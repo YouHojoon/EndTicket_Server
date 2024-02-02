@@ -1,1 +1,2 @@
-rootProject.name = "endTicket"
+rootProject.name = "EndTicket"
+include("user")
