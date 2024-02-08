@@ -17,27 +17,20 @@ import jakarta.validation.constraints.Size
  * @param id DB에 저장되는 primary key
  */
 @Entity
-@Schema(description = "사용자")
+
 class User(
 
-    @field:Size(min = 3, max = 8)
     @Column(nullable = false)
-    @Schema(description = "별명", nullable = false, example = "테스트")
     val nickname: String,
 
-    @field:Email
     @Column(nullable = false, updatable = false, unique = true)
-    @Schema(description = "이메일", nullable = false, example = "test@test.com")
     val email: String,
 
     @Column(nullable = false, updatable = false)
     @Enumerated(value = EnumType.STRING)
-    @Schema(description = "SNS 타입", nullable = false, example = "KAKAO")
     private val socialType: SocialType,
 
-    @field:NotBlank
     @Column(nullable = false, updatable = false, unique = true)
-    @Schema(description = "SNS 사용자 번호", nullable = false, example = "1234567")
     private val socialUserNumber: String
 )
 {

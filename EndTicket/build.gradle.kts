@@ -8,9 +8,11 @@ plugins {
     kotlin("plugin.jpa") version "1.9.22"
 }
 
+
 allprojects{
     group = "ac.kr.smu"
     version = "0.0.1-SNAPSHOT"
+    extra["springCloudVersion"] = "2022.0.4"
 
     apply(plugin = "org.jetbrains.kotlin.plugin.spring")
     apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
@@ -25,6 +27,14 @@ allprojects{
     repositories {
         mavenCentral()
     }
+}
+
+subprojects{
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+        }
+    }
 
     dependencies {
         implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -38,6 +48,7 @@ allprojects{
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         testImplementation("org.springframework.security:spring-security-test")
         testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+
         // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
         implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
     }

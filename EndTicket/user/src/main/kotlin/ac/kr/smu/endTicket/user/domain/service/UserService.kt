@@ -4,6 +4,7 @@ import ac.kr.smu.endTicket.user.domain.exception.UserEmailDuplicationException
 import ac.kr.smu.endTicket.user.domain.model.User
 import ac.kr.smu.endTicket.user.domain.repository.UserRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.sql.SQLIntegrityConstraintViolationException
 import kotlin.jvm.optionals.getOrNull
 
@@ -23,7 +24,6 @@ class UserService(
      */
     @Throws(UserEmailDuplicationException::class)
     fun createUser(user: User){
-//        if (checkUserExistenceByEmail(user.email)) throw UserEmailDuplicationException()
         try{
             userRepo.save(user)
         }catch (e: SQLIntegrityConstraintViolationException) {
@@ -36,6 +36,7 @@ class UserService(
      * 중복 이메일을 방지하기 위한 메소드
      * @return 사용자 존재 여부
      */
+    @Transactional(readOnly = true)
     fun checkUserExistenceByEmail(email: String): Boolean{
         return userRepo.findByEmail(email) != null
     }
