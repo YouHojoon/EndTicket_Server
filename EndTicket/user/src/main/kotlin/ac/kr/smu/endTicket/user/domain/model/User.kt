@@ -26,7 +26,7 @@ class User(
     val nickname: String,
 
     @field:Email
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, unique = true)
     @Schema(description = "이메일", nullable = false, example = "test@test.com")
     val email: String,
 
@@ -34,10 +34,11 @@ class User(
     @Enumerated(value = EnumType.STRING)
     @Schema(description = "SNS 타입", nullable = false, example = "KAKAO")
     private val socialType: SocialType,
-//
-//    @field:NotBlank
-//    @Column(nullable = false, updatable = false)
-//    private val socialUserNumber: String
+
+    @field:NotBlank
+    @Column(nullable = false, updatable = false, unique = true)
+    @Schema(description = "SNS 사용자 번호", nullable = false, example = "1234567")
+    private val socialUserNumber: String
 )
 {
     @Id

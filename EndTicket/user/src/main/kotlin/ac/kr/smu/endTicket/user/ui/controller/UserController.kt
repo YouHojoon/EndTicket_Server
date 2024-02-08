@@ -2,7 +2,7 @@ package ac.kr.smu.endTicket.user.ui.controller
 
 import ac.kr.smu.endTicket.user.domain.model.User
 import ac.kr.smu.endTicket.user.domain.service.UserService
-import ac.kr.smu.endTicket.user.ui.dto.BindingExceptionDTO
+import ac.kr.smu.endTicket.user.ui.response.BindingExceptionResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -31,7 +31,7 @@ class UserController(
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "201", description = "회원가입 완료"),
-            ApiResponse(responseCode = "400", description = "필드 검증 실패", content = [Content(schema = Schema(implementation = BindingExceptionDTO::class))]),
+            ApiResponse(responseCode = "400", description = "필드 검증 실패", content = [Content(schema = Schema(implementation = BindingExceptionResponse::class))]),
         ]
     )
     fun createUser(
@@ -59,7 +59,7 @@ class UserController(
     @ExceptionHandler(BindException::class)
     fun handleBindingException(e: BindException, bindingResult: BindingResult): ResponseEntity<*>{
         return ResponseEntity.badRequest().body(
-            BindingExceptionDTO(
+            BindingExceptionResponse(
                 bindingResult.fieldError?.field,
                 bindingResult.fieldError?.defaultMessage
             )

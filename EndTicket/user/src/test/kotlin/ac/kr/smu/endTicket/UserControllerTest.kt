@@ -30,7 +30,7 @@ class UserControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("회원가입 테스트")
-    fun createUser(){
+    fun test_createUser(){
         val body1 = objectMapper.writeValueAsString(
             mapOf("nickname" to "test", "email" to "test@test.com", "socialType" to "KAKAO", "socialUserNumber" to "1")
         )
@@ -56,7 +56,7 @@ class UserControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("이메일 중복확인 테스트")
-    fun checkUserExistenceByEmail(){
+    fun test_checkUserExistenceByEmail(){
         Mockito
             .`when`(service.checkUserExistenceByEmail("test@test.com"))
             .thenReturn(true)

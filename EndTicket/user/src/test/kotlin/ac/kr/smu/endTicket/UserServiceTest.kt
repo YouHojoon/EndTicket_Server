@@ -13,6 +13,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.jupiter.MockitoExtension
+import java.sql.SQLIntegrityConstraintViolationException
 import java.util.*
 import kotlin.test.Test
 
@@ -31,16 +32,18 @@ class UserServiceTest(
 
     @Test
     @DisplayName("이메일 중복된 사용자 생성 테스트")
+//    @Throws(SQLIntegrityConstraintViolationException::class)
+    @kotlin.jvm.Throws(SQLIntegrityConstraintViolationException::class)
     fun when_사용자_이메일이_중복됐을때_then_throw_UserEmailDuplicationException() {
-        //given
-        Mockito
-            .`when`(userRepo.findByEmail("test@test.com"))
-            .thenReturn(createUser())
 
-        //when
         val user = createUser()
+        Mockito
+            .`when`(userRepo
+                .save(user))
+            .thenAnswer{
+                throw SQLIntegrityConstraintViolationException()
+            }
 
-        //then
         assertThrows<UserEmailDuplicationException> {
             userService.createUser(user)
         }

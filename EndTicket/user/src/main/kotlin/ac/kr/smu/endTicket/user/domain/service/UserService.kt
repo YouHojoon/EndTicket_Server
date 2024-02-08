@@ -4,6 +4,7 @@ import ac.kr.smu.endTicket.user.domain.exception.UserEmailDuplicationException
 import ac.kr.smu.endTicket.user.domain.model.User
 import ac.kr.smu.endTicket.user.domain.repository.UserRepository
 import org.springframework.stereotype.Service
+import java.sql.SQLIntegrityConstraintViolationException
 import kotlin.jvm.optionals.getOrNull
 
 /**
@@ -22,9 +23,12 @@ class UserService(
      */
     @Throws(UserEmailDuplicationException::class)
     fun createUser(user: User){
-        if (checkUserExistenceByEmail(user.email)) throw UserEmailDuplicationException()
-
-        userRepo.save(user)
+//        if (checkUserExistenceByEmail(user.email)) throw UserEmailDuplicationException()
+        try{
+            userRepo.save(user)
+        }catch (e: SQLIntegrityConstraintViolationException) {
+            throw UserEmailDuplicationException()
+        }
     }
 
     /**
