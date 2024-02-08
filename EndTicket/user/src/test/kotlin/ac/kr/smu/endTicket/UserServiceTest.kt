@@ -32,7 +32,6 @@ class UserServiceTest(
 
     @Test
     @DisplayName("이메일 중복된 사용자 생성 테스트")
-//    @Throws(SQLIntegrityConstraintViolationException::class)
     @kotlin.jvm.Throws(SQLIntegrityConstraintViolationException::class)
     fun when_사용자_이메일이_중복됐을때_then_throw_UserEmailDuplicationException() {
 

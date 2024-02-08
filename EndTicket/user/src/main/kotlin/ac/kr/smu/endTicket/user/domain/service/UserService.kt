@@ -31,13 +31,13 @@ class UserService(
         }
     }
 
-    /**
-     * 사용자의 이메일을 통해서 사용자가 존재하는 지 확인하는 메소드
-     * 중복 이메일을 방지하기 위한 메소드
-     * @return 사용자 존재 여부
-     */
-    @Transactional(readOnly = true)
-    fun checkUserExistenceByEmail(email: String): Boolean{
-        return userRepo.findByEmail(email) != null
-    }
+//    /**
+//     * 사용자의 이메일을 통해서 사용자가 존재하는 지 확인하는 메소드
+//     * 중복 이메일을 방지하기 위한 메소드
+//     * @return 사용자 존재 여부
+//     */
+//    @Transactional(readOnly = true)
+//    fun checkUserExistenceByEmail(email: String): Boolean{
+//        return userRepo.findByEmail(email) != null
+//    }
 }

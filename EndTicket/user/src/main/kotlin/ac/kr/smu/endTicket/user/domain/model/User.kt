@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import java.lang.IllegalArgumentException
 
 /**
  * 사용자를 추상화한 클래스
@@ -39,5 +40,11 @@ class User(
     private val id: Long = 0L
     enum class SocialType {
         KAKAO, GOOGLE, APPLE
+    }
+
+    override fun equals(other: Any?): Boolean {
+        val user = (other as? User) ?: throw IllegalArgumentException()
+
+        return user.email == email
     }
 }
