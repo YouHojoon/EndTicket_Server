@@ -39,8 +39,7 @@ class UserController(
             ApiResponse(responseCode = "201", description = "회원가입 완료"),
             ApiResponse(responseCode = "400", description = "필드 검증 실패", content = [
                 Content(schema = Schema(implementation = BindingExceptionResponse::class))
-            ]),
-            ApiResponse(responseCode = "409", description = "사용자 이메일 중복, 이미 가입되어 있는 email")
+            ])
         ]
     )
     fun createUser(
@@ -51,7 +50,7 @@ class UserController(
         val socialUserNumber = authClient.getSocialUserNumber(userRequest.code)
 
         try{
-            userService.createUser(User(userRequest.nickname, userRequest.email, userRequest.socialType, socialUserNumber))
+            userService.createUser(User(userRequest.nickname, userRequest.socialType, socialUserNumber))
         }catch (e: UserEmailDuplicationException){
             return ResponseEntity.status(409).build()
         }

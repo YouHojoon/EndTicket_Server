@@ -40,20 +40,11 @@ class UserControllerTest @Autowired constructor(
     @DisplayName("회원가입 테스트")
     fun test_createUser(){
         val body1 = objectMapper.writeValueAsString(
-            mapOf("nickname" to "test", "email" to "test@test.com", "socialType" to "KAKAO", "code" to "1")
+            mapOf("nickname" to "test", "socialType" to "KAKAO", "code" to "1")
         )
         val body2 = objectMapper.writeValueAsString(
-            mapOf("nickname" to "test12312312312", "email" to "tes.com", "socialType" to "KAKAO", "code" to "2")
+            mapOf("nickname" to "test12312312312",  "socialType" to "KAKAO", "code" to "2")
         )
-        val body3 = objectMapper.writeValueAsString(
-            mapOf("nickname" to "test", "email" to "test2@test.com", "socialType" to "KAKAO", "code" to "3")
-        )
-
-        Mockito.`when`(service
-            .createUser(User("test","test2@test.com",User.SocialType.KAKAO, "1")))
-            .thenAnswer{
-                throw UserEmailDuplicationException()
-            }
         
         Mockito.`when`(authClient.getSocialUserNumber(Mockito.anyString()))
             .thenReturn("1")
@@ -71,11 +62,6 @@ class UserControllerTest @Autowired constructor(
         ).andExpect(MockMvcResultMatchers.status().is4xxClientError)
             .andExpect(MockMvcResultMatchers.jsonPath("field").isString)
             .andExpect(MockMvcResultMatchers.jsonPath("message").isString)
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
-            .content(body3)
-            .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(MockMvcResultMatchers.status().isConflict)
     }
 
 //    @Test

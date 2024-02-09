@@ -30,25 +30,25 @@ class UserServiceTest(
         MockitoAnnotations.openMocks(this)
     }
 
-    @Test
-    @DisplayName("이메일 중복된 사용자 생성 테스트")
-    @kotlin.jvm.Throws(SQLIntegrityConstraintViolationException::class)
-    fun when_사용자_이메일이_중복됐을때_then_throw_UserEmailDuplicationException() {
-
-        val user = createUser()
-        Mockito
-            .`when`(userRepo
-                .save(user))
-            .thenAnswer{
-                throw SQLIntegrityConstraintViolationException()
-            }
-
-        assertThrows<UserEmailDuplicationException> {
-            userService.createUser(user)
-        }
-    }
+//    @Test
+//    @DisplayName("이메일 중복된 사용자 생성 테스트")
+//    @kotlin.jvm.Throws(SQLIntegrityConstraintViolationException::class)
+//    fun when_사용자_이메일이_중복됐을때_then_throw_UserEmailDuplicationException() {
+//
+//        val user = createUser()
+//        Mockito
+//            .`when`(userRepo
+//                .save(user))
+//            .thenAnswer{
+//                throw SQLIntegrityConstraintViolationException()
+//            }
+//
+//        assertThrows<UserEmailDuplicationException> {
+//            userService.createUser(user)
+//        }
+//    }
 
     private fun createUser(): User{
-        return User("test","test@test.com", User.SocialType.KAKAO,"1")
+        return User("test", User.SocialType.KAKAO,"1")
     }
 }
