@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.infra.config
 
-import ac.kr.smu.endTicket.infra.converter.SocialTypeConverter
+import ac.kr.smu.endTicket.user.ui.converter.SocialTypeConverter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.format.FormatterRegistry

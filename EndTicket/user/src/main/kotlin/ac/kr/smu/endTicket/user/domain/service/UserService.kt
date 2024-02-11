@@ -31,13 +31,13 @@ class UserService(
         }
     }
 
-//    /**
-//     * 사용자의 이메일을 통해서 사용자가 존재하는 지 확인하는 메소드
-//     * 중복 이메일을 방지하기 위한 메소드
-//     * @return 사용자 존재 여부
-//     */
-//    @Transactional(readOnly = true)
-//    fun checkUserExistenceByEmail(email: String): Boolean{
-//        return userRepo.findByEmail(email) != null
-//    }
+    /**
+     * SNS 사용자 번호를 통해 해당 SNS의 사용자를 찾아 user id를 반환하는 메소드
+     * @param SNS 해당 SNS로 회원가입한 사용자
+     * @param socialUserNumber SNS 사용자 번호
+     * @return 사용자 번
+     */
+    fun findBySocialTypeAndSocialUserNumber(SNS: User.SocialType, socialUserNumber: Long): Long?{
+        return userRepo.findBySocialTypeAndSocialUserNumber(SNS, socialUserNumber)?.id
+    }
 }
