@@ -1,17 +1,18 @@
 package ac.kr.smu.endTicket.auth.ui.controller
 
+import ac.kr.smu.endTicket.auth.domain.exception.UserNotFoundException
 import ac.kr.smu.endTicket.auth.service.AuthService
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
-import io.swagger.v3.oas.annotations.StringToClassMapItem
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.media.SchemaProperties
 import io.swagger.v3.oas.annotations.media.SchemaProperty
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import io.swagger.v3.oas.models.media.MapSchema
+import org.springframework.http.HttpStatus
+
+import org.springframework.http.HttpStatusCode
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
@@ -57,8 +58,12 @@ class AuthController(
         @Parameter(description = "SNS 로그인으로 발급받은 authorization code", required = true)
         @PathVariable("code")
         code: String
-    ): ResponseEntity<Map<String, Any>>{
-        authService.auth(SNS,code)
-        return ResponseEntity.ok().build()
+    ): ResponseEntity<*>{
+        try {
+            val jwtToken = authService.auth(SNS,code)
+            return ResponseEntity.ok(jwtToken)
+        }catch (e:UserNotFoundException){
+            return ResponseEntity(mapOf("socialUserNumber" to e.socialUserNumber), HttpStatus.NOT_FOUND)
+        }
     }
 }
