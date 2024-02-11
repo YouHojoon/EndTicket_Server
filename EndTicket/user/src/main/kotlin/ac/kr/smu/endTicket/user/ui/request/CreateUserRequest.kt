@@ -11,7 +11,7 @@ import jakarta.validation.constraints.Size
  * 사용자 생성 요청을 추상화한 클래스
  * @property nickname 사용자 별명
  * @property socialType 생성 요청을 한 SNS 타입
- * @property code SNS OAuth에서 인증하고 응답받은 authorization code
+ * @property socialUserNumber SNS 사용자 번
  */
 @Schema(description = "사용자 생성 요청")
 data class CreateUserRequest(
@@ -23,7 +23,7 @@ data class CreateUserRequest(
     @Schema(description = "SNS 타입", nullable = false, example = "KAKAO")
     val socialType: User.SocialType,
 
-    @field:NotBlank
-    @Schema(description = "SNS 인증 코드", nullable = false, example = "LTXdE0-xf2CuXua_M4YFGbS6gThxAlVpwq-drntxv1nkyN7ztxVJy_pPMLkKPXLrAAABjYJsmeWm1x-HnlkNwQ")
-    val code: String
+    @field:NotNull
+    @Schema(description = "SNS 사용자 번호", nullable = false, example = "1234152")
+    val socialUserNumber: Long
 )

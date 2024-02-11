@@ -1,13 +1,10 @@
 package ac.kr.smu.endTicket
 
-import ac.kr.smu.endTicket.infra.client.AuthClient
 import ac.kr.smu.endTicket.infra.config.SecurityConfig
-import ac.kr.smu.endTicket.user.domain.exception.UserEmailDuplicationException
 import ac.kr.smu.endTicket.user.domain.model.User
 import ac.kr.smu.endTicket.user.domain.service.UserService
 import ac.kr.smu.endTicket.user.ui.controller.UserController
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.aspectj.apache.bcel.classfile.Code
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -31,23 +28,18 @@ class UserControllerTest @Autowired constructor(
 
     @MockBean
     private val service: UserService,
-
-    @MockBean
-    private val authClient: AuthClient
 ) {
 
     @Test
     @DisplayName("회원가입 테스트")
     fun test_createUser(){
         val body1 = objectMapper.writeValueAsString(
-            mapOf("nickname" to "test", "socialType" to "KAKAO", "code" to "1")
+            mapOf("nickname" to "test", "socialType" to "KAKAO", "socialUserNumber" to 1)
         )
         val body2 = objectMapper.writeValueAsString(
-            mapOf("nickname" to "test12312312312",  "socialType" to "KAKAO", "code" to "2")
+            mapOf("nickname" to "test12312312312",  "socialType" to "KAKAO", "socialUserNumber" to 2)
         )
-        
-        Mockito.`when`(authClient.getSocialUserNumber(Mockito.anyString()))
-            .thenReturn("1")
+
 
         mockMvc
             .perform(
@@ -64,24 +56,25 @@ class UserControllerTest @Autowired constructor(
             .andExpect(MockMvcResultMatchers.jsonPath("message").isString)
     }
 
-//    @Test
-//    @DisplayName("이메일 중복확인 테스트")
-//    fun test_checkUserExistenceByEmail() {
-//        Mockito
-//            .`when`(service.checkUserExistenceByEmail("test@test.com"))
-//            .thenReturn(true)
-//
-//        Mockito.`when`(service.checkUserExistenceByEmail("test1@test.com"))
-//            .thenReturn(false)
-//
-//        mockMvc
-//            .perform(
-//                MockMvcRequestBuilders
-//                    .get("/users/test@test.com")
-//            )
-//            .andExpect(MockMvcResultMatchers.status().isOk)
-//
-//        mockMvc.perform(MockMvcRequestBuilders.get("/users/test1@test.com"))
-//            .andExpect(MockMvcResultMatchers.status().isNotFound)
-//    }
+    @Test
+    @DisplayName("사용자 id 반환 테스트")
+    fun test_getUserId() {
+        Mockito
+            .`when`(service.findBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO,1))
+            .thenReturn(1)
+
+        Mockito.`when`(service.findBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO,2))
+            .thenReturn(null)
+
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders
+                    .get("/users/kakao/1")
+            )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("socialUserNumber").value(1))
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/kakao/2"))
+            .andExpect(MockMvcResultMatchers.status().isNotFound)
+    }
 }

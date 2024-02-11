@@ -1,13 +1,12 @@
 package ac.kr.smu.endTicket.user.domain.model
 
-import io.swagger.v3.oas.annotations.media.Schema
-import jakarta.persistence.*
-import jakarta.validation.constraints.Email
-import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotEmpty
-import jakarta.validation.constraints.NotNull
-import jakarta.validation.constraints.Size
-import java.lang.IllegalArgumentException
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
 
 /**
  * 사용자를 추상화한 클래스
@@ -19,7 +18,6 @@ import java.lang.IllegalArgumentException
 @Entity
 
 class User(
-
     @Column(nullable = false)
     val nickname: String,
 
@@ -28,13 +26,13 @@ class User(
     private val socialType: SocialType,
 
     @Column(nullable = false, updatable = false)
-    private val socialUserNumber: String
+    private val socialUserNumber: Long
 )
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, insertable = false, updatable = false)
-    private val id: Long = 0L
+    val id: Long = 0L
     enum class SocialType {
         KAKAO, GOOGLE, APPLE
     }

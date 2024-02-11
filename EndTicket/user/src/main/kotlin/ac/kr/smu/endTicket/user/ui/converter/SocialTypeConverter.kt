@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.infra.converter
+package ac.kr.smu.endTicket.user.ui.converter
 
 import ac.kr.smu.endTicket.user.domain.model.User
 import org.springframework.core.convert.converter.Converter
