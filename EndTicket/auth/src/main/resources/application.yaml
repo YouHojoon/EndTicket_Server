@@ -1,0 +1,44 @@
+server:
+    port: 8081
+
+spring:
+    security:
+        oauth2:
+            client:
+                registration:
+                  kakao:
+                      client-id: 3cd7c8a7086666accd283d84eb5f3f39
+                      client-secret: jg8ibObIUgJ4wUQF8MuJUASELaIQnnNn
+                      redirect-uri: "http://localhost:8081/oauth/kakao"
+                      authorization-grant-type: authorization_code
+                      client-name: kakao
+                provider:
+                  kakao:
+                      authorization-uri: https://kauth.kakao.com/oauth/authorize
+                      token-uri: https://kauth.kakao.com/oauth/token
+                      jwk-set-uri: https://kauth.kakao.com/.well-known/jwks.json
+                      issuer-uri: https://kauth.kakao.com
+    data:
+        redis:
+            host: localhost
+            port: 6379
+
+springdoc:
+    swagger-ui:
+        path: /docs
+        disable-swagger-default-url: true
+        display-request-duration: true
+    api-docs:
+        path: /api-docs
+    default-consumes-media-type: application/json
+    default-produces-media-type: application/json
+    show-actuator: true
+    paths-to-match:
+        - "/auth/**"
+
+jwt:
+    secret: acsghawhhwawaawfqacsghawhhwawaawfqacsghawhhwawaawfq
+
+openfeign:
+    client:
+        user.url: http://localhost:8080
