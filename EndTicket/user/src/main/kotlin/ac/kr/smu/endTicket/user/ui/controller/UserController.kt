@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.user.ui.controller
 
-import ac.kr.smu.endTicket.user.domain.exception.UserEmailDuplicationException
+import ac.kr.smu.endTicket.user.domain.exception.UserAlreadyExistException
 import ac.kr.smu.endTicket.user.domain.model.User
 import ac.kr.smu.endTicket.user.domain.service.UserService
 import ac.kr.smu.endTicket.user.ui.request.CreateUserRequest
@@ -36,7 +36,8 @@ class UserController(
             ApiResponse(responseCode = "201", description = "회원가입 완료"),
             ApiResponse(responseCode = "400", description = "필드 검증 실패", content = [
                 Content(schema = Schema(implementation = BindingExceptionResponse::class))
-            ])
+            ]),
+            ApiResponse(responseCode = "409", description = "이미 회원가입 되어 있는 사용자")
         ]
     )
     fun createUser(
@@ -46,7 +47,7 @@ class UserController(
         userRequest: CreateUserRequest): ResponseEntity<Void>{
         try{
             userService.createUser(User(userRequest.nickname, userRequest.socialType, userRequest.socialUserNumber))
-        }catch (e: UserEmailDuplicationException){
+        }catch (e: UserAlreadyExistException){
             return ResponseEntity.status(409).build()
         }
 
@@ -55,21 +56,22 @@ class UserController(
 
 
 
-    @GetMapping("/{SNS}/{socialUserNumber}")
+    @GetMapping("/{socialType}/{socialUserNumber}")
     @Operation(summary = "사용자 조회", description = "SNS 사용자 번호를 가진 사용자 조회")
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "SNS 사용자 번호를 가진 사용자가 존재할 시", content = [Content(schema = Schema(name = "SNS 사용자 번호", type = "object", requiredProperties = ["socialUserNumber"]), schemaProperties = [SchemaProperty(name = "userId", schema = Schema(type = "long", example = "1"))])]),
-            ApiResponse(responseCode = "404", description = "해당 uid의 사용자가 없을 시")
+            ApiResponse(responseCode = "404", description = "SNS 사용자 번호의 사용자가 없을 시")
         ]
     )
     fun getUserId(
         @Parameter(description = "가입한 SNS", required = true)
-        @PathVariable("SNS")
-                  SNS: User.SocialType,
+        @PathVariable("socialType")
+        socialType: User.SocialType,
         @Parameter(description = "SNS 사용자 번호", required = true)
         @PathVariable("socialUserNumber") socialUserNumber: Long): ResponseEntity<*>{
-        val socialUserNumber = userService.findBySocialTypeAndSocialUserNumber(SNS, socialUserNumber) ?: return ResponseEntity.notFound().build<Void>()
+        val socialUserNumber = userService.findBySocialTypeAndSocialUserNumber(socialType, socialUserNumber) ?: return ResponseEntity.notFound().build<Void>()
+
         return ResponseEntity.ok(mapOf("socialUserNumber" to socialUserNumber))
     }
 
