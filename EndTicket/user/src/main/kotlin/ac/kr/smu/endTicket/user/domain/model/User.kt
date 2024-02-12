@@ -24,11 +24,11 @@ class User(
     @Column(nullable = false)
     val nickname: String,
 
-    @Column(nullable = false, updatable = false)
+    @Column(name="social_type", nullable = false, updatable = false)
     @Enumerated(value = EnumType.STRING)
     private val socialType: SocialType,
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "social_user_number", nullable = false, updatable = false)
     private val socialUserNumber: Long
 )
 {
