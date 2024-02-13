@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController
 class AuthController(
     private val authService: AuthService
 ) {
-    @PostMapping("{SNS}/{code}")
+    @PostMapping("{socialType}/{code}")
     @Operation(summary = "SNS를 사용해 인증", description = "SNS 로그인으로 발급받은 authorization code를 이용해 인증<br>회원 정보가 없을 시 status code 404와 함께 SNS 회원 번호를 응답")
     @ApiResponses(
         value = [
@@ -52,15 +52,15 @@ class AuthController(
     )
     fun createToken(
         @Parameter(description = "인증에 사용한 SNS", required = true)
-        @PathVariable("SNS")
-             SNS: SocialType,
+        @PathVariable("socialType")
+        socialType: SocialType,
 
         @Parameter(description = "SNS 로그인으로 발급받은 authorization code", required = true)
         @PathVariable("code")
         code: String
     ): ResponseEntity<*>{
         try {
-            val jwtToken = authService.createToken(SNS,code)
+            val jwtToken = authService.createToken(socialType,code)
             return ResponseEntity.ok(jwtToken)
         }catch (e:UserNotFoundException){
             return ResponseEntity(mapOf("socialUserNumber" to e.socialUserNumber), HttpStatus.NOT_FOUND)

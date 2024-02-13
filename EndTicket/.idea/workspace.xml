@@ -5,26 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7b5dc841-4ccf-44c8-88c8-ff93cc451e8e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/user/src/main/kotlin/ac/kr/smu/endTicket/user/domain/exception/UserAlreadyExistException.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.gitsecret/paths/mapping.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitsecret/paths/mapping.cfg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/auth/domain/model/JWTToken.kt" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/auth/domain/model/JWTToken.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/auth/service/AuthService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/auth/service/AuthService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/auth/ui/controller/AuthController.kt" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/auth/ui/controller/AuthController.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/infra/openfeign/UserClient.kt" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/infra/openfeign/UserClient.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/main/resources/application.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/kotlin/ac/kr/smu/endTicket/infra/config/SwaggerConfig.kt" beforeDir="false" afterPath="$PROJECT_DIR$/user/src/main/kotlin/ac/kr/smu/endTicket/infra/config/SwaggerConfig.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/kotlin/ac/kr/smu/endTicket/user/domain/exception/UserEmailDuplicationException.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/kotlin/ac/kr/smu/endTicket/user/domain/model/User.kt" beforeDir="false" afterPath="$PROJECT_DIR$/user/src/main/kotlin/ac/kr/smu/endTicket/user/domain/model/User.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/kotlin/ac/kr/smu/endTicket/user/domain/repository/UserRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/user/src/main/kotlin/ac/kr/smu/endTicket/user/domain/repository/UserRepository.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/kotlin/ac/kr/smu/endTicket/user/domain/service/UserService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/user/src/main/kotlin/ac/kr/smu/endTicket/user/domain/service/UserService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/kotlin/ac/kr/smu/endTicket/user/ui/controller/UserController.kt" beforeDir="false" afterPath="$PROJECT_DIR$/user/src/main/kotlin/ac/kr/smu/endTicket/user/ui/controller/UserController.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/main/resources/application.yaml.secret" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/test/kotlin/ac/kr/smu/endTicket/UserControllerTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/user/src/test/kotlin/ac/kr/smu/endTicket/UserControllerTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user/src/test/kotlin/ac/kr/smu/endTicket/UserServiceTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/user/src/test/kotlin/ac/kr/smu/endTicket/UserServiceTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../dump.rdb" beforeDir="false" afterPath="$PROJECT_DIR$/../dump.rdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,7 +82,7 @@
       <option name="presentableId" value="Default" />
       <updated>1707800097541</updated>
       <workItem from="1707800098924" duration="2454000" />
-      <workItem from="1707803564337" duration="2910000" />
+      <workItem from="1707803564337" duration="4163000" />
     </task>
     <servers />
   </component>
