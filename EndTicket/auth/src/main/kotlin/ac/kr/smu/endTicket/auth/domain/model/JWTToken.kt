@@ -28,10 +28,10 @@ class JWTToken(userID: Long, key: Key, accessTokenExpiration: Long, refreshToken
         val builder = Jwts
             .builder()
             .issuedAt(now)
-            .subject(userID.toString())
             .signWith(key)
 
         accessToken = builder
+            .subject(userID.toString())
             .expiration(Date(now.time + accessTokenExpiration))
             .compact()
         refreshToken = builder

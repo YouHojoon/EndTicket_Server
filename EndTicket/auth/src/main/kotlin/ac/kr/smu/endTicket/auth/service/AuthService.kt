@@ -8,8 +8,10 @@ import ac.kr.smu.endTicket.infra.openfeign.UserClient
 import feign.FeignException
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.redis.core.RedisTemplate
 
 import org.springframework.stereotype.Service
+import java.util.concurrent.TimeUnit
 
 /**
  * 인증 기능을 처리하는 클래스
@@ -23,13 +25,12 @@ import org.springframework.stereotype.Service
 class AuthService(
     private val oAuthService: OAuthService,
     private val userClient: UserClient,
+    private val redisTemplate: RedisTemplate<String, String>,
 
     @Value("\${jwt.secret}")
     private val jwtSecret: String,
-
     @Value("\${jwt.access-token-expiration}")
     private val accessTokenExpiration: Long,
-
     @Value("\${jwt.refresh-token-expiration}")
     private val refreshTokenExpiration: Long
 ) {
@@ -37,6 +38,8 @@ class AuthService(
      * JWT를 서명하기 위한 key
      */
     private val key = Keys.hmacShaKeyFor(jwtSecret.toByteArray())
+    private val REDIS_KEY_POSTFIX_FOR_REFRESH_TOKEN = "_refresh_token"
+
     /**
      * 인증 기능
      * @param SNS 인증에 사용할 SNS
@@ -51,8 +54,10 @@ class AuthService(
 
         try {
             val response = userClient.getUserId(SNS, socialUserNumber)
+            val token = JWTToken(response.userID, key, accessTokenExpiration, refreshTokenExpiration)
+            redisTemplate.opsForValue().set("${response.userID}" + REDIS_KEY_POSTFIX_FOR_REFRESH_TOKEN, token.refreshToken, refreshTokenExpiration, TimeUnit.MILLISECONDS)
 
-            return JWTToken(response.userID, key, accessTokenExpiration, refreshTokenExpiration)
+            return token
         } catch (e: FeignException.NotFound) {
             throw UserNotFoundException(socialUserNumber)
         }
