@@ -10,6 +10,7 @@ import io.jsonwebtoken.security.Jwk
 import io.jsonwebtoken.security.JwkSet
 import io.jsonwebtoken.security.Jwks
 import kotlinx.coroutines.runBlocking
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.security.oauth2.client.registration.ClientRegistration
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
@@ -31,7 +32,7 @@ import java.util.*
 @Service
 class IDTokenService(
     private val clientRegistrationRepository: ClientRegistrationRepository,
-    private val redisTemplate: StringRedisTemplate
+    private val redisTemplate: RedisTemplate<String, String>
 ) {
     /**
      * ID 토큰을 이용해 SNS 사용자 번호를 반환하는 메소드

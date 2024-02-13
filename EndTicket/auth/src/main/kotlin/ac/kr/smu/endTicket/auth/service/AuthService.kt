@@ -4,6 +4,7 @@ import ac.kr.smu.endTicket.auth.domain.exception.UserNotFoundException
 import ac.kr.smu.endTicket.auth.domain.model.JWTToken
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
+import ac.kr.smu.endTicket.infra.config.JWTProperties
 import ac.kr.smu.endTicket.infra.openfeign.UserClient
 import feign.FeignException
 import io.jsonwebtoken.security.Keys
@@ -26,18 +27,12 @@ class AuthService(
     private val oAuthService: OAuthService,
     private val userClient: UserClient,
     private val redisTemplate: RedisTemplate<String, String>,
-
-    @Value("\${jwt.secret}")
-    private val jwtSecret: String,
-    @Value("\${jwt.access-token-expiration}")
-    private val accessTokenExpiration: Long,
-    @Value("\${jwt.refresh-token-expiration}")
-    private val refreshTokenExpiration: Long
+    private val jwtProperties: JWTProperties
 ) {
     /**
      * JWT를 서명하기 위한 key
      */
-    private val key = Keys.hmacShaKeyFor(jwtSecret.toByteArray())
+    private val key = Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray())
 
     /**
      * Refresh 토큰이 redis에 저장될 때 키에 붙는 접미사
@@ -58,8 +53,8 @@ class AuthService(
 
         try {
             val response = userClient.getUserId(socialType, socialUserNumber)
-            val token = JWTToken(response.userID, key, accessTokenExpiration, refreshTokenExpiration)
-            redisTemplate.opsForValue().set("${response.userID}" + REDIS_KEY_POSTFIX_FOR_REFRESH_TOKEN, token.refreshToken, refreshTokenExpiration, TimeUnit.MILLISECONDS)
+            val token = JWTToken(response.userID, key, jwtProperties.accessTokenExpiration, jwtProperties.refreshTokenExpiration)
+            redisTemplate.opsForValue().set("${response.userID}" + REDIS_KEY_POSTFIX_FOR_REFRESH_TOKEN, token.refreshToken, jwtProperties.refreshTokenExpiration, TimeUnit.MILLISECONDS)
 
             return token
         } catch (e: FeignException.NotFound) {
