@@ -10,9 +10,17 @@ import ac.kr.smu.endTicket.infra.oAuth.OAuthTokenResponse
 interface OAuthService {
     /**
      * 외부 SNS 서비스 인증을 하여 access 토큰 응답을 반환하는 메소드
-     * @param SNS SNS 종류
+     * @param socialType SNS 종류
      * @param code SNS 인증에서 반환받은 authorization code
+     * @return access token 응답
      */
-    fun oAuth(SNS: SocialType, code: String): OAuthTokenResponse
-    fun parseSocialUserNumber(SNS: SocialType, idToken: String): Long
+    fun oAuth(socialType: SocialType, code: String): OAuthTokenResponse
+
+    /**
+     * idToken에서 SNS 사용자 번호를 반환하는 메소드
+     * @param socialType SNS 종류
+     * @param idToken idToken
+     * @return 파싱된 회원 번호
+     */
+    fun parseSocialUserNumber(socialType: SocialType, idToken: String): Long
 }

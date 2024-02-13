@@ -1,6 +1,7 @@
 package ac.kr.smu.endTicket.auth.ui.controller
 
 import ac.kr.smu.endTicket.auth.domain.exception.UserNotFoundException
+import ac.kr.smu.endTicket.auth.domain.model.JWTToken
 import ac.kr.smu.endTicket.auth.service.AuthService
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import io.swagger.v3.oas.annotations.Operation
@@ -34,10 +35,7 @@ class AuthController(
             ApiResponse(description = "인증 성공", responseCode = "200",
                 content = [
                     Content(
-                        schema = Schema(type = "object", requiredProperties = ["token"]),
-                        schemaProperties = [
-                            SchemaProperty(name = "token", schema = Schema(type = "string", example = "12345"))
-                        ]
+                        schema = Schema(implementation = JWTToken::class)
                     )
                 ]),
             ApiResponse(description = "파라미터 에러", responseCode = "400"),

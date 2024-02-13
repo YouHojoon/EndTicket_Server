@@ -38,6 +38,10 @@ class AuthService(
      * JWT를 서명하기 위한 key
      */
     private val key = Keys.hmacShaKeyFor(jwtSecret.toByteArray())
+
+    /**
+     * Refresh 토큰이 redis에 저장될 때 키에 붙는 접미사
+     */
     private val REDIS_KEY_POSTFIX_FOR_REFRESH_TOKEN = "_refresh_token"
 
     /**
@@ -47,8 +51,8 @@ class AuthService(
      * @return JWT 토큰 발급
      * @throws UserNotFoundException 해당 SNS로 가입한 적 없을 시
      */
+    @Throws(UserNotFoundException::class)
     fun createToken(SNS: SocialType, code: String): JWTToken{
-        //todo: oAuth를 활용해 토큰을 응답받고 ID 토큰으로 유저 식별 후 JWT 토큰 발급
         val idToken = oAuthService.oAuth(SNS,code).idToken
         val socialUserNumber = oAuthService.parseSocialUserNumber(SNS, idToken)
 
