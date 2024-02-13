@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7b5dc841-4ccf-44c8-88c8-ff93cc451e8e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/auth/domain/model/JWTToken.kt" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/auth/domain/model/JWTToken.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/auth/service/AuthService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/auth/service/AuthService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/auth/ui/controller/AuthController.kt" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/auth/ui/controller/AuthController.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/main/resources/application.yaml" afterDir="false" />
-    </list>
+    <list default="true" id="7b5dc841-4ccf-44c8-88c8-ff93cc451e8e" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -87,7 +81,7 @@
       <updated>1707800097541</updated>
       <workItem from="1707800098924" duration="2454000" />
       <workItem from="1707803564337" duration="4163000" />
-      <workItem from="1707808057872" duration="3501000" />
+      <workItem from="1707808057872" duration="3813000" />
     </task>
     <servers />
   </component>
