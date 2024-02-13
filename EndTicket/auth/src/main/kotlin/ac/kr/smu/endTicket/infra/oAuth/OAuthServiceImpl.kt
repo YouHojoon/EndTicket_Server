@@ -27,12 +27,12 @@ class OAuthServiceImpl(
 ): OAuthService {
     /**
      * 외부 SNS 서비스 인증을 하여 access 토큰 응답을 반환하는 메소드
-     * @param SNS SNS 종류
+     * @param socialType SNS 종류
      * @param code SNS 인증에서 반환받은 authorization code
      * @return access 토큰 응답을 반환, 에러 발생 시 null 반환
      */
-    override fun oAuth(SNS: SocialType, code: String): OAuthTokenResponse{
-        val provider = clientRegistrationRepository.findByRegistrationId(SNS.name.lowercase())
+    override fun oAuth(socialType: SocialType, code: String): OAuthTokenResponse{
+        val provider = clientRegistrationRepository.findByRegistrationId(socialType.name.lowercase())
         return runBlocking {
             getToken(provider,code)
         }
@@ -40,12 +40,12 @@ class OAuthServiceImpl(
 
     /**
      * SNS 서비스의 ID 토큰에서 SNS 회원 번호를 파싱하는 메소드
-     * @param SNS SNS 종류
+     * @param socialType SNS 종류
      * @param idToken ID 토큰
      * @return 파싱된 회원 번호
      */
-    override fun parseSocialUserNumber(SNS: SocialType, idToken: String): Long {
-        return idTokenService.parseSocialUserNumber(SNS,idToken)
+    override fun parseSocialUserNumber(socialType: SocialType, idToken: String): Long {
+        return idTokenService.parseSocialUserNumber(socialType,idToken)
     }
 
     /**

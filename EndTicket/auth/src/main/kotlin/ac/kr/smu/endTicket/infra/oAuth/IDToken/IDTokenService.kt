@@ -35,17 +35,17 @@ class IDTokenService(
 ) {
     /**
      * ID 토큰을 이용해 SNS 사용자 번호를 반환하는 메소드
-     * @param ID 토큰을 발급받은 메소드
+     * @param socialType ID 토큰을 발급받은 SNS
      * @param idToken ID 토큰
      * @throws IDTokenNotVerifyException ID 토큰 검증 실패 의
      */
     @Throws(IDTokenNotVerifyException::class)
-    fun parseSocialUserNumber(SNS: SocialType, idToken: String): Long{
-        val (header, payload, _) = parseIDToken(SNS, idToken)
-        val key = findPublicKey(SNS, header.kid)
+    fun parseSocialUserNumber(socialType: SocialType, idToken: String): Long{
+        val (header, payload, _) = parseIDToken(socialType, idToken)
+        val key = findPublicKey(socialType, header.kid)
 
         try {
-            verifyIDToken(SNS,idToken, payload, key)
+            verifyIDToken(socialType,idToken, payload, key)
         }catch (e:IllegalArgumentException){
             throw IDTokenNotVerifyException(e.message)
         }
@@ -55,15 +55,15 @@ class IDTokenService(
 
     /**
      * ID Token을 검증하는 메소드
-     * @param SNS ID 토큰을 발급받은 SNS
+     * @param socialType ID 토큰을 발급받은 SNS
      * @param idToken ID 토큰
      * @param payload ID 토큰의 페이로드
      * @param key ID 토큰의 공개키
      * @throws IllegalArgumentException ID 토큰 검증 실패 시
      */
     @Throws(IllegalArgumentException::class)
-    private fun verifyIDToken(SNS: SocialType, idToken: String, payload: IDTokenPayLoad, key:PublicKey){
-        val provider = clientRegistrationRepository.findByRegistrationId(SNS.name.lowercase())
+    private fun verifyIDToken(socialType: SocialType, idToken: String, payload: IDTokenPayLoad, key:PublicKey){
+        val provider = clientRegistrationRepository.findByRegistrationId(socialType.name.lowercase())
 
         require(payload.iss == provider.providerDetails.issuerUri){
             "payload의 iss가 일치하지 않습니다. iss: ${payload.iss}, provider iss: ${provider.providerDetails.issuerUri}"
@@ -86,14 +86,14 @@ class IDTokenService(
 
     /**
      * 외부 SNS 서비스의 공개키를 반환하는 메소드
-     * @param SNS 종류
+     * @param socialType 종류
      * @param kid 공개키의 id
      * @return id와 일치하는 공개키 반환
      * @throws IllegalStateException 일치하는 공개키가 없을 시
      */
     @Throws(IllegalStateException::class)
-    private fun findPublicKey(SNS: SocialType, kid: String): PublicKey {
-        val provider = clientRegistrationRepository.findByRegistrationId(SNS.name.lowercase())
+    private fun findPublicKey(socialType: SocialType, kid: String): PublicKey {
+        val provider = clientRegistrationRepository.findByRegistrationId(socialType.name.lowercase())
         return runBlocking {
             val jwkSet = getJwkSet(provider)
             val key = jwkSet.filter { jwk: Jwk<*> -> jwk.id == kid }.firstOrNull()?.toKey()
@@ -131,12 +131,12 @@ class IDTokenService(
 
     /**
      * SNS의 ID 토큰을 파싱하는 메소드
-     * @param SNS ID 토큰을 발급받은 SNS
+     * @param socialType ID 토큰을 발급받은 SNS
      * @param token ID 토큰
      * @return 복호화된 ID 토큰의 헤더, 페이로드 그리고 서명
      */
-    private fun parseIDToken(SNS: SocialType, token: String): IDToken{
-        return when(SNS){
+    private fun parseIDToken(socialType: SocialType, token: String): IDToken{
+        return when(socialType){
             SocialType.KAKAO -> parseKakaoIDToken(token)
             else ->{
                 throw UnsupportedOperationException()

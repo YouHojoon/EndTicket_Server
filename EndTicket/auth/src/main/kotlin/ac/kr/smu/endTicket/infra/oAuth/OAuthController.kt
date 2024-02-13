@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 class OAuthController {
 
     @GetMapping("/{SNS}")
-    fun callback(@PathVariable SNS: SocialType, @RequestParam code: String): ResponseEntity<Void>{
+    fun callback(@PathVariable socialType: SocialType, @RequestParam code: String): ResponseEntity<Void>{
         println(code)
         return ResponseEntity.ok().build()
     }

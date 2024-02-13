@@ -29,7 +29,7 @@ class AuthController(
     private val authService: AuthService
 ) {
     @PostMapping("{socialType}/{code}")
-    @Operation(summary = "SNS를 사용해 인증", description = "SNS 로그인으로 발급받은 authorization code를 이용해 인증<br>회원 정보가 없을 시 status code 404와 함께 SNS 회원 번호를 응답")
+    @Operation(summary = "SNS를 사용해 토큰 생성", description = "SNS 로그인으로 발급받은 authorization code를 이용해 Access 토큰과 Refresh 토큰 생성<br>회원 정보가 없을 시 status code 404와 함께 SNS 회원 번호를 응답")
     @ApiResponses(
         value = [
             ApiResponse(description = "인증 성공", responseCode = "200",
@@ -50,7 +50,7 @@ class AuthController(
         ]
     )
     fun createToken(
-        @Parameter(description = "인증에 사용한 SNS", required = true)
+        @Parameter(description = "토큰 생성에 사용할 SNS", required = true)
         @PathVariable("socialType")
         socialType: SocialType,
 
