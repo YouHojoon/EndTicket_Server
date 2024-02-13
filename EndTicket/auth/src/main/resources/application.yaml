@@ -38,6 +38,8 @@ springdoc:
 
 jwt:
     secret: acsghawhhwawaawfqacsghawhhwawaawfqacsghawhhwawaawfq
+    access-token-expiration: 60 * 30
+    refresh-token-expiration: 60 * 60 * 24 * 30
 
 openfeign:
     client:

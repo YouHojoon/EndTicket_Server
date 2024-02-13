@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.user.domain.service
 
-import ac.kr.smu.endTicket.user.domain.exception.UserEmailDuplicationException
+import ac.kr.smu.endTicket.user.domain.exception.UserAlreadyExistException
 import ac.kr.smu.endTicket.user.domain.model.User
 import ac.kr.smu.endTicket.user.domain.repository.UserRepository
 import org.springframework.stereotype.Service
@@ -20,24 +20,24 @@ class UserService(
     /**
      * 사용자 생성 메소드
      * @param user 생성할 사용자
-     * @throws UserEmailDuplicationException 이메일이 중복됐을 시
+     * @throws UserAlreadyExistException 이미 가입된 SNS 사용자일 시
      */
-    @Throws(UserEmailDuplicationException::class)
+    @Throws(UserAlreadyExistException::class)
     fun createUser(user: User){
         try{
             userRepo.save(user)
         }catch (e: SQLIntegrityConstraintViolationException) {
-            throw UserEmailDuplicationException()
+            throw UserAlreadyExistException()
         }
     }
 
     /**
      * SNS 사용자 번호를 통해 해당 SNS의 사용자를 찾아 user id를 반환하는 메소드
-     * @param SNS 해당 SNS로 회원가입한 사용자
+     * @param socialType 해당 SNS로 회원가입한 사용자
      * @param socialUserNumber SNS 사용자 번호
-     * @return 사용자 번
+     * @return 사용자 번호 반환
      */
-    fun findBySocialTypeAndSocialUserNumber(SNS: User.SocialType, socialUserNumber: Long): Long?{
-        return userRepo.findBySocialTypeAndSocialUserNumber(SNS, socialUserNumber)?.id
+    fun findBySocialTypeAndSocialUserNumber(socialType: User.SocialType, socialUserNumber: Long): Long?{
+        return userRepo.findBySocialTypeAndSocialUserNumber(socialType, socialUserNumber)?.id
     }
 }

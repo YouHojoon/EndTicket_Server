@@ -50,7 +50,7 @@ class AuthController(
                     )])
         ]
     )
-    fun auth(
+    fun createToken(
         @Parameter(description = "인증에 사용한 SNS", required = true)
         @PathVariable("SNS")
              SNS: SocialType,
@@ -60,7 +60,7 @@ class AuthController(
         code: String
     ): ResponseEntity<*>{
         try {
-            val jwtToken = authService.auth(SNS,code)
+            val jwtToken = authService.createToken(SNS,code)
             return ResponseEntity.ok(jwtToken)
         }catch (e:UserNotFoundException){
             return ResponseEntity(mapOf("socialUserNumber" to e.socialUserNumber), HttpStatus.NOT_FOUND)
