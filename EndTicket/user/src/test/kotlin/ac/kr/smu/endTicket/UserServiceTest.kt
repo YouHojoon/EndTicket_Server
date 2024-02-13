@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket
 
-import ac.kr.smu.endTicket.user.domain.exception.UserEmailDuplicationException
+import ac.kr.smu.endTicket.user.domain.exception.UserAlreadyExistException
 import ac.kr.smu.endTicket.user.domain.model.User
 import ac.kr.smu.endTicket.user.domain.repository.UserRepository
 import ac.kr.smu.endTicket.user.domain.service.UserService
@@ -40,6 +40,19 @@ class UserServiceTest(
 
         assert(userService.findBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO,1) == user.id)
 
+    }
+
+    @Test
+    @DisplayName("이미 가입된 SNS 이용자에 대한 테스트")
+    fun givenDuplicateSocialUserNumberWithSameSocialType_then_throwUserAlreadyExistException() {
+        val user = createUser()
+        Mockito
+            .`when`(userRepo.save(user))
+            .thenAnswer {
+                throw SQLIntegrityConstraintViolationException()
+            }
+
+        assertThrows<UserAlreadyExistException> { userService.createUser(user) }
     }
 
     private fun createUser(): User{
