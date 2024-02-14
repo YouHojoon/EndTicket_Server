@@ -5,7 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 application.yaml
-
+dump.rdb
 
 # Created by https://www.toptal.com/developers/gitignore/api/intellij,kotlin,macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij,kotlin,macos

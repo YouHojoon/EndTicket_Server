@@ -137,7 +137,7 @@ class IDTokenService(
         return when(socialType){
             SocialType.KAKAO -> parseKakaoIDToken(token)
             else ->{
-                throw UnsupportedOperationException()
+                TODO("Not Implemented")
             }
         }
     }

@@ -5,8 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7b5dc841-4ccf-44c8-88c8-ff93cc451e8e" name="Changes" comment="">
+<<<<<<< HEAD
       <change afterPath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/infra/oAuth/CustomOAuth2AuthorizationRequestRedirectFilter.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/infra/config/SecurityConfig.kt" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/infra/config/SecurityConfig.kt" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/auth/service/AuthService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/auth/service/AuthService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/infra/oAuth/IDToken/IDTokenService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/infra/oAuth/IDToken/IDTokenService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/src/test/kotlin/ac/kr/smu/endTicket/AuthServiceTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/test/kotlin/ac/kr/smu/endTicket/AuthServiceTest.kt" afterDir="false" />
+>>>>>>> cb4a3961962125c4901ed2f22ddee9e664bd34d8
       <change beforePath="$PROJECT_DIR$/../dump.rdb" beforeDir="false" afterPath="$PROJECT_DIR$/../dump.rdb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -55,30 +62,39 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;spring.configuration.checksum&quot;: &quot;20d4a8d23c2c5549b797dd666f610951&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "spring.configuration.checksum": "20d4a8d23c2c5549b797dd666f610951",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/user/src/main/resources" />
     </key>
   </component>
+<<<<<<< HEAD
   <component name="RunManager" selected="Spring Boot.AuthApplication">
     <configuration name="AuthServiceTest.given_normal_user_then_success_createToken" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+=======
+  <component name="RunManager" selected="Gradle.AuthServiceTest.given_normal_accessToken_then_success_validToken">
+    <configuration name="AuthServiceTest.given_normal_accessToken_then_success_validToken" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+>>>>>>> cb4a3961962125c4901ed2f22ddee9e664bd34d8
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -91,7 +107,35 @@
           <list>
             <option value=":auth:test" />
             <option value="--tests" />
+<<<<<<< HEAD
             <option value="&quot;ac.kr.smu.endTicket.AuthServiceTest.given_normal_user_then_success_createToken&quot;" />
+=======
+            <option value="&quot;ac.kr.smu.endTicket.AuthServiceTest.given_normal_accessToken_then_success_validToken&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="AuthServiceTest.given_notSignUp_user_then_throw_UserNotFoundException" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":auth:test" />
+            <option value="--tests" />
+            <option value="&quot;ac.kr.smu.endTicket.AuthServiceTest.given_notSignUp_user_then_throw_UserNotFoundException&quot;" />
+>>>>>>> cb4a3961962125c4901ed2f22ddee9e664bd34d8
           </list>
         </option>
         <option name="vmOptions" />
@@ -118,7 +162,12 @@
     </configuration>
     <recent_temporary>
       <list>
+<<<<<<< HEAD
         <item itemvalue="Gradle.AuthServiceTest.given_normal_user_then_success_createToken" />
+=======
+        <item itemvalue="Gradle.AuthServiceTest.given_normal_accessToken_then_success_validToken" />
+        <item itemvalue="Gradle.AuthServiceTest.given_notSignUp_user_then_throw_UserNotFoundException" />
+>>>>>>> cb4a3961962125c4901ed2f22ddee9e664bd34d8
       </list>
     </recent_temporary>
   </component>
