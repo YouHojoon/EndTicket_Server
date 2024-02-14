@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.infra.oAuth.IDToken
+package ac.kr.smu.endTicket.infra.oAuth2.IDToken
 
 class IDTokenPayLoad{
     var iss: String = ""

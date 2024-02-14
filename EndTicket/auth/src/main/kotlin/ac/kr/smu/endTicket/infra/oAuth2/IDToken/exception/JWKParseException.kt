@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.infra.oAuth.IDToken.exception
+package ac.kr.smu.endTicket.infra.oAuth2.IDToken.exception
 
 
 /**

@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.infra.oAuth
+package ac.kr.smu.endTicket.infra.oAuth2
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming
@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming
  */
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
-data class OAuthTokenResponse(
+data class OAuth2TokenResponse(
     private val tokenType: String,
     private val accessToken: String,
     val idToken: String,

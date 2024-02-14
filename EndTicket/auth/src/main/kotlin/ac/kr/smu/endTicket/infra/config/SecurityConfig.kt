@@ -1,7 +1,12 @@
 package ac.kr.smu.endTicket.infra.config
 
+
+import ac.kr.smu.endTicket.auth.domain.service.OAuthService
+import ac.kr.smu.endTicket.infra.oAuth2.filter.CustomOAuth2AuthorizationRequestRedirectFilter
+import ac.kr.smu.endTicket.infra.oAuth2.filter.OAuth2ErrorHandlerFilter
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesMapper
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -10,21 +15,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository
+import org.springframework.security.core.Authentication
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
 @EnableWebSecurity
-@EnableConfigurationProperties(OAuth2ClientProperties::class)
 class SecurityConfig(
-    private val oAuthProperties: OAuth2ClientProperties
+    private val oAuthService: OAuthService
 ) {
-
-    @Bean
-    fun clientRegistrationRepository(): ClientRegistrationRepository{
-        val registrations = OAuth2ClientPropertiesMapper(oAuthProperties).asClientRegistrations()
-        return InMemoryClientRegistrationRepository(registrations)
-    }
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain{
         http{
@@ -34,10 +35,14 @@ class SecurityConfig(
                 sessionCreationPolicy = SessionCreationPolicy.STATELESS
             }
             authorizeRequests {
-                authorize(anyRequest, permitAll)
+                authorize("/oauth/**", permitAll)
+                authorize(anyRequest, authenticated)
             }
+            addFilterBefore<OAuth2LoginAuthenticationFilter>(CustomOAuth2AuthorizationRequestRedirectFilter(oAuthService))
+            addFilterBefore<CustomOAuth2AuthorizationRequestRedirectFilter>(OAuth2ErrorHandlerFilter())
         }
 
         return http.build()
     }
+
 }

@@ -1,17 +1,15 @@
-package ac.kr.smu.endTicket.infra.oAuth.IDToken
+package ac.kr.smu.endTicket.infra.oAuth2.IDToken
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
-import ac.kr.smu.endTicket.infra.oAuth.IDToken.exception.IDTokenNotVerifyException
-import ac.kr.smu.endTicket.infra.oAuth.IDToken.exception.JWKParseException
+import ac.kr.smu.endTicket.infra.oAuth2.IDToken.exception.IDTokenNotVerifyException
+import ac.kr.smu.endTicket.infra.oAuth2.IDToken.exception.JWKParseException
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nimbusds.jose.util.KeyUtils
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Jwk
 import io.jsonwebtoken.security.JwkSet
 import io.jsonwebtoken.security.Jwks
 import kotlinx.coroutines.runBlocking
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.security.oauth2.client.registration.ClientRegistration
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
 import org.springframework.stereotype.Service
@@ -20,7 +18,6 @@ import org.springframework.web.reactive.function.client.awaitBody
 import java.security.KeyFactory
 import java.security.PublicKey
 import java.security.spec.RSAPublicKeySpec
-import java.security.spec.X509EncodedKeySpec
 import java.time.Instant
 import java.util.*
 
@@ -107,7 +104,7 @@ class IDTokenService(
 
     /**
      * 공개키 목록 조회하기, 캐시에 존재하는 경우 캐시값 반환
-     * @param 공개키 목록을 조회할 SNS 서비스
+     * @param  provider 공개키 목록을 조회할 SNS 서비스
      * @return 조회된 공개키 목록 반환
      * @throws JWKParseException 파싱 실패 시
      */

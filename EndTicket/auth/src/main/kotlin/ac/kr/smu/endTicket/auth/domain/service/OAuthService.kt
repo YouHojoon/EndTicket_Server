@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.auth.domain.service
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
-import ac.kr.smu.endTicket.infra.oAuth.OAuthTokenResponse
+import ac.kr.smu.endTicket.infra.oAuth2.OAuth2TokenResponse
 
 
 /**
@@ -14,7 +14,7 @@ interface OAuthService {
      * @param code SNS 인증에서 반환받은 authorization code
      * @return access token 응답
      */
-    fun oAuth(socialType: SocialType, code: String): OAuthTokenResponse
+    fun oAuth(socialType: SocialType, code: String): OAuth2TokenResponse
 
     /**
      * idToken에서 SNS 사용자 번호를 반환하는 메소드

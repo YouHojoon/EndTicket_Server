@@ -4,30 +4,19 @@ import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
 import ac.kr.smu.endTicket.auth.service.AuthService
 import ac.kr.smu.endTicket.infra.config.JWTProperties
-import ac.kr.smu.endTicket.infra.config.RedisConfig
-import ac.kr.smu.endTicket.infra.oAuth.OAuthTokenResponse
+import ac.kr.smu.endTicket.infra.oAuth2.OAuth2TokenResponse
 import ac.kr.smu.endTicket.infra.openfeign.GetUserIDResponse
 import ac.kr.smu.endTicket.infra.openfeign.UserClient
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
-import org.mockito.MockitoAnnotations
-import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.context.annotation.Import
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.data.redis.core.StringRedisTemplate
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.context.junit4.SpringRunner
 
 @SpringBootTest
 @EnableConfigurationProperties(JWTProperties::class)
@@ -50,7 +39,7 @@ class AuthServiceTest(
     @DisplayName("토큰 발급 테스트")
     fun given_normal_user_then_success_createToken(){
         Mockito.`when`(oAuthService.oAuth(SocialType.KAKAO, "1"))
-            .thenReturn(OAuthTokenResponse("jwt","a","i",1,"1","1",""))
+            .thenReturn(OAuth2TokenResponse("jwt","a","i",1,"1","1",""))
         Mockito.`when`(oAuthService.parseSocialUserNumber(SocialType.KAKAO, "i"))
             .thenReturn(1)
         Mockito.`when`(userClient.getUserId(SocialType.KAKAO, 1))

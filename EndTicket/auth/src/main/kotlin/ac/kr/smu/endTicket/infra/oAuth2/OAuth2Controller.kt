@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.infra.oAuth
+package ac.kr.smu.endTicket.infra.oAuth2
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import org.springframework.http.ResponseEntity
@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/oauth")
-class OAuthController {
+class OAuth2Controller {
 
     @GetMapping("/{SNS}")
-    fun callback(@PathVariable socialType: SocialType, @RequestParam code: String): ResponseEntity<Void>{
+    fun callback(@PathVariable("SNS") socialType: SocialType, @RequestParam code: String): ResponseEntity<Void>{
         println(code)
         return ResponseEntity.ok().build()
     }

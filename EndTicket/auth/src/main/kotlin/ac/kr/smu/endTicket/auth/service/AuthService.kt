@@ -18,9 +18,8 @@ import java.util.concurrent.TimeUnit
  * 인증 기능을 처리하는 클래스
  * @property oAuthService oAuth 기능을 담당하는 객체,
  * @property userClient 유저 ID를 조회하기 위한 feign client
- * @property jwtSecret jwt 암호화에 사용하기 위한 문자열
- * @property accessTokenExpiration access token 만료 시간
- * @property refreshTokenExpiration refresh token 만료 시간
+ * @property redisTemplate redis를 사용하기 위한 객체
+ * @property jwtProperties JWT 토큰 관련 설정
  */
 @Service
 class AuthService(

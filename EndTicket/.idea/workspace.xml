@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7b5dc841-4ccf-44c8-88c8-ff93cc451e8e" name="Changes" comment="" />
+    <list default="true" id="7b5dc841-4ccf-44c8-88c8-ff93cc451e8e" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/infra/oAuth/CustomOAuth2AuthorizationRequestRedirectFilter.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/infra/config/SecurityConfig.kt" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/infra/config/SecurityConfig.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../dump.rdb" beforeDir="false" afterPath="$PROJECT_DIR$/../dump.rdb" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,6 +18,21 @@
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
     </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand />
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -29,6 +48,9 @@
   &quot;associatedIndex&quot;: 4
 }</component>
   <component name="ProjectId" id="2cIXWUqlhimN3f9ATMSkOQZu22Q" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -56,6 +78,30 @@
     </key>
   </component>
   <component name="RunManager" selected="Spring Boot.AuthApplication">
+    <configuration name="AuthServiceTest.given_normal_user_then_success_createToken" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":auth:test" />
+            <option value="--tests" />
+            <option value="&quot;ac.kr.smu.endTicket.AuthServiceTest.given_normal_user_then_success_createToken&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
     <configuration name="AuthApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="EndTicket.auth.main" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="ac.kr.smu.endTicket.AuthApplication" />
@@ -70,6 +116,11 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.AuthServiceTest.given_normal_user_then_success_createToken" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -87,5 +138,20 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="kotlin-function">
+          <url>file://$PROJECT_DIR$/auth/src/test/kotlin/ac/kr/smu/endTicket/AuthServiceTest.kt</url>
+          <line>50</line>
+          <properties class="ac.kr.smu.endTicket.AuthServiceTest" method="given_normal_user_then_success_createToken">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
