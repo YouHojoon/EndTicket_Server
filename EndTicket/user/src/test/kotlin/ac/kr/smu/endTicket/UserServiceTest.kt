@@ -35,10 +35,10 @@ class UserServiceTest(
     fun givenSocialUserNumber_then_returnUserId() {
         val user = createUser()
         Mockito
-            .`when`(userRepo.findBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO, 1))
+            .`when`(userRepo.findBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO, "1"))
             .thenReturn(user)
 
-        assert(userService.findBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO,1) == user.id)
+        assert(userService.findBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO,"1") == user.id)
 
     }
 
@@ -56,6 +56,6 @@ class UserServiceTest(
     }
 
     private fun createUser(): User{
-        return User("test", User.SocialType.KAKAO,1)
+        return User("test", User.SocialType.KAKAO,"1")
     }
 }

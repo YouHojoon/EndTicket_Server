@@ -29,7 +29,7 @@ class User(
     private val socialType: SocialType,
 
     @Column(name = "social_user_number", nullable = false, updatable = false)
-    private val socialUserNumber: Long
+    private val socialUserNumber: String
 )
 {
     @Id
