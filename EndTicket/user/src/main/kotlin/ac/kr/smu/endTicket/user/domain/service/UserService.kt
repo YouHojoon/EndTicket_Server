@@ -37,7 +37,7 @@ class UserService(
      * @param socialUserNumber SNS 사용자 번호
      * @return 사용자 번호 반환
      */
-    fun findBySocialTypeAndSocialUserNumber(socialType: User.SocialType, socialUserNumber: Long): Long?{
+    fun findBySocialTypeAndSocialUserNumber(socialType: User.SocialType, socialUserNumber: String): Long?{
         return userRepo.findBySocialTypeAndSocialUserNumber(socialType, socialUserNumber)?.id
     }
 }

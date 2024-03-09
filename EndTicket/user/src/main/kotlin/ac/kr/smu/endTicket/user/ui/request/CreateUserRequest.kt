@@ -25,5 +25,5 @@ data class CreateUserRequest(
 
     @field:NotNull
     @Schema(description = "SNS 사용자 번호", nullable = false, example = "1234152")
-    val socialUserNumber: Long
+    val socialUserNumber: String
 )

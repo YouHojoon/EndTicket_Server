@@ -36,12 +36,12 @@ class UserControllerTest @Autowired constructor(
     fun test_createUser(){
         //정상 회원
         val body1 = objectMapper.writeValueAsString(
-            mapOf("nickname" to "test", "socialType" to "KAKAO", "socialUserNumber" to 1)
+            mapOf("nickname" to "test", "socialType" to "KAKAO", "socialUserNumber" to "1")
         )
 
         //파라미터 조건 불충분
         val body2 = objectMapper.writeValueAsString(
-            mapOf("nickname" to "test12312312312",  "socialType" to "KAKAO", "socialUserNumber" to 2)
+            mapOf("nickname" to "test12312312312",  "socialType" to "KAKAO", "socialUserNumber" to "2")
         )
 
         mockMvc
@@ -59,7 +59,8 @@ class UserControllerTest @Autowired constructor(
             .andExpect(MockMvcResultMatchers.jsonPath("message").isString)
 
         //이미 회원가입 된 회원
-        Mockito.`when`(service.createUser(User("test",User.SocialType.KAKAO, 1))).thenThrow(UserAlreadyExistException())
+        Mockito.`when`(service.createUser(User("test",User.SocialType.KAKAO, "1")))
+            .thenThrow(UserAlreadyExistException())
 
         mockMvc
             .perform(
@@ -73,10 +74,10 @@ class UserControllerTest @Autowired constructor(
     @DisplayName("사용자 id 반환 테스트")
     fun test_getUserId() {
         Mockito
-            .`when`(service.findBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO,1))
+            .`when`(service.findBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO,"1"))
             .thenReturn(1)
 
-        Mockito.`when`(service.findBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO,2))
+        Mockito.`when`(service.findBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO,"2"))
             .thenReturn(null)
 
         mockMvc
