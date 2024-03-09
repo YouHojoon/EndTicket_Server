@@ -45,20 +45,26 @@ class AuthService(
 
     /**
      * 토큰 생성 기능
-     * @param socialType 토큰 생성에 사용할 SNS
-     * @param code 해당 SNS에서 발급받은 authorization code
+     * @param socialType 인증을 한 SNS
+     * @param socialUserNumber SNS의 사용자 번호
      * @return JWT 토큰 발급
-     * @throws UserNotFoundException 해당 SNS로 가입한 적 없을 시
      */
     @Throws(UserNotFoundException::class)
-    fun createToken(socialType:  SocialType, code: String): JWTToken{
-        val idToken = oAuthService.oAuth(socialType,code).idToken
-        val socialUserNumber = oAuthService.parseSocialUserNumber(socialType, idToken)
-
+    fun createToken(socialType:SocialType,socialUserNumber: Long): JWTToken{
         try {
             val response = userClient.getUserId(socialType, socialUserNumber)
-            val token = JWTToken(response.userID, key, jwtProperties.accessTokenExpiration, jwtProperties.refreshTokenExpiration)
-            redisTemplate.opsForValue().set("${response.userID}" + REDIS_KEY_POSTFIX_FOR_REFRESH_TOKEN, token.refreshToken, jwtProperties.refreshTokenExpiration, TimeUnit.MILLISECONDS)
+            val token =  JWTToken(
+                userID = response.userID,
+                key = key,
+                accessTokenExpiration = jwtProperties.accessTokenExpiration,
+                refreshTokenExpiration = jwtProperties.refreshTokenExpiration
+            )
+
+            redisTemplate
+                .opsForValue()
+                .set("${response.userID}" + REDIS_KEY_POSTFIX_FOR_REFRESH_TOKEN,
+                    token.refreshToken, jwtProperties.refreshTokenExpiration,
+                    TimeUnit.MILLISECONDS)
 
             return token
         } catch (e: FeignException.NotFound) {

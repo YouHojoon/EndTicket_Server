@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.auth.ui.controller
 
+import ac.kr.smu.endTicket.auth.domain.exception.UserNotFoundException
 import ac.kr.smu.endTicket.auth.domain.model.JWTToken
 import ac.kr.smu.endTicket.infra.oAuth2.OAuth2User
 import ac.kr.smu.endTicket.auth.service.AuthService
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.SchemaProperty
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import org.springframework.http.HttpStatus
 
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -46,13 +48,11 @@ class AuthController(
     fun createToken(
         @AuthenticationPrincipal oAuth2User: OAuth2User
     ): ResponseEntity<*>{
-        println(oAuth2User.name)
-        return ResponseEntity.ok(null)
-//        try {
-//            val jwtToken = authService.createToken(socialType,code)
-//            return ResponseEntity.ok(jwtToken)
-//        }catch (e:UserNotFoundException){
-//            return ResponseEntity(mapOf("socialUserNumber" to e.socialUserNumber), HttpStatus.NOT_FOUND)
-//        }
+        try {
+            val jwtToken = authService.createToken(oAuth2User.socialType, oAuth2User.name.toLong())
+            return ResponseEntity.ok(jwtToken)
+        }catch (e:UserNotFoundException){
+            return ResponseEntity(mapOf("socialUserNumber" to e.socialUserNumber), HttpStatus.NOT_FOUND)
+        }
     }
 }

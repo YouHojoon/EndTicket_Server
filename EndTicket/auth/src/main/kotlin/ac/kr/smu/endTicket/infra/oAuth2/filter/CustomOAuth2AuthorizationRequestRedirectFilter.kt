@@ -49,7 +49,7 @@ class CustomOAuth2AuthorizationRequestRedirectFilter(
 
         val oAuth2TokenResponse = oAuthService.oAuth(socialType, code)
         val socialUserNumber = oAuthService.parseSocialUserNumber(socialType, oAuth2TokenResponse.idToken)
-        val oAuth2User = OAuth2User(socialUserNumber)
+        val oAuth2User = OAuth2User(socialUserNumber, socialType)
 
         SecurityContextHolder.getContext().authentication =  OAuth2AuthenticationToken(oAuth2User, oAuth2User.authorities, socialTypeVariable)
 

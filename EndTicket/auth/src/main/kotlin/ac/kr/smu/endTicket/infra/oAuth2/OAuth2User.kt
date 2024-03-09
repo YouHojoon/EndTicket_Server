@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.infra.oAuth2
 
+import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.core.user.OAuth2User
@@ -9,7 +10,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User
  * @property socialUserNumber 파싱된 SNS 사용자 번호
  */
 class OAuth2User(
-    socialUserNumber: Long
+    socialUserNumber: Long,
+    val socialType: SocialType
 ): OAuth2User {
     private val attr = mutableMapOf<String, Any>()
 
