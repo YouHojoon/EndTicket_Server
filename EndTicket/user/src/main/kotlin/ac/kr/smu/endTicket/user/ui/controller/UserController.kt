@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/users")
-class UserController(
+class   UserController(
     private val userService: UserService
 ) {
     @PostMapping
@@ -69,7 +69,7 @@ class UserController(
         @PathVariable("socialType")
         socialType: User.SocialType,
         @Parameter(description = "SNS 사용자 번호", required = true)
-        @PathVariable("socialUserNumber") socialUserNumber: Long): ResponseEntity<*>{
+        @PathVariable("socialUserNumber") socialUserNumber: String): ResponseEntity<*>{
         val socialUserNumber = userService.findBySocialTypeAndSocialUserNumber(socialType, socialUserNumber) ?: return ResponseEntity.notFound().build<Void>()
 
         return ResponseEntity.ok(mapOf("socialUserNumber" to socialUserNumber))

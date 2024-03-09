@@ -4,7 +4,7 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-EndTicket/user/src/main/resources/application.yaml
+application.yaml
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/intellij,kotlin,macos
