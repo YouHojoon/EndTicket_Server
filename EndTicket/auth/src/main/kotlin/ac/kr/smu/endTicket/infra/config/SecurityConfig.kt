@@ -38,6 +38,7 @@ class SecurityConfig(
                 authorize("/docs/**", permitAll)
                 authorize("/swagger-ui/**",permitAll)
                 authorize("/api-docs/**",permitAll)
+                authorize("/oauth/**",permitAll)
                 authorize(anyRequest, authenticated)
             }
             addFilterBefore<OAuth2LoginAuthenticationFilter>(CustomOAuth2AuthorizationRequestRedirectFilter(oAuthService))
