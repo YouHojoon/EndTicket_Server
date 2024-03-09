@@ -38,7 +38,7 @@ class IDTokenService(
      * @throws IDTokenNotVerifyException ID 토큰 검증 실패 의
      */
     @Throws(IDTokenNotVerifyException::class)
-    fun parseSocialUserNumber(socialType: SocialType, idToken: String): Long{
+    fun parseSocialUserNumber(socialType: SocialType, idToken: String): String{
         val (header, payload, _) = parseIDToken(socialType, idToken)
         val key = findPublicKey(socialType, header.kid)
 
@@ -136,6 +136,7 @@ class IDTokenService(
     private fun parseIDToken(socialType: SocialType, token: String): IDToken{
         return when(socialType){
             SocialType.KAKAO -> parseKakaoIDToken(token)
+            SocialType.GOOGLE -> parseKakaoIDToken(token)
             else ->{
                 TODO("Not Implemented")
             }

@@ -32,6 +32,7 @@ class OAuth2ServiceImpl(
      * @return access 토큰 응답을 반환, 에러 발생 시 null 반환
      */
     override fun oAuth(socialType: SocialType, code: String): OAuth2TokenResponse{
+        println(code)
         val provider = clientRegistrationRepository.findByRegistrationId(socialType.name.lowercase())
         return runBlocking {
             getToken(provider,code)
@@ -44,7 +45,7 @@ class OAuth2ServiceImpl(
      * @param idToken ID 토큰
      * @return 파싱된 회원 번호
      */
-    override fun parseSocialUserNumber(socialType: SocialType, idToken: String): Long {
+    override fun parseSocialUserNumber(socialType: SocialType, idToken: String): String {
         return idTokenService.parseSocialUserNumber(socialType,idToken)
     }
 

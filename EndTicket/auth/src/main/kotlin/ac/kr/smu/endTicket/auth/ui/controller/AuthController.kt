@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController
 class AuthController(
     private val authService: AuthService
 ) {
-    @PostMapping("/{socialType}/{code}")
+    @PostMapping("/{socialType}")
     @Operation(summary = "SNS를 사용해 토큰 생성", description = "SNS 로그인으로 발급받은 authorization code를 이용해 Access 토큰과 Refresh 토큰 생성<br>회원 정보가 없을 시 status code 404와 함께 SNS 회원 번호를 응답")
     @ApiResponses(
         value = [
@@ -46,10 +47,11 @@ class AuthController(
         ]
     )
     fun createToken(
+        @RequestParam("code") code: String,
         @AuthenticationPrincipal oAuth2User: OAuth2User
     ): ResponseEntity<*>{
         try {
-            val jwtToken = authService.createToken(oAuth2User.socialType, oAuth2User.name.toLong())
+            val jwtToken = authService.createToken(oAuth2User.socialType, oAuth2User.name)
             return ResponseEntity.ok(jwtToken)
         }catch (e:UserNotFoundException){
             return ResponseEntity(mapOf("socialUserNumber" to e.socialUserNumber), HttpStatus.NOT_FOUND)

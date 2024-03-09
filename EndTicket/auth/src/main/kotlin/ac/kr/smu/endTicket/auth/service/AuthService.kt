@@ -50,7 +50,7 @@ class AuthService(
      * @return JWT 토큰 발급
      */
     @Throws(UserNotFoundException::class)
-    fun createToken(socialType:SocialType,socialUserNumber: Long): JWTToken{
+    fun createToken(socialType:SocialType,socialUserNumber: String): JWTToken{
         try {
             val response = userClient.getUserId(socialType, socialUserNumber)
             val token =  JWTToken(

@@ -10,7 +10,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User
  * @property socialUserNumber 파싱된 SNS 사용자 번호
  */
 class OAuth2User(
-    socialUserNumber: Long,
+    socialUserNumber: String,
     val socialType: SocialType
 ): OAuth2User {
     private val attr = mutableMapOf<String, Any>()

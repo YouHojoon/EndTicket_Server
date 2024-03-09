@@ -22,6 +22,6 @@ data class OAuth2TokenResponse(
     val idToken: String,
     private val expiresIn: Int,
     private val refreshToken: String?,
-    private val refreshTokenExpiresIn:String,
+    private val refreshTokenExpiresIn:String?,
     private val scope: String
 )

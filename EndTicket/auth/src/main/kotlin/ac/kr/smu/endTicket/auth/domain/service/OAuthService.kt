@@ -22,5 +22,5 @@ interface OAuthService {
      * @param idToken idToken
      * @return 파싱된 회원 번호
      */
-    fun parseSocialUserNumber(socialType: SocialType, idToken: String): Long
+    fun parseSocialUserNumber(socialType: SocialType, idToken: String): String
 }
