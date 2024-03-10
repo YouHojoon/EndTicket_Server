@@ -74,10 +74,10 @@ class UserControllerTest @Autowired constructor(
     @DisplayName("사용자 id 반환 테스트")
     fun test_getUserId() {
         Mockito
-            .`when`(service.findBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO,"1"))
+            .`when`(service.findIdBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO,"1"))
             .thenReturn(1)
 
-        Mockito.`when`(service.findBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO,"2"))
+        Mockito.`when`(service.findIdBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO,"2"))
             .thenReturn(null)
 
         mockMvc

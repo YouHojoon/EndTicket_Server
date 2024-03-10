@@ -70,9 +70,9 @@ class   UserController(
         socialType: User.SocialType,
         @Parameter(description = "SNS 사용자 번호", required = true)
         @PathVariable("socialUserNumber") socialUserNumber: String): ResponseEntity<*>{
-        val socialUserNumber = userService.findBySocialTypeAndSocialUserNumber(socialType, socialUserNumber) ?: return ResponseEntity.notFound().build<Void>()
+        val id = userService.findIdBySocialTypeAndSocialUserNumber(socialType, socialUserNumber) ?: return ResponseEntity.notFound().build<Void>()
 
-        return ResponseEntity.ok(mapOf("socialUserNumber" to socialUserNumber))
+        return ResponseEntity.ok(mapOf("userID" to id))
     }
 
     @ExceptionHandler(BindException::class)

@@ -35,9 +35,9 @@ class UserService(
      * SNS 사용자 번호를 통해 해당 SNS의 사용자를 찾아 user id를 반환하는 메소드
      * @param socialType 해당 SNS로 회원가입한 사용자
      * @param socialUserNumber SNS 사용자 번호
-     * @return 사용자 번호 반환
+     * @return 사용자 번호 반환, 존재하지 않는다면 null 반환
      */
-    fun findBySocialTypeAndSocialUserNumber(socialType: User.SocialType, socialUserNumber: String): Long?{
+    fun findIdBySocialTypeAndSocialUserNumber(socialType: User.SocialType, socialUserNumber: String): Long?{
         return userRepo.findBySocialTypeAndSocialUserNumber(socialType, socialUserNumber)?.id
     }
 }
