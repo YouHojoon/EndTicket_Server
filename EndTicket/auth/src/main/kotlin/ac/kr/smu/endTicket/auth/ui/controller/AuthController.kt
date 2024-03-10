@@ -6,6 +6,7 @@ import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.infra.oAuth2.OAuth2User
 import ac.kr.smu.endTicket.auth.service.TokenService
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.SchemaProperty
@@ -48,8 +49,12 @@ class AuthController(
         ]
     )
     fun createToken(
+        @Parameter(description = "인증에 사용한 SNS", schema = Schema(implementation = SocialType::class))
         @RequestParam("socialType") socialType: SocialType,
+
+        @Parameter(description = "인증 후 받은 authorization code", example = "d-MKlV0eZz8d6x9upP3Z7mTd8w2nRSHMHORMV01xfAnMhtFN0n6MyGP-LyMKPXOaAAABjiie8OaBPKUF0hG4dQ")
         @RequestParam("code") code: String,
+
         @AuthenticationPrincipal oAuth2User: OAuth2User
     ): ResponseEntity<*>{
         try {
