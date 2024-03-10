@@ -38,13 +38,16 @@ class SecurityConfig(
             sessionManagement {
                 sessionCreationPolicy = SessionCreationPolicy.STATELESS
             }
+
             authorizeRequests {
                 authorize("/docs/**", permitAll)
                 authorize("/swagger-ui/**",permitAll)
                 authorize("/api-docs/**",permitAll)
                 authorize("/oauth/**",permitAll)
+                authorize("/auth/reissueToken", permitAll)
                 authorize(anyRequest, authenticated)
             }
+
             addFilterBefore<OAuth2LoginAuthenticationFilter>(OAuth2AuthorizationFilter(oAuthService))
             addFilterBefore<OAuth2AuthorizationFilter>(OAuth2ErrorHandlerFilter())
             addFilterBefore<UsernamePasswordAuthenticationFilter>(JWTAuthenticationFilter(tokenService))

@@ -8,5 +8,6 @@ import org.springframework.stereotype.Component
 class JWTProperties(
     val secret: String,
     val accessTokenExpiration: Long,
-    val refreshTokenExpiration: Long
+    val refreshTokenExpiration: Long,
+    val refreshTokenReissueExpiration: Long
 )

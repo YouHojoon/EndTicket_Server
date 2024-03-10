@@ -29,7 +29,7 @@ class OAuth2ErrorHandlerFilter: OncePerRequestFilter() {
             sendResponse(response, HttpStatus.INTERNAL_SERVER_ERROR)
         }catch (e: IDTokenNotVerifyException){
             log.error("${e.stackTraceToString()}")
-            sendResponse(response, HttpStatus.UNAUTHORIZED)
+            sendResponse(response, HttpStatus.BAD_REQUEST)
         }catch (e: JWKParseException){
             log.error("${e.stackTraceToString()}")
             sendResponse(response, HttpStatus.INTERNAL_SERVER_ERROR)

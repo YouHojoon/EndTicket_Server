@@ -56,7 +56,7 @@ class TokenServiceTest(
     @DisplayName("정상 유저 토큰 발급 테스트")
     fun given_normal_user_then_success_createToken(){
         assertDoesNotThrow {
-            service.createToken(SocialType.KAKAO, "1")
+            service.createAccessAndRefreshToken(SocialType.KAKAO, "1")
         }
     }
 
@@ -82,7 +82,7 @@ class TokenServiceTest(
             }
 
         assertThrows<UserNotFoundException> {
-            service.createToken(SocialType.KAKAO,"2")
+            service.createAccessAndRefreshToken(SocialType.KAKAO,"2")
         }
     }
 
@@ -90,7 +90,7 @@ class TokenServiceTest(
     @DisplayName("access 토큰으로 사용자 인증")
     fun given_normal_accessToken_then_success_validToken() {
         val token = service
-            .createToken(SocialType.KAKAO, "1")
+            .createAccessAndRefreshToken(SocialType.KAKAO, "1")
 
         assertDoesNotThrow {
             service.parseUserID(token.accessToken)

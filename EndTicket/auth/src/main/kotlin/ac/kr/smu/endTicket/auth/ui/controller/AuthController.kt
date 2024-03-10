@@ -1,12 +1,14 @@
 package ac.kr.smu.endTicket.auth.ui.controller
 
 import ac.kr.smu.endTicket.auth.domain.exception.UserNotFoundException
-import ac.kr.smu.endTicket.auth.domain.model.JWTToken
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.infra.oAuth2.OAuth2User
 import ac.kr.smu.endTicket.auth.service.TokenService
+import ac.kr.smu.endTicket.auth.ui.response.CreateTokenResponse
+import ac.kr.smu.endTicket.auth.ui.response.ReissueTokenResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.StringToClassMapItem
 import io.swagger.v3.oas.annotations.enums.ParameterIn
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -19,6 +21,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -36,7 +39,7 @@ class AuthController(
             ApiResponse(description = "인증 성공", responseCode = "200",
                 content = [
                     Content(
-                        schema = Schema(implementation = JWTToken::class)
+                        schema = Schema(implementation = CreateTokenResponse::class)
                     )
                 ]),
             ApiResponse(description = "파라미터 에러", responseCode = "400"),
@@ -60,7 +63,7 @@ class AuthController(
         @AuthenticationPrincipal oAuth2User: OAuth2User
     ): ResponseEntity<*>{
         try {
-            val jwtToken = tokenService.createToken(oAuth2User.socialType, oAuth2User.name)
+            val jwtToken = tokenService.createAccessAndRefreshToken(oAuth2User.socialType, oAuth2User.name)
             return ResponseEntity.ok(jwtToken)
         }catch (e:UserNotFoundException){
             return ResponseEntity(mapOf("socialUserNumber" to e.socialUserNumber), HttpStatus.NOT_FOUND)
@@ -89,5 +92,50 @@ class AuthController(
             .build()
     }
 
-//    fun reissueToken
+
+    @Operation(summary = "refresh 토큰을 사용해 토큰 재발급", description = "refresh 토큰을 사용해 access 토큰을 재발급 받는다.<br>만약 refresh 토큰도 일정 기준 시간 아래라면 재발급받는다.")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                description = "재발급 성공",
+                responseCode = "200",
+                content = [
+                    Content(
+                        schema = Schema(implementation = ReissueTokenResponse::class)
+                    )
+                ]),
+            ApiResponse(
+                description = "파라미터 에러",
+                responseCode = "400",
+                content = [
+                    Content(
+                        schema = Schema(type = "object", requiredProperties = ["message", "code"]),
+                        schemaProperties = [
+                            SchemaProperty(name = "message", schema = Schema(type = "string", example = "refresh 토큰이 없습니다.")),
+                            SchemaProperty(name = "code", schema = Schema(type = "integer", example = "400"))
+                        ]
+                    )
+                ])
+        ]
+    )
+    @PostMapping("/reissueToken")
+    fun reissueToken(
+        @Parameter(
+            description = "refresh 토큰",
+            schema = Schema(type = "object", requiredProperties = ["refreshToken"], properties = [
+                StringToClassMapItem(String::class, key = "refreshToken")
+            ]),
+        )
+        @RequestBody body: Map<String, String>
+    ): ResponseEntity<*>{
+        val refreshToken = body["refreshToken"] ?: return ResponseEntity.badRequest().body(mapOf("message" to "refresh 토큰이 없습니다.", "code" to 400))
+
+        try {
+            val token = tokenService.reissueToken(refreshToken)
+
+            return ResponseEntity.ok(token)
+        }catch (e: IllegalArgumentException){
+            return ResponseEntity.badRequest().body(mapOf("message" to e.message, "code" to 400))
+        }
+    }
 }
