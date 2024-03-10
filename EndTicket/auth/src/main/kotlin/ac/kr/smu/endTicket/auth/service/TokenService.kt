@@ -73,8 +73,9 @@ class TokenService(
     }
 
     /**
-     * 토큰을 검증하는 메소드
-     * @param token access token 혹은 refresh token
+     * access 토큰에서 사용자 ID를 파싱하는 메소드
+     * @param token access token
+     * @return 사용자 ID
      * @throws ExpiredTokenException 토큰이 만료되었을 시 발생하는 Exception
      * @throws TokenSignatureException 토큰의 서명이 잘못되었을 시 발생하는 Exception
      */

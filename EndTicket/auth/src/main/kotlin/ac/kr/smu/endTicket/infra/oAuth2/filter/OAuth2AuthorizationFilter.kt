@@ -16,13 +16,13 @@ import org.springframework.web.filter.OncePerRequestFilter
  * 토큰 생성 전에 SNS의 OAuth2 서비스를 통해 인증한다.
  * @property oAuthService 인증을 처리하는 서비스 객체
  */
-class CustomOAuth2AuthorizationRequestRedirectFilter(
+class OAuth2AuthorizationFilter(
     private val oAuthService: OAuthService
 ): OncePerRequestFilter() {
     private val converter = SocialTypeConverter()
     private val SOCIAL_TYPE_URI_VARIABLE_NAME = "socialType"
     private val CODE_URI_VARIABLE_NAME = "code"
-    private val matcher = AntPathRequestMatcher("/auth/sns/{${SOCIAL_TYPE_URI_VARIABLE_NAME}}")
+    private val matcher = AntPathRequestMatcher("/auth/sns")
 
     @Throws(IllegalStateException::class)
     override fun doFilterInternal(
@@ -35,22 +35,21 @@ class CustomOAuth2AuthorizationRequestRedirectFilter(
             return
         }
 
-        val variables = matcher.matcher(request).variables
-        val socialTypeVariable = variables[SOCIAL_TYPE_URI_VARIABLE_NAME]
-        val code = request.getParameter(CODE_URI_VARIABLE_NAME) ?: ""
+        val socialTypeString = request.getParameter(SOCIAL_TYPE_URI_VARIABLE_NAME) ?: null
+        check(socialTypeString != null){"SocialType이 없습니다."}
+        check(socialTypeString.isNotBlank()){"SocialType이 비어있습니다."}
 
-        checkNotNull(socialTypeVariable){"SocialType이 null입니다."}
-        check(socialTypeVariable.isNotBlank()){"SocialType이 비어있습니다."}
-        check(code.isNotBlank()){"code가 비어있습니다."}
-
-        val socialType = converter.convert(socialTypeVariable)
+        val socialType = converter.convert(socialTypeString)
         checkNotNull(socialType){"지원하지 않는 SNS입니다."}
+
+        val code = request.getParameter(CODE_URI_VARIABLE_NAME) ?: ""
+        check(code.isNotBlank()){"code가 비어있습니다."}
 
         val oAuth2TokenResponse = oAuthService.oAuth(socialType, code)
         val socialUserNumber = oAuthService.parseSocialUserNumber(socialType, oAuth2TokenResponse.idToken)
         val oAuth2User = OAuth2User(socialUserNumber, socialType)
 
-        SecurityContextHolder.getContext().authentication =  OAuth2AuthenticationToken(oAuth2User, oAuth2User.authorities, socialTypeVariable)
+        SecurityContextHolder.getContext().authentication =  OAuth2AuthenticationToken(oAuth2User, oAuth2User.authorities, socialTypeString)
 
         filterChain.doFilter(request,response)
     }

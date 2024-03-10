@@ -2,6 +2,7 @@ package ac.kr.smu.endTicket.auth.ui.controller
 
 import ac.kr.smu.endTicket.auth.domain.exception.UserNotFoundException
 import ac.kr.smu.endTicket.auth.domain.model.JWTToken
+import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.infra.oAuth2.OAuth2User
 import ac.kr.smu.endTicket.auth.service.TokenService
 import io.swagger.v3.oas.annotations.Operation
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController
 class AuthController(
     private val tokenService: TokenService
 ) {
-    @PostMapping("/sns/{socialType}")
+    @PostMapping("/sns")
     @Operation(summary = "SNS를 사용해 토큰 생성", description = "SNS 로그인으로 발급받은 authorization code를 이용해 Access 토큰과 Refresh 토큰 생성<br>회원 정보가 없을 시 status code 404와 함께 SNS 회원 번호를 응답")
     @ApiResponses(
         value = [
@@ -47,6 +48,7 @@ class AuthController(
         ]
     )
     fun createToken(
+        @RequestParam("socialType") socialType: SocialType,
         @RequestParam("code") code: String,
         @AuthenticationPrincipal oAuth2User: OAuth2User
     ): ResponseEntity<*>{

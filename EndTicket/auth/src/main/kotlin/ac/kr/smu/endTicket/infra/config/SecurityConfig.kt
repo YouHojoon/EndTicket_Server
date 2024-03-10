@@ -3,8 +3,9 @@ package ac.kr.smu.endTicket.infra.config
 
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
 import ac.kr.smu.endTicket.auth.service.TokenService
-import ac.kr.smu.endTicket.infra.oAuth2.filter.CustomOAuth2AuthorizationRequestRedirectFilter
+
 import ac.kr.smu.endTicket.infra.oAuth2.filter.JWTAuthenticationFilter
+import ac.kr.smu.endTicket.infra.oAuth2.filter.OAuth2AuthorizationFilter
 import ac.kr.smu.endTicket.infra.oAuth2.filter.OAuth2ErrorHandlerFilter
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -44,8 +45,8 @@ class SecurityConfig(
                 authorize("/oauth/**",permitAll)
                 authorize(anyRequest, authenticated)
             }
-            addFilterBefore<OAuth2LoginAuthenticationFilter>(CustomOAuth2AuthorizationRequestRedirectFilter(oAuthService))
-            addFilterBefore<CustomOAuth2AuthorizationRequestRedirectFilter>(OAuth2ErrorHandlerFilter())
+            addFilterBefore<OAuth2LoginAuthenticationFilter>(OAuth2AuthorizationFilter(oAuthService))
+            addFilterBefore<OAuth2AuthorizationFilter>(OAuth2ErrorHandlerFilter())
             addFilterBefore<UsernamePasswordAuthenticationFilter>(JWTAuthenticationFilter(tokenService))
         }
 
