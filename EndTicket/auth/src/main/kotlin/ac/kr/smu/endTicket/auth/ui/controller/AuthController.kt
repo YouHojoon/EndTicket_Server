@@ -7,11 +7,13 @@ import ac.kr.smu.endTicket.infra.oAuth2.OAuth2User
 import ac.kr.smu.endTicket.auth.service.TokenService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.enums.ParameterIn
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.SchemaProperty
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.http.HttpStatus
 
 import org.springframework.http.ResponseEntity
@@ -65,7 +67,14 @@ class AuthController(
         }
     }
 
-    @Operation(summary = "access 토큰 인증", description = "access 토큰을 인증한다.")
+
+
+    @Operation(
+        summary = "access 토큰 인증",
+        description = "access 토큰을 인증한다.",
+        security = [SecurityRequirement(name = "Bearer Token")],
+        parameters = [Parameter(name = "Authorization", description = "JWT 토큰", `in` = ParameterIn.HEADER)]
+    )
     @ApiResponses(
         value = [
             ApiResponse(description = "인증 성공", responseCode = "204"),
@@ -74,9 +83,11 @@ class AuthController(
         ]
     )
     @PostMapping("/validation")
-    fun validationToken(): ResponseEntity<Void>{
+    fun validateToken(): ResponseEntity<Void>{
         return ResponseEntity
             .noContent()
             .build()
     }
+
+//    fun reissueToken
 }
