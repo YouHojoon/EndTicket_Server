@@ -10,24 +10,24 @@ import ac.kr.smu.endTicket.infra.config.JWTProperties
 import ac.kr.smu.endTicket.infra.openfeign.UserClient
 import feign.FeignException
 import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.Jwe
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.redis.core.RedisTemplate
 
 import org.springframework.stereotype.Service
 import java.util.concurrent.TimeUnit
 
 /**
- * 인증 기능을 처리하는 클래스
+ * 토큰 기능을 처리하는 클래스
  * @property oAuthService oAuth 기능을 담당하는 객체,
  * @property userClient 유저 ID를 조회하기 위한 feign client
  * @property redisTemplate redis를 사용하기 위한 객체
  * @property jwtProperties JWT 토큰 관련 설정
  */
 @Service
-class AuthService(
+class TokenService(
     private val oAuthService: OAuthService,
     private val userClient: UserClient,
     private val redisTemplate: RedisTemplate<String, String>,
@@ -79,13 +79,15 @@ class AuthService(
      * @throws TokenSignatureException 토큰의 서명이 잘못되었을 시 발생하는 Exception
      */
     @Throws(ExpiredTokenException::class, SignatureException::class)
-    fun validToken(token: String){
+    fun parseUserID(token: String): Long{
         try {
-            Jwts
+            val claims = Jwts
                 .parser()
                 .verifyWith(key)
                 .build()
-                .parse(token)
+                .parseSignedClaims(token)
+
+            return claims.payload.subject.toLong()
         }catch (e: ExpiredJwtException){
             throw ExpiredTokenException()
         }

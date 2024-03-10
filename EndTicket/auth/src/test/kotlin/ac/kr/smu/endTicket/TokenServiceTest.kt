@@ -3,7 +3,7 @@ package ac.kr.smu.endTicket
 import ac.kr.smu.endTicket.auth.domain.exception.UserNotFoundException
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
-import ac.kr.smu.endTicket.auth.service.AuthService
+import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.infra.config.JWTProperties
 
 import ac.kr.smu.endTicket.infra.oAuth2.OAuth2TokenResponse
@@ -31,7 +31,7 @@ import org.springframework.test.context.ActiveProfiles
 @SpringBootTest
 @ActiveProfiles("test")
 @EnableConfigurationProperties(JWTProperties::class)
-class AuthServiceTest(
+class TokenServiceTest(
 ){
     @MockBean
     private lateinit var oAuthService: OAuthService
@@ -40,15 +40,15 @@ class AuthServiceTest(
     @Mock
     private lateinit var redisTemplate: RedisTemplate<String, String>
     @Autowired
-    private lateinit var service: AuthService
+    private lateinit var service: TokenService
 
     @BeforeEach
     fun setUp(){
         Mockito.`when`(oAuthService.oAuth(SocialType.KAKAO, "1"))
             .thenReturn(OAuth2TokenResponse("jwt","a","i",1,"1","1",""))
         Mockito.`when`(oAuthService.parseSocialUserNumber(SocialType.KAKAO, "i"))
-            .thenReturn(1)
-        Mockito.`when`(userClient.getUserId(SocialType.KAKAO, 1))
+            .thenReturn("1")
+        Mockito.`when`(userClient.getUserId(SocialType.KAKAO, "1"))
             .thenReturn(GetUserIDResponse(1))
     }
 
@@ -56,7 +56,7 @@ class AuthServiceTest(
     @DisplayName("정상 유저 토큰 발급 테스트")
     fun given_normal_user_then_success_createToken(){
         assertDoesNotThrow {
-            service.createToken(SocialType.KAKAO, 1)
+            service.createToken(SocialType.KAKAO, "1")
         }
     }
 
@@ -66,8 +66,8 @@ class AuthServiceTest(
         Mockito.`when`(oAuthService.oAuth(SocialType.KAKAO, "2"))
             .thenReturn(OAuth2TokenResponse("jwt","a","i",1,"1","1",""))
         Mockito.`when`(oAuthService.parseSocialUserNumber(SocialType.KAKAO, "i"))
-            .thenReturn(2)
-        Mockito.`when`(userClient.getUserId(SocialType.KAKAO, 2))
+            .thenReturn("2")
+        Mockito.`when`(userClient.getUserId(SocialType.KAKAO, "2"))
             .thenAnswer {
                 throw FeignException.NotFound(
                     "message",
@@ -82,7 +82,7 @@ class AuthServiceTest(
             }
 
         assertThrows<UserNotFoundException> {
-            service.createToken(SocialType.KAKAO,2)
+            service.createToken(SocialType.KAKAO,"2")
         }
     }
 
@@ -90,10 +90,10 @@ class AuthServiceTest(
     @DisplayName("access 토큰으로 사용자 인증")
     fun given_normal_accessToken_then_success_validToken() {
         val token = service
-            .createToken(SocialType.KAKAO, 1)
+            .createToken(SocialType.KAKAO, "1")
 
         assertDoesNotThrow {
-            service.validToken(token.accessToken)
+            service.parseUserID(token.accessToken)
         }
     }
 }

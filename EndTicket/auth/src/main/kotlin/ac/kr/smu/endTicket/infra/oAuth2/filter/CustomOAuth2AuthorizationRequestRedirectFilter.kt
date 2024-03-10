@@ -22,7 +22,7 @@ class CustomOAuth2AuthorizationRequestRedirectFilter(
     private val converter = SocialTypeConverter()
     private val SOCIAL_TYPE_URI_VARIABLE_NAME = "socialType"
     private val CODE_URI_VARIABLE_NAME = "code"
-    private val matcher = AntPathRequestMatcher("/auth/{${SOCIAL_TYPE_URI_VARIABLE_NAME}}")
+    private val matcher = AntPathRequestMatcher("/auth/sns/{${SOCIAL_TYPE_URI_VARIABLE_NAME}}")
 
     @Throws(IllegalStateException::class)
     override fun doFilterInternal(
@@ -30,20 +30,18 @@ class CustomOAuth2AuthorizationRequestRedirectFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        if (!matcher.matches(request)){
+        if (!matcher.matches(request) || request.method != "POST"){
             filterChain.doFilter(request,response)
             return
         }
 
         val variables = matcher.matcher(request).variables
         val socialTypeVariable = variables[SOCIAL_TYPE_URI_VARIABLE_NAME]
-        val code = request.getParameterValues(CODE_URI_VARIABLE_NAME).firstOrNull()
+        val code = request.getParameter(CODE_URI_VARIABLE_NAME) ?: ""
 
         checkNotNull(socialTypeVariable){"SocialType이 null입니다."}
         check(socialTypeVariable.isNotBlank()){"SocialType이 비어있습니다."}
-        checkNotNull(code){"code가 null입니다."}
         check(code.isNotBlank()){"code가 비어있습니다."}
-
 
         val socialType = converter.convert(socialTypeVariable)
         checkNotNull(socialType){"지원하지 않는 SNS입니다."}

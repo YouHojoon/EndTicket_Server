@@ -2,7 +2,9 @@ package ac.kr.smu.endTicket.infra.config
 
 
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
+import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.infra.oAuth2.filter.CustomOAuth2AuthorizationRequestRedirectFilter
+import ac.kr.smu.endTicket.infra.oAuth2.filter.JWTAuthenticationFilter
 import ac.kr.smu.endTicket.infra.oAuth2.filter.OAuth2ErrorHandlerFilter
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -24,7 +26,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val oAuthService: OAuthService
+    private val oAuthService: OAuthService,
+    private val tokenService: TokenService
 ) {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain{
@@ -43,6 +46,7 @@ class SecurityConfig(
             }
             addFilterBefore<OAuth2LoginAuthenticationFilter>(CustomOAuth2AuthorizationRequestRedirectFilter(oAuthService))
             addFilterBefore<CustomOAuth2AuthorizationRequestRedirectFilter>(OAuth2ErrorHandlerFilter())
+            addFilterBefore<UsernamePasswordAuthenticationFilter>(JWTAuthenticationFilter(tokenService))
         }
 
         return http.build()
