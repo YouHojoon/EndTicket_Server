@@ -15,6 +15,7 @@ import jakarta.persistence.UniqueConstraint
  * @property nickname 사용자의 별명, 3~8 자 사이여야 한다.
  * @property socialType SNS 로그인의 타입
  * @property socialUserId 각 SNS 별 회원번호
+ * @property id 회원번호
  */
 @Entity
 @Table(uniqueConstraints = [
@@ -29,13 +30,14 @@ class User(
     private val socialType: SocialType,
 
     @Column(name = "social_user_number", nullable = false, updatable = false)
-    private val socialUserNumber: String
-)
-{
+    private val socialUserNumber: String,
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, insertable = false, updatable = false)
     val id: Long = 0L
+)
+{
     enum class SocialType {
         KAKAO, GOOGLE, APPLE
     }
@@ -43,6 +45,6 @@ class User(
     override fun equals(other: Any?): Boolean {
         val user = (other as? User) ?: return false
 
-        return user.socialUserNumber == socialUserNumber && socialType == user.socialType
+        return user.id == other.id
     }
 }
