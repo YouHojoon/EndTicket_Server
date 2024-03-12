@@ -39,7 +39,7 @@ class IDTokenService(
      */
     @Throws(IDTokenNotVerifyException::class)
     fun parseSocialUserNumber(socialType: SocialType, idToken: String): String{
-        val (header, payload, _) = parseIDToken(socialType, idToken)
+        val (header, payload, _) = parseIDToken(idToken)
         val key = findPublicKey(socialType, header.kid)
 
         try {
@@ -111,7 +111,10 @@ class IDTokenService(
     @Throws(JWKParseException::class)
     private suspend fun getJwkSet(provider: ClientRegistration): JwkSet{
         val vo = redisTemplate.opsForValue()
-        val json = vo.get("${provider.clientName.lowercase()}_jwk_set") ?: WebClient.create()
+
+        val json = vo.get("${provider.clientName.lowercase()}_jwk_set") ?:
+
+        WebClient.create()
             .get()
             .uri(provider.providerDetails.jwkSetUri)
             .retrieve()
@@ -128,27 +131,11 @@ class IDTokenService(
     }
 
     /**
-     * SNS의 ID 토큰을 파싱하는 메소드
-     * @param socialType ID 토큰을 발급받은 SNS
+     * ID 토큰을 파싱하는 메소드
      * @param token ID 토큰
      * @return 복호화된 ID 토큰의 헤더, 페이로드 그리고 서명
      */
-    private fun parseIDToken(socialType: SocialType, token: String): IDToken{
-        return when(socialType){
-            SocialType.KAKAO -> parseKakaoIDToken(token)
-            SocialType.GOOGLE -> parseKakaoIDToken(token)
-            else ->{
-                TODO("Not Implemented")
-            }
-        }
-    }
-
-    /**
-     * Kakao의 ID 토큰을 파싱하는 메소드
-     * @param token: Kakao의 ID 토큰
-     * @return 복호화된 ID 토큰의 헤더, 페이로드 그리고 서명
-     */
-    private fun parseKakaoIDToken(token: String): IDToken{
+    private fun parseIDToken(token: String): IDToken{
         val objectMapper = ObjectMapper()
         val (header, payload, signature) = token.split(".")
         val decoder = Base64.getDecoder()
@@ -159,6 +146,7 @@ class IDTokenService(
         return Triple(objectMapper.readValue(decodedHeader, IDTokenHeader::class.java)
             , objectMapper.readValue(decodedPayload, IDTokenPayLoad::class.java), signature)
     }
+
 }
 
 private typealias IDToken = Triple<IDTokenHeader, IDTokenPayLoad,String>
