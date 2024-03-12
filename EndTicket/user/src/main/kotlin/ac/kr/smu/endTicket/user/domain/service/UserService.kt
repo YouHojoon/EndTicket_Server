@@ -20,12 +20,13 @@ class UserService(
     /**
      * 사용자 생성 메소드
      * @param user 생성할 사용자
+     * @return 생성된 사용자 번호
      * @throws UserAlreadyExistException 이미 가입된 SNS 사용자일 시
      */
     @Throws(UserAlreadyExistException::class)
-    fun createUser(user: User){
+    fun createUser(user: User): Long{
         try{
-            userRepo.save(user)
+            return userRepo.save(user).id
         }catch (e: SQLIntegrityConstraintViolationException) {
             throw UserAlreadyExistException()
         }
