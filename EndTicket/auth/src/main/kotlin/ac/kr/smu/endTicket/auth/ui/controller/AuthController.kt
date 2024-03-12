@@ -68,7 +68,7 @@ class AuthController(
             response.userID
         }catch (e: FeignException.NotFound){
             // 회원가입이 되어 있지 않으면 강제 회원 가입
-            userClient.createUser(CreateUserRequest(oAuth2User.name, socialType))
+            userClient.createUser(CreateUserRequest(oAuth2User.name, socialType)).userID
         }
 
         return ResponseEntity.ok(tokenService.createAccessAndRefreshToken(userID))

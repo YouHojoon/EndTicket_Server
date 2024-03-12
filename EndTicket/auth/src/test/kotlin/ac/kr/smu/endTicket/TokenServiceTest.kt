@@ -7,7 +7,7 @@ import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.infra.config.JWTProperties
 
 import ac.kr.smu.endTicket.infra.oAuth2.OAuth2TokenResponse
-import ac.kr.smu.endTicket.infra.openfeign.GetUserIDResponse
+import ac.kr.smu.endTicket.infra.openfeign.`\UserIDResponse`
 import ac.kr.smu.endTicket.infra.openfeign.UserClient
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -49,7 +49,7 @@ class TokenServiceTest(
         Mockito.`when`(oAuthService.parseSocialUserNumber(SocialType.KAKAO, "i"))
             .thenReturn("1")
         Mockito.`when`(userClient.getUserId(SocialType.KAKAO, "1"))
-            .thenReturn(GetUserIDResponse(1))
+            .thenReturn(`\UserIDResponse`(1))
     }
 
     @Test
