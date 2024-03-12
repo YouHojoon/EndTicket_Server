@@ -38,7 +38,7 @@ class UserServiceTest(
             .`when`(userRepo.findBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO, "1"))
             .thenReturn(user)
 
-        assert(userService.findBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO,"1") == user.id)
+        assert(userService.findIdBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO,"1") == user.id)
 
     }
 
@@ -56,6 +56,6 @@ class UserServiceTest(
     }
 
     private fun createUser(): User{
-        return User("test", User.SocialType.KAKAO,"1")
+        return User(User.SocialType.KAKAO,"1")
     }
 }

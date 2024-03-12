@@ -9,21 +9,16 @@ import jakarta.validation.constraints.Size
 
 /**
  * 사용자 생성 요청을 추상화한 클래스
- * @property nickname 사용자 별명
  * @property socialType 생성 요청을 한 SNS 타입
- * @property socialUserNumber SNS 사용자 번
+ * @property socialUserNumber SNS 사용자 번호
  */
 @Schema(description = "사용자 생성 요청")
 data class CreateUserRequest(
-    @field:Size(min = 3, max = 8)
-    @Schema(description = "별명", nullable = false, example = "테스트")
-    val nickname: String,
-
-    @field:NotNull
+    @field:NotNull(message = "SNS 타입은 null일 수 없습니다.")
     @Schema(description = "SNS 타입", nullable = false, example = "KAKAO")
     val socialType: User.SocialType,
 
-    @field:NotNull
+    @field:NotBlank(message = "SNS 사용자 번호는 null일 수 없습니다.")
     @Schema(description = "SNS 사용자 번호", nullable = false, example = "1234152")
     val socialUserNumber: String
 )

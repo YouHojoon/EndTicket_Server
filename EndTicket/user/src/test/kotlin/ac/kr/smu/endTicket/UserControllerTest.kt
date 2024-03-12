@@ -36,12 +36,12 @@ class UserControllerTest @Autowired constructor(
     fun test_createUser(){
         //정상 회원
         val body1 = objectMapper.writeValueAsString(
-            mapOf("nickname" to "test", "socialType" to "KAKAO", "socialUserNumber" to "1")
+            mapOf("socialType" to "KAKAO", "socialUserNumber" to "1")
         )
 
         //파라미터 조건 불충분
         val body2 = objectMapper.writeValueAsString(
-            mapOf("nickname" to "test12312312312",  "socialType" to "KAKAO", "socialUserNumber" to "2")
+            mapOf("socialType" to "KAKAO", "socialUserNumber" to "")
         )
 
         mockMvc
@@ -59,7 +59,7 @@ class UserControllerTest @Autowired constructor(
             .andExpect(MockMvcResultMatchers.jsonPath("message").isString)
 
         //이미 회원가입 된 회원
-        Mockito.`when`(service.createUser(User("test",User.SocialType.KAKAO, "1")))
+        Mockito.`when`(service.createUser(User(User.SocialType.KAKAO, "1")))
             .thenThrow(UserAlreadyExistException())
 
         mockMvc
@@ -86,7 +86,7 @@ class UserControllerTest @Autowired constructor(
                     .get("/users/kakao/1")
             )
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("socialUserNumber").value(1))
+            .andExpect(MockMvcResultMatchers.jsonPath("userID").value(1))
 
         mockMvc.perform(MockMvcRequestBuilders.get("/users/kakao/2"))
             .andExpect(MockMvcResultMatchers.status().isNotFound)
