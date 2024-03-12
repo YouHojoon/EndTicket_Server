@@ -63,11 +63,13 @@ class TokenService(
      * access 토큰에서 사용자 ID를 파싱하는 메소드
      * @param token access token
      * @return 사용자 ID
+     * @throws UnsupportedJwtException token에 subject가 없을 시 발생
      */
     fun parseUserID(token: String): Long{
         val claims = Jwts.parser().parseJWTSignedClaims(token)
-        TODO("refresh 토큰으로 요청을 받을 시 어떻게 될지 확인 필")
-        return claims.payload.subject.toLong()
+
+        val sub = claims.payload.subject ?: throw UnsupportedJwtException(token)
+        return sub.toLong()
     }
 
     /**

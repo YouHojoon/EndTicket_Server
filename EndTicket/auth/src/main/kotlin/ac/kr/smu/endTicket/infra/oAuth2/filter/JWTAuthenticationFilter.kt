@@ -3,6 +3,7 @@ package ac.kr.smu.endTicket.infra.oAuth2.filter
 import ac.kr.smu.endTicket.auth.service.TokenService
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.UnsupportedJwtException
 import io.jsonwebtoken.security.SignatureException
 import jakarta.servlet.Filter
 import jakarta.servlet.FilterChain
@@ -53,6 +54,13 @@ class JWTAuthenticationFilter(
                 response = response as HttpServletResponse,
                 status = HttpStatus.BAD_REQUEST,
                 message = "토큰 서명 검증에 실패하였습니다."
+            )
+        }
+        catch (e: UnsupportedJwtException){
+            sendResponse(
+                response as HttpServletResponse,
+                status = HttpStatus.BAD_REQUEST,
+                message = "잘못된 토큰입니다."
             )
         }
     }
