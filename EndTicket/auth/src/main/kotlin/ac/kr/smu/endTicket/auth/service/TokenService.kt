@@ -2,16 +2,12 @@ package ac.kr.smu.endTicket.auth.service
 
 import ac.kr.smu.endTicket.auth.domain.exception.UserNotFoundException
 
-import ac.kr.smu.endTicket.auth.domain.model.SocialType
-import ac.kr.smu.endTicket.auth.domain.service.OAuthService
 import ac.kr.smu.endTicket.auth.ui.response.CreateTokenResponse
 import ac.kr.smu.endTicket.auth.ui.response.ReissueTokenResponse
 import ac.kr.smu.endTicket.infra.config.JWTProperties
-import ac.kr.smu.endTicket.infra.openfeign.UserClient
-import feign.FeignException
+
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
-import io.jsonwebtoken.security.SignatureException
 import org.springframework.data.redis.core.RedisTemplate
 
 import org.springframework.stereotype.Service
@@ -20,15 +16,11 @@ import java.util.concurrent.TimeUnit
 
 /**
  * 토큰 기능을 처리하는 클래스
- * @property oAuthService oAuth 기능을 담당하는 객체,
- * @property userClient 유저 ID를 조회하기 위한 feign client
  * @property redisTemplate redis를 사용하기 위한 객체
  * @property jwtProperties JWT 토큰 관련 설정
  */
 @Service
 class TokenService(
-    private val oAuthService: OAuthService,
-    private val userClient: UserClient,
     private val redisTemplate: RedisTemplate<String, String>,
     private val jwtProperties: JWTProperties
 ) {
@@ -39,24 +31,18 @@ class TokenService(
 
     /**
      * 토큰 생성 기능
-     * @param socialType 인증을 한 SNS
-     * @param socialUserNumber SNS의 사용자 번호
+     * @param userID 사용자 번호
      * @return JWT 토큰 발급
      */
     @Throws(UserNotFoundException::class)
-    fun createAccessAndRefreshToken(socialType:SocialType,socialUserNumber: String): CreateTokenResponse{
-        try {
-            val response = userClient.getUserId(socialType, socialUserNumber)
-            val issuedAt = Date()
-            val accessToken = createAccessToken(response.userID, issuedAt)
-            val refreshToken = createRefreshToken(issuedAt)
+    fun createAccessAndRefreshToken(userID: Long): CreateTokenResponse{
+        val issuedAt = Date()
+        val accessToken = createAccessToken(userID, issuedAt)
+        val refreshToken = createRefreshToken(issuedAt)
 
-            redisTemplate.setRefreshToken(response.userID, refreshToken)
+        redisTemplate.setRefreshToken(userID, refreshToken)
 
-            return CreateTokenResponse(accessToken, refreshToken)
-        } catch (e: FeignException.NotFound) {
-            throw UserNotFoundException(socialUserNumber)
-        }
+        return CreateTokenResponse(accessToken, refreshToken)
     }
 
     /**
