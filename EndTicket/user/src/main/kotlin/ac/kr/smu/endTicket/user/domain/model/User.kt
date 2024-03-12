@@ -22,9 +22,6 @@ import jakarta.persistence.UniqueConstraint
     UniqueConstraint(columnNames = ["social_type", "social_user_number"])
 ])
 class User(
-    @Column(nullable = false)
-    val nickname: String,
-
     @Column(name="social_type", nullable = false, updatable = false)
     @Enumerated(value = EnumType.STRING)
     private val socialType: SocialType,
@@ -35,7 +32,10 @@ class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, insertable = false, updatable = false)
-    val id: Long = 0L
+    val id: Long = 0L,
+
+    @Column(updatable = false)
+    val nickname: String? = null
 )
 {
     enum class SocialType {
