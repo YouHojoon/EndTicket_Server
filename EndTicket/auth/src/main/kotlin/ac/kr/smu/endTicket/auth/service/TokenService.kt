@@ -1,7 +1,5 @@
 package ac.kr.smu.endTicket.auth.service
 
-import ac.kr.smu.endTicket.auth.domain.exception.ExpiredTokenException
-import ac.kr.smu.endTicket.auth.domain.exception.TokenSignatureException
 import ac.kr.smu.endTicket.auth.domain.exception.UserNotFoundException
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
@@ -67,16 +65,9 @@ class TokenService(
      * @return 사용자 ID
      */
     fun parseUserID(token: String): Long{
-        try {
-            val claims = Jwts.parser().parseJWTSignedClaims(token)
-            TODO("refresh 토큰으로 요청을 받을 시 어떻게 될지 확인 필")
-            return claims.payload.subject.toLong()
-        }catch (e: ExpiredJwtException){
-            throw ExpiredTokenException()
-        }
-        catch (e: SignatureException){
-            throw TokenSignatureException()
-        }
+        val claims = Jwts.parser().parseJWTSignedClaims(token)
+        TODO("refresh 토큰으로 요청을 받을 시 어떻게 될지 확인 필")
+        return claims.payload.subject.toLong()
     }
 
     /**
@@ -144,22 +135,12 @@ class TokenService(
      * JWT 토큰에서 Claims 반환
      * @param token JWT 토큰
      * @return 파싱된 Claims
-     * @throws ExpiredTokenException 토큰이 만료되었을 시 발생하는 Exception
-     * @throws TokenSignatureException 토큰의 서명이 잘못되었을 시 발생하는 Exception
      */
-    @Throws(ExpiredTokenException::class, SignatureException::class)
     private fun JwtParserBuilder.parseJWTSignedClaims(token: String): Jws<Claims>{
-        try {
-            return this
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-        }catch (e: ExpiredJwtException){
-            throw ExpiredTokenException()
-        }
-        catch (e: SignatureException){
-            throw TokenSignatureException()
-        }
+        return this
+            .verifyWith(key)
+            .build()
+            .parseSignedClaims(token)
     }
 
     private fun RedisTemplate<String,String>.setRefreshToken(userID: Long, refreshToken: String){

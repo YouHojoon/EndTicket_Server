@@ -1,18 +1,15 @@
 package ac.kr.smu.endTicket.infra.oAuth2.filter
 
-import ac.kr.smu.endTicket.auth.domain.exception.ExpiredTokenException
-import ac.kr.smu.endTicket.auth.domain.exception.TokenSignatureException
 import ac.kr.smu.endTicket.auth.service.TokenService
-import ac.kr.smu.endTicket.infra.oAuth2.OAuth2User
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nimbusds.jose.proc.SecurityContext
+import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.security.SignatureException
 import jakarta.servlet.Filter
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -44,14 +41,14 @@ class JWTAuthenticationFilter(
                 .getContext().authentication = createAuthentication(userID)
 
             chain.doFilter(request,response)
-        }catch (e: ExpiredTokenException){
+        }catch (e: ExpiredJwtException){
             sendResponse(
                 response = response as HttpServletResponse,
                 status = HttpStatus.UNAUTHORIZED,
                 message = "토큰이 만료되었습니다."
             )
         }
-        catch (e: TokenSignatureException){
+        catch (e: SignatureException){
             sendResponse(
                 response = response as HttpServletResponse,
                 status = HttpStatus.BAD_REQUEST,
