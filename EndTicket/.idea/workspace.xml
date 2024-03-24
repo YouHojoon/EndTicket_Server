@@ -5,15 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7b5dc841-4ccf-44c8-88c8-ff93cc451e8e" name="Changes" comment="">
-<<<<<<< HEAD
       <change afterPath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/infra/oAuth/CustomOAuth2AuthorizationRequestRedirectFilter.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/infra/config/SecurityConfig.kt" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/infra/config/SecurityConfig.kt" afterDir="false" />
-=======
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/auth/service/AuthService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/auth/service/AuthService.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/infra/oAuth/IDToken/IDTokenService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/main/kotlin/ac/kr/smu/endTicket/infra/oAuth/IDToken/IDTokenService.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auth/src/test/kotlin/ac/kr/smu/endTicket/AuthServiceTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/auth/src/test/kotlin/ac/kr/smu/endTicket/AuthServiceTest.kt" afterDir="false" />
->>>>>>> cb4a3961962125c4901ed2f22ddee9e664bd34d8
       <change beforePath="$PROJECT_DIR$/../dump.rdb" beforeDir="false" afterPath="$PROJECT_DIR$/../dump.rdb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -88,13 +85,10 @@
       <recent name="$PROJECT_DIR$/user/src/main/resources" />
     </key>
   </component>
-<<<<<<< HEAD
   <component name="RunManager" selected="Spring Boot.AuthApplication">
     <configuration name="AuthServiceTest.given_normal_user_then_success_createToken" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-=======
   <component name="RunManager" selected="Gradle.AuthServiceTest.given_normal_accessToken_then_success_validToken">
     <configuration name="AuthServiceTest.given_normal_accessToken_then_success_validToken" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
->>>>>>> cb4a3961962125c4901ed2f22ddee9e664bd34d8
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -107,9 +101,7 @@
           <list>
             <option value=":auth:test" />
             <option value="--tests" />
-<<<<<<< HEAD
             <option value="&quot;ac.kr.smu.endTicket.AuthServiceTest.given_normal_user_then_success_createToken&quot;" />
-=======
             <option value="&quot;ac.kr.smu.endTicket.AuthServiceTest.given_normal_accessToken_then_success_validToken&quot;" />
           </list>
         </option>
@@ -135,7 +127,6 @@
             <option value=":auth:test" />
             <option value="--tests" />
             <option value="&quot;ac.kr.smu.endTicket.AuthServiceTest.given_notSignUp_user_then_throw_UserNotFoundException&quot;" />
->>>>>>> cb4a3961962125c4901ed2f22ddee9e664bd34d8
           </list>
         </option>
         <option name="vmOptions" />
@@ -162,12 +153,9 @@
     </configuration>
     <recent_temporary>
       <list>
-<<<<<<< HEAD
         <item itemvalue="Gradle.AuthServiceTest.given_normal_user_then_success_createToken" />
-=======
         <item itemvalue="Gradle.AuthServiceTest.given_normal_accessToken_then_success_validToken" />
         <item itemvalue="Gradle.AuthServiceTest.given_notSignUp_user_then_throw_UserNotFoundException" />
->>>>>>> cb4a3961962125c4901ed2f22ddee9e664bd34d8
       </list>
     </recent_temporary>
   </component>

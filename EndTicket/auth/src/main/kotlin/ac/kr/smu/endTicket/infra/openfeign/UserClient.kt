@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody
 @FeignClient(name = "user", url = "\${openfeign.client.user.url}/users")
 interface UserClient {
     @GetMapping("/{SNS}/{socialUserNumber}")
-    fun getUserId(@PathVariable("SNS") SNS: SocialType, @PathVariable("socialUserNumber") socialUserNumber: String): UserIDResponse
+    fun getUserId(@PathVariable("SNS") socialType: SocialType, @PathVariable("socialUserNumber") socialUserNumber: String): UserIDResponse
 
     @PostMapping
     fun createUser(@RequestBody request: CreateUserRequest): UserIDResponse

@@ -1,4 +1,4 @@
 jwt:
   secret: testtesttesttesttesttesttesttesttesttesttesttest
   access-token-expiration: 10000 # 1시간
-  refresh-token-expiration: 1 # 30일
+  refresh-token-expiration: 1000000 # 30일

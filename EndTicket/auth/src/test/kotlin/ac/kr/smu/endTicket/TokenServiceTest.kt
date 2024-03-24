@@ -1,99 +1,81 @@
 package ac.kr.smu.endTicket
 
-import ac.kr.smu.endTicket.auth.domain.exception.UserNotFoundException
-import ac.kr.smu.endTicket.auth.domain.model.SocialType
-import ac.kr.smu.endTicket.auth.domain.service.OAuthService
 import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.infra.config.JWTProperties
-
-import ac.kr.smu.endTicket.infra.oAuth2.OAuth2TokenResponse
-import ac.kr.smu.endTicket.infra.openfeign.`\UserIDResponse`
-import ac.kr.smu.endTicket.infra.openfeign.UserClient
+import io.jsonwebtoken.UnsupportedJwtException
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
-
-import feign.FeignException
-import feign.Request
-import feign.RequestTemplate
-import org.junit.jupiter.api.*
-
-import org.mockito.Mock
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
-
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.core.ValueOperations
 import org.springframework.test.context.ActiveProfiles
+import kotlin.test.BeforeTest
+import kotlin.test.assertEquals
 
 @SpringBootTest
 @ActiveProfiles("test")
 @EnableConfigurationProperties(JWTProperties::class)
-class TokenServiceTest(
+class TokenServiceTest @Autowired constructor(
+    @MockBean
+    private val ops: ValueOperations<String,String>,
+    @MockBean
+    private val redisTemplate: RedisTemplate<String,String>,
+    private val service: TokenService
 ){
-    @MockBean
-    private lateinit var oAuthService: OAuthService
-    @MockBean
-    private lateinit var userClient: UserClient
-    @Mock
-    private lateinit var redisTemplate: RedisTemplate<String, String>
-    @Autowired
-    private lateinit var service: TokenService
-
-    @BeforeEach
-    fun setUp(){
-        Mockito.`when`(oAuthService.oAuth(SocialType.KAKAO, "1"))
-            .thenReturn(OAuth2TokenResponse("jwt","a","i",1,"1","1",""))
-        Mockito.`when`(oAuthService.parseSocialUserNumber(SocialType.KAKAO, "i"))
-            .thenReturn("1")
-        Mockito.`when`(userClient.getUserId(SocialType.KAKAO, "1"))
-            .thenReturn(`\UserIDResponse`(1))
+    private val USER_ID = 1L
+    @BeforeTest
+    fun setRedis(){
+        Mockito.`when`(redisTemplate.opsForValue()).thenReturn(ops)
     }
-
     @Test
     @DisplayName("정상 유저 토큰 발급 테스트")
-    fun given_normal_user_then_success_createToken(){
+    fun given_userID_when_createAccessAndRefreshToken_then_success(){
         assertDoesNotThrow {
-            service.createAccessAndRefreshToken(SocialType.KAKAO, "1")
+            service.createAccessAndRefreshToken(userID = USER_ID)
         }
     }
 
     @Test
-    @DisplayName("미가입 유저 토큰 발급 테스트")
-    fun given_notSignUp_user_then_throw_UserNotFoundException(){
-        Mockito.`when`(oAuthService.oAuth(SocialType.KAKAO, "2"))
-            .thenReturn(OAuth2TokenResponse("jwt","a","i",1,"1","1",""))
-        Mockito.`when`(oAuthService.parseSocialUserNumber(SocialType.KAKAO, "i"))
-            .thenReturn("2")
-        Mockito.`when`(userClient.getUserId(SocialType.KAKAO, "2"))
-            .thenAnswer {
-                throw FeignException.NotFound(
-                    "message",
-                    Request.create(Request.HttpMethod.GET,
-                        "",
-                        emptyMap(),
-                        Request.Body.empty(),
-                        RequestTemplate()),
-                    ByteArray(0),
-                    emptyMap()
-                )
-            }
-
-        assertThrows<UserNotFoundException> {
-            service.createAccessAndRefreshToken(SocialType.KAKAO,"2")
-        }
-    }
-
-    @Test
-    @DisplayName("access 토큰으로 사용자 인증")
-    fun given_normal_accessToken_then_success_validToken() {
+    @DisplayName("access 토큰으로 사용자 ID 파싱")
+    fun given_accessToken_when_parseUserID_then_return_UserID() {
         val token = service
-            .createAccessAndRefreshToken(SocialType.KAKAO, "1")
+            .createAccessAndRefreshToken(USER_ID)
 
-        assertDoesNotThrow {
-            service.parseUserID(token.accessToken)
+        assertEquals(service.parseUserID(token.accessToken), USER_ID)
+    }
+
+    @Test
+    @DisplayName("refresh 토큰으로 사용자 ID 파싱 테스트")
+    fun given_refreshToken_when_parseUserID_then_throw_UnsupportedJwtException(){
+        val token = service.createAccessAndRefreshToken(USER_ID)
+
+        assertThrows<UnsupportedJwtException> { service.parseUserID(token.refreshToken)}
+    }
+
+    @Test
+    @DisplayName("access 토큰 재발급 테스트")
+    fun given_refreshToken_when_reissueToken_then_success(){
+        val token = service.createAccessAndRefreshToken(USER_ID)
+
+        Mockito.`when`(ops.get(token.refreshToken))
+            .thenReturn(USER_ID.toString())
+
+        assertDoesNotThrow {service.reissueToken(token.refreshToken)}
+    }
+
+    @Test
+    @DisplayName("캐시에 저장되어 있지 않은 refresh 토큰으로 access 토큰 재발급 테스트")
+    fun given_notStored_refreshToken_when_reissusToken_then_throw_IllegalArgumentException(){
+        val token = service.createAccessAndRefreshToken(USER_ID)
+
+        assertThrows<IllegalArgumentException> {
+            service.reissueToken(token.refreshToken)
         }
     }
 }
