@@ -1,9 +1,9 @@
-package ac.kr.smu.endTicket.infra.oAuth
+package ac.kr.smu.endTicket.infra.oAuth2
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
-import ac.kr.smu.endTicket.infra.oAuth.exception.OAuthRequestException
-import ac.kr.smu.endTicket.infra.oAuth.IDToken.IDTokenService
+import ac.kr.smu.endTicket.infra.oAuth2.exception.OAuth2RequestException
+import ac.kr.smu.endTicket.infra.oAuth2.IDToken.IDTokenService
 import kotlinx.coroutines.*
 import org.springframework.http.MediaType
 import org.springframework.security.oauth2.client.registration.ClientRegistration
@@ -21,18 +21,19 @@ import org.springframework.web.reactive.function.client.awaitBody
  * @property clientRegistrationRepository OAuth 클라이언트가 저장된 객체
  */
 @Service
-class OAuthServiceImpl(
+class OAuth2ServiceImpl(
     private val clientRegistrationRepository: ClientRegistrationRepository,
     private val idTokenService: IDTokenService
 ): OAuthService {
     /**
      * 외부 SNS 서비스 인증을 하여 access 토큰 응답을 반환하는 메소드
-     * @param SNS SNS 종류
+     * @param socialType SNS 종류
      * @param code SNS 인증에서 반환받은 authorization code
      * @return access 토큰 응답을 반환, 에러 발생 시 null 반환
      */
-    override fun oAuth(SNS: SocialType, code: String): OAuthTokenResponse{
-        val provider = clientRegistrationRepository.findByRegistrationId(SNS.name.lowercase())
+    override fun oAuth(socialType: SocialType, code: String): OAuth2TokenResponse{
+        println(code)
+        val provider = clientRegistrationRepository.findByRegistrationId(socialType.name.lowercase())
         return runBlocking {
             getToken(provider,code)
         }
@@ -40,12 +41,12 @@ class OAuthServiceImpl(
 
     /**
      * SNS 서비스의 ID 토큰에서 SNS 회원 번호를 파싱하는 메소드
-     * @param SNS SNS 종류
+     * @param socialType SNS 종류
      * @param idToken ID 토큰
      * @return 파싱된 회원 번호
      */
-    override fun parseSocialUserNumber(SNS: SocialType, idToken: String): Long {
-        return idTokenService.parseSocialUserNumber(SNS,idToken)
+    override fun parseSocialUserNumber(socialType: SocialType, idToken: String): String {
+        return idTokenService.parseSocialUserNumber(socialType,idToken)
     }
 
     /**
@@ -53,10 +54,10 @@ class OAuthServiceImpl(
      * @param provider 통신할 SNS 서비스
      * @param code SNS 인증에서 반환받은 authorization code
      * @return 통신 결과를 반환
-     * @throws OAuthRequestException OAuth 요청이 에러일 때 발생
+     * @throws OAuth2RequestException OAuth 요청이 에러일 때 발생
      */
-    @Throws(OAuthRequestException::class)
-    private suspend fun getToken(provider: ClientRegistration, code: String): OAuthTokenResponse{
+    @Throws(OAuth2RequestException::class)
+    private suspend fun getToken(provider: ClientRegistration, code: String): OAuth2TokenResponse{
        try {
            return WebClient.create()
                .post()
@@ -68,7 +69,7 @@ class OAuthServiceImpl(
                .retrieve()
                .awaitBody()
        }catch (e: WebClientResponseException){
-           throw OAuthRequestException(e.getResponseBodyAs(Map::class.java).toString(), e)
+           throw OAuth2RequestException(e.getResponseBodyAs(Map::class.java).toString(), e)
        }
     }
 

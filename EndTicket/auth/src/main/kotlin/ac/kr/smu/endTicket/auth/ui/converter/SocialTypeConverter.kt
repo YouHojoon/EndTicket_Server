@@ -5,6 +5,7 @@ import org.springframework.core.convert.converter.Converter
 
 class SocialTypeConverter: Converter<String, SocialType> {
     override fun convert(source: String): SocialType? {
-        return SocialType.valueOf(source.uppercase())
+        val name = source.uppercase()
+        return SocialType.values().filter { it.name == name }.firstOrNull()
     }
 }
