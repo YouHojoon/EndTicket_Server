@@ -20,13 +20,12 @@ import java.security.Principal
 
 /**
  * JWT 토큰으로 인증을 하는 필터
- * @property tokenService 토큰 관련 로직을 수행하는 객
+ * @property tokenService 토큰 관련 로직을 수행하는 객체
  */
 class JWTAuthenticationFilter(
     private val tokenService: TokenService
 ): OncePerRequestFilter(){
     private val JWT_TOKEN_HEADER_NAME = "Authorization"
-    private val matcher = AntPathRequestMatcher("/auth/{uri:(sns|reissueToken)}")
 
     override fun doFilterInternal(
         request: HttpServletRequest,
