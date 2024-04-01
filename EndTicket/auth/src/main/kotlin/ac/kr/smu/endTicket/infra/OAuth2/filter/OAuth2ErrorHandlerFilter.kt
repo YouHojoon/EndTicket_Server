@@ -1,8 +1,8 @@
-package ac.kr.smu.endTicket.infra.oAuth2.filter
+package ac.kr.smu.endTicket.infra.OAuth2.filter
 
-import ac.kr.smu.endTicket.infra.oAuth2.IDToken.exception.IDTokenNotVerifyException
-import ac.kr.smu.endTicket.infra.oAuth2.IDToken.exception.JWKParseException
-import ac.kr.smu.endTicket.infra.oAuth2.exception.OAuth2RequestException
+import ac.kr.smu.endTicket.infra.OAuth2.IDToken.exception.IDTokenNotVerifyException
+import ac.kr.smu.endTicket.infra.OAuth2.IDToken.exception.JWKParseException
+import ac.kr.smu.endTicket.infra.OAuth2.exception.OAuth2RequestException
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest

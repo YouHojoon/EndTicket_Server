@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.auth.domain.service
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
-import ac.kr.smu.endTicket.infra.oAuth2.OAuth2TokenResponse
+import ac.kr.smu.endTicket.infra.OAuth2.OAuth2TokenResponse
 
 
 /**

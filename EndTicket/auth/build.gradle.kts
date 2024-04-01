@@ -12,4 +12,5 @@ dependencies{
     implementation("io.jsonwebtoken:jjwt-jackson:0.12.5")
 
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 }

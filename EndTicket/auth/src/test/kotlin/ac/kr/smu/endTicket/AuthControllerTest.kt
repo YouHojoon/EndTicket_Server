@@ -7,34 +7,26 @@ import ac.kr.smu.endTicket.auth.ui.controller.AuthController
 import ac.kr.smu.endTicket.auth.ui.response.CreateTokenResponse
 import ac.kr.smu.endTicket.auth.ui.response.ReissueTokenResponse
 import ac.kr.smu.endTicket.infra.config.SecurityConfig
-import ac.kr.smu.endTicket.infra.oAuth2.OAuth2TokenResponse
-import ac.kr.smu.endTicket.infra.oAuth2.filter.OAuth2AuthorizationFilter
+import ac.kr.smu.endTicket.infra.OAuth2.OAuth2TokenResponse
 import ac.kr.smu.endTicket.infra.openfeign.CreateUserRequest
 import ac.kr.smu.endTicket.infra.openfeign.UserClient
 import ac.kr.smu.endTicket.infra.openfeign.UserIDResponse
 import com.fasterxml.jackson.databind.ObjectMapper
-import feign.Feign
 import feign.FeignException
 import io.jsonwebtoken.UnsupportedJwtException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.mockito.Mock
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.FilterType
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
-import org.springframework.security.web.FilterChainProxy
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
 
 @WebMvcTest(controllers = [AuthController::class])
 @AutoConfigureMockMvc
