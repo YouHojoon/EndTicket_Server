@@ -21,8 +21,9 @@ class SecurityConfig(
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain{
         http{
-            csrf { disable() }
             formLogin { disable() }
+            csrf { disable() }
+
             authorizeRequests {
 //                authorize(anyRequest, permitAll)
                 for (matcher in ipAddressMatcher()){
