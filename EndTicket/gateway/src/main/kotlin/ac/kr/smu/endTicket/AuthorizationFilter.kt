@@ -1,38 +1,26 @@
 package ac.kr.smu.endTicket
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import org.springframework.cloud.client.discovery.DiscoveryClient
 import org.springframework.cloud.gateway.filter.GatewayFilter
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.stereotype.Component
-import org.springframework.web.ErrorResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import org.springframework.web.reactive.function.client.awaitBodilessEntity
 import reactor.core.publisher.Mono
 
 @Component
-class AuthenticationFilter(
+class AuthorizationFilter(
     private val webClientBuilder: WebClient.Builder
-): AbstractGatewayFilterFactory<AuthenticationFilter.Config>(Config::class.java) {
-
-    override fun apply(config: Config): GatewayFilter {
+): AbstractGatewayFilterFactory<Any>() {
+    private val AUTHORIZATION_URL = "http://auth/auth/validation"
+    override fun apply(config: Any): GatewayFilter {
         return GatewayFilter { exchange, chain ->
-            if (exchange.request.uri.toString() in config.whiteList){
-                return@GatewayFilter chain.filter(exchange)
-            }
-
             val token = exchange.request.headers.getFirst("Authorization")
-                ?: return@GatewayFilter denyRequest(
-                    response = exchange.response,
-                    status = HttpStatus.UNAUTHORIZED,
-                    body = "access 토큰이 없습니다.".toByteArray())
 
             webClientBuilder
-                .baseUrl("http://auth/auth/validation")
+                .baseUrl(AUTHORIZATION_URL)
                 .build()
                 .post()
                 .header("Authorization", token)
@@ -56,6 +44,4 @@ class AuthenticationFilter(
 
         return response.writeWith(Mono.just(response.bufferFactory().wrap(body ?: ByteArray(0))))
     }
-
-    data class Config(val whiteList: List<String>)
 }
