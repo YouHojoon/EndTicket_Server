@@ -23,7 +23,9 @@ class SecurityConfig(
         http{
             formLogin { disable() }
             csrf { disable() }
+
             authorizeRequests {
+//                authorize(anyRequest, permitAll)
                 for (matcher in ipAddressMatcher()){
                     authorize(matcher, permitAll)
                 }
