@@ -24,7 +24,7 @@ import jakarta.persistence.UniqueConstraint
 class User(
     @Column(name="social_type", nullable = false, updatable = false)
     @Enumerated(value = EnumType.STRING)
-    private val socialType: SocialType,
+    val socialType: SocialType,
 
     @Column(name = "social_user_number", nullable = false, updatable = false)
     private val socialUserNumber: String,
