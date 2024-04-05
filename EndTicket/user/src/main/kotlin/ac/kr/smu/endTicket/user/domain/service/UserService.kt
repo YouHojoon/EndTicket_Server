@@ -3,6 +3,12 @@ package ac.kr.smu.endTicket.user.domain.service
 import ac.kr.smu.endTicket.user.domain.exception.UserAlreadyExistException
 import ac.kr.smu.endTicket.user.domain.model.User
 import ac.kr.smu.endTicket.user.domain.repository.UserRepository
+import ac.kr.smu.protobuf.FindUserIDRequest
+import ac.kr.smu.protobuf.UserIDResponse
+import ac.kr.smu.protobuf.UserServiceGrpc
+import ac.kr.smu.protobuf.UserServiceGrpcKt
+import io.grpc.stub.StreamObserver
+import net.devh.boot.grpc.server.service.GrpcService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.sql.SQLIntegrityConstraintViolationException
@@ -13,9 +19,19 @@ import kotlin.jvm.optionals.getOrNull
  * @property userRepo 의존성 주입으로 얻는 user 저장소
  */
 @Service
+@GrpcService
 class UserService(
     private val userRepo: UserRepository
-) {
+): UserServiceGrpc.UserServiceImplBase() {
+    override fun findUserID(request: FindUserIDRequest, responseObserver: StreamObserver<UserIDResponse>) {
+        val socialType = User.SocialType.valueOf(request.socialType.name)
+        val id = userRepo.findBySocialTypeAndSocialUserNumber(socialType, request.socialUserNumber)?.id ?: userRepo.save(User(socialType, request.socialUserNumber)).id
+
+        responseObserver.onNext(
+            UserIDResponse.newBuilder().setUserId(id).build()
+        )
+        responseObserver.onCompleted()
+    }
 
     /**
      * 사용자 생성 메소드
