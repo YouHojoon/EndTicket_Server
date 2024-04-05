@@ -32,8 +32,8 @@ class OAuth2ServiceImpl(
      * @return access 토큰 응답을 반환, 에러 발생 시 null 반환
      */
     override fun oAuth(socialType: SocialType, code: String): OAuth2TokenResponse{
-        println(code)
         val provider = clientRegistrationRepository.findByRegistrationId(socialType.name.lowercase())
+
         return runBlocking {
             getToken(provider,code)
         }

@@ -1,13 +1,12 @@
 package ac.kr.smu.endTicket.auth.ui.controller
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
+import ac.kr.smu.endTicket.auth.domain.service.UserService
 import ac.kr.smu.endTicket.infra.OAuth2.OAuth2User
 import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.auth.ui.response.CreateTokenResponse
 import ac.kr.smu.endTicket.auth.ui.response.ReissueTokenResponse
-import ac.kr.smu.endTicket.infra.openfeign.CreateUserRequest
-import ac.kr.smu.endTicket.infra.openfeign.UserClient
-import feign.FeignException
+import io.grpc.StatusRuntimeException
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.StringToClassMapItem
@@ -22,7 +21,6 @@ import org.slf4j.LoggerFactory
 
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -34,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class AuthController(
     private val tokenService: TokenService,
-    private val userClient: UserClient
+    private val userService: UserService
 ) {
     private val log = LoggerFactory.getLogger(AuthController::class.java)
 
@@ -60,15 +58,15 @@ class AuthController(
 
         @AuthenticationPrincipal oAuth2User: OAuth2User
     ): ResponseEntity<*>{
-        val userID = try {
-            val response = userClient.getUserId(socialType, oAuth2User.name)
-            response.userID
-        }catch (e: FeignException.NotFound){
-            // 회원가입이 되어 있지 않으면 강제 회원 가입
-            userClient.createUser(CreateUserRequest(oAuth2User.name, socialType)).userID
-        }
+        try {
+            val userID = userService.findUserID(socialType, oAuth2User.name)
 
-        return ResponseEntity.ok(tokenService.createAccessAndRefreshToken(userID))
+            return ResponseEntity.ok(tokenService.createAccessAndRefreshToken(userID))
+        }catch (e: StatusRuntimeException){
+            log.error(e.stackTraceToString())
+
+            return ResponseEntity.internalServerError().body(mapOf("message" to "네트워크 에러가 발생했습니다.", code to 500))
+        }
     }
 
     @Operation(
@@ -136,11 +134,5 @@ class AuthController(
         }catch (e: IllegalArgumentException){
             return ResponseEntity.badRequest().body(mapOf("message" to e.message, "code" to 400))
         }
-    }
-
-    @ExceptionHandler(value = [FeignException::class])
-    fun handleFeignException(e: FeignException): ResponseEntity<*>{
-        log.error(e.message, e)
-        return ResponseEntity.internalServerError().body(mapOf("message" to  "유저 서버와 통신 실패", "code" to 500))
     }
 }
