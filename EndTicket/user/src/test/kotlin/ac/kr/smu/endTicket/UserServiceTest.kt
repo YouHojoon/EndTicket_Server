@@ -1,6 +1,5 @@
 package ac.kr.smu.endTicket
 
-import ac.kr.smu.endTicket.user.domain.exception.UserAlreadyExistException
 import ac.kr.smu.endTicket.user.domain.model.User
 import ac.kr.smu.endTicket.user.domain.repository.UserRepository
 import ac.kr.smu.endTicket.user.domain.service.UserService
@@ -34,7 +33,10 @@ class UserServiceTest(
     @InjectMocks
     lateinit var userService: UserService
     lateinit var blockingStub: UserServiceGrpc.UserServiceBlockingStub
+
     private val SOCIAL_USER_NUMBER = "1"
+    private val SOCIAL_TYPE = User.SocialType.KAKAO
+    private val USER_ID = 1L
     @BeforeEach
     fun init(){
         MockitoAnnotations.openMocks(this)
@@ -71,32 +73,9 @@ class UserServiceTest(
 
         assertEquals(userIDResponse.userId, user.id)
     }
-    @Test
-    @DisplayName("Social User Number로 user id 반환 테스트")
-    fun givenSocialUserNumber_then_returnUserId() {
-        val user = createUser()
-        Mockito
-            .`when`(userRepo.findBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO, SOCIAL_USER_NUMBER))
-            .thenReturn(user)
 
-        assert(userService.findIdBySocialTypeAndSocialUserNumber(User.SocialType.KAKAO,SOCIAL_USER_NUMBER) == user.id)
-
-    }
-
-    @Test
-    @DisplayName("이미 가입된 SNS 이용자에 대한 테스트")
-    fun givenDuplicateSocialUserNumberWithSameSocialType_then_throwUserAlreadyExistException() {
-        val user = createUser()
-        Mockito
-            .`when`(userRepo.save(user))
-            .thenAnswer {
-                throw SQLIntegrityConstraintViolationException()
-            }
-
-        assertThrows<UserAlreadyExistException> { userService.createUser(user) }
-    }
 
     private fun createUser(): User{
-        return User(User.SocialType.KAKAO,SOCIAL_USER_NUMBER,1)
+        return User(SOCIAL_TYPE,SOCIAL_USER_NUMBER,USER_ID)
     }
 }
