@@ -2,17 +2,15 @@ package ac.kr.smu.endTicket
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
+import ac.kr.smu.endTicket.auth.domain.service.UserService
 import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.auth.ui.controller.AuthController
 import ac.kr.smu.endTicket.auth.ui.response.CreateTokenResponse
 import ac.kr.smu.endTicket.auth.ui.response.ReissueTokenResponse
 import ac.kr.smu.endTicket.infra.config.SecurityConfig
 import ac.kr.smu.endTicket.infra.OAuth2.OAuth2TokenResponse
-import ac.kr.smu.endTicket.infra.openfeign.CreateUserRequest
-import ac.kr.smu.endTicket.infra.openfeign.UserClient
-import ac.kr.smu.endTicket.infra.openfeign.UserIDResponse
+
 import com.fasterxml.jackson.databind.ObjectMapper
-import feign.FeignException
 import io.jsonwebtoken.UnsupportedJwtException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -37,7 +35,7 @@ class AuthControllerTest @Autowired constructor(
     @MockBean
     private val tokenService: TokenService,
     @MockBean
-    private val userClient: UserClient,
+    private val userService: UserService,
     private val mvc: MockMvc
 ) {
 
@@ -58,10 +56,8 @@ class AuthControllerTest @Autowired constructor(
     @Test
     @DisplayName("사용자 토큰 생성 테스트")
     fun given_user_when_createToken_then_return_accessToken_and_refreshToken(){
-        Mockito
-            .`when`(userClient.getUserId(SocialType.KAKAO, SOCIAL_UESR_NUMBER))
-            .thenReturn(UserIDResponse(USER_ID))
-
+        Mockito.`when`(userService.findUserID(SOCIAL_TYPE, SOCIAL_UESR_NUMBER))
+            .thenReturn(USER_ID)
 
         mvc.perform(
             MockMvcRequestBuilders
@@ -72,38 +68,7 @@ class AuthControllerTest @Autowired constructor(
             .andExpect(MockMvcResultMatchers.jsonPath("refreshToken").value(REFRESH_TOKEN))
     }
 
-    @Test
-    @DisplayName("미가입된 유저 토큰 발급 테스트")
-    fun given_notRegisteredUser_when_createToken_then_registerUser_and_return_accessToken_and_refreshToken(){
-        val request = Mockito.mock(feign.Request::class.java)
-        Mockito
-            .`when`(userClient.getUserId(SOCIAL_TYPE, SOCIAL_UESR_NUMBER))
-            .thenAnswer {
-                throw FeignException.NotFound(
-                    "",
-                    request,
-                    "".toByteArray(),
-                    emptyMap()
-                )
-            }
 
-        val createUserRequest = CreateUserRequest(SOCIAL_UESR_NUMBER,SocialType.KAKAO)
-        Mockito.`when`(userClient.createUser(createUserRequest))
-            .thenReturn(UserIDResponse(USER_ID))
-
-
-        mvc.perform(
-            MockMvcRequestBuilders
-                .post("$BASE_URL/sns?socialType=$SOCIAL_TYPE&code=$AUTHORIZATION_CODE")
-        )
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("accessToken").value(ACCESS_TOKEN))
-            .andExpect(MockMvcResultMatchers.jsonPath("refreshToken").value(REFRESH_TOKEN))
-
-
-        Mockito.verify(userClient, Mockito.times(1))
-            .createUser(createUserRequest)
-    }
 
     @Test
     @DisplayName("토큰 검증 테스트")
@@ -142,7 +107,6 @@ class AuthControllerTest @Autowired constructor(
                 .post("$BASE_URL/validation")
                 .header("Authorization", "Barer ${token.refreshToken}")
         ).andExpect(MockMvcResultMatchers.status().isBadRequest)
-
     }
 
     @Test
