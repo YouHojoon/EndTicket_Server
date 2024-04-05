@@ -1,8 +1,8 @@
-package ac.kr.smu.endTicket.infra.oAuth2.IDToken
+package ac.kr.smu.endTicket.infra.OAuth2.IDToken
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
-import ac.kr.smu.endTicket.infra.oAuth2.IDToken.exception.IDTokenNotVerifyException
-import ac.kr.smu.endTicket.infra.oAuth2.IDToken.exception.JWKParseException
+import ac.kr.smu.endTicket.infra.OAuth2.IDToken.exception.IDTokenNotVerifyException
+import ac.kr.smu.endTicket.infra.OAuth2.IDToken.exception.JWKParseException
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Jwk

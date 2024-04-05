@@ -6,16 +6,13 @@ import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.infra.jwt.JWTAuthenticationErrorHandlerFilter
 
 import ac.kr.smu.endTicket.infra.jwt.JWTAuthenticationFilter
-import ac.kr.smu.endTicket.infra.oAuth2.filter.OAuth2AuthorizationFilter
-import ac.kr.smu.endTicket.infra.oAuth2.filter.OAuth2ErrorHandlerFilter
+import ac.kr.smu.endTicket.infra.OAuth2.filter.OAuth2AuthorizationFilter
+import ac.kr.smu.endTicket.infra.OAuth2.filter.OAuth2ErrorHandlerFilter
 import com.fasterxml.jackson.databind.ObjectMapper
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.web.SecurityFilterChain
@@ -23,9 +20,7 @@ import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter
 import org.springframework.security.web.AuthenticationEntryPoint
-import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import java.nio.charset.CharsetEncoder
 
 @Configuration
 @EnableWebSecurity
