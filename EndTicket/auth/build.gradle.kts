@@ -11,6 +11,8 @@ dependencies{
     implementation("io.jsonwebtoken:jjwt-impl:0.12.5")
     implementation("io.jsonwebtoken:jjwt-jackson:0.12.5")
 
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+
+    implementation("net.devh:grpc-client-spring-boot-starter:3.0.0.RELEASE")
+    implementation(files("../grpc.jar"))
 }
