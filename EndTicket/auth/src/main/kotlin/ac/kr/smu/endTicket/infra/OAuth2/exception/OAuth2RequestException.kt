@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.infra.oAuth2.exception
+package ac.kr.smu.endTicket.infra.OAuth2.exception
 
 /**
  * OAuth 요청이 실패했을 시 발생하는 Exception
