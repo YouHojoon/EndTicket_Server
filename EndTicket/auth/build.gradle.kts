@@ -13,6 +13,7 @@ dependencies{
 
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 
+    implementation("net.devh:grpc-server-spring-boot-starter:3.0.0.RELEASE")
     implementation("net.devh:grpc-client-spring-boot-starter:3.0.0.RELEASE")
     implementation(files("../grpc.jar"))
 }
