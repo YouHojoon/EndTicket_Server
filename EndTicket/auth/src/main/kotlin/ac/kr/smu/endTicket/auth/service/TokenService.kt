@@ -13,6 +13,7 @@ import io.grpc.stub.StreamObserver
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
+import net.devh.boot.grpc.server.service.GrpcService
 import org.springframework.data.redis.core.RedisTemplate
 
 import org.springframework.stereotype.Service
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit
  * @property jwtProperties JWT 토큰 관련 설정
  */
 @Service
+@GrpcService
 class TokenService(
     private val redisTemplate: RedisTemplate<String, String>,
     private val jwtProperties: JWTProperties
@@ -32,7 +34,8 @@ class TokenService(
 
     override fun validationToken(request: AccessToken, responseObserver: StreamObserver<ValidationResponse>) {
         try {
-            val userID = parseUserID(request.token)
+            println(request.token)
+            val userID = parseUserID(request.token.split(" ").last())
             responseObserver.onNext(
                 createValidationResponse(userID,true,200)
             )
