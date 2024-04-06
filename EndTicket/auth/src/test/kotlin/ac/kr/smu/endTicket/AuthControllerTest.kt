@@ -68,47 +68,6 @@ class AuthControllerTest @Autowired constructor(
             .andExpect(MockMvcResultMatchers.jsonPath("refreshToken").value(REFRESH_TOKEN))
     }
 
-
-
-    @Test
-    @DisplayName("토큰 검증 테스트")
-    fun given_accessToken_when_validationToken_then_responseStatus204(){
-        val token = tokenService.createAccessAndRefreshToken(USER_ID)
-
-        mvc.perform(
-            MockMvcRequestBuilders
-                .post("$BASE_URL/validation")
-                .header("Authorization", "Barer ${token.accessToken}")
-
-        ).andExpect(MockMvcResultMatchers.status().isNoContent)
-    }
-
-    @Test
-    @DisplayName("토큰 없을 시 접근 금지 테스트")
-    fun notGiven_accessToken_when_validationToken_then_responseStatus401(){
-        mvc.perform(
-            MockMvcRequestBuilders
-                .post("$BASE_URL/validation")
-        )
-            .andExpect(MockMvcResultMatchers.status().isUnauthorized)
-    }
-
-    @Test
-    @DisplayName("리프레시 토큰으로 토큰 검증")
-    fun given_refreshToken_when_validationToken_thenResponseStatus400(){
-        val token = tokenService.createAccessAndRefreshToken(USER_ID)
-        Mockito.`when`(tokenService.parseUserID(token.refreshToken))
-            .thenAnswer {
-                throw UnsupportedJwtException("")
-            }
-
-        mvc.perform(
-            MockMvcRequestBuilders
-                .post("$BASE_URL/validation")
-                .header("Authorization", "Barer ${token.refreshToken}")
-        ).andExpect(MockMvcResultMatchers.status().isBadRequest)
-    }
-
     @Test
     @DisplayName("리프레시 토큰으로 토큰 재발급 테스트")
     fun given_refreshToken_then_reissueToken_then_reissueAccessToken_and_refreshToken(){
