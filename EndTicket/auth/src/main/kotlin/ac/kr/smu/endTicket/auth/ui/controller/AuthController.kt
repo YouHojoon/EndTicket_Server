@@ -82,7 +82,7 @@ class AuthController(
             ApiResponse(description = "토큰 만료", responseCode = "401")
         ]
     )
-    @PostMapping("/validation")
+    @PostMapping("/validationToken")
     fun validateToken(): ResponseEntity<Void>{
         return ResponseEntity
             .noContent()
