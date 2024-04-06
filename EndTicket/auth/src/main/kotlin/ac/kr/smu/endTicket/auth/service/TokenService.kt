@@ -8,6 +8,7 @@ import ac.kr.smu.endTicket.infra.config.JWTProperties
 import ac.kr.smu.protobuf.AccessToken
 import ac.kr.smu.protobuf.AuthServiceGrpc
 import ac.kr.smu.protobuf.ValidationResponse
+import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
 
 import io.jsonwebtoken.*
@@ -34,40 +35,33 @@ class TokenService(
 
     override fun validationToken(request: AccessToken, responseObserver: StreamObserver<ValidationResponse>) {
         try {
-            val userID = parseUserID(request.token)
+            val userID = parseUserID(request.token.split(" ").last())
             responseObserver.onNext(
                 createValidationResponse(userID,true,200)
             )
-            responseObserver.onCompleted()
         } catch (e: ExpiredJwtException) {
            responseObserver.onNext(
-               createValidationResponse(isValid = false, status = 401)
+               createValidationResponse(isValid = false, status = 401, message = "토큰이 만료됐습니다.")
            )
         }
         catch (e: SignatureException){
             responseObserver.onNext(
-                createValidationResponse(isValid = false, status = 400)
+                createValidationResponse(isValid = false, status = 400, message = "토큰 서명 검증에 실패했습니다.")
             )
         }
         catch (e: UnsupportedJwtException){
             responseObserver.onNext(
-                createValidationResponse(isValid = false, status = 400)
+                createValidationResponse(isValid = false, status = 400, message = "올바르지 않은 토큰입니다.")
+            )
+        }
+        catch (e: StatusRuntimeException){
+            responseObserver.onNext(
+                createValidationResponse(isValid =  false, status = 500, message = e.message)
             )
         }
         responseObserver.onCompleted()
     }
 
-    private fun createValidationResponse(userID: Long? = null, isValid:Boolean, status: Int): ValidationResponse{
-        val response = ValidationResponse
-            .newBuilder()
-            .setIsValid(isValid)
-            .setStatus(status)
-
-        if (userID == null)
-            return response.build()
-
-        return response.setUserId(userID).build()
-    }
 
     /**
      * JWT를 서명하기 위한 key
@@ -179,4 +173,26 @@ class TokenService(
     private fun RedisTemplate<String,String>.setRefreshToken(userID: Long, refreshToken: String){
         this.opsForValue().set(refreshToken,userID.toString(), jwtProperties.refreshTokenExpiration, TimeUnit.MILLISECONDS)
     }
+
+    /**
+     * gRPC를 통해 반환될 응답을 생성하는 메소드
+     * @param userID 토큰에서 파싱한 사용자 ID
+     * @param isValid 검증 여부
+     * @param status 상태, HttpStatusCode와 대응된다.
+     * @param message 에러 발생 시 메시지
+     */
+    private fun createValidationResponse(userID: Long? = null, isValid:Boolean, status: Int, message: String? = null): ValidationResponse{
+        var response = ValidationResponse
+            .newBuilder()
+            .setIsValid(isValid)
+            .setStatus(status)
+
+        if (userID != null)
+            response.setUserID(userID)
+        if (message != null)
+            response.setMessage(message)
+
+        return response.build()
+    }
+
 }

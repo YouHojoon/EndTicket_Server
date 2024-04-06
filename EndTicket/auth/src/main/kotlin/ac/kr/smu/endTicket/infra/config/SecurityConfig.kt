@@ -3,9 +3,6 @@ package ac.kr.smu.endTicket.infra.config
 
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
 import ac.kr.smu.endTicket.auth.service.TokenService
-import ac.kr.smu.endTicket.infra.jwt.JWTAuthenticationErrorHandlerFilter
-
-import ac.kr.smu.endTicket.infra.jwt.JWTAuthenticationFilter
 import ac.kr.smu.endTicket.infra.OAuth2.filter.OAuth2AuthorizationFilter
 import ac.kr.smu.endTicket.infra.OAuth2.filter.OAuth2ErrorHandlerFilter
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -20,7 +17,6 @@ import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter
 import org.springframework.security.web.AuthenticationEntryPoint
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
 @EnableWebSecurity
@@ -57,8 +53,6 @@ class SecurityConfig(
 
             addFilterBefore<OAuth2LoginAuthenticationFilter>(OAuth2AuthorizationFilter(oAuthService))
             addFilterBefore<OAuth2AuthorizationFilter>(OAuth2ErrorHandlerFilter())
-            addFilterBefore<UsernamePasswordAuthenticationFilter>(JWTAuthenticationFilter(tokenService))
-            addFilterBefore<JWTAuthenticationFilter>(JWTAuthenticationErrorHandlerFilter())
         }
 
         return http.build()

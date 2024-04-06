@@ -69,27 +69,6 @@ class AuthController(
         }
     }
 
-    @Operation(
-        summary = "access 토큰 인증",
-        description = "access 토큰을 인증한다.",
-        security = [SecurityRequirement(name = "Bearer Token")],
-        parameters = [Parameter(name = "Authorization", description = "JWT 토큰", `in` = ParameterIn.HEADER)]
-    )
-    @ApiResponses(
-        value = [
-            ApiResponse(description = "인증 성공", responseCode = "204"),
-            ApiResponse(description = "토큰 서명 검증 실패", responseCode = "400"),
-            ApiResponse(description = "토큰 만료", responseCode = "401")
-        ]
-    )
-    @PostMapping("/validationToken")
-    fun validateToken(): ResponseEntity<Void>{
-        return ResponseEntity
-            .noContent()
-            .build()
-    }
-
-
     @Operation(summary = "refresh 토큰을 사용해 토큰 재발급", description = "refresh 토큰을 사용해 access 토큰을 재발급 받는다.<br>만약 refresh 토큰도 일정 기준 시간 아래라면 재발급받는다.")
     @ApiResponses(
         value = [
