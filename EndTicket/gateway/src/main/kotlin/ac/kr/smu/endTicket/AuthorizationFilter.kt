@@ -12,33 +12,23 @@ import reactor.core.publisher.Mono
 
 @Component
 class AuthorizationFilter(
-    private val webClientBuilder: WebClient.Builder
+    private val authService: AuthService,
 ): AbstractGatewayFilterFactory<Any>() {
-    private val AUTHORIZATION_URL = "http://auth/auth/validation"
+
     override fun apply(config: Any): GatewayFilter {
         return GatewayFilter { exchange, chain ->
             val token = exchange.request.headers.getFirst("Authorization")
+                ?: return@GatewayFilter denyRequest(exchange.response, HttpStatus.UNAUTHORIZED, "access 토큰이 없습니다.".toByteArray())
+            val response = authService.validationToken(token)
 
-            webClientBuilder
-                .baseUrl(AUTHORIZATION_URL)
-                .build()
-                .post()
-                .header("Authorization", token)
-                .retrieve()
-                .toBodilessEntity()
-                .flatMap {
-                    chain.filter(exchange)
-                }
-                .onErrorResume {
-                    if (it is WebClientResponseException)
-                       denyRequest(exchange.response, HttpStatus.valueOf(it.statusCode.value()), it.responseBodyAsByteArray)
-                    else
-                        denyRequest(exchange.response, HttpStatus.UNAUTHORIZED, it.message?.toByteArray())
-                }
+            if(response.isValid)
+                chain.filter(exchange)
+            else
+                denyRequest(exchange.response, HttpStatus.valueOf(response.status), response.message.toByteArray())
         }
     }
 
-    private fun denyRequest(response: ServerHttpResponse, status: HttpStatus, body: ByteArray?): Mono<Void>{
+    private fun denyRequest(response: ServerHttpResponse, status: HttpStatus, body: ByteArray? = null): Mono<Void>{
         response.statusCode = status
         response.headers.contentType = MediaType.APPLICATION_JSON
 
