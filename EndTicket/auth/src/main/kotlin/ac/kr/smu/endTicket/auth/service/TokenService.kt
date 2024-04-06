@@ -5,9 +5,14 @@ import ac.kr.smu.endTicket.auth.domain.exception.UserNotFoundException
 import ac.kr.smu.endTicket.auth.ui.response.CreateTokenResponse
 import ac.kr.smu.endTicket.auth.ui.response.ReissueTokenResponse
 import ac.kr.smu.endTicket.infra.config.JWTProperties
+import ac.kr.smu.protobuf.AccessToken
+import ac.kr.smu.protobuf.AuthServiceGrpc
+import ac.kr.smu.protobuf.ValidationResponse
+import io.grpc.stub.StreamObserver
 
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
+import io.jsonwebtoken.security.SignatureException
 import org.springframework.data.redis.core.RedisTemplate
 
 import org.springframework.stereotype.Service
@@ -23,7 +28,45 @@ import java.util.concurrent.TimeUnit
 class TokenService(
     private val redisTemplate: RedisTemplate<String, String>,
     private val jwtProperties: JWTProperties
-) {
+): AuthServiceGrpc.AuthServiceImplBase(){
+
+    override fun validationToken(request: AccessToken, responseObserver: StreamObserver<ValidationResponse>) {
+        try {
+            val userID = parseUserID(request.token)
+            responseObserver.onNext(
+                createValidationResponse(userID,true,200)
+            )
+            responseObserver.onCompleted()
+        } catch (e: ExpiredJwtException) {
+           responseObserver.onNext(
+               createValidationResponse(isValid = false, status = 401)
+           )
+        }
+        catch (e: SignatureException){
+            responseObserver.onNext(
+                createValidationResponse(isValid = false, status = 400)
+            )
+        }
+        catch (e: UnsupportedJwtException){
+            responseObserver.onNext(
+                createValidationResponse(isValid = false, status = 400)
+            )
+        }
+        responseObserver.onCompleted()
+    }
+
+    private fun createValidationResponse(userID: Long? = null, isValid:Boolean, status: Int): ValidationResponse{
+        val response = ValidationResponse
+            .newBuilder()
+            .setIsValid(isValid)
+            .setStatus(status)
+
+        if (userID == null)
+            return response.build()
+
+        return response.setUserId(userID).build()
+    }
+
     /**
      * JWT를 서명하기 위한 key
      */
