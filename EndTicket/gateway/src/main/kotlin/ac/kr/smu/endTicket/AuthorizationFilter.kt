@@ -1,5 +1,7 @@
 package ac.kr.smu.endTicket
 
+import ErrorResponse
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.cloud.gateway.filter.GatewayFilter
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory
 import org.springframework.http.HttpStatus
@@ -18,7 +20,7 @@ class AuthorizationFilter(
     override fun apply(config: Any): GatewayFilter {
         return GatewayFilter { exchange, chain ->
             val token = exchange.request.headers.getFirst("Authorization")
-                ?: return@GatewayFilter denyRequest(exchange.response, HttpStatus.UNAUTHORIZED, "access 토큰이 없습니다.".toByteArray())
+                ?: return@GatewayFilter denyRequest(exchange.response, HttpStatus.UNAUTHORIZED,ErrorResponse(401, "게이트웨이 인증 에러", "access 토큰이 없습니다."))
             val response = authService.validationToken(token)
             val userID = response.userID
             
@@ -28,14 +30,14 @@ class AuthorizationFilter(
             }
 
             else
-                denyRequest(exchange.response, HttpStatus.valueOf(response.status), response.message.toByteArray())
+                denyRequest(exchange.response, HttpStatus.valueOf(response.status), ErrorResponse(response.status, "게이트웨이 인증 에러", response.message))
         }
     }
 
-    private fun denyRequest(response: ServerHttpResponse, status: HttpStatus, body: ByteArray? = null): Mono<Void>{
+    private fun denyRequest(response: ServerHttpResponse, status: HttpStatus, body: ErrorResponse): Mono<Void>{
         response.statusCode = status
         response.headers.contentType = MediaType.APPLICATION_JSON
 
-        return response.writeWith(Mono.just(response.bufferFactory().wrap(body ?: ByteArray(0))))
+        return response.writeWith(Mono.just(response.bufferFactory().wrap(ObjectMapper().writeValueAsBytes(body))))
     }
 }
