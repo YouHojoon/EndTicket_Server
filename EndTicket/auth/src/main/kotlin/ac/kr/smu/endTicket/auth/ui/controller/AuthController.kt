@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.auth.ui.controller
 
+import ErrorResponse
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.domain.service.UserService
 import ac.kr.smu.endTicket.infra.OAuth2.OAuth2User
@@ -56,6 +57,7 @@ class AuthController(
         @Parameter(description = "인증 후 받은 authorization code", example = "d-MKlV0eZz8d6x9upP3Z7mTd8w2nRSHMHORMV01xfAnMhtFN0n6MyGP-LyMKPXOaAAABjiie8OaBPKUF0hG4dQ")
         @RequestParam("code") code: String,
 
+        
         @AuthenticationPrincipal oAuth2User: OAuth2User
     ): ResponseEntity<*>{
         try {
@@ -65,7 +67,9 @@ class AuthController(
         }catch (e: StatusRuntimeException){
             log.error(e.stackTraceToString())
 
-            return ResponseEntity.internalServerError().body(mapOf("message" to "네트워크 에러가 발생했습니다.", code to 500))
+            return ResponseEntity.internalServerError().body(
+                ErrorResponse(500, "user gRPC 에러가 발생", "userID를 조회하는 도중 에러가 발생했습니다.")
+            )
         }
     }
 
@@ -104,14 +108,14 @@ class AuthController(
         )
         @RequestBody body: Map<String, String>
     ): ResponseEntity<*>{
-        val refreshToken = body["refreshToken"] ?: return ResponseEntity.badRequest().body(mapOf("message" to "refresh 토큰이 없습니다.", "code" to 400))
+        val refreshToken = body["refreshToken"] ?: return ResponseEntity.badRequest().body(ErrorResponse(400, "토큰을 재발급하는 과정에서 에러가 발생했습니다.","refresh 토큰이 존재하지 않습니다."))
 
         try {
             val token = tokenService.reissueToken(refreshToken)
 
             return ResponseEntity.ok(token)
         }catch (e: IllegalArgumentException){
-            return ResponseEntity.badRequest().body(mapOf("message" to e.message, "code" to 400))
+            return ResponseEntity.badRequest().body(ErrorResponse(400, "토큰을 재발급하는 과정에서 에러가 발생했습니다.", detail = e.message))
         }
     }
 }

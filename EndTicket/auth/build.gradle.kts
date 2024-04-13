@@ -16,6 +16,7 @@ dependencies{
     implementation("net.devh:grpc-server-spring-boot-starter:3.0.0.RELEASE")
     implementation("net.devh:grpc-client-spring-boot-starter:3.0.0.RELEASE")
     implementation(files("../grpc.jar"))
+    implementation(project(":common"))
 
     testImplementation("io.grpc:grpc-testing:1.62.2")
     testImplementation("io.grpc:grpc-inprocess:1.62.2")

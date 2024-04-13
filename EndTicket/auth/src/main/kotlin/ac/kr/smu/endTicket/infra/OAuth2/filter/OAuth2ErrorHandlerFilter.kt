@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.infra.OAuth2.filter
 
+import ErrorResponse
 import ac.kr.smu.endTicket.infra.OAuth2.IDToken.exception.IDTokenNotVerifyException
 import ac.kr.smu.endTicket.infra.OAuth2.IDToken.exception.JWKParseException
 import ac.kr.smu.endTicket.infra.OAuth2.exception.OAuth2RequestException
@@ -49,7 +50,7 @@ class OAuth2ErrorHandlerFilter: OncePerRequestFilter() {
         response.contentType = MediaType.APPLICATION_JSON_VALUE
         response.characterEncoding = "UTF-8"
         response.status = status.value()
-        val body = mapOf("message" to message, "code" to status.value())
+        val body = ErrorResponse(status.value(), "SNS 인증에 실패했습니다.", message)
         response.writer.write(ObjectMapper().writeValueAsString(body))
     }
 }
