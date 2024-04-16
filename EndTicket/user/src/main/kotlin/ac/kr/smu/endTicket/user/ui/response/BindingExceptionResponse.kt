@@ -14,11 +14,10 @@ class BindingExceptionResponse(
     val field: String?,
     @Schema(description = "에러 코드, 현재는 HttpStatusCode", example = "400")
     code: Int,
-    @Schema(description = "검증에 실패한 객체", example = "registerNicknameRequest")
-    message: String?,
+    objectName: String,
     @Schema(description = "검증에 실패한 사유", example = "닉네임의 길이는 3자에서 8자 이하여야 합니다.")
     detail: String?
-): ErrorResponse(code,message, detail){
+): ErrorResponse(code,"$objectName 바인딩 중에 오류가 발생했습니다.", detail){
     override fun toString(): String {
         return "field: $field ${super.toString()}"
     }

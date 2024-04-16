@@ -78,7 +78,7 @@ class UserController(
             BindingExceptionResponse(
                 field = bindingResult.fieldError?.field,
                 code = 400,
-                message = "${bindingResult.objectName} 바인딩 중에 오류가 발생했습니다.",
+                objectName = bindingResult.objectName,
                 detail = bindingResult.fieldError?.defaultMessage
             )
         )
