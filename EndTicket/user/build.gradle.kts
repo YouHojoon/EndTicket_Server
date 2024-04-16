@@ -7,7 +7,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     implementation(files("../grpc.jar"))
-
+    implementation(project(":common"))
     // https://mvnrepository.com/artifact/net.devh/grpc-server-spring-boot-starter
     implementation("net.devh:grpc-server-spring-boot-starter:3.0.0.RELEASE")
 
