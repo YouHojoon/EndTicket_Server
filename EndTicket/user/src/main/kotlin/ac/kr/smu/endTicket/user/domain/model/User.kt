@@ -34,10 +34,16 @@ class User(
     @Column(nullable = false, insertable = false, updatable = false)
     val id: Long = 0L,
 
-    @Column(updatable = false)
-    val nickname: String? = null
+    nickname: String? = null
 )
 {
+    @Column
+    var nickname: String?
+        private set
+    init {
+        this.nickname = nickname
+    }
+
     enum class SocialType {
         KAKAO, GOOGLE, APPLE
     }
@@ -46,5 +52,20 @@ class User(
         val user = (other as? User) ?: return false
 
         return user.id == other.id
+    }
+
+    /**
+     * 닉네임을 변경하는 메소드
+     * @param nickname 변경할 닉네임
+     * @throws IllegalStateException 닉네임이 null이 아닐 떄
+     */
+    @Throws(IllegalStateException::class)
+    fun updateNickname(nickname: String){
+        check(this.nickname == null){"닉네임을 변경할 수 없습니다."}
+        this.nickname = nickname
+    }
+
+    override fun toString(): String {
+        return  "id: $id, nickname: $nickname, $socialType: $socialType"
     }
 }

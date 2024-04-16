@@ -21,6 +21,7 @@ import java.sql.SQLIntegrityConstraintViolationException
 import kotlin.test.Test
 import io.grpc.testing.GrpcCleanupRule
 import org.junit.Rule
+import java.util.*
 import kotlin.test.assertEquals
 
 @ExtendWith(MockitoExtension::class)
@@ -74,7 +75,32 @@ class UserServiceTest(
         assertEquals(userIDResponse.userId, user.id)
     }
 
+    @Test
+    @DisplayName("닉네임 등록 테스트")
+    fun given_nickname_and_userID_when_updateNickname_then_updateNicknameOfUser(){
+        val nickname = "닉네임"
+        Mockito.
+                `when`(userRepo.findById(USER_ID))
+                .thenReturn(Optional.of(createUser()))
 
+        userService.registerNickname(USER_ID, nickname)
+        assertEquals(userRepo.findById(USER_ID).get().nickname, nickname)
+
+    }
+
+    @Test
+    @DisplayName("닉네임이 등록되어 있을 시 닉네임 변경 테스트")
+    fun given_nickname_and_userID_of_user_whoseNicknameIsNotNull_when_updateNickname_then_throw_IllegalStateException(){
+        val nickname = "닉네임"
+        Mockito
+            .`when`(userRepo.findById(USER_ID))
+            .thenReturn(Optional.of(User(SOCIAL_TYPE, SOCIAL_USER_NUMBER, USER_ID, nickname)))
+
+        assertThrows<IllegalStateException> {
+            userService.registerNickname(USER_ID, nickname)
+        }
+    }
+    @Test
     private fun createUser(): User{
         return User(SOCIAL_TYPE,SOCIAL_USER_NUMBER,USER_ID)
     }

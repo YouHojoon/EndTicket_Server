@@ -10,11 +10,11 @@ import net.devh.boot.grpc.server.service.GrpcService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.sql.SQLIntegrityConstraintViolationException
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * 사용자 관련 서비스 제공 클래스
  * @property userRepo 의존성 주입으로 얻는 user 저장소
- * @
  */
 @Service
 @GrpcService
@@ -39,5 +39,16 @@ class UserService(
     }
 
 
+    /**
+     * 사용자의 닉네임 등록
+     * @param userID 닉네임을 등록할 사용자
+     * @param nickname 등록할 닉네임
+     */
+    @Transactional
+    fun registerNickname(userID: Long, nickname: String){
+        val user = userRepo.findById(userID).getOrNull()
+        checkNotNull(user){"해당 userID의 사용자를 찾을 수 없습니다."}
 
+        user.updateNickname(nickname)
+    }
 }
