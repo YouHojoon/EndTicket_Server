@@ -12,9 +12,7 @@ dependencies{
     implementation("io.jsonwebtoken:jjwt-jackson:0.12.5")
 
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
-
-    implementation("net.devh:grpc-server-spring-boot-starter:3.0.0.RELEASE")
-    implementation("net.devh:grpc-client-spring-boot-starter:3.0.0.RELEASE")
+    implementation ("net.devh:grpc-spring-boot-starter:${property("grpcStarterVersion")}")
     implementation(files("../grpc.jar"))
     implementation(project(":common"))
 
