@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindException
@@ -27,9 +28,10 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/users")
 @Tag(name = "/users")
-class UserController(
+class  UserController(
     private val service: UserService
 ) {
+    private val log = LoggerFactory.getLogger(UserController::class.java)
     @PostMapping("nickname")
     @Operation(summary = "닉네임을 등록하는 메소드", description = "닉네임이 등록되지 않은 사용자의 닉네임을 등록합니다.", security = [SecurityRequirement(name = "Access token")])
     @ApiResponses(
@@ -66,6 +68,7 @@ class UserController(
         try {
             service.registerNickname(userID,request.nickname)
         }catch (e: IllegalStateException){
+            log.info("userID: $userID", e)
             return ResponseEntity(ErrorResponse(404, "닉네임 등록에 에러가 발생했습니다.", e.message), HttpStatus.NOT_FOUND)
         }
 
