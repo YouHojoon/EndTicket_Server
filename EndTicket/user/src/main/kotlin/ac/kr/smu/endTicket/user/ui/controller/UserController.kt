@@ -77,6 +77,8 @@ class  UserController(
 
     @ExceptionHandler(BindException::class)
     fun handleBindingException(e: BindException, bindingResult: BindingResult): ResponseEntity<*>{
+        log.info("field: ${bindingResult.fieldError?.field}, objectName: ${bindingResult.objectName}, rejectedValue: ${bindingResult.fieldError?.rejectedValue}")
+
         return ResponseEntity.badRequest().body(
             BindingExceptionResponse(
                 field = bindingResult.fieldError?.field,
