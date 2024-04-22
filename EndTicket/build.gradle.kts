@@ -13,7 +13,7 @@ allprojects{
     group = "ac.kr.smu"
     version = "0.0.1-SNAPSHOT"
     extra["springCloudVersion"] = "2022.0.4"
-
+    extra["grpcStarterVersion"] = "2.15.0.RELEASE"
     apply(plugin = "org.jetbrains.kotlin.plugin.spring")
     apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
     apply(plugin = "org.jetbrains.kotlin.jvm")
@@ -50,6 +50,12 @@ subprojects{
 
         // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
         implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+        // https://mvnrepository.com/artifact/io.zipkin.brave/brave-instrumentation-grpc
+        implementation("io.micrometer:micrometer-tracing-bridge-brave")
+        implementation("io.zipkin.reporter2:zipkin-reporter-brave")
+
+
+
     }
 
     tasks.withType<KotlinCompile> {
