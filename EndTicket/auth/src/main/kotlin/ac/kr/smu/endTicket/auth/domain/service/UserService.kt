@@ -4,6 +4,7 @@ package ac.kr.smu.endTicket.auth.domain.service
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.protobuf.FindUserIDRequest
 import ac.kr.smu.protobuf.UserServiceGrpc
+import io.micrometer.observation.annotation.Observed
 import net.devh.boot.grpc.client.inject.GrpcClient
 import org.springframework.stereotype.Service
 
@@ -21,6 +22,7 @@ class UserService{
      * @param socialUserNumber 해당 SNS의 사용자 번호
      * @return 사용자 번호
      */
+
     fun findUserID(socialType: SocialType, socialUserNumber: String): Long{
         return userStub.findUserID(
             FindUserIDRequest.newBuilder()
@@ -29,5 +31,4 @@ class UserService{
                 .build()
         ).userId
     }
-
 }

@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.reactive.function.client.awaitBody
 import java.security.KeyFactory
 import java.security.PublicKey
@@ -45,7 +46,7 @@ class IDTokenService(
         try {
             verifyIDToken(socialType,idToken, payload, key)
         }catch (e:IllegalArgumentException){
-            throw IDTokenNotVerifyException(e.message)
+            throw IDTokenNotVerifyException(socialType,idToken ,e.message)
         }
 
         return payload.sub
@@ -121,7 +122,7 @@ class IDTokenService(
             .onStatus({ it.isError }) {
                 it.createException()
                     .map {
-                        JWKParseException(it.getResponseBodyAs(Map::class.java).toString(), it)
+                        JWKParseException(provider.clientName, it.getResponseBodyAs(Map::class.java).toString(), it)
                     }
             }
             .awaitBody<String>()

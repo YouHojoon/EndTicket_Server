@@ -1,0 +1,15 @@
+package ac.kr.smu.endTicket.infra.config
+
+import brave.Tracing
+import net.devh.boot.grpc.client.interceptor.GrpcGlobalClientInterceptor
+import org.springframework.context.annotation.Configuration
+import brave.grpc.GrpcTracing
+import io.grpc.ClientInterceptor
+
+@Configuration(proxyBeanMethods = false)
+class GrpcTracingConfig {
+    @GrpcGlobalClientInterceptor
+    fun tracingInterceptor(tracing: Tracing): ClientInterceptor{
+        return GrpcTracing.create(tracing).newClientInterceptor()
+    }
+}

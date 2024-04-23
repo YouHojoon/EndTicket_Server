@@ -35,15 +35,14 @@ class OAuth2AuthorizationFilter(
             return
         }
 
-        val socialTypeString = request.getParameter(SOCIAL_TYPE_URI_VARIABLE_NAME) ?: null
-        check(socialTypeString != null){"SocialType이 없습니다."}
-        check(socialTypeString.isNotBlank()){"SocialType이 비어있습니다."}
+        val socialTypeString = request.getParameter(SOCIAL_TYPE_URI_VARIABLE_NAME) ?: ""
+        require(socialTypeString.isNotBlank()){"SocialType이 비어있습니다."}
 
         val socialType = converter.convert(socialTypeString)
-        checkNotNull(socialType){"지원하지 않는 SNS입니다."}
+        requireNotNull(socialType){"지원하지 않는 SNS입니다."}
 
         val code = request.getParameter(CODE_URI_VARIABLE_NAME) ?: ""
-        check(code.isNotBlank()){"code가 비어있습니다."}
+        require(code.isNotBlank()){"code가 비어있습니다."}
 
         val oAuth2TokenResponse = oAuthService.oAuth(socialType, code)
         val socialUserNumber = oAuthService.parseSocialUserNumber(socialType, oAuth2TokenResponse.idToken)

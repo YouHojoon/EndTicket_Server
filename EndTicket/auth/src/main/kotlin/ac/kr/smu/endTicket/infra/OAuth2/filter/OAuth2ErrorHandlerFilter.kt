@@ -17,7 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter
  * OAuth2 인증 과정에서 발생한 에러를 처리하는 Filter
  */
 class OAuth2ErrorHandlerFilter: OncePerRequestFilter() {
-    val log = LoggerFactory.getLogger(this::class.java)
+    private val log = LoggerFactory.getLogger(this::class.java)
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -26,16 +26,16 @@ class OAuth2ErrorHandlerFilter: OncePerRequestFilter() {
         try {
             filterChain.doFilter(request,response)
         }catch (e: OAuth2RequestException){
-            log.error("${e.stackTraceToString()}")
+            log.error("{parameters: ${request.parameterMap}, stackTrace: ${e.stackTraceToString()}}", e)
             sendResponse(response, HttpStatus.INTERNAL_SERVER_ERROR)
         }catch (e: IDTokenNotVerifyException){
-            log.error("${e.stackTraceToString()}")
+            log.info("{idToken: ${e.idToken}, message: ${e.message}}", e)
             sendResponse(response, HttpStatus.BAD_REQUEST)
         }catch (e: JWKParseException){
-            log.error("${e.stackTraceToString()}")
+            log.error("clientName: ${e.clientName}, message: ${e.message}",e)
             sendResponse(response, HttpStatus.INTERNAL_SERVER_ERROR)
-        }catch (e: IllegalStateException){
-            log.error("${e.stackTraceToString()}")
+        }catch (e: IllegalArgumentException){
+            log.info("{message: ${e.message}}",e)
             sendResponse(response, HttpStatus.BAD_REQUEST, message = e.message ?: "")
         }
     }
