@@ -2,8 +2,10 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-gateway")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("net.devh:grpc-client-spring-boot-starter:3.0.0.RELEASE")
+    implementation("net.devh:grpc-client-spring-boot-starter:${property("grpcStarterVersion")}"){
+        exclude("io.grpc", "grpc-netty-shaded")
+    }
     implementation(files("../grpc.jar"))
-    implementation("io.grpc:grpc-netty:1.60.1")
+    implementation("io.grpc:grpc-netty:1.58.0")
     implementation(project(":common"))
 }
