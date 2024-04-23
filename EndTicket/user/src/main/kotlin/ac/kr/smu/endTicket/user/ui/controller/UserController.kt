@@ -68,7 +68,7 @@ class  UserController(
         try {
             service.registerNickname(userID,request.nickname)
         }catch (e: IllegalStateException){
-            log.info("userID: $userID", e)
+            log.info("{userID: $userID}", e)
             return ResponseEntity(ErrorResponse(404, "닉네임 등록에 에러가 발생했습니다.", e.message), HttpStatus.NOT_FOUND)
         }
 
@@ -77,7 +77,7 @@ class  UserController(
 
     @ExceptionHandler(BindException::class)
     fun handleBindingException(e: BindException, bindingResult: BindingResult): ResponseEntity<*>{
-        log.info("field: ${bindingResult.fieldError?.field}, objectName: ${bindingResult.objectName}, rejectedValue: ${bindingResult.fieldError?.rejectedValue}")
+        log.info("{field: ${bindingResult.fieldError?.field}, objectName: ${bindingResult.objectName}, rejectedValue: ${bindingResult.fieldError?.rejectedValue}}", e)
 
         return ResponseEntity.badRequest().body(
             BindingExceptionResponse(

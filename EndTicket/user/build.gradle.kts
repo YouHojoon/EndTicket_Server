@@ -10,7 +10,7 @@ dependencies {
     implementation(project(":common"))
     // https://mvnrepository.com/artifact/net.devh/grpc-server-spring-boot-starter
     implementation("net.devh:grpc-server-spring-boot-starter:${property("grpcStarterVersion")}")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
+
     testImplementation("io.grpc:grpc-testing:1.62.2")
     testImplementation("io.grpc:grpc-inprocess:1.62.2")
 
