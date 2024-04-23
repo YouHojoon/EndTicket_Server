@@ -1,6 +1,7 @@
 package ac.kr.smu.endTicket.infra.config
 
 
+import ErrorResponse
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
 import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.infra.OAuth2.filter.OAuth2AuthorizationFilter
@@ -21,8 +22,7 @@ import org.springframework.security.web.AuthenticationEntryPoint
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val oAuthService: OAuthService,
-    private val tokenService: TokenService
+    private val oAuthService: OAuthService
 ) {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain{
@@ -43,11 +43,17 @@ class SecurityConfig(
             }
 
             exceptionHandling {
-                authenticationEntryPoint = AuthenticationEntryPoint { _, response, _ ->
+                authenticationEntryPoint = AuthenticationEntryPoint { _, response, e ->
                     response.contentType = MediaType.APPLICATION_JSON_VALUE
                     response.status = HttpStatus.UNAUTHORIZED.value()
                     response.characterEncoding = "UTF-8"
-                    response.writer.write(ObjectMapper().writeValueAsString(mapOf("status" to HttpStatus.UNAUTHORIZED.value(), "message" to "인증에 실패했습니다.")))
+                    response.writer.write(ObjectMapper().writeValueAsString(
+                        ErrorResponse(
+                            code = HttpStatus.UNAUTHORIZED.value(),
+                            message = "인증에 실패했습니다.",
+                            detail = e.message
+                        )
+                    ))
                 }
             }
 

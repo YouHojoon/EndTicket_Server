@@ -65,10 +65,10 @@ class AuthController(
 
             return ResponseEntity.ok(tokenService.createAccessAndRefreshToken(userID))
         }catch (e: StatusRuntimeException){
-            log.error(e.stackTraceToString())
+            log.error("{socialType: $socialType, socialUserID: ${oAuth2User.name}, stackTrace: ${e.stackTraceToString()}}",e)
 
             return ResponseEntity.internalServerError().body(
-                ErrorResponse(500, "user gRPC 에러가 발생", "userID를 조회하는 도중 에러가 발생했습니다.")
+                ErrorResponse(500, "userID를 조회하는 과정에서 에러가 발생했습니다.", e.message)
             )
         }
     }
@@ -115,6 +115,7 @@ class AuthController(
 
             return ResponseEntity.ok(token)
         }catch (e: IllegalArgumentException){
+            log.info("{refreshToken: $refreshToken, message: ${e.message}}", e)
             return ResponseEntity.badRequest().body(ErrorResponse(400, "토큰을 재발급하는 과정에서 에러가 발생했습니다.", detail = e.message))
         }
     }
