@@ -22,7 +22,7 @@ class AuthorizationFilter(
             val token = exchange.request.headers.getFirst("Authorization")
                 ?: return@GatewayFilter denyRequest(exchange.response, HttpStatus.UNAUTHORIZED,ErrorResponse(401, "게이트웨이 인증 에러", "access 토큰이 없습니다."))
 
-            val response = authService.validationAccessToken(token)
+            val response = authService.validateAccessToken(token)
             val userID = response.userID
             
             if(userID != null) {
