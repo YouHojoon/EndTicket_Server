@@ -34,6 +34,10 @@ class TokenService {
         MDC.put("accessToken", token)
         log.error(message)
         MDC.clear()
-        return ValidateAccessTokenResponse.newBuilder().setStatus(HttpStatus.SERVICE_UNAVAILABLE.value()).setMessage(message).build()
+        return ValidateAccessTokenResponse
+            .newBuilder()
+            .setUserID(-1)
+            .setStatus(HttpStatus.SERVICE_UNAVAILABLE.value())
+            .setMessage(message).build()
     }
 }
