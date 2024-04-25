@@ -2,18 +2,17 @@ syntax = "proto3";
 
 option java_multiple_files = true;
 option java_package = "ac.kr.smu.protobuf";
-option java_outer_classname = "AuthServiceProto";
+option java_outer_classname = "TokenServiceProto";
 
-service AuthService{
-  rpc ValidationToken (AccessToken) returns (ValidationResponse);
+service TokenService{
+  rpc ValidateAccessToken (AccessToken) returns (ValidateAccessTokenResponse);
 }
 
 message AccessToken{
   string token = 1;
 }
 
-message ValidationResponse{
-  bool is_valid = 1;
+message ValidateAccessTokenResponse{
   int64 user_iD = 2;
   uint32 status = 3;
   string message = 4;
