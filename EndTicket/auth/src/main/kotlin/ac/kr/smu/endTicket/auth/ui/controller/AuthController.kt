@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -60,17 +61,16 @@ class AuthController(
         
         @AuthenticationPrincipal oAuth2User: OAuth2User
     ): ResponseEntity<*>{
-        try {
-            val userID = userService.findUserID(socialType, oAuth2User.name)
+        val userID = userService.findUserID(socialType, oAuth2User.name)
 
-            return ResponseEntity.ok(tokenService.createAccessAndRefreshToken(userID))
-        }catch (e: StatusRuntimeException){
-            log.error("{socialType: $socialType, socialUserID: ${oAuth2User.name}, stackTrace: ${e.stackTraceToString()}}",e)
+        if (userID == -1L)
+            return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(ErrorResponse(503, "토큰을 발급하는 과정에서 에러가 발생했습니다.", "user서버와 통신에 실패했습니다"))
 
-            return ResponseEntity.internalServerError().body(
-                ErrorResponse(500, "userID를 조회하는 과정에서 에러가 발생했습니다.", e.message)
-            )
-        }
+
+        return ResponseEntity.ok(tokenService.createAccessAndRefreshToken(userID))
+
     }
 
     @Operation(summary = "refresh 토큰을 사용해 토큰 재발급", description = "refresh 토큰을 사용해 access 토큰을 재발급 받는다.<br>만약 refresh 토큰도 일정 기준 시간 아래라면 재발급받는다.")
@@ -109,7 +109,6 @@ class AuthController(
         @RequestBody body: Map<String, String>
     ): ResponseEntity<*>{
         val refreshToken = body["refreshToken"] ?: return ResponseEntity.badRequest().body(ErrorResponse(400, "토큰을 재발급하는 과정에서 에러가 발생했습니다.","refresh 토큰이 존재하지 않습니다."))
-
         try {
             val token = tokenService.reissueToken(refreshToken)
 

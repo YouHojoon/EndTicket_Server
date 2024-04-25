@@ -44,6 +44,9 @@ subprojects{
         implementation("org.springframework.boot:spring-boot-starter-actuator")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         runtimeOnly("com.mysql:mysql-connector-j")
+        implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")
+        implementation("org.springframework.boot:spring-boot-starter-aop")
+
 
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         testImplementation("org.springframework.security:spring-security-test")
