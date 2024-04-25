@@ -5,11 +5,9 @@ import ac.kr.smu.endTicket.auth.domain.exception.UserNotFoundException
 import ac.kr.smu.endTicket.auth.ui.response.CreateTokenResponse
 import ac.kr.smu.endTicket.auth.ui.response.ReissueTokenResponse
 import ac.kr.smu.endTicket.infra.config.JWTProperties
-import ac.kr.smu.protobuf.AccessToken
-import ac.kr.smu.protobuf.TokenServiceGrpc
+import ac.kr.smu.protobuf.*
+import com.google.protobuf.Int64Value
 
-import ac.kr.smu.protobuf.TokenServiceProto
-import ac.kr.smu.protobuf.ValidateAccessTokenResponse
 import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
 
@@ -197,8 +195,7 @@ class TokenService(
             .newBuilder()
             .setStatus(status)
 
-        if (userID != null)
-            response.setUserID(userID)
+        response.setUserID(userID ?: -1)
         if (message != null)
             response.setMessage(message)
 

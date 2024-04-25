@@ -1,10 +1,11 @@
 package ac.kr.smu.endTicket
 
+import ac.kr.smu.endTicket.auth.domain.service.UserService
 import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.infra.config.JWTProperties
 import ac.kr.smu.protobuf.AccessToken
-import ac.kr.smu.protobuf.AuthServiceGrpc
-import ac.kr.smu.protobuf.AuthServiceGrpc.AuthServiceBlockingStub
+import ac.kr.smu.protobuf.TokenServiceGrpc
+import ac.kr.smu.protobuf.TokenServiceGrpc.TokenServiceBlockingStub
 import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.inprocess.InProcessServerBuilder
 import io.grpc.testing.GrpcCleanupRule
@@ -22,11 +23,9 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import org.springframework.test.context.ActiveProfiles
-import kotlin.test.BeforeTest
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.*
 
-@SpringBootTest
+@SpringBootTest()
 @ActiveProfiles("test")
 @EnableConfigurationProperties(JWTProperties::class)
 class TokenServiceTest @Autowired constructor(
@@ -34,11 +33,14 @@ class TokenServiceTest @Autowired constructor(
     private val ops: ValueOperations<String,String>,
     @MockBean
     private val redisTemplate: RedisTemplate<String,String>,
+    @MockBean
+    private val userService:UserService,
+
     private val service: TokenService
 ){
     @Rule
     private val cleanupRule: GrpcCleanupRule = GrpcCleanupRule()
-    private lateinit var stub: AuthServiceBlockingStub
+    private lateinit var stub: TokenServiceBlockingStub
     private val USER_ID = 1L
 
     @BeforeTest
@@ -49,7 +51,7 @@ class TokenServiceTest @Autowired constructor(
                 .directExecutor().addService(service)
                 .build().start()
         )
-        stub = AuthServiceGrpc.newBlockingStub(
+        stub = TokenServiceGrpc.newBlockingStub(
             cleanupRule.register(
             InProcessChannelBuilder.forName(server).directExecutor().build()
         ))
@@ -64,25 +66,27 @@ class TokenServiceTest @Autowired constructor(
     fun given_accessToken_when_validationToken_then_returnResponse(){
         val createToken = service.createAccessAndRefreshToken(USER_ID)
 
-        val response = stub.validationToken(
+        val response = stub.validateAccessToken(
             AccessToken.newBuilder()
                 .setToken(createToken.accessToken)
                 .build()
         )
 
-        assertTrue(response.isValid && response.userID == USER_ID)
+        assertNotNull(response.userID)
+        assertEquals(response.userID, USER_ID)
     }
     @Test
     @DisplayName("grpc 리프레시로 토큰 검증 테스트")
     fun given_refreshToken_when_validationToken_then_returnResponseOfStatus400(){
         val createTokenResponse = service.createAccessAndRefreshToken(USER_ID)
-        val response = stub.validationToken(
+        val response = stub.validateAccessToken(
             AccessToken.newBuilder()
                 .setToken(createTokenResponse.refreshToken)
                 .build()
         )
 
-        assertTrue(!response.isValid && response.status == 400)
+        assertEquals(response.userID, -1)
+        assertEquals(response.status, 400)
     }
     @Test
     @DisplayName("정상 유저 토큰 발급 테스트")
