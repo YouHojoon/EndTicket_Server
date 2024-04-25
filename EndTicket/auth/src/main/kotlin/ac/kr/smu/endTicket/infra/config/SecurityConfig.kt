@@ -34,11 +34,13 @@ class SecurityConfig(
             }
 
             authorizeRequests {
+                authorize("/actuator/**", permitAll)
                 authorize("/docs/**", permitAll)
                 authorize("/swagger-ui/**",permitAll)
                 authorize("/api-docs/**",permitAll)
                 authorize("/oauth/**",permitAll)
                 authorize("/auth/reissueToken", permitAll)
+
                 authorize(anyRequest, authenticated)
             }
 

@@ -4,8 +4,13 @@ package ac.kr.smu.endTicket.auth.domain.service
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.protobuf.FindUserIDRequest
 import ac.kr.smu.protobuf.UserServiceGrpc
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter
 import io.micrometer.observation.annotation.Observed
 import net.devh.boot.grpc.client.inject.GrpcClient
+import org.slf4j.LoggerFactory
+import org.slf4j.MDC
 import org.springframework.stereotype.Service
 
 /**
@@ -15,6 +20,7 @@ import org.springframework.stereotype.Service
 class UserService{
     @GrpcClient("user")
     private lateinit var userStub: UserServiceGrpc.UserServiceBlockingStub
+    private val log = LoggerFactory.getLogger(UserService::class.java)
 
     /**
      * 사용자 번호를 반환하는 메소드, 만약 가입이 되어 있지 않다면 가입된다.
@@ -23,6 +29,7 @@ class UserService{
      * @return 사용자 번호
      */
 
+    @CircuitBreaker(name = "find-userID", fallbackMethod = "fallbackFindUserID")
     fun findUserID(socialType: SocialType, socialUserNumber: String): Long{
         return userStub.findUserID(
             FindUserIDRequest.newBuilder()
@@ -30,5 +37,20 @@ class UserService{
                 .setSocialUserNumber(socialUserNumber)
                 .build()
         ).userId
+    }
+
+    /**
+     * findUserID의 fallback 메소드
+     * @param socialType 실패한 사용의 SNS 종류
+     * @param socialUserNumber 실패한 사용자의 SNS 사용자 번호
+     * @param e 발생한 에러
+     * @return -1 반환
+     */
+    private fun fallbackFindUserID(socialType: SocialType, socialUserNumber: String, e: Exception): Long{
+        MDC.put("socialType", socialType.toString())
+        MDC.put("socialUserNumber", socialUserNumber)
+        log.error("user 서버에 userID 요청 실패",e)
+        MDC.clear()
+        return -1
     }
 }
