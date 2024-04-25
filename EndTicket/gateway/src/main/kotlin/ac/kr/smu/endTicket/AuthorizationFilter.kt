@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono
 
 @Component
 class AuthorizationFilter(
-    private val authService: AuthService,
+    private val tokenService: TokenService,
 ): AbstractGatewayFilterFactory<Any>() {
     private val USER_ID_HEADER_NAME = "User-ID"
     override fun apply(config: Any): GatewayFilter {
@@ -22,7 +22,7 @@ class AuthorizationFilter(
             val token = exchange.request.headers.getFirst("Authorization")
                 ?: return@GatewayFilter denyRequest(exchange.response, HttpStatus.UNAUTHORIZED,ErrorResponse(401, "게이트웨이 인증 에러", "access 토큰이 없습니다."))
 
-            val response = authService.validateAccessToken(token)
+            val response = tokenService.validateAccessToken(token)
             val userID = response.userID
             
             if(userID != null) {
