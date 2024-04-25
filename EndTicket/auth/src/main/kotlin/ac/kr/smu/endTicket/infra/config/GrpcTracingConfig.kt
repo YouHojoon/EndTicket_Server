@@ -5,7 +5,9 @@ import net.devh.boot.grpc.client.interceptor.GrpcGlobalClientInterceptor
 import org.springframework.context.annotation.Configuration
 import brave.grpc.GrpcTracing
 import io.grpc.ClientInterceptor
+import org.springframework.context.annotation.Profile
 
+@Profile("!test")
 @Configuration(proxyBeanMethods = false)
 class GrpcTracingConfig {
     @GrpcGlobalClientInterceptor
