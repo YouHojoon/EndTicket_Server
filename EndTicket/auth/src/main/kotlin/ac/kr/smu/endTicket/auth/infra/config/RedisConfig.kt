@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.infra.config
+package ac.kr.smu.endTicket.auth.infra.config
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean

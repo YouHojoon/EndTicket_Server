@@ -7,8 +7,8 @@ import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.auth.ui.controller.AuthController
 import ac.kr.smu.endTicket.auth.ui.response.CreateTokenResponse
 import ac.kr.smu.endTicket.auth.ui.response.ReissueTokenResponse
-import ac.kr.smu.endTicket.infra.config.SecurityConfig
-import ac.kr.smu.endTicket.infra.OAuth2.OAuth2TokenResponse
+import ac.kr.smu.endTicket.auth.infra.config.SecurityConfig
+import ac.kr.smu.endTicket.auth.infra.OAuth2.OAuth2TokenResponse
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.UnsupportedJwtException

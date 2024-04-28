@@ -1,23 +1,19 @@
 package ac.kr.smu.endTicket.auth.ui.controller
 
-import ErrorResponse
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.domain.service.UserService
-import ac.kr.smu.endTicket.infra.OAuth2.OAuth2User
+import ac.kr.smu.endTicket.auth.infra.OAuth2.OAuth2User
 import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.auth.ui.response.CreateTokenResponse
 import ac.kr.smu.endTicket.auth.ui.response.ReissueTokenResponse
-import io.grpc.StatusRuntimeException
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.StringToClassMapItem
-import io.swagger.v3.oas.annotations.enums.ParameterIn
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.media.SchemaProperty
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
-import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 
@@ -28,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import response.ExceptionResponse
 
 
 @RequestMapping("/auth")
@@ -66,7 +63,7 @@ class AuthController(
         if (userID == -1L)
             return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(ErrorResponse(503, "토큰을 발급하는 과정에서 에러가 발생했습니다.", "user서버와 통신에 실패했습니다"))
+                .body(ExceptionResponse(503, "토큰을 발급하는 과정에서 에러가 발생했습니다.", "user서버와 통신에 실패했습니다"))
 
 
         return ResponseEntity.ok(tokenService.createAccessAndRefreshToken(userID))
@@ -108,14 +105,14 @@ class AuthController(
         )
         @RequestBody body: Map<String, String>
     ): ResponseEntity<*>{
-        val refreshToken = body["refreshToken"] ?: return ResponseEntity.badRequest().body(ErrorResponse(400, "토큰을 재발급하는 과정에서 에러가 발생했습니다.","refresh 토큰이 존재하지 않습니다."))
+        val refreshToken = body["refreshToken"] ?: return ResponseEntity.badRequest().body(ExceptionResponse(400, "토큰을 재발급하는 과정에서 에러가 발생했습니다.","refresh 토큰이 존재하지 않습니다."))
         try {
             val token = tokenService.reissueToken(refreshToken)
 
             return ResponseEntity.ok(token)
         }catch (e: IllegalArgumentException){
             log.info("{refreshToken: $refreshToken, message: ${e.message}}", e)
-            return ResponseEntity.badRequest().body(ErrorResponse(400, "토큰을 재발급하는 과정에서 에러가 발생했습니다.", detail = e.message))
+            return ResponseEntity.badRequest().body(ExceptionResponse(400, "토큰을 재발급하는 과정에서 에러가 발생했습니다.", detail = e.message))
         }
     }
 }

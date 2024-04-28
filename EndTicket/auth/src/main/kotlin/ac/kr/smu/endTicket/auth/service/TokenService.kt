@@ -4,7 +4,7 @@ import ac.kr.smu.endTicket.auth.domain.exception.UserNotFoundException
 
 import ac.kr.smu.endTicket.auth.ui.response.CreateTokenResponse
 import ac.kr.smu.endTicket.auth.ui.response.ReissueTokenResponse
-import ac.kr.smu.endTicket.infra.config.JWTProperties
+import ac.kr.smu.endTicket.auth.infra.config.JWTProperties
 import ac.kr.smu.protobuf.*
 import com.google.protobuf.Int64Value
 

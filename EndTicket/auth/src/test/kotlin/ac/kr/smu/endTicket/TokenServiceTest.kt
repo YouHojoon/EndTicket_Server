@@ -2,7 +2,7 @@ package ac.kr.smu.endTicket
 
 import ac.kr.smu.endTicket.auth.domain.service.UserService
 import ac.kr.smu.endTicket.auth.service.TokenService
-import ac.kr.smu.endTicket.infra.config.JWTProperties
+import ac.kr.smu.endTicket.auth.infra.config.JWTProperties
 import ac.kr.smu.protobuf.AccessToken
 import ac.kr.smu.protobuf.TokenServiceGrpc
 import ac.kr.smu.protobuf.TokenServiceGrpc.TokenServiceBlockingStub

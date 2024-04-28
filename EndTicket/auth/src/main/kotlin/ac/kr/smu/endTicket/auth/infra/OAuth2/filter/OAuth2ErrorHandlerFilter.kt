@@ -1,9 +1,8 @@
-package ac.kr.smu.endTicket.infra.OAuth2.filter
+package ac.kr.smu.endTicket.auth.infra.OAuth2.filter
 
-import ErrorResponse
-import ac.kr.smu.endTicket.infra.OAuth2.IDToken.exception.IDTokenNotVerifyException
-import ac.kr.smu.endTicket.infra.OAuth2.IDToken.exception.JWKParseException
-import ac.kr.smu.endTicket.infra.OAuth2.exception.OAuth2RequestException
+import ac.kr.smu.endTicket.auth.infra.OAuth2.IDToken.exception.IDTokenNotVerifyException
+import ac.kr.smu.endTicket.auth.infra.OAuth2.IDToken.exception.JWKParseException
+import ac.kr.smu.endTicket.auth.infra.OAuth2.exception.OAuth2RequestException
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -12,6 +11,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.filter.OncePerRequestFilter
+import response.ExceptionResponse
 
 /**
  * OAuth2 인증 과정에서 발생한 에러를 처리하는 Filter
@@ -50,7 +50,7 @@ class OAuth2ErrorHandlerFilter: OncePerRequestFilter() {
         response.contentType = MediaType.APPLICATION_JSON_VALUE
         response.characterEncoding = "UTF-8"
         response.status = status.value()
-        val body = ErrorResponse(status.value(), "SNS 인증에 실패했습니다.", message)
+        val body = ExceptionResponse(status.value(), "SNS 인증에 실패했습니다.", message)
         response.writer.write(ObjectMapper().writeValueAsString(body))
     }
 }
