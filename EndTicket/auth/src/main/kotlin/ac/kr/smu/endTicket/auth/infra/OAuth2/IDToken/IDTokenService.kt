@@ -1,8 +1,8 @@
-package ac.kr.smu.endTicket.infra.OAuth2.IDToken
+package ac.kr.smu.endTicket.auth.infra.OAuth2.IDToken
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
-import ac.kr.smu.endTicket.infra.OAuth2.IDToken.exception.IDTokenNotVerifyException
-import ac.kr.smu.endTicket.infra.OAuth2.IDToken.exception.JWKParseException
+import ac.kr.smu.endTicket.auth.infra.OAuth2.IDToken.exception.IDTokenNotVerifyException
+import ac.kr.smu.endTicket.auth.infra.OAuth2.IDToken.exception.JWKParseException
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Jwk
@@ -136,7 +136,7 @@ class IDTokenService(
      * @param token ID 토큰
      * @return 복호화된 ID 토큰의 헤더, 페이로드 그리고 서명
      */
-    private fun parseIDToken(token: String): IDToken{
+    private fun parseIDToken(token: String): IDToken {
         val objectMapper = ObjectMapper()
         val (header, payload, signature) = token.split(".")
         val decoder = Base64.getDecoder()

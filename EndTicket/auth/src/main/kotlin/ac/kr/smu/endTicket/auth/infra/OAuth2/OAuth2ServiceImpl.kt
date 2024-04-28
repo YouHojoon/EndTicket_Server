@@ -1,9 +1,9 @@
-package ac.kr.smu.endTicket.infra.OAuth2
+package ac.kr.smu.endTicket.auth.infra.OAuth2
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
-import ac.kr.smu.endTicket.infra.OAuth2.exception.OAuth2RequestException
-import ac.kr.smu.endTicket.infra.OAuth2.IDToken.IDTokenService
+import ac.kr.smu.endTicket.auth.infra.OAuth2.exception.OAuth2RequestException
+import ac.kr.smu.endTicket.auth.infra.OAuth2.IDToken.IDTokenService
 import kotlinx.coroutines.*
 import org.springframework.http.MediaType
 import org.springframework.security.oauth2.client.registration.ClientRegistration
@@ -31,7 +31,7 @@ class OAuth2ServiceImpl(
      * @param code SNS 인증에서 반환받은 authorization code
      * @return access 토큰 응답을 반환, 에러 발생 시 null 반환
      */
-    override fun oAuth(socialType: SocialType, code: String): OAuth2TokenResponse{
+    override fun oAuth(socialType: SocialType, code: String): OAuth2TokenResponse {
         val provider = clientRegistrationRepository.findByRegistrationId(socialType.name.lowercase())
 
         return runBlocking {
@@ -57,7 +57,7 @@ class OAuth2ServiceImpl(
      * @throws OAuth2RequestException OAuth 요청이 에러일 때 발생
      */
     @Throws(OAuth2RequestException::class)
-    private suspend fun getToken(provider: ClientRegistration, code: String): OAuth2TokenResponse{
+    private suspend fun getToken(provider: ClientRegistration, code: String): OAuth2TokenResponse {
        try {
            return WebClient.create()
                .post()

@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.infra.OAuth2
+package ac.kr.smu.endTicket.auth.infra.OAuth2
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import org.springframework.http.ResponseEntity

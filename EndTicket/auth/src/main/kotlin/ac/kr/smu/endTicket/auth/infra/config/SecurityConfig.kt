@@ -1,11 +1,10 @@
-package ac.kr.smu.endTicket.infra.config
+package ac.kr.smu.endTicket.auth.infra.config
 
 
-import ErrorResponse
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
 import ac.kr.smu.endTicket.auth.service.TokenService
-import ac.kr.smu.endTicket.infra.OAuth2.filter.OAuth2AuthorizationFilter
-import ac.kr.smu.endTicket.infra.OAuth2.filter.OAuth2ErrorHandlerFilter
+import ac.kr.smu.endTicket.auth.infra.OAuth2.filter.OAuth2AuthorizationFilter
+import ac.kr.smu.endTicket.auth.infra.OAuth2.filter.OAuth2ErrorHandlerFilter
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -18,6 +17,7 @@ import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter
 import org.springframework.security.web.AuthenticationEntryPoint
+import response.ExceptionResponse
 
 @Configuration
 @EnableWebSecurity
@@ -40,7 +40,6 @@ class SecurityConfig(
                 authorize("/api-docs/**",permitAll)
                 authorize("/oauth/**",permitAll)
                 authorize("/auth/reissueToken", permitAll)
-
                 authorize(anyRequest, authenticated)
             }
 
@@ -50,7 +49,7 @@ class SecurityConfig(
                     response.status = HttpStatus.UNAUTHORIZED.value()
                     response.characterEncoding = "UTF-8"
                     response.writer.write(ObjectMapper().writeValueAsString(
-                        ErrorResponse(
+                        ExceptionResponse(
                             code = HttpStatus.UNAUTHORIZED.value(),
                             message = "인증에 실패했습니다.",
                             detail = e.message
