@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.infra.config
+package ac.kr.smu.endTicket.user.config
 
 import ac.kr.smu.endTicket.user.ui.converter.SocialTypeConverter
 import org.springframework.context.annotation.Bean
