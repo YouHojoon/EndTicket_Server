@@ -45,7 +45,7 @@ class UserService(
      * @param nickname 등록할 닉네임
      */
     @Transactional
-    fun registerNickname(userID: Long, nickname: String){
+    fun registerNickname(nickname: String, userID: Long){
         val user = userRepo.findById(userID).getOrNull()
         checkNotNull(user){"해당 userID의 사용자를 찾을 수 없습니다."}
 
