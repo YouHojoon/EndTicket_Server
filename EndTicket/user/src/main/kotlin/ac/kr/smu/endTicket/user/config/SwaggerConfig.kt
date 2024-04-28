@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.infra.config
+package ac.kr.smu.endTicket.user.config
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType

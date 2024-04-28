@@ -1,9 +1,8 @@
 package ac.kr.smu.endTicket.user.ui.controller
 
-import ErrorResponse
 import ac.kr.smu.endTicket.user.domain.service.UserService
 import ac.kr.smu.endTicket.user.ui.request.RegisterNicknameRequest
-import ac.kr.smu.endTicket.user.ui.response.BindingExceptionResponse
+import annotation.AutoBindingExceptionHandle
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -16,17 +15,17 @@ import jakarta.validation.Valid
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.validation.BindException
-import org.springframework.validation.BindingResult
-import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import response.BindingExceptionResponse
+import response.ExceptionResponse
 
 @RestController
 @RequestMapping("/users")
+@AutoBindingExceptionHandle
 @Tag(name = "/users")
 class  UserController(
     private val service: UserService
@@ -44,7 +43,7 @@ class  UserController(
                 responseCode = "404",
                 description = "사용자를 찾을 수 없음",
                 content = [
-                    Content(schema = Schema(implementation = ErrorResponse::class))
+                    Content(schema = Schema(implementation = ExceptionResponse::class))
                 ]
             ),
             ApiResponse(
@@ -69,23 +68,10 @@ class  UserController(
             service.registerNickname(userID,request.nickname)
         }catch (e: IllegalStateException){
             log.info("{userID: $userID}", e)
-            return ResponseEntity(ErrorResponse(404, "닉네임 등록에 에러가 발생했습니다.", e.message), HttpStatus.NOT_FOUND)
+            return ResponseEntity(ExceptionResponse(404, "닉네임 등록에 에러가 발생했습니다.", e.message), HttpStatus.NOT_FOUND)
         }
 
         return ResponseEntity.noContent().build<Void>()
     }
 
-    @ExceptionHandler(BindException::class)
-    fun handleBindingException(e: BindException, bindingResult: BindingResult): ResponseEntity<*>{
-        log.info("{field: ${bindingResult.fieldError?.field}, objectName: ${bindingResult.objectName}, rejectedValue: ${bindingResult.fieldError?.rejectedValue}}", e)
-
-        return ResponseEntity.badRequest().body(
-            BindingExceptionResponse(
-                field = bindingResult.fieldError?.field,
-                code = 400,
-                objectName = bindingResult.objectName,
-                detail = bindingResult.fieldError?.defaultMessage
-            )
-        )
-    }
 }
