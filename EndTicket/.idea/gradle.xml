@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/common" />
             <option value="$PROJECT_DIR$/eureka" />
             <option value="$PROJECT_DIR$/gateway" />
+            <option value="$PROJECT_DIR$/ticket" />
             <option value="$PROJECT_DIR$/user" />
           </set>
         </option>
