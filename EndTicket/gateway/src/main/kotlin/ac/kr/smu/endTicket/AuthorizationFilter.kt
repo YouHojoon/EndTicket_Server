@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket
 
+import brave.Tracer
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.cloud.gateway.filter.GatewayFilter
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory
@@ -14,6 +15,7 @@ import response.ExceptionResponse
 @Component
 class AuthorizationFilter(
     private val tokenService: TokenService,
+    private val tracer: Tracer
 ): AbstractGatewayFilterFactory<Any>() {
     private val USER_ID_HEADER_NAME = "X-User-ID"
     override fun apply(config: Any): GatewayFilter {
@@ -23,10 +25,11 @@ class AuthorizationFilter(
 
             val response = tokenService.validateAccessToken(token)
             val userID = response.userID
-            
+
             if(response.userID != -1L) {
                 val request = exchange.request.mutate().header(USER_ID_HEADER_NAME, userID.toString()).build()
-                chain.filter(exchange.mutate().request(request).build())
+                chain
+                    .filter(exchange.mutate().request(request).build())
             }
 
             else
