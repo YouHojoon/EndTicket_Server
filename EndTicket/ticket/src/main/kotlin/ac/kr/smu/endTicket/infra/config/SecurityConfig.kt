@@ -20,6 +20,8 @@ class SecurityConfig(
     fun filterChain(http: HttpSecurity): SecurityFilterChain{
 
         http{
+            csrf { disable() }
+            formLogin { disable() }
             authorizeHttpRequests {
                 discoveryClient.getInstances("gateway").forEach {
                     authorize(IpAddressMatcher("${it.host}"), permitAll)
