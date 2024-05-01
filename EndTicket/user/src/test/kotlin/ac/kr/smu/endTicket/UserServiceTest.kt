@@ -83,7 +83,7 @@ class UserServiceTest(
                 `when`(userRepo.findById(USER_ID))
                 .thenReturn(Optional.of(createUser()))
 
-        userService.registerNickname(USER_ID, nickname)
+        userService.registerNickname(nickname,USER_ID)
         assertEquals(userRepo.findById(USER_ID).get().nickname, nickname)
 
     }
@@ -97,7 +97,7 @@ class UserServiceTest(
             .thenReturn(Optional.of(User(SOCIAL_TYPE, SOCIAL_USER_NUMBER, USER_ID, nickname)))
 
         assertThrows<IllegalStateException> {
-            userService.registerNickname(USER_ID, nickname)
+            userService.registerNickname(nickname, USER_ID)
         }
     }
     @Test

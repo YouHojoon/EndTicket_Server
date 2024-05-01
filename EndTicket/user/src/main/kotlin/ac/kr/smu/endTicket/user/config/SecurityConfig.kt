@@ -25,6 +25,9 @@ class SecurityConfig(
             csrf { disable() }
             formLogin { disable() }
             authorizeRequests {
+                authorize("/docs/**", permitAll)
+                authorize("/swagger-ui/**",permitAll)
+                authorize("/api-docs/**",permitAll)
                 discoveryClient.getInstances("gateway").forEach {
                     authorize(IpAddressMatcher(it.host), permitAll)
                 }
