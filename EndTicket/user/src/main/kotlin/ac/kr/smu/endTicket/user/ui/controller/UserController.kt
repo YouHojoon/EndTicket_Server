@@ -2,7 +2,7 @@ package ac.kr.smu.endTicket.user.ui.controller
 
 import ac.kr.smu.endTicket.user.domain.service.UserService
 import ac.kr.smu.endTicket.user.ui.request.RegisterNicknameRequest
-import annotation.AutoBindingExceptionHandle
+
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -25,7 +25,6 @@ import response.ExceptionResponse
 
 @RestController
 @RequestMapping("/users")
-@AutoBindingExceptionHandle
 @Tag(name = "/users")
 class  UserController(
     private val service: UserService
