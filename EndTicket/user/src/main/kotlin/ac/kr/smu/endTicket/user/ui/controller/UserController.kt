@@ -65,7 +65,7 @@ class  UserController(
         @Parameter(hidden = true)
         userID: Long): ResponseEntity<*>{
         try {
-            service.registerNickname(userID,request.nickname)
+            service.registerNickname(request.nickname, userID)
         }catch (e: IllegalStateException){
             log.info("{userID: $userID}", e)
             return ResponseEntity(ExceptionResponse(404, "닉네임 등록에 에러가 발생했습니다.", e.message), HttpStatus.NOT_FOUND)
