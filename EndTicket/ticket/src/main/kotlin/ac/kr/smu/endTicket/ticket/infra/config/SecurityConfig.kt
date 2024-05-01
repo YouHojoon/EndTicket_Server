@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.infra.config
+package ac.kr.smu.endTicket.ticket.infra.config
 
 import org.springframework.cloud.client.discovery.DiscoveryClient
 import org.springframework.context.annotation.Bean
@@ -14,13 +14,17 @@ import org.springframework.security.web.util.matcher.IpAddressMatcher
 @Configuration
 class SecurityConfig(
     private val discoveryClient: DiscoveryClient
-) { @Bean
+) {
+    @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain{
         http{
             csrf { disable() }
             formLogin { disable() }
             authorizeHttpRequests {
                 discoveryClient.getInstances("gateway").forEach {
+                    authorize("/docs/**", permitAll)
+                    authorize("/swagger-ui/**",permitAll)
+                    authorize("/api-docs/**",permitAll)
                     authorize(IpAddressMatcher("${it.host}"), permitAll)
                 }
                 authorize(anyRequest, denyAll)

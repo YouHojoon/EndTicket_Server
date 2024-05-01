@@ -20,7 +20,7 @@ import jakarta.persistence.Id
  */
 @Entity
 @Schema(description = "티켓")
-class Ticket(
+class   Ticket(
     @Column(nullable = false)
     @Schema(description = "행동", example = "힘들어도 눈치 보지 말고 꼭 대화하기")
     var behavior: String,
@@ -60,7 +60,7 @@ class Ticket(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private val id: Long = 0L
+    val id: Long = 0L
 
 
     @Schema(description = "스와이프 횟수")

@@ -4,7 +4,7 @@ import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.service.TicketService
 import ac.kr.smu.endTicket.ticket.ui.controller.TicketController
 import ac.kr.smu.endTicket.ticket.ui.request.CreateTicketRequest
-import aop.BindingExceptionAdvice
+import aop.BindExceptionAdvice
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -15,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.JsonPathResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
@@ -27,7 +28,7 @@ class TicketControllerTest @Autowired constructor(
 
     private val mvc: MockMvc =
         MockMvcBuilders.standaloneSetup(controller)
-            .setControllerAdvice(BindingExceptionAdvice())
+            .setControllerAdvice(BindExceptionAdvice())
             .build()
 
     private val USER_ID_HEADER_NAME = "X-User-ID"
@@ -79,6 +80,10 @@ class TicketControllerTest @Autowired constructor(
                 .contentType(MediaType.APPLICATION_JSON)
         )
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.jsonPath("field").isString)
+            .andExpect(MockMvcResultMatchers.jsonPath("code").value(400))
+            .andExpect(MockMvcResultMatchers.jsonPath("message").isString)
+            .andExpect(MockMvcResultMatchers.jsonPath("detail").isString)
 
     }
 
