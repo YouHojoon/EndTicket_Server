@@ -14,11 +14,8 @@ import org.springframework.security.web.util.matcher.IpAddressMatcher
 @Configuration
 class SecurityConfig(
     private val discoveryClient: DiscoveryClient
-) {
-
-    @Bean
+) { @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain{
-
         http{
             csrf { disable() }
             formLogin { disable() }

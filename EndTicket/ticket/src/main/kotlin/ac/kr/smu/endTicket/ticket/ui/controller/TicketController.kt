@@ -4,7 +4,6 @@ import response.BindingExceptionResponse
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.service.TicketService
 import ac.kr.smu.endTicket.ticket.ui.request.CreateTicketRequest
-import annotation.AutoBindingExceptionHandle
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -12,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/tickets")
 @Tag(name = "/tickets")
-@AutoBindingExceptionHandle
 class TicketController(
     private val service: TicketService
 ) {
@@ -45,6 +44,7 @@ class TicketController(
     fun createTicket(
         @Parameter(name = "생성 요청", schema = Schema(implementation = CreateTicketRequest::class), required = true)
         @RequestBody
+        @Valid
         ticket: CreateTicketRequest,
 
         @RequestHeader("X-User-ID")

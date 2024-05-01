@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service
 class TicketService(
     private val repo: TicketRepository
 ) {
-
     fun createTicket(request: CreateTicketRequest, userID: Long): Ticket{
         return repo.save(
             Ticket(request,userID)

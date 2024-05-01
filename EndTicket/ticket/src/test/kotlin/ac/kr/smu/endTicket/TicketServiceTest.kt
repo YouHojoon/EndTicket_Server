@@ -5,6 +5,7 @@ import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endTicket.ticket.service.TicketService
 import ac.kr.smu.endTicket.ticket.ui.request.CreateTicketRequest
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
@@ -29,6 +30,7 @@ class TicketServiceTest(
     }
 
     @Test
+    @DisplayName("티켓 생성 테스트")
     fun given_ticket_when_createTicket_then_createTicket(){
         val ticket = createTicket()
         Mockito.`when`(repo.save(Mockito.any()))
