@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import response.BindingExceptionResponse
+import response.BindExceptionResponse
 import response.ExceptionResponse
 
 @RestController
@@ -49,7 +49,7 @@ class  UserController(
                 responseCode = "400",
                 description = "요청 파라미터 에러",
                 content = [
-                    Content(schema = Schema(implementation = BindingExceptionResponse::class))
+                    Content(schema = Schema(implementation = BindExceptionResponse::class))
                 ]
             )
         ]

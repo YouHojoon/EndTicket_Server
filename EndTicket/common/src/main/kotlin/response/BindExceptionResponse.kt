@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema
  *
  */
 @Schema(description = "검증을 실패해 반환되는 응답")
-class BindingExceptionResponse(
+class BindExceptionResponse(
     @Schema(description = "검증에 실패한 대표 필드", example = "nickname")
     val field: String?,
     @Schema(description = "에러 코드, 현재는 HttpStatusCode", example = "400")
