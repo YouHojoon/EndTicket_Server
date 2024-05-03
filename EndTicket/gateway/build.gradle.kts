@@ -8,4 +8,6 @@ dependencies {
     implementation(files("../grpc.jar"))
     implementation("io.grpc:grpc-netty:1.58.0")
     implementation(project(":common"))
+
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.4.0")
 }
