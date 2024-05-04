@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.ticket.domain.model
 
-import ac.kr.smu.endTicket.ticket.ui.request.CreateTicketRequest
+import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -9,6 +9,9 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.Index
+import jakarta.persistence.Table
+
 /**
  * 티켓을 추상화한 클래스
  * @param behavior 행동
@@ -16,10 +19,13 @@ import jakarta.persistence.Id
  * @param color 티켓의 색깔
  * @param type 분류
  * @param swipeCount 스와이프 횟수
- * @param userID 티켓의 소유자
+ * @param userID 티켓 소유자의 사용자 id
  */
 @Entity
 @Schema(description = "티켓")
+@Table(name = "ticket", indexes = [
+    Index(name = "idx_user_id", columnList = "user_id")
+])
 class   Ticket(
     @Column(nullable = false)
     @Schema(description = "행동", example = "힘들어도 눈치 보지 말고 꼭 대화하기")
@@ -45,10 +51,10 @@ class   Ticket(
     var swipeCount: SwipeCount,
 
     @Schema(description = "티켓의 소유자", example = "1")
-    @Column(updatable = false, nullable = false)
-    private val userID: Long
+    @Column(name = "user_id", updatable = false, nullable = false)
+    val userID: Long
 ) {
-    constructor(createTicketRequest: CreateTicketRequest, userID: Long):
+    constructor(createTicketRequest: TicketRequest, userID: Long):
             this(
                 behavior = createTicketRequest.behavior,
                 target = createTicketRequest.target,
@@ -89,5 +95,14 @@ class   Ticket(
         val o = other as? Ticket ?: return false
 
         return o.id == id
+    }
+
+    fun update(request: TicketRequest){
+        this.behavior = request.behavior
+        this.target = request.target
+        this.color = request.color
+        this.swipeCount =request.swipeCount
+        this.type = request.type
+
     }
 }

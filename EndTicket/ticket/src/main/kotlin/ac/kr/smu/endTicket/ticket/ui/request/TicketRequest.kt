@@ -2,13 +2,20 @@ package ac.kr.smu.endTicket.ticket.ui.request
 
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import io.swagger.v3.oas.annotations.media.Schema
-import jakarta.persistence.Column
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 
-data class CreateTicketRequest(
+/**
+ * 티켓 생성 혹은 수정에 사용되는 객체
+ * @param behavior 행동
+ * @param target 목표
+ * @param color 티켓의 색
+ * @param type 티켓의 분류
+ * @param swipeCount 티켓의 스와이프 개수
+ */
+
+@Schema(description = "티켓")
+data class TicketRequest(
     @field:NotBlank
     @Schema(description = "행동", example = "힘들어도 눈치 보지 말고 꼭 대화하기")
     val behavior: String,

@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import response.BindExceptionResponse
-import response.ExceptionResponse
+import ac.kr.smu.endTicket.response.BindExceptionResponse
+import ac.kr.smu.endTicket.response.ExceptionResponse
 
 @RestController
 @RequestMapping("/users")

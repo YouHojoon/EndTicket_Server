@@ -4,7 +4,7 @@ import ac.kr.smu.endTicket.user.config.SecurityConfig
 import ac.kr.smu.endTicket.user.domain.model.User
 import ac.kr.smu.endTicket.user.domain.service.UserService
 import ac.kr.smu.endTicket.user.ui.controller.UserController
-import aop.BindExceptionAdvice
+import ac.kr.smu.endTicket.aop.BindExceptionAdvice
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName

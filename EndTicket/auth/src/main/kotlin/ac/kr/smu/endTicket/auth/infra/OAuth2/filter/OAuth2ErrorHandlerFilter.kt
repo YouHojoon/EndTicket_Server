@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.filter.OncePerRequestFilter
-import response.ExceptionResponse
+import ac.kr.smu.endTicket.response.ExceptionResponse
 
 /**
  * OAuth2 인증 과정에서 발생한 에러를 처리하는 Filter

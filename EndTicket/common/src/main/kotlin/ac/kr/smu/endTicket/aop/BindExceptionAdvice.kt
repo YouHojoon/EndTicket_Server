@@ -1,17 +1,23 @@
-package aop
+package ac.kr.smu.endTicket.aop
 
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindException
 import org.springframework.validation.BindingResult
+import org.springframework.web.bind.MethodArgumentNotValidException
+import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import response.BindExceptionResponse
+import org.springframework.web.context.request.WebRequest
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
+import ac.kr.smu.endTicket.response.BindExceptionResponse
 
 /**
  * [BindException]을 공통적으로 처리하는 클래스
  */
-@RestControllerAdvice
+@ControllerAdvice
 class BindExceptionAdvice {
     private val log = LoggerFactory.getLogger(BindException::class.java)
 
