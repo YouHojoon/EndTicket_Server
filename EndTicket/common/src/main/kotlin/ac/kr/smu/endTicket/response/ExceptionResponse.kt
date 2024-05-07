@@ -1,4 +1,4 @@
-package response
+package ac.kr.smu.endTicket.response
 
 import io.swagger.v3.oas.annotations.media.Schema
 

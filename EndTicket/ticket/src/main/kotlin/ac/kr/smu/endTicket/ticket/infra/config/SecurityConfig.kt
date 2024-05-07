@@ -9,6 +9,8 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.web.util.matcher.IpAddressMatcher
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @EnableWebSecurity
 @Configuration

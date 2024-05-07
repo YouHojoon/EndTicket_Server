@@ -17,7 +17,7 @@ import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter
 import org.springframework.security.web.AuthenticationEntryPoint
-import response.ExceptionResponse
+import ac.kr.smu.endTicket.response.ExceptionResponse
 
 @Configuration
 @EnableWebSecurity

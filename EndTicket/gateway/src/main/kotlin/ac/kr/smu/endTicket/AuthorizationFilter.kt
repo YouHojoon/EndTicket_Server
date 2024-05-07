@@ -10,7 +10,7 @@ import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.stereotype.Component
 
 import reactor.core.publisher.Mono
-import response.ExceptionResponse
+import ac.kr.smu.endTicket.response.ExceptionResponse
 
 @Component
 class AuthorizationFilter(
@@ -21,7 +21,9 @@ class AuthorizationFilter(
     override fun apply(config: Any): GatewayFilter {
         return GatewayFilter { exchange, chain ->
             val token = exchange.request.headers.getFirst("Authorization")
-                ?: return@GatewayFilter denyRequest(exchange.response, HttpStatus.UNAUTHORIZED,ExceptionResponse(401, "게이트웨이 인증 에러", "access 토큰이 없습니다."))
+                ?: return@GatewayFilter denyRequest(exchange.response, HttpStatus.UNAUTHORIZED,
+                    ExceptionResponse(401, "게이트웨이 인증 에러", "access 토큰이 없습니다.")
+                )
 
             val response = tokenService.validateAccessToken(token)
             val userID = response.userID
