@@ -1,0 +1,1396 @@
+45354:C 06 May 2024 01:39:02.672 # WARNING: Changing databases number from 16 to 1 since we are in cluster mode
+45355:C 06 May 2024 01:39:02.673 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+45355:C 06 May 2024 01:39:02.674 * Redis version=7.2.4, bits=64, commit=00000000, modified=0, pid=45355, just started
+45355:C 06 May 2024 01:39:02.674 * Configuration loaded
+45355:M 06 May 2024 01:39:02.675 * Increased maximum number of open files to 10032 (it was originally set to 256).
+45355:M 06 May 2024 01:39:02.675 * monotonic clock: POSIX clock_gettime
+45355:M 06 May 2024 01:39:02.675 # Failed to write PID file: Permission denied
+45355:M 06 May 2024 01:39:02.676 * Running mode=cluster, port=6481.
+45355:M 06 May 2024 01:39:02.676 # WARNING: The TCP backlog setting of 511 cannot be enforced because kern.ipc.somaxconn is set to the lower value of 128.
+45355:M 06 May 2024 01:39:02.676 * No cluster configuration found, I'm 67b4e90aabf7af6ea62fad4555bf7d59f719e6dd
+45355:M 06 May 2024 01:39:02.686 * Server initialized
+45355:M 06 May 2024 01:39:02.686 * Loading RDB produced by version 7.2.4
+45355:M 06 May 2024 01:39:02.687 * RDB age 2514304 seconds
+45355:M 06 May 2024 01:39:02.687 * RDB memory usage when created 1.21 Mb
+45355:M 06 May 2024 01:39:02.687 * Done loading RDB, keys loaded: 2, keys expired: 10.
+45355:M 06 May 2024 01:39:02.687 * DB loaded from disk: 0.001 seconds
+45355:M 06 May 2024 01:39:02.687 * I have keys for unassigned slot 13159. Taking responsibility for it.
+45355:M 06 May 2024 01:39:02.687 * I have keys for unassigned slot 13376. Taking responsibility for it.
+45355:M 06 May 2024 01:39:02.697 * Ready to accept connections tcp
+45355:M 06 May 2024 01:56:19.560 * DB saved on disk
+45355:M 06 May 2024 01:56:27.554 * IP address for this node updated to 127.0.0.1
+45355:M 06 May 2024 01:56:27.554 * Configuration change detected. Reconfiguring myself as a replica of 940e3bee61c7f0858e3e7405e3f9f8824d515a01 ()
+45355:S 06 May 2024 01:56:27.554 * Before turning into a replica, using my own master parameters to synthesize a cached master: I may be able to synchronize with the new master with just a partial transfer.
+45355:S 06 May 2024 01:56:27.555 * Connecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 01:56:27.555 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 01:56:27.567 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 01:56:27.569 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 01:56:27.570 * Trying a partial resynchronization (request 0d2dec6ab368f2c2d45b7ee55d047ef427fa2b57:1564).
+45355:S 06 May 2024 01:56:27.768 * Cluster state changed: ok
+45355:S 06 May 2024 01:56:28.397 * Connecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 01:56:28.398 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 01:56:28.399 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 01:56:28.400 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 01:56:28.401 * Trying a partial resynchronization (request 0d2dec6ab368f2c2d45b7ee55d047ef427fa2b57:1564).
+45355:S 06 May 2024 01:56:33.738 * Full resync from master: 0d241592c1116dc3298446988424b2678853c69c:14
+45355:S 06 May 2024 01:56:33.742 * MASTER <-> REPLICA sync: receiving streamed RDB from master with EOF to disk
+45355:S 06 May 2024 01:56:33.742 * Discarding previously cached master state.
+45355:S 06 May 2024 01:56:33.742 * MASTER <-> REPLICA sync: Flushing old data
+45355:S 06 May 2024 01:56:33.743 * MASTER <-> REPLICA sync: Loading DB in memory
+45355:S 06 May 2024 01:56:33.746 * Loading RDB produced by version 7.2.4
+45355:S 06 May 2024 01:56:33.748 * RDB age 0 seconds
+45355:S 06 May 2024 01:56:33.748 * RDB memory usage when created 2.05 Mb
+45355:S 06 May 2024 01:56:33.749 * Done loading RDB, keys loaded: 0, keys expired: 0.
+45355:S 06 May 2024 01:56:33.749 * MASTER <-> REPLICA sync: Finished with success
+45355:S 06 May 2024 02:56:20.062 * 1 changes in 3600 seconds. Saving...
+45355:S 06 May 2024 02:56:20.064 * Background saving started by pid 47734
+47734:C 06 May 2024 02:56:20.069 * DB saved on disk
+47734:C 06 May 2024 02:56:20.069 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
+45355:S 06 May 2024 02:56:20.165 * Background saving terminated with success
+45355:S 06 May 2024 03:40:20.983 * DB saved on disk
+45355:S 06 May 2024 04:35:09.784 * Connection with master lost.
+45355:S 06 May 2024 04:35:09.883 * Caching the disconnected master state.
+45355:S 06 May 2024 04:35:09.883 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 04:35:09.884 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 04:35:09.884 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 04:35:09.886 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 04:35:09.886 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17747).
+45355:S 06 May 2024 04:35:09.886 * Successful partial resynchronization with master.
+45355:S 06 May 2024 04:35:09.886 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 04:50:17.602 * 1 changes in 3600 seconds. Saving...
+45355:S 06 May 2024 04:50:17.712 * Background saving started by pid 49073
+45355:S 06 May 2024 04:50:17.713 * Connection with master lost.
+45355:S 06 May 2024 04:50:17.713 * Caching the disconnected master state.
+45355:S 06 May 2024 04:50:17.713 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 04:50:17.713 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 04:50:17.713 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 04:50:17.714 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 04:50:17.717 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17747).
+45355:S 06 May 2024 04:50:17.719 * Successful partial resynchronization with master.
+45355:S 06 May 2024 04:50:17.729 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+49073:C 06 May 2024 04:50:17.740 * DB saved on disk
+49073:C 06 May 2024 04:50:17.740 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
+45355:S 06 May 2024 04:50:17.813 * Background saving terminated with success
+45355:S 06 May 2024 05:05:44.791 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 05:05:44.792 * Connection with master lost.
+45355:S 06 May 2024 05:05:44.792 * Caching the disconnected master state.
+45355:S 06 May 2024 05:05:44.792 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 05:05:44.792 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 05:05:44.793 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 05:05:44.794 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 05:05:44.795 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17789).
+45355:S 06 May 2024 05:05:44.795 * Successful partial resynchronization with master.
+45355:S 06 May 2024 05:05:44.795 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 05:21:12.799 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 05:21:12.799 * Connection with master lost.
+45355:S 06 May 2024 05:21:12.799 * Caching the disconnected master state.
+45355:S 06 May 2024 05:21:12.799 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 05:21:12.800 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 05:21:12.800 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 05:21:12.800 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 05:21:12.801 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17817).
+45355:S 06 May 2024 05:21:12.801 * Successful partial resynchronization with master.
+45355:S 06 May 2024 05:21:12.801 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 05:37:09.650 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 05:37:09.651 * Connection with master lost.
+45355:S 06 May 2024 05:37:09.651 * Caching the disconnected master state.
+45355:S 06 May 2024 05:37:09.651 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 05:37:09.652 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 05:37:09.652 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 05:37:09.653 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 05:37:09.654 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17831).
+45355:S 06 May 2024 05:37:09.655 * Successful partial resynchronization with master.
+45355:S 06 May 2024 05:37:09.655 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 05:53:47.412 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 05:53:47.412 * Connection with master lost.
+45355:S 06 May 2024 05:53:47.412 * Caching the disconnected master state.
+45355:S 06 May 2024 05:53:47.413 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 05:53:47.413 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 05:53:47.413 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 05:53:47.414 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 05:53:47.414 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17831).
+45355:S 06 May 2024 05:53:47.415 * Successful partial resynchronization with master.
+45355:S 06 May 2024 05:53:47.415 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 06:09:45.303 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 06:09:45.303 * Connection with master lost.
+45355:S 06 May 2024 06:09:45.303 * Caching the disconnected master state.
+45355:S 06 May 2024 06:09:45.304 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 06:09:45.304 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 06:09:45.304 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 06:09:45.305 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 06:09:45.305 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17845).
+45355:S 06 May 2024 06:09:45.305 * Successful partial resynchronization with master.
+45355:S 06 May 2024 06:09:45.305 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 06:25:30.020 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 06:25:30.120 * Connection with master lost.
+45355:S 06 May 2024 06:25:30.125 * Caching the disconnected master state.
+45355:S 06 May 2024 06:25:30.125 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 06:25:30.126 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 06:25:30.126 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 06:25:30.127 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 06:25:30.128 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17859).
+45355:S 06 May 2024 06:25:30.129 * Successful partial resynchronization with master.
+45355:S 06 May 2024 06:25:30.129 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 06:31:50.998 * Connection with master lost.
+45355:S 06 May 2024 06:31:51.096 * Caching the disconnected master state.
+45355:S 06 May 2024 06:31:51.096 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 06:31:51.096 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 06:31:51.096 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 06:31:51.106 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 06:31:51.107 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17859).
+45355:S 06 May 2024 06:31:51.107 * Successful partial resynchronization with master.
+45355:S 06 May 2024 06:31:51.107 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 06:49:12.255 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 06:49:12.256 * Connection with master lost.
+45355:S 06 May 2024 06:49:12.257 * Caching the disconnected master state.
+45355:S 06 May 2024 06:49:12.257 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 06:49:12.257 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 06:49:12.258 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 06:49:12.260 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 06:49:12.261 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17873).
+45355:S 06 May 2024 06:49:12.262 * Successful partial resynchronization with master.
+45355:S 06 May 2024 06:49:12.263 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 07:05:21.120 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 07:05:21.121 * Connection with master lost.
+45355:S 06 May 2024 07:05:21.121 * Caching the disconnected master state.
+45355:S 06 May 2024 07:05:21.122 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 07:05:21.123 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 07:05:21.124 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 07:05:21.126 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 07:05:21.154 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17887).
+45355:S 06 May 2024 07:05:21.155 * Successful partial resynchronization with master.
+45355:S 06 May 2024 07:05:21.156 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 07:20:50.014 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 07:20:50.019 * Connection with master lost.
+45355:S 06 May 2024 07:20:50.020 * Caching the disconnected master state.
+45355:S 06 May 2024 07:20:50.021 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 07:20:50.021 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 07:20:50.021 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 07:20:50.022 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 07:20:50.023 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17887).
+45355:S 06 May 2024 07:20:50.025 * Successful partial resynchronization with master.
+45355:S 06 May 2024 07:20:50.025 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 07:32:51.914 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 07:32:52.021 * Connection with master lost.
+45355:S 06 May 2024 07:32:52.021 * Caching the disconnected master state.
+45355:S 06 May 2024 07:32:52.022 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 07:32:52.023 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 07:32:52.025 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 07:32:52.027 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 07:32:52.027 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17901).
+45355:S 06 May 2024 07:32:52.028 * Successful partial resynchronization with master.
+45355:S 06 May 2024 07:32:52.028 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 07:48:59.605 * Connection with master lost.
+45355:S 06 May 2024 07:48:59.605 * Caching the disconnected master state.
+45355:S 06 May 2024 07:48:59.605 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 07:48:59.606 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 07:48:59.606 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 07:48:59.607 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 07:48:59.607 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17901).
+45355:S 06 May 2024 07:48:59.608 * Successful partial resynchronization with master.
+45355:S 06 May 2024 07:48:59.609 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 08:04:59.458 * Connection with master lost.
+45355:S 06 May 2024 08:04:59.458 * Caching the disconnected master state.
+45355:S 06 May 2024 08:04:59.459 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 08:04:59.459 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 08:04:59.459 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 08:04:59.460 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 08:04:59.461 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17915).
+45355:S 06 May 2024 08:04:59.461 * Successful partial resynchronization with master.
+45355:S 06 May 2024 08:04:59.462 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 08:14:33.029 * Connection with master lost.
+45355:S 06 May 2024 08:14:33.030 * Caching the disconnected master state.
+45355:S 06 May 2024 08:14:33.030 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 08:14:33.030 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 08:14:33.030 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 08:14:33.031 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 08:14:33.032 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17915).
+45355:S 06 May 2024 08:14:33.033 * Successful partial resynchronization with master.
+45355:S 06 May 2024 08:14:33.033 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 08:29:51.065 * Connection with master lost.
+45355:S 06 May 2024 08:29:51.065 * Caching the disconnected master state.
+45355:S 06 May 2024 08:29:51.066 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 08:29:51.066 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 08:29:51.066 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 08:29:51.067 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 08:29:51.068 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17929).
+45355:S 06 May 2024 08:29:51.069 * Successful partial resynchronization with master.
+45355:S 06 May 2024 08:29:51.069 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 08:32:21.049 * Connection with master lost.
+45355:S 06 May 2024 08:32:21.050 * Caching the disconnected master state.
+45355:S 06 May 2024 08:32:21.050 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 08:32:21.051 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 08:32:21.051 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 08:32:21.052 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 08:32:21.053 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17943).
+45355:S 06 May 2024 08:32:21.054 * Successful partial resynchronization with master.
+45355:S 06 May 2024 08:32:21.054 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 08:33:53.489 * Connection with master lost.
+45355:S 06 May 2024 08:33:53.489 * Caching the disconnected master state.
+45355:S 06 May 2024 08:33:53.489 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 08:33:53.490 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 08:33:53.490 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 08:33:53.491 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 08:33:53.492 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17957).
+45355:S 06 May 2024 08:33:53.493 * Successful partial resynchronization with master.
+45355:S 06 May 2024 08:33:53.493 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 08:51:10.876 * Connection with master lost.
+45355:S 06 May 2024 08:51:10.876 * Caching the disconnected master state.
+45355:S 06 May 2024 08:51:10.876 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 08:51:10.877 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 08:51:10.877 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 08:51:10.878 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 08:51:10.879 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17971).
+45355:S 06 May 2024 08:51:10.880 * Successful partial resynchronization with master.
+45355:S 06 May 2024 08:51:10.881 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 09:07:18.741 * Connection with master lost.
+45355:S 06 May 2024 09:07:18.840 * Caching the disconnected master state.
+45355:S 06 May 2024 09:07:18.840 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 09:07:18.840 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 09:07:18.840 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 09:07:18.850 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 09:07:18.850 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17985).
+45355:S 06 May 2024 09:07:18.851 * Successful partial resynchronization with master.
+45355:S 06 May 2024 09:07:18.851 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 09:23:52.815 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 09:23:52.823 * Connection with master lost.
+45355:S 06 May 2024 09:23:52.823 * Caching the disconnected master state.
+45355:S 06 May 2024 09:23:52.823 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 09:23:52.824 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 09:23:52.824 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 09:23:52.826 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 09:23:52.826 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17985).
+45355:S 06 May 2024 09:23:52.827 * Successful partial resynchronization with master.
+45355:S 06 May 2024 09:23:52.827 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 09:34:52.695 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 09:34:52.791 * Connection with master lost.
+45355:S 06 May 2024 09:34:52.791 * Caching the disconnected master state.
+45355:S 06 May 2024 09:34:52.792 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 09:34:52.792 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 09:34:52.792 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 09:34:52.793 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 09:34:52.793 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:17999).
+45355:S 06 May 2024 09:34:52.794 * Successful partial resynchronization with master.
+45355:S 06 May 2024 09:34:52.794 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 09:50:51.265 * Connection with master lost.
+45355:S 06 May 2024 09:50:51.265 * Caching the disconnected master state.
+45355:S 06 May 2024 09:50:51.266 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 09:50:51.266 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 09:50:51.266 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 09:50:51.267 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 09:50:51.267 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:18013).
+45355:S 06 May 2024 09:50:51.268 * Successful partial resynchronization with master.
+45355:S 06 May 2024 09:50:51.268 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 10:08:33.124 * Connection with master lost.
+45355:S 06 May 2024 10:08:33.124 * Caching the disconnected master state.
+45355:S 06 May 2024 10:08:33.125 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 10:08:33.125 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 10:08:33.125 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 10:08:33.126 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 10:08:33.127 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:18013).
+45355:S 06 May 2024 10:08:33.128 * Successful partial resynchronization with master.
+45355:S 06 May 2024 10:08:33.128 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 10:26:14.983 * Connection with master lost.
+45355:S 06 May 2024 10:26:14.984 * Caching the disconnected master state.
+45355:S 06 May 2024 10:26:14.984 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 10:26:14.984 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 10:26:14.985 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 10:26:14.986 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 10:26:14.987 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:18027).
+45355:S 06 May 2024 10:26:14.987 * Successful partial resynchronization with master.
+45355:S 06 May 2024 10:26:14.988 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 10:35:52.851 * Connection with master lost.
+45355:S 06 May 2024 10:35:52.852 * Caching the disconnected master state.
+45355:S 06 May 2024 10:35:52.852 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 10:35:52.852 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 10:35:52.853 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 10:35:52.854 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 10:35:52.854 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:18027).
+45355:S 06 May 2024 10:35:52.855 * Successful partial resynchronization with master.
+45355:S 06 May 2024 10:35:52.855 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 10:51:16.092 * Connection with master lost.
+45355:S 06 May 2024 10:51:16.092 * Caching the disconnected master state.
+45355:S 06 May 2024 10:51:16.093 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 10:51:16.093 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 10:51:16.093 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 10:51:16.094 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 10:51:16.094 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:18041).
+45355:S 06 May 2024 10:51:16.095 * Successful partial resynchronization with master.
+45355:S 06 May 2024 10:51:16.095 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 10:59:54.755 * Connection with master lost.
+45355:S 06 May 2024 10:59:54.756 * Caching the disconnected master state.
+45355:S 06 May 2024 10:59:54.756 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 10:59:54.757 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 10:59:54.758 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 10:59:54.759 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 10:59:54.761 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:18055).
+45355:S 06 May 2024 10:59:54.762 * Successful partial resynchronization with master.
+45355:S 06 May 2024 10:59:54.763 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 11:17:21.982 * Connection with master lost.
+45355:S 06 May 2024 11:17:21.982 * Caching the disconnected master state.
+45355:S 06 May 2024 11:17:21.982 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 11:17:21.983 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 11:17:21.983 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 11:17:21.983 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 11:17:21.984 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:18055).
+45355:S 06 May 2024 11:17:21.985 * Successful partial resynchronization with master.
+45355:S 06 May 2024 11:17:21.985 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 11:33:14.846 * Connection with master lost.
+45355:S 06 May 2024 11:33:14.847 * Caching the disconnected master state.
+45355:S 06 May 2024 11:33:14.847 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 11:33:14.847 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 11:33:14.848 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 11:33:14.848 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 11:33:14.849 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:18069).
+45355:S 06 May 2024 11:33:14.850 * Successful partial resynchronization with master.
+45355:S 06 May 2024 11:33:14.850 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 11:36:52.727 * Connection with master lost.
+45355:S 06 May 2024 11:36:52.728 * Caching the disconnected master state.
+45355:S 06 May 2024 11:36:52.728 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 11:36:52.728 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 11:36:52.729 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 11:36:52.729 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 11:36:52.730 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:18069).
+45355:S 06 May 2024 11:36:52.731 * Successful partial resynchronization with master.
+45355:S 06 May 2024 11:36:52.731 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 11:52:38.879 * Connection with master lost.
+45355:S 06 May 2024 11:52:38.880 * Caching the disconnected master state.
+45355:S 06 May 2024 11:52:38.880 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 11:52:38.880 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 11:52:38.881 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 11:52:38.882 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 11:52:38.883 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:18083).
+45355:S 06 May 2024 11:52:38.884 * Successful partial resynchronization with master.
+45355:S 06 May 2024 11:52:38.884 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 12:07:44.814 * Connection with master lost.
+45355:S 06 May 2024 12:07:44.815 * Caching the disconnected master state.
+45355:S 06 May 2024 12:07:44.815 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 12:07:44.816 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 12:07:44.816 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 12:07:44.817 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 12:07:44.818 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:18097).
+45355:S 06 May 2024 12:07:44.819 * Successful partial resynchronization with master.
+45355:S 06 May 2024 12:07:44.819 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 12:11:29.286 * Connection with master lost.
+45355:S 06 May 2024 12:11:29.287 * Caching the disconnected master state.
+45355:S 06 May 2024 12:11:29.287 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 12:11:29.287 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 12:11:29.288 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 12:11:29.288 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 12:11:29.290 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:18111).
+45355:S 06 May 2024 12:11:29.291 * Successful partial resynchronization with master.
+45355:S 06 May 2024 12:11:29.291 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 12:28:39.867 * Connection with master lost.
+45355:S 06 May 2024 12:28:39.867 * Caching the disconnected master state.
+45355:S 06 May 2024 12:28:39.867 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 12:28:39.868 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 12:28:39.868 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 12:28:39.869 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 12:28:39.869 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:18125).
+45355:S 06 May 2024 12:28:39.870 * Successful partial resynchronization with master.
+45355:S 06 May 2024 12:28:39.870 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 12:37:52.761 * Connection with master lost.
+45355:S 06 May 2024 12:37:52.761 * Caching the disconnected master state.
+45355:S 06 May 2024 12:37:52.762 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 12:37:52.762 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 12:37:52.763 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 12:37:52.763 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 12:37:52.764 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:18125).
+45355:S 06 May 2024 12:37:52.765 * Successful partial resynchronization with master.
+45355:S 06 May 2024 12:37:52.765 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 12:43:56.516 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 12:43:56.517 * Connection with master lost.
+45355:S 06 May 2024 12:43:56.517 * Caching the disconnected master state.
+45355:S 06 May 2024 12:43:56.519 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 12:43:56.519 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 12:43:56.520 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 12:43:56.521 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 12:43:56.522 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:18139).
+45355:S 06 May 2024 12:43:56.522 * Successful partial resynchronization with master.
+45355:S 06 May 2024 12:43:56.523 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 12:59:59.756 * Connection with master lost.
+45355:S 06 May 2024 12:59:59.756 * Caching the disconnected master state.
+45355:S 06 May 2024 12:59:59.757 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 12:59:59.758 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 12:59:59.759 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 12:59:59.760 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 12:59:59.761 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:18153).
+45355:S 06 May 2024 12:59:59.762 * Successful partial resynchronization with master.
+45355:S 06 May 2024 12:59:59.763 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 13:17:49.604 * Connection with master lost.
+45355:S 06 May 2024 13:17:49.605 * Caching the disconnected master state.
+45355:S 06 May 2024 13:17:49.605 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 13:17:49.606 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 13:17:49.606 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 13:17:49.607 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 13:17:49.608 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:18153).
+45355:S 06 May 2024 13:17:49.608 * Successful partial resynchronization with master.
+45355:S 06 May 2024 13:17:49.609 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 13:18:54.755 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 13:18:54.755 * Connection with master lost.
+45355:S 06 May 2024 13:18:54.755 * Caching the disconnected master state.
+45355:S 06 May 2024 13:18:54.755 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 13:18:54.756 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 13:18:54.756 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 13:18:54.757 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 13:18:54.758 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:18167).
+45355:S 06 May 2024 13:18:54.758 * Successful partial resynchronization with master.
+45355:S 06 May 2024 13:18:54.759 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 16:00:29.444 * Connection with master lost.
+45355:S 06 May 2024 16:00:29.444 * Caching the disconnected master state.
+45355:S 06 May 2024 16:00:29.444 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 16:00:29.445 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 16:00:29.445 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 16:00:29.446 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 16:00:29.447 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:30725).
+45355:S 06 May 2024 16:00:29.448 * Successful partial resynchronization with master.
+45355:S 06 May 2024 16:00:29.448 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 16:17:42.332 * Connection with master lost.
+45355:S 06 May 2024 16:17:42.354 * Caching the disconnected master state.
+45355:S 06 May 2024 16:17:42.355 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 16:17:42.355 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 16:17:42.355 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 16:17:42.357 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 16:17:42.357 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:30753).
+45355:S 06 May 2024 16:17:42.357 * Successful partial resynchronization with master.
+45355:S 06 May 2024 16:17:42.358 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 16:34:18.224 * Connection with master lost.
+45355:S 06 May 2024 16:34:18.322 * Caching the disconnected master state.
+45355:S 06 May 2024 16:34:18.322 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 16:34:18.322 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 16:34:18.322 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 16:34:18.323 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 16:34:18.336 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:30753).
+45355:S 06 May 2024 16:34:18.336 * Successful partial resynchronization with master.
+45355:S 06 May 2024 16:34:18.336 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 16:52:16.315 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 16:52:16.332 * Connection with master lost.
+45355:S 06 May 2024 16:52:16.332 * Caching the disconnected master state.
+45355:S 06 May 2024 16:52:16.333 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 16:52:16.333 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 16:52:16.333 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 16:52:16.335 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 16:52:16.336 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:30767).
+45355:S 06 May 2024 16:52:16.337 * Successful partial resynchronization with master.
+45355:S 06 May 2024 16:52:16.337 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 17:45:55.635 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 17:45:55.643 * Connection with master lost.
+45355:S 06 May 2024 17:45:55.643 * Caching the disconnected master state.
+45355:S 06 May 2024 17:45:55.643 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 17:45:55.644 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 17:45:55.644 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 17:45:55.645 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 17:45:55.646 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:30767).
+45355:S 06 May 2024 17:45:55.646 * Successful partial resynchronization with master.
+45355:S 06 May 2024 17:45:55.647 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 19:11:15.294 * 1 changes in 3600 seconds. Saving...
+45355:S 06 May 2024 19:11:15.297 * Background saving started by pid 52713
+52713:C 06 May 2024 19:11:15.310 * DB saved on disk
+52713:C 06 May 2024 19:11:15.318 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
+45355:S 06 May 2024 19:11:15.398 * Background saving terminated with success
+45355:S 06 May 2024 20:11:16.012 * 1 changes in 3600 seconds. Saving...
+45355:S 06 May 2024 20:11:16.015 * Background saving started by pid 54200
+54200:C 06 May 2024 20:11:16.023 * DB saved on disk
+54200:C 06 May 2024 20:11:16.024 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
+45355:S 06 May 2024 20:11:16.117 * Background saving terminated with success
+45355:S 06 May 2024 21:50:10.837 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 21:50:10.837 * Connection with master lost.
+45355:S 06 May 2024 21:50:10.837 * Caching the disconnected master state.
+45355:S 06 May 2024 21:50:10.837 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 21:50:10.838 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 21:50:10.838 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 21:50:10.839 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 21:50:10.840 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52206).
+45355:S 06 May 2024 21:50:10.841 * Successful partial resynchronization with master.
+45355:S 06 May 2024 21:50:10.841 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 22:07:12.888 * 1 changes in 3600 seconds. Saving...
+45355:S 06 May 2024 22:07:12.890 * Background saving started by pid 55846
+55846:C 06 May 2024 22:07:12.895 * DB saved on disk
+55846:C 06 May 2024 22:07:12.895 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
+45355:S 06 May 2024 22:07:12.991 * Background saving terminated with success
+45355:S 06 May 2024 22:24:48.849 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 22:24:48.849 * Connection with master lost.
+45355:S 06 May 2024 22:24:48.849 * Caching the disconnected master state.
+45355:S 06 May 2024 22:24:48.849 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 22:24:48.849 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 22:24:48.849 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 22:24:48.850 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 22:24:48.850 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52262).
+45355:S 06 May 2024 22:24:48.850 * Successful partial resynchronization with master.
+45355:S 06 May 2024 22:24:48.850 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 23:07:57.653 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 23:07:57.658 * Connection with master lost.
+45355:S 06 May 2024 23:07:57.659 * Caching the disconnected master state.
+45355:S 06 May 2024 23:07:57.659 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 23:07:57.659 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 23:07:57.659 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 23:07:57.660 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 23:07:57.660 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52262).
+45355:S 06 May 2024 23:07:57.660 * Successful partial resynchronization with master.
+45355:S 06 May 2024 23:07:57.661 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 23:18:59.459 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 23:18:59.563 * Connection with master lost.
+45355:S 06 May 2024 23:18:59.563 * Caching the disconnected master state.
+45355:S 06 May 2024 23:18:59.563 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 23:18:59.568 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 23:18:59.568 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 23:18:59.569 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 23:18:59.569 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52276).
+45355:S 06 May 2024 23:18:59.570 * Successful partial resynchronization with master.
+45355:S 06 May 2024 23:18:59.570 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 23:35:42.098 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 23:35:42.099 * Connection with master lost.
+45355:S 06 May 2024 23:35:42.099 * Caching the disconnected master state.
+45355:S 06 May 2024 23:35:42.100 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 23:35:42.100 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 23:35:42.100 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 23:35:42.101 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 23:35:42.102 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52304).
+45355:S 06 May 2024 23:35:42.103 * Successful partial resynchronization with master.
+45355:S 06 May 2024 23:35:42.103 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 06 May 2024 23:47:19.016 # MASTER timeout: no data nor PING received...
+45355:S 06 May 2024 23:47:19.017 * Connection with master lost.
+45355:S 06 May 2024 23:47:19.020 * Caching the disconnected master state.
+45355:S 06 May 2024 23:47:19.020 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 06 May 2024 23:47:19.020 * MASTER <-> REPLICA sync started
+45355:S 06 May 2024 23:47:19.021 * Non blocking connect for SYNC fired the event.
+45355:S 06 May 2024 23:47:19.021 * Master replied to PING, replication can continue...
+45355:S 06 May 2024 23:47:19.022 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52304).
+45355:S 06 May 2024 23:47:19.022 * Successful partial resynchronization with master.
+45355:S 06 May 2024 23:47:19.022 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 00:03:49.833 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 00:03:49.834 * Connection with master lost.
+45355:S 07 May 2024 00:03:49.834 * Caching the disconnected master state.
+45355:S 07 May 2024 00:03:49.834 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 00:03:49.835 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 00:03:49.835 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 00:03:49.836 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 00:03:49.837 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52318).
+45355:S 07 May 2024 00:03:49.837 * Successful partial resynchronization with master.
+45355:S 07 May 2024 00:03:49.838 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 00:09:44.463 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 00:09:44.463 * Connection with master lost.
+45355:S 07 May 2024 00:09:44.463 * Caching the disconnected master state.
+45355:S 07 May 2024 00:09:44.463 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 00:09:44.464 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 00:09:44.464 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 00:09:44.465 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 00:09:44.466 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52318).
+45355:S 07 May 2024 00:09:44.466 * Successful partial resynchronization with master.
+45355:S 07 May 2024 00:09:44.467 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 00:25:38.483 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 00:25:38.498 * Connection with master lost.
+45355:S 07 May 2024 00:25:38.498 * Caching the disconnected master state.
+45355:S 07 May 2024 00:25:38.498 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 00:25:38.498 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 00:25:38.499 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 00:25:38.499 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 00:25:38.499 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52332).
+45355:S 07 May 2024 00:25:38.500 * Successful partial resynchronization with master.
+45355:S 07 May 2024 00:25:38.500 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 00:42:18.391 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 00:42:18.392 * Connection with master lost.
+45355:S 07 May 2024 00:42:18.396 * Caching the disconnected master state.
+45355:S 07 May 2024 00:42:18.397 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 00:42:18.399 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 00:42:18.401 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 00:42:18.404 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 00:42:18.405 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52360).
+45355:S 07 May 2024 00:42:18.412 * Successful partial resynchronization with master.
+45355:S 07 May 2024 00:42:18.413 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 00:44:50.328 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 00:44:50.328 * Connection with master lost.
+45355:S 07 May 2024 00:44:50.328 * Caching the disconnected master state.
+45355:S 07 May 2024 00:44:50.329 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 00:44:50.329 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 00:44:50.330 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 00:44:50.330 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 00:44:50.331 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52388).
+45355:S 07 May 2024 00:44:50.332 * Successful partial resynchronization with master.
+45355:S 07 May 2024 00:44:50.332 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 00:48:18.791 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 00:48:18.792 * Connection with master lost.
+45355:S 07 May 2024 00:48:18.792 * Caching the disconnected master state.
+45355:S 07 May 2024 00:48:18.792 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 00:48:18.793 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 00:48:18.793 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 00:48:18.794 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 00:48:18.795 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52402).
+45355:S 07 May 2024 00:48:18.796 * Successful partial resynchronization with master.
+45355:S 07 May 2024 00:48:18.796 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 01:04:38.706 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 01:04:38.706 * Connection with master lost.
+45355:S 07 May 2024 01:04:38.706 * Caching the disconnected master state.
+45355:S 07 May 2024 01:04:38.706 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 01:04:38.707 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 01:04:38.707 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 01:04:38.709 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 01:04:38.711 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52416).
+45355:S 07 May 2024 01:04:38.711 * Successful partial resynchronization with master.
+45355:S 07 May 2024 01:04:38.712 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 01:12:29.161 * Connection with master lost.
+45355:S 07 May 2024 01:12:29.266 * Caching the disconnected master state.
+45355:S 07 May 2024 01:12:29.266 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 01:12:29.266 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 01:12:29.270 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 01:12:29.271 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 01:12:29.271 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52430).
+45355:S 07 May 2024 01:12:29.272 * Successful partial resynchronization with master.
+45355:S 07 May 2024 01:12:29.272 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 01:30:07.966 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 01:30:07.967 * Connection with master lost.
+45355:S 07 May 2024 01:30:07.967 * Caching the disconnected master state.
+45355:S 07 May 2024 01:30:07.967 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 01:30:07.968 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 01:30:07.968 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 01:30:07.969 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 01:30:07.969 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52444).
+45355:S 07 May 2024 01:30:07.970 * Successful partial resynchronization with master.
+45355:S 07 May 2024 01:30:07.970 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 01:37:50.341 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 01:37:50.342 * Connection with master lost.
+45355:S 07 May 2024 01:37:50.342 * Caching the disconnected master state.
+45355:S 07 May 2024 01:37:50.342 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 01:37:50.343 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 01:37:50.343 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 01:37:50.344 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 01:37:50.344 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52458).
+45355:S 07 May 2024 01:37:50.345 * Successful partial resynchronization with master.
+45355:S 07 May 2024 01:37:50.345 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 01:49:18.423 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 01:49:18.430 * Connection with master lost.
+45355:S 07 May 2024 01:49:18.438 * Caching the disconnected master state.
+45355:S 07 May 2024 01:49:18.438 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 01:49:18.438 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 01:49:18.438 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 01:49:18.438 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 01:49:18.439 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52458).
+45355:S 07 May 2024 01:49:18.439 * Successful partial resynchronization with master.
+45355:S 07 May 2024 01:49:18.439 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 02:04:30.148 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 02:04:30.159 * Connection with master lost.
+45355:S 07 May 2024 02:04:30.159 * Caching the disconnected master state.
+45355:S 07 May 2024 02:04:30.160 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 02:04:30.160 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 02:04:30.160 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 02:04:30.162 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 02:04:30.163 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52472).
+45355:S 07 May 2024 02:04:30.163 * Successful partial resynchronization with master.
+45355:S 07 May 2024 02:04:30.163 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 02:16:22.843 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 02:16:22.844 * Connection with master lost.
+45355:S 07 May 2024 02:16:22.844 * Caching the disconnected master state.
+45355:S 07 May 2024 02:16:22.844 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 02:16:22.845 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 02:16:22.845 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 02:16:22.846 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 02:16:22.848 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52514).
+45355:S 07 May 2024 02:16:22.849 * Successful partial resynchronization with master.
+45355:S 07 May 2024 02:16:22.849 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 02:32:18.940 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 02:32:18.940 * Connection with master lost.
+45355:S 07 May 2024 02:32:18.941 * Caching the disconnected master state.
+45355:S 07 May 2024 02:32:18.941 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 02:32:18.942 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 02:32:18.942 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 02:32:18.943 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 02:32:18.943 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52542).
+45355:S 07 May 2024 02:32:18.944 * Successful partial resynchronization with master.
+45355:S 07 May 2024 02:32:18.944 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 02:34:07.456 * Connection with master lost.
+45355:S 07 May 2024 02:34:07.456 * Caching the disconnected master state.
+45355:S 07 May 2024 02:34:07.456 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 02:34:07.457 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 02:34:07.457 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 02:34:07.458 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 02:34:07.458 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:52556).
+45355:S 07 May 2024 02:34:07.459 * Successful partial resynchronization with master.
+45355:S 07 May 2024 02:34:07.459 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 03:25:21.697 * 1 changes in 3600 seconds. Saving...
+45355:S 07 May 2024 03:25:21.700 * Background saving started by pid 56674
+56674:C 07 May 2024 03:25:21.711 * DB saved on disk
+56674:C 07 May 2024 03:25:21.718 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
+45355:S 07 May 2024 03:25:21.803 * Background saving terminated with success
+45355:S 07 May 2024 04:25:22.087 * 1 changes in 3600 seconds. Saving...
+45355:S 07 May 2024 04:25:22.092 * Background saving started by pid 57561
+57561:C 07 May 2024 04:25:22.102 * DB saved on disk
+57561:C 07 May 2024 04:25:22.109 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
+45355:S 07 May 2024 04:25:22.193 * Background saving terminated with success
+45355:S 07 May 2024 05:17:17.792 * Connection with master lost.
+45355:S 07 May 2024 05:17:17.792 * Caching the disconnected master state.
+45355:S 07 May 2024 05:17:17.793 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 05:17:17.793 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 05:17:17.794 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 05:17:17.795 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 05:17:17.796 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:72510).
+45355:S 07 May 2024 05:17:17.797 * Successful partial resynchronization with master.
+45355:S 07 May 2024 05:17:17.797 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 05:35:12.356 * 1 changes in 3600 seconds. Saving...
+45355:S 07 May 2024 05:35:12.463 * Background saving started by pid 58179
+58179:C 07 May 2024 05:35:12.503 * DB saved on disk
+58179:C 07 May 2024 05:35:12.503 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
+45355:S 07 May 2024 05:35:12.573 * Background saving terminated with success
+45355:S 07 May 2024 05:35:12.767 * Connection with master lost.
+45355:S 07 May 2024 05:35:12.767 * Caching the disconnected master state.
+45355:S 07 May 2024 05:35:12.767 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 05:35:12.768 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 05:35:12.768 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 05:35:12.769 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 05:35:12.769 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:72660).
+45355:S 07 May 2024 05:35:12.770 * Successful partial resynchronization with master.
+45355:S 07 May 2024 05:35:12.771 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 05:52:00.355 * Connection with master lost.
+45355:S 07 May 2024 05:52:00.362 * Caching the disconnected master state.
+45355:S 07 May 2024 05:52:00.376 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 05:52:00.376 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 05:52:00.376 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 05:52:00.377 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 05:52:00.377 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:72674).
+45355:S 07 May 2024 05:52:00.377 * Successful partial resynchronization with master.
+45355:S 07 May 2024 05:52:00.377 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 06:07:06.290 * Connection with master lost.
+45355:S 07 May 2024 06:07:06.393 * Caching the disconnected master state.
+45355:S 07 May 2024 06:07:06.393 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 06:07:06.393 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 06:07:06.394 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 06:07:06.404 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 06:07:06.405 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:72674).
+45355:S 07 May 2024 06:07:06.405 * Successful partial resynchronization with master.
+45355:S 07 May 2024 06:07:06.405 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 06:11:16.443 * Connection with master lost.
+45355:S 07 May 2024 06:11:16.443 * Caching the disconnected master state.
+45355:S 07 May 2024 06:11:16.444 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 06:11:16.444 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 06:11:16.445 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 06:11:16.445 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 06:11:16.446 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:72836).
+45355:S 07 May 2024 06:11:16.447 * Successful partial resynchronization with master.
+45355:S 07 May 2024 06:11:16.447 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 06:26:24.197 * Connection with master lost.
+45355:S 07 May 2024 06:26:24.214 * Caching the disconnected master state.
+45355:S 07 May 2024 06:26:24.214 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 06:26:24.214 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 06:26:24.215 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 06:26:24.215 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 06:26:24.215 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:72836).
+45355:S 07 May 2024 06:26:24.215 * Successful partial resynchronization with master.
+45355:S 07 May 2024 06:26:24.216 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 06:43:56.123 * 1 changes in 3600 seconds. Saving...
+45355:S 07 May 2024 06:43:56.245 * Background saving started by pid 58232
+58232:C 07 May 2024 06:43:56.266 * DB saved on disk
+58232:C 07 May 2024 06:43:56.266 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
+45355:S 07 May 2024 06:43:56.376 * Background saving terminated with success
+45355:S 07 May 2024 06:43:56.429 * Connection with master lost.
+45355:S 07 May 2024 06:43:56.429 * Caching the disconnected master state.
+45355:S 07 May 2024 06:43:56.429 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 06:43:56.429 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 06:43:56.430 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 06:43:56.430 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 06:43:56.430 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:72908).
+45355:S 07 May 2024 06:43:56.431 * Successful partial resynchronization with master.
+45355:S 07 May 2024 06:43:56.431 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 07:00:40.285 * Connection with master lost.
+45355:S 07 May 2024 07:00:40.286 * Caching the disconnected master state.
+45355:S 07 May 2024 07:00:40.286 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 07:00:40.287 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 07:00:40.304 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 07:00:40.304 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 07:00:40.304 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73042).
+45355:S 07 May 2024 07:00:40.305 * Successful partial resynchronization with master.
+45355:S 07 May 2024 07:00:40.305 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 07:18:48.055 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 07:18:48.159 * Connection with master lost.
+45355:S 07 May 2024 07:18:48.159 * Caching the disconnected master state.
+45355:S 07 May 2024 07:18:48.159 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 07:18:48.159 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 07:18:48.160 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 07:18:48.173 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 07:18:48.173 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73056).
+45355:S 07 May 2024 07:18:48.173 * Successful partial resynchronization with master.
+45355:S 07 May 2024 07:18:48.173 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 07:34:54.040 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 07:34:54.137 * Connection with master lost.
+45355:S 07 May 2024 07:34:54.137 * Caching the disconnected master state.
+45355:S 07 May 2024 07:34:54.137 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 07:34:54.137 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 07:34:54.144 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 07:34:54.145 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 07:34:54.145 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73056).
+45355:S 07 May 2024 07:34:54.145 * Successful partial resynchronization with master.
+45355:S 07 May 2024 07:34:54.145 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 07:50:20.021 * 1 changes in 3600 seconds. Saving...
+45355:S 07 May 2024 07:50:20.121 * Background saving started by pid 58245
+45355:S 07 May 2024 07:50:20.129 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 07:50:20.130 * Connection with master lost.
+45355:S 07 May 2024 07:50:20.130 * Caching the disconnected master state.
+45355:S 07 May 2024 07:50:20.130 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 07:50:20.130 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 07:50:20.130 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 07:50:20.132 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 07:50:20.139 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73070).
+58245:C 07 May 2024 07:50:20.144 * DB saved on disk
+58245:C 07 May 2024 07:50:20.145 * Fork CoW for RDB: current 0 MB, peak 0 MB, average 0 MB
+45355:S 07 May 2024 07:50:20.145 * Successful partial resynchronization with master.
+45355:S 07 May 2024 07:50:20.145 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 07:50:20.231 * Background saving terminated with success
+45355:S 07 May 2024 08:01:40.988 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 08:01:41.086 * Connection with master lost.
+45355:S 07 May 2024 08:01:41.086 * Caching the disconnected master state.
+45355:S 07 May 2024 08:01:41.086 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 08:01:41.087 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 08:01:41.093 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 08:01:41.094 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 08:01:41.094 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73070).
+45355:S 07 May 2024 08:01:41.094 * Successful partial resynchronization with master.
+45355:S 07 May 2024 08:01:41.094 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 08:19:15.359 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 08:19:15.360 * Connection with master lost.
+45355:S 07 May 2024 08:19:15.360 * Caching the disconnected master state.
+45355:S 07 May 2024 08:19:15.360 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 08:19:15.360 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 08:19:15.361 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 08:19:15.361 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 08:19:15.362 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73084).
+45355:S 07 May 2024 08:19:15.364 * Successful partial resynchronization with master.
+45355:S 07 May 2024 08:19:15.364 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 08:36:22.541 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 08:36:22.541 * Connection with master lost.
+45355:S 07 May 2024 08:36:22.541 * Caching the disconnected master state.
+45355:S 07 May 2024 08:36:22.541 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 08:36:22.542 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 08:36:22.542 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 08:36:22.543 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 08:36:22.544 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73098).
+45355:S 07 May 2024 08:36:22.544 * Successful partial resynchronization with master.
+45355:S 07 May 2024 08:36:22.544 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 08:54:20.372 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 08:54:20.372 * Connection with master lost.
+45355:S 07 May 2024 08:54:20.372 * Caching the disconnected master state.
+45355:S 07 May 2024 08:54:20.373 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 08:54:20.373 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 08:54:20.374 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 08:54:20.375 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 08:54:20.377 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73098).
+45355:S 07 May 2024 08:54:20.378 * Successful partial resynchronization with master.
+45355:S 07 May 2024 08:54:20.378 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 09:02:42.261 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 09:02:42.261 * Connection with master lost.
+45355:S 07 May 2024 09:02:42.262 * Caching the disconnected master state.
+45355:S 07 May 2024 09:02:42.262 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 09:02:42.262 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 09:02:42.263 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 09:02:42.263 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 09:02:42.264 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73112).
+45355:S 07 May 2024 09:02:42.265 * Successful partial resynchronization with master.
+45355:S 07 May 2024 09:02:42.265 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 09:18:37.451 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 09:18:37.452 * Connection with master lost.
+45355:S 07 May 2024 09:18:37.452 * Caching the disconnected master state.
+45355:S 07 May 2024 09:18:37.452 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 09:18:37.452 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 09:18:37.453 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 09:18:37.453 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 09:18:37.454 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73126).
+45355:S 07 May 2024 09:18:37.455 * Successful partial resynchronization with master.
+45355:S 07 May 2024 09:18:37.455 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 09:34:49.324 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 09:34:49.324 * Connection with master lost.
+45355:S 07 May 2024 09:34:49.324 * Caching the disconnected master state.
+45355:S 07 May 2024 09:34:49.324 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 09:34:49.325 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 09:34:49.325 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 09:34:49.326 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 09:34:49.326 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73126).
+45355:S 07 May 2024 09:34:49.327 * Successful partial resynchronization with master.
+45355:S 07 May 2024 09:34:49.327 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 09:52:24.166 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 09:52:24.166 * Connection with master lost.
+45355:S 07 May 2024 09:52:24.167 * Caching the disconnected master state.
+45355:S 07 May 2024 09:52:24.167 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 09:52:24.168 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 09:52:24.168 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 09:52:24.169 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 09:52:24.170 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73140).
+45355:S 07 May 2024 09:52:24.171 * Successful partial resynchronization with master.
+45355:S 07 May 2024 09:52:24.171 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 10:03:43.046 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 10:03:43.047 * Connection with master lost.
+45355:S 07 May 2024 10:03:43.047 * Caching the disconnected master state.
+45355:S 07 May 2024 10:03:43.048 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 10:03:43.048 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 10:03:43.048 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 10:03:43.049 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 10:03:43.050 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73140).
+45355:S 07 May 2024 10:03:43.051 * Successful partial resynchronization with master.
+45355:S 07 May 2024 10:03:43.051 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 10:20:32.393 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 10:20:32.393 * Connection with master lost.
+45355:S 07 May 2024 10:20:32.394 * Caching the disconnected master state.
+45355:S 07 May 2024 10:20:32.394 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 10:20:32.394 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 10:20:32.395 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 10:20:32.395 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 10:20:32.396 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73154).
+45355:S 07 May 2024 10:20:32.397 * Successful partial resynchronization with master.
+45355:S 07 May 2024 10:20:32.398 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 10:37:38.270 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 10:37:38.271 * Connection with master lost.
+45355:S 07 May 2024 10:37:38.271 * Caching the disconnected master state.
+45355:S 07 May 2024 10:37:38.271 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 10:37:38.271 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 10:37:38.272 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 10:37:38.273 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 10:37:38.273 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73168).
+45355:S 07 May 2024 10:37:38.274 * Successful partial resynchronization with master.
+45355:S 07 May 2024 10:37:38.274 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 10:53:26.143 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 10:53:26.143 * Connection with master lost.
+45355:S 07 May 2024 10:53:26.144 * Caching the disconnected master state.
+45355:S 07 May 2024 10:53:26.144 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 10:53:26.144 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 10:53:26.145 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 10:53:26.145 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 10:53:26.146 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73168).
+45355:S 07 May 2024 10:53:26.146 * Successful partial resynchronization with master.
+45355:S 07 May 2024 10:53:26.147 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 11:04:42.696 * Connection with master lost.
+45355:S 07 May 2024 11:04:42.701 * Caching the disconnected master state.
+45355:S 07 May 2024 11:04:42.701 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 11:04:42.702 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 11:04:42.702 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 11:04:42.702 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 11:04:42.702 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73182).
+45355:S 07 May 2024 11:04:42.703 * Successful partial resynchronization with master.
+45355:S 07 May 2024 11:04:42.703 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 11:20:14.556 * Connection with master lost.
+45355:S 07 May 2024 11:20:14.654 * Caching the disconnected master state.
+45355:S 07 May 2024 11:20:14.654 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 11:20:14.654 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 11:20:14.677 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 11:20:14.678 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 11:20:14.678 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73182).
+45355:S 07 May 2024 11:20:14.679 * Successful partial resynchronization with master.
+45355:S 07 May 2024 11:20:14.679 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 11:36:09.755 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 11:36:09.755 * Connection with master lost.
+45355:S 07 May 2024 11:36:09.756 * Caching the disconnected master state.
+45355:S 07 May 2024 11:36:09.756 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 11:36:09.756 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 11:36:09.756 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 11:36:09.757 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 11:36:09.757 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73196).
+45355:S 07 May 2024 11:36:09.758 * Successful partial resynchronization with master.
+45355:S 07 May 2024 11:36:09.758 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 11:53:19.642 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 11:53:19.652 * Connection with master lost.
+45355:S 07 May 2024 11:53:19.652 * Caching the disconnected master state.
+45355:S 07 May 2024 11:53:19.652 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 11:53:19.652 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 11:53:19.653 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 11:53:19.653 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 11:53:19.654 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73210).
+45355:S 07 May 2024 11:53:19.654 * Successful partial resynchronization with master.
+45355:S 07 May 2024 11:53:19.654 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 12:05:42.668 * Connection with master lost.
+45355:S 07 May 2024 12:05:42.668 * Caching the disconnected master state.
+45355:S 07 May 2024 12:05:42.668 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 12:05:42.669 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 12:05:42.669 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 12:05:42.669 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 12:05:42.669 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73210).
+45355:S 07 May 2024 12:05:42.670 * Successful partial resynchronization with master.
+45355:S 07 May 2024 12:05:42.670 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 12:20:51.610 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 12:20:51.611 * Connection with master lost.
+45355:S 07 May 2024 12:20:51.611 * Caching the disconnected master state.
+45355:S 07 May 2024 12:20:51.611 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 12:20:51.611 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 12:20:51.612 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 12:20:51.612 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 12:20:51.613 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73224).
+45355:S 07 May 2024 12:20:51.614 * Successful partial resynchronization with master.
+45355:S 07 May 2024 12:20:51.615 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 12:24:04.339 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 12:24:04.345 * Connection with master lost.
+45355:S 07 May 2024 12:24:04.358 * Caching the disconnected master state.
+45355:S 07 May 2024 12:24:04.358 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 12:24:04.358 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 12:24:04.359 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 12:24:04.359 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 12:24:04.359 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73280).
+45355:S 07 May 2024 12:24:04.360 * Successful partial resynchronization with master.
+45355:S 07 May 2024 12:24:04.360 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 12:41:02.004 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 12:41:02.005 * Connection with master lost.
+45355:S 07 May 2024 12:41:02.005 * Caching the disconnected master state.
+45355:S 07 May 2024 12:41:02.005 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 12:41:02.005 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 12:41:02.006 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 12:41:02.006 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 12:41:02.007 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73294).
+45355:S 07 May 2024 12:41:02.008 * Successful partial resynchronization with master.
+45355:S 07 May 2024 12:41:02.008 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 12:56:11.847 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 12:56:11.848 * Connection with master lost.
+45355:S 07 May 2024 12:56:11.848 * Caching the disconnected master state.
+45355:S 07 May 2024 12:56:11.848 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 12:56:11.848 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 12:56:11.849 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 12:56:11.849 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 12:56:11.850 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73308).
+45355:S 07 May 2024 12:56:11.851 * Successful partial resynchronization with master.
+45355:S 07 May 2024 12:56:11.851 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 13:04:14.712 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 13:04:14.713 * Connection with master lost.
+45355:S 07 May 2024 13:04:14.713 * Caching the disconnected master state.
+45355:S 07 May 2024 13:04:14.714 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 13:04:14.714 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 13:04:14.714 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 13:04:14.715 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 13:04:14.716 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73308).
+45355:S 07 May 2024 13:04:14.716 * Successful partial resynchronization with master.
+45355:S 07 May 2024 13:04:14.717 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 13:06:42.912 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 13:06:42.913 * Connection with master lost.
+45355:S 07 May 2024 13:06:42.913 * Caching the disconnected master state.
+45355:S 07 May 2024 13:06:42.913 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 13:06:42.913 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 13:06:42.914 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 13:06:42.914 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 13:06:42.915 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73322).
+45355:S 07 May 2024 13:06:42.916 * Successful partial resynchronization with master.
+45355:S 07 May 2024 13:06:42.916 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 13:49:57.275 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 13:49:57.276 * Connection with master lost.
+45355:S 07 May 2024 13:49:57.277 * Caching the disconnected master state.
+45355:S 07 May 2024 13:49:57.277 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 13:49:57.278 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 13:49:57.278 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 13:49:57.278 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 13:49:57.279 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73336).
+45355:S 07 May 2024 13:49:57.279 * Successful partial resynchronization with master.
+45355:S 07 May 2024 13:49:57.279 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 14:06:25.210 * Connection with master lost.
+45355:S 07 May 2024 14:06:25.210 * Caching the disconnected master state.
+45355:S 07 May 2024 14:06:25.210 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 14:06:25.210 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 14:06:25.210 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 14:06:25.211 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 14:06:25.211 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73350).
+45355:S 07 May 2024 14:06:25.211 * Successful partial resynchronization with master.
+45355:S 07 May 2024 14:06:25.211 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 14:07:42.101 * Connection with master lost.
+45355:S 07 May 2024 14:07:42.210 * Caching the disconnected master state.
+45355:S 07 May 2024 14:07:42.210 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 14:07:42.210 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 14:07:42.210 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 14:07:42.211 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 14:07:42.211 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73350).
+45355:S 07 May 2024 14:07:42.211 * Successful partial resynchronization with master.
+45355:S 07 May 2024 14:07:42.211 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 14:23:09.654 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 14:23:09.655 * Connection with master lost.
+45355:S 07 May 2024 14:23:09.655 * Caching the disconnected master state.
+45355:S 07 May 2024 14:23:09.655 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 14:23:09.656 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 14:23:09.656 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 14:23:09.657 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 14:23:09.657 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:73364).
+45355:S 07 May 2024 14:23:09.658 * Successful partial resynchronization with master.
+45355:S 07 May 2024 14:23:09.659 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 15:30:03.444 * Connection with master lost.
+45355:S 07 May 2024 15:30:03.445 * Caching the disconnected master state.
+45355:S 07 May 2024 15:30:03.445 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 15:30:03.446 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 15:30:03.446 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 15:30:03.447 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 15:30:03.447 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:77382).
+45355:S 07 May 2024 15:30:03.449 * Successful partial resynchronization with master.
+45355:S 07 May 2024 15:30:03.449 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 15:47:21.340 * Connection with master lost.
+45355:S 07 May 2024 15:47:21.343 * Caching the disconnected master state.
+45355:S 07 May 2024 15:47:21.344 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 15:47:21.345 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 15:47:21.347 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 15:47:21.350 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 15:47:21.351 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:77396).
+45355:S 07 May 2024 15:47:21.352 * Successful partial resynchronization with master.
+45355:S 07 May 2024 15:47:21.353 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 15:53:51.458 * Connection with master lost.
+45355:S 07 May 2024 15:53:51.554 * Caching the disconnected master state.
+45355:S 07 May 2024 15:53:51.554 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 15:53:51.555 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 15:53:51.561 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 15:53:51.562 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 15:53:51.562 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:77396).
+45355:S 07 May 2024 15:53:51.562 * Successful partial resynchronization with master.
+45355:S 07 May 2024 15:53:51.562 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 16:09:03.452 * Connection with master lost.
+45355:S 07 May 2024 16:09:03.452 * Caching the disconnected master state.
+45355:S 07 May 2024 16:09:03.452 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 16:09:03.452 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 16:09:03.453 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 16:09:03.453 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 16:09:03.453 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:77410).
+45355:S 07 May 2024 16:09:03.454 * Successful partial resynchronization with master.
+45355:S 07 May 2024 16:09:03.455 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 16:10:12.889 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 16:10:12.890 * Connection with master lost.
+45355:S 07 May 2024 16:10:12.891 * Caching the disconnected master state.
+45355:S 07 May 2024 16:10:12.891 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 16:10:12.892 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 16:10:12.893 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 16:10:12.893 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 16:10:12.894 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:77424).
+45355:S 07 May 2024 16:10:12.895 * Successful partial resynchronization with master.
+45355:S 07 May 2024 16:10:12.895 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 16:12:51.288 * Connection with master lost.
+45355:S 07 May 2024 16:12:51.295 * Caching the disconnected master state.
+45355:S 07 May 2024 16:12:51.295 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 16:12:51.296 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 16:12:51.296 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 16:12:51.298 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 16:12:51.307 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:77466).
+45355:S 07 May 2024 16:12:51.308 * Successful partial resynchronization with master.
+45355:S 07 May 2024 16:12:51.308 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 16:27:09.348 * Connection with master lost.
+45355:S 07 May 2024 16:27:09.362 * Caching the disconnected master state.
+45355:S 07 May 2024 16:27:09.363 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 16:27:09.363 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 16:27:09.364 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 16:27:09.364 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 16:27:09.365 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:77466).
+45355:S 07 May 2024 16:27:09.367 * Successful partial resynchronization with master.
+45355:S 07 May 2024 16:27:09.367 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 17:46:28.337 * Connection with master lost.
+45355:S 07 May 2024 17:46:28.338 * Caching the disconnected master state.
+45355:S 07 May 2024 17:46:28.339 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 17:46:28.339 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 17:46:28.339 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 17:46:28.340 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 17:46:28.341 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82492).
+45355:S 07 May 2024 17:46:28.342 * Successful partial resynchronization with master.
+45355:S 07 May 2024 17:46:28.343 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 17:54:59.064 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 17:54:59.065 * Connection with master lost.
+45355:S 07 May 2024 17:54:59.065 * Caching the disconnected master state.
+45355:S 07 May 2024 17:54:59.065 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 17:54:59.065 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 17:54:59.066 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 17:54:59.067 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 17:54:59.067 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82520).
+45355:S 07 May 2024 17:54:59.068 * Successful partial resynchronization with master.
+45355:S 07 May 2024 17:54:59.069 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 18:00:30.739 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 18:00:30.843 * Connection with master lost.
+45355:S 07 May 2024 18:00:30.843 * Caching the disconnected master state.
+45355:S 07 May 2024 18:00:30.843 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 18:00:30.844 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 18:00:30.849 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 18:00:30.849 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 18:00:30.850 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82520).
+45355:S 07 May 2024 18:00:30.850 * Successful partial resynchronization with master.
+45355:S 07 May 2024 18:00:30.850 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 18:04:23.897 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 18:04:23.999 * Connection with master lost.
+45355:S 07 May 2024 18:04:24.000 * Caching the disconnected master state.
+45355:S 07 May 2024 18:04:24.000 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 18:04:24.000 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 18:04:24.006 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 18:04:24.006 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 18:04:24.007 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82548).
+45355:S 07 May 2024 18:04:24.007 * Successful partial resynchronization with master.
+45355:S 07 May 2024 18:04:24.007 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 18:20:08.936 * Connection with master lost.
+45355:S 07 May 2024 18:20:09.035 * Caching the disconnected master state.
+45355:S 07 May 2024 18:20:09.036 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 18:20:09.036 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 18:20:09.040 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 18:20:09.040 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 18:20:09.041 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82562).
+45355:S 07 May 2024 18:20:09.041 * Successful partial resynchronization with master.
+45355:S 07 May 2024 18:20:09.041 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 18:38:11.624 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 18:38:11.625 * Connection with master lost.
+45355:S 07 May 2024 18:38:11.625 * Caching the disconnected master state.
+45355:S 07 May 2024 18:38:11.625 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 18:38:11.625 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 18:38:11.626 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 18:38:11.626 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 18:38:11.627 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82562).
+45355:S 07 May 2024 18:38:11.628 * Successful partial resynchronization with master.
+45355:S 07 May 2024 18:38:11.628 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 18:55:24.487 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 18:55:24.488 * Connection with master lost.
+45355:S 07 May 2024 18:55:24.488 * Caching the disconnected master state.
+45355:S 07 May 2024 18:55:24.488 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 18:55:24.488 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 18:55:24.489 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 18:55:24.489 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 18:55:24.490 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82576).
+45355:S 07 May 2024 18:55:24.491 * Successful partial resynchronization with master.
+45355:S 07 May 2024 18:55:24.491 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 19:10:52.242 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 19:10:52.242 * Connection with master lost.
+45355:S 07 May 2024 19:10:52.243 * Caching the disconnected master state.
+45355:S 07 May 2024 19:10:52.243 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 19:10:52.243 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 19:10:52.244 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 19:10:52.244 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 19:10:52.245 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82576).
+45355:S 07 May 2024 19:10:52.246 * Successful partial resynchronization with master.
+45355:S 07 May 2024 19:10:52.246 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 19:28:48.091 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 19:28:48.091 * Connection with master lost.
+45355:S 07 May 2024 19:28:48.091 * Caching the disconnected master state.
+45355:S 07 May 2024 19:28:48.091 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 19:28:48.092 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 19:28:48.092 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 19:28:48.093 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 19:28:48.093 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82590).
+45355:S 07 May 2024 19:28:48.094 * Successful partial resynchronization with master.
+45355:S 07 May 2024 19:28:48.094 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 19:31:16.996 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 19:31:16.996 * Connection with master lost.
+45355:S 07 May 2024 19:31:16.996 * Caching the disconnected master state.
+45355:S 07 May 2024 19:31:16.996 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 19:31:16.997 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 19:31:16.997 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 19:31:16.997 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 19:31:16.998 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82590).
+45355:S 07 May 2024 19:31:16.998 * Successful partial resynchronization with master.
+45355:S 07 May 2024 19:31:16.998 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 19:35:26.865 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 19:35:26.977 * Connection with master lost.
+45355:S 07 May 2024 19:35:26.977 * Caching the disconnected master state.
+45355:S 07 May 2024 19:35:26.977 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 19:35:26.977 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 19:35:26.978 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 19:35:26.978 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 19:35:26.979 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82618).
+45355:S 07 May 2024 19:35:26.979 * Successful partial resynchronization with master.
+45355:S 07 May 2024 19:35:26.979 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 19:50:35.290 * Connection with master lost.
+45355:S 07 May 2024 19:50:35.391 * Caching the disconnected master state.
+45355:S 07 May 2024 19:50:35.392 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 19:50:35.392 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 19:50:35.392 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 19:50:35.400 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 19:50:35.401 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82632).
+45355:S 07 May 2024 19:50:35.401 * Successful partial resynchronization with master.
+45355:S 07 May 2024 19:50:35.401 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 19:54:21.519 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 19:54:21.520 * Connection with master lost.
+45355:S 07 May 2024 19:54:21.520 * Caching the disconnected master state.
+45355:S 07 May 2024 19:54:21.520 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 19:54:21.520 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 19:54:21.521 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 19:54:21.521 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 19:54:21.522 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82674).
+45355:S 07 May 2024 19:54:21.523 * Successful partial resynchronization with master.
+45355:S 07 May 2024 19:54:21.523 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 20:11:10.083 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 20:11:10.083 * Connection with master lost.
+45355:S 07 May 2024 20:11:10.084 * Caching the disconnected master state.
+45355:S 07 May 2024 20:11:10.084 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 20:11:10.084 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 20:11:10.085 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 20:11:10.085 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 20:11:10.086 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82674).
+45355:S 07 May 2024 20:11:10.087 * Successful partial resynchronization with master.
+45355:S 07 May 2024 20:11:10.087 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 20:17:45.959 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 20:17:46.058 * Connection with master lost.
+45355:S 07 May 2024 20:17:46.058 * Caching the disconnected master state.
+45355:S 07 May 2024 20:17:46.058 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 20:17:46.058 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 20:17:46.059 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 20:17:46.063 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 20:17:46.063 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82716).
+45355:S 07 May 2024 20:17:46.064 * Successful partial resynchronization with master.
+45355:S 07 May 2024 20:17:46.064 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 20:32:54.359 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 20:32:54.462 * Connection with master lost.
+45355:S 07 May 2024 20:32:54.462 * Caching the disconnected master state.
+45355:S 07 May 2024 20:32:54.462 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 20:32:54.462 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 20:32:54.469 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 20:32:54.470 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 20:32:54.470 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82716).
+45355:S 07 May 2024 20:32:54.470 * Successful partial resynchronization with master.
+45355:S 07 May 2024 20:32:54.470 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 21:07:23.785 * Connection with master lost.
+45355:S 07 May 2024 21:07:23.786 * Caching the disconnected master state.
+45355:S 07 May 2024 21:07:23.787 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 21:07:23.788 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 21:07:23.789 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 21:07:23.791 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 21:07:23.793 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82758).
+45355:S 07 May 2024 21:07:23.796 * Successful partial resynchronization with master.
+45355:S 07 May 2024 21:07:23.797 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 21:12:11.468 * Connection with master lost.
+45355:S 07 May 2024 21:12:11.469 * Caching the disconnected master state.
+45355:S 07 May 2024 21:12:11.469 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 21:12:11.470 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 21:12:11.470 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 21:12:11.471 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 21:12:11.471 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82800).
+45355:S 07 May 2024 21:12:11.473 * Successful partial resynchronization with master.
+45355:S 07 May 2024 21:12:11.473 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 21:16:48.617 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 21:16:48.719 * Connection with master lost.
+45355:S 07 May 2024 21:16:48.719 * Caching the disconnected master state.
+45355:S 07 May 2024 21:16:48.728 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 21:16:48.728 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 21:16:48.729 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 21:16:48.729 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 21:16:48.730 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82800).
+45355:S 07 May 2024 21:16:48.730 * Successful partial resynchronization with master.
+45355:S 07 May 2024 21:16:48.730 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 21:32:06.849 * Connection with master lost.
+45355:S 07 May 2024 21:32:06.948 * Caching the disconnected master state.
+45355:S 07 May 2024 21:32:06.948 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 21:32:06.948 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 21:32:06.948 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 21:32:06.949 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 21:32:06.956 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82828).
+45355:S 07 May 2024 21:32:06.956 * Successful partial resynchronization with master.
+45355:S 07 May 2024 21:32:06.956 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 21:48:00.529 * Connection with master lost.
+45355:S 07 May 2024 21:48:00.628 * Caching the disconnected master state.
+45355:S 07 May 2024 21:48:00.628 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 21:48:00.628 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 21:48:00.640 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 21:48:00.640 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 21:48:00.640 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82856).
+45355:S 07 May 2024 21:48:00.641 * Successful partial resynchronization with master.
+45355:S 07 May 2024 21:48:00.641 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 22:05:15.464 * Connection with master lost.
+45355:S 07 May 2024 22:05:15.566 * Caching the disconnected master state.
+45355:S 07 May 2024 22:05:15.566 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 22:05:15.574 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 22:05:15.574 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 22:05:15.574 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 22:05:15.574 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82870).
+45355:S 07 May 2024 22:05:15.575 * Successful partial resynchronization with master.
+45355:S 07 May 2024 22:05:15.575 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 22:13:10.560 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 22:13:10.564 * Connection with master lost.
+45355:S 07 May 2024 22:13:10.565 * Caching the disconnected master state.
+45355:S 07 May 2024 22:13:10.566 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 22:13:10.566 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 22:13:10.567 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 22:13:10.574 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 22:13:10.580 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82884).
+45355:S 07 May 2024 22:13:10.583 * Successful partial resynchronization with master.
+45355:S 07 May 2024 22:13:10.583 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.
+45355:S 07 May 2024 22:18:25.650 # MASTER timeout: no data nor PING received...
+45355:S 07 May 2024 22:18:25.747 * Connection with master lost.
+45355:S 07 May 2024 22:18:25.747 * Caching the disconnected master state.
+45355:S 07 May 2024 22:18:25.747 * Reconnecting to MASTER 127.0.0.1:6381
+45355:S 07 May 2024 22:18:25.747 * MASTER <-> REPLICA sync started
+45355:S 07 May 2024 22:18:25.755 * Non blocking connect for SYNC fired the event.
+45355:S 07 May 2024 22:18:25.756 * Master replied to PING, replication can continue...
+45355:S 07 May 2024 22:18:25.756 * Trying a partial resynchronization (request 0d241592c1116dc3298446988424b2678853c69c:82898).
+45355:S 07 May 2024 22:18:25.756 * Successful partial resynchronization with master.
+45355:S 07 May 2024 22:18:25.757 * MASTER <-> REPLICA sync: Master accepted a Partial Resynchronization.

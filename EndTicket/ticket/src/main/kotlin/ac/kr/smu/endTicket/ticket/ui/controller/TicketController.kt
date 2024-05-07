@@ -26,11 +26,17 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ac.kr.smu.endTicket.response.ExceptionResponse
+import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
+import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
+import io.swagger.v3.oas.annotations.security.SecurityRequirements
 import org.slf4j.LoggerFactory
+import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.PatchMapping
 
 @RestController
 @RequestMapping("/tickets")
 @Tag(name = "/tickets")
+@SecurityRequirement(name = "Access token")
 class TicketController(
     private val service: TicketService
 ) {
@@ -39,7 +45,7 @@ class TicketController(
         ApiResponse(
             description = "생성 완료",
             responseCode = "201",
-            content = [Content(schema = Schema(implementation = Ticket::class))]
+            content = [Content(schema = Schema(implementation = TicketResponse::class))]
         ),
         ApiResponse(
             description = "비정상적인 생성 요청",
@@ -47,7 +53,7 @@ class TicketController(
             content = [Content(schema = Schema(implementation = BindExceptionResponse::class))]
         )
     )
-    @Operation(summary = "티켓 생성", security = [SecurityRequirement(name = "Access token")])
+    @Operation(summary = "티켓 생성")
     @PostMapping
     fun createTicket(
         @Valid
@@ -58,15 +64,15 @@ class TicketController(
         @RequestHeader("X-User-ID")
         @Parameter(hidden = true)
         userID: Long
-    ): ResponseEntity<Ticket>{
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.createTicket(request, userID))
+    ): ResponseEntity<TicketResponse>{
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.createTicket(request, userID).toTicketResponse())
     }
 
     @ApiResponses(
         ApiResponse(
             description = "수정 완료",
             responseCode = "200",
-            content = [Content(schema = Schema(implementation = Ticket::class))]
+            content = [Content(schema = Schema(implementation = TicketResponse::class))]
         ),
 
         ApiResponse(
@@ -102,29 +108,42 @@ class TicketController(
         @Parameter(hidden = true)
         userID: Long
     ): ResponseEntity<*>{
-        val message = "티켓 수정 중 오류가 발생했습니다."
-        try {
-            return ResponseEntity
-                .ok(service.updateTicket(request, id, userID))
-        }catch (e: IllegalStateException){
-            log.info("id: $id", e)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                ExceptionResponse(
+        return ResponseEntity
+                .ok(service.updateTicket(request, id, userID).toTicketResponse())
+    }
+
+    @PatchMapping("/swipe/{id}")
+    @Operation(summary = "티켓 스와이프", description = "티켓을 스와이프 합니다. 티켓이 완료일 시에는 완료 이벤트가 발생됩니다.")
+    fun swipeTicket(
+        @PathVariable("id")
+        @Parameter(description = "티켓의 id", example = "1",required = true)
+        id: Long,
+
+        @Parameter(hidden = true)
+        @RequestHeader("X-User-ID") userID: Long): ResponseEntity<*>{
+        return ResponseEntity.ok().body(service.swipeTicket(id,userID))
+    }
+
+    @ExceptionHandler(NotFoundTicketException::class)
+    fun handleNotFoundTicketException(e: NotFoundTicketException): ResponseEntity<ExceptionResponse>{
+        log.info("id: ${e.id}", e)
+        return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+            ExceptionResponse(
                 code = HttpStatus.NOT_FOUND.value(),
-                message = message,
+                message = e.message,
                 detail = e.message
             )
+        )
+    }
+    @ExceptionHandler(NotOwnerOfTicketException::class)
+    fun handleNotOwnerOfTicketException(e: NotOwnerOfTicketException): ResponseEntity<ExceptionResponse>{
+        log.info("id: ${e.id}, userID: ${e.userID}", e)
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+            ExceptionResponse(
+                code = HttpStatus.FORBIDDEN.value(),
+                message = "티켓 스와이프 혹은 수정 요청 시 에러가 발생했습니다.",
+                detail = "사용자가 티켓의 소유자가 아닙니다."
             )
-        }
-        catch (e: NotOwnerOfTicketException){
-            log.info("id: $id, userID: $userID", e)
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                ExceptionResponse(
-                    code = HttpStatus.FORBIDDEN.value(),
-                    message = message,
-                    detail = "사용자가 티켓의 소유자가 아닙니다."
-                )
-            )
-        }
+        )
     }
 }

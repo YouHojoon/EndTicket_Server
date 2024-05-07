@@ -40,5 +40,3 @@ fun main(args: Array<String>) {
     runApplication<GatewayApplication>(*args)
     Hooks.enableAutomaticContextPropagation()
 }
-
-
