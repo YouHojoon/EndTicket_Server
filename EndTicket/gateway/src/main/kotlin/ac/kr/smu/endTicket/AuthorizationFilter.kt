@@ -15,7 +15,6 @@ import ac.kr.smu.endTicket.response.ExceptionResponse
 @Component
 class AuthorizationFilter(
     private val tokenService: TokenService,
-    private val tracer: Tracer
 ): AbstractGatewayFilterFactory<Any>() {
     private val USER_ID_HEADER_NAME = "X-User-ID"
     override fun apply(config: Any): GatewayFilter {
