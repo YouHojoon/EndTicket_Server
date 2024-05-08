@@ -2,7 +2,7 @@ package ac.kr.smu.endTicket.auth.ui.controller
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.domain.service.UserService
-import ac.kr.smu.endTicket.auth.infra.oAuth2.OAuth2User
+import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2User
 import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
 import io.swagger.v3.oas.annotations.Operation

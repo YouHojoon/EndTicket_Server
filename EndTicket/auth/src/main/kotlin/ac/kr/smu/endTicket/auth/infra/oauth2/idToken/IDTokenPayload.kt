@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.auth.infra.oAuth2.idToken
+package ac.kr.smu.endTicket.auth.infra.oauth2.idToken
 
 /**
  * ID 토큰의 페이로드를 추상화한 클래스

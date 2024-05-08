@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.auth.infra.oAuth2
+package ac.kr.smu.endTicket.auth.infra.oauth2
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import io.swagger.v3.oas.annotations.Operation

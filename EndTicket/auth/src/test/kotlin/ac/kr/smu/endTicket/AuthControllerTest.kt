@@ -7,7 +7,7 @@ import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.auth.ui.controller.AuthController
 import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
 import ac.kr.smu.endTicket.auth.infra.config.SecurityConfig
-import ac.kr.smu.endTicket.auth.infra.oAuth2.OAuth2TokenResponse
+import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2TokenResponse
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach

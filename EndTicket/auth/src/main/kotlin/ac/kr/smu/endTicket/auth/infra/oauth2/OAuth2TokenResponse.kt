@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.auth.infra.oAuth2
+package ac.kr.smu.endTicket.auth.infra.oauth2
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming

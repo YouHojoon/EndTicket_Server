@@ -2,8 +2,8 @@ package ac.kr.smu.endTicket.auth.infra.config
 
 
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
-import ac.kr.smu.endTicket.auth.infra.oAuth2.filter.OAuth2AuthorizationFilter
-import ac.kr.smu.endTicket.auth.infra.oAuth2.filter.OAuth2ErrorHandlerFilter
+import ac.kr.smu.endTicket.auth.infra.oauth2.filter.OAuth2AuthorizationFilter
+import ac.kr.smu.endTicket.auth.infra.oauth2.filter.OAuth2ErrorHandlerFilter
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

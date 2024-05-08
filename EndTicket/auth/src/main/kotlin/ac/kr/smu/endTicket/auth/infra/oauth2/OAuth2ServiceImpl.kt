@@ -1,9 +1,9 @@
-package ac.kr.smu.endTicket.auth.infra.oAuth2
+package ac.kr.smu.endTicket.auth.infra.oauth2
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
-import ac.kr.smu.endTicket.auth.infra.oAuth2.exception.OAuth2RequestException
-import ac.kr.smu.endTicket.auth.infra.oAuth2.idToken.IDTokenService
+import ac.kr.smu.endTicket.auth.infra.oauth2.exception.OAuth2RequestException
+import ac.kr.smu.endTicket.auth.infra.oauth2.idToken.IDTokenService
 import kotlinx.coroutines.*
 import org.springframework.http.MediaType
 import org.springframework.security.oauth2.client.registration.ClientRegistration

@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.auth.infra.oAuth2.idToken.exception
+package ac.kr.smu.endTicket.auth.infra.oauth2.idToken.exception
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 

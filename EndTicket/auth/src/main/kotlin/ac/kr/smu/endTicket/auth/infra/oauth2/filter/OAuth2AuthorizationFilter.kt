@@ -1,6 +1,6 @@
-package ac.kr.smu.endTicket.auth.infra.oAuth2.filter
+package ac.kr.smu.endTicket.auth.infra.oauth2.filter
 
-import ac.kr.smu.endTicket.auth.infra.oAuth2.OAuth2User
+import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2User
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
 import ac.kr.smu.endTicket.auth.ui.converter.SocialTypeConverter
 import jakarta.servlet.FilterChain
