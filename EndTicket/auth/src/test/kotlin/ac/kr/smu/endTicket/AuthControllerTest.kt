@@ -5,13 +5,11 @@ import ac.kr.smu.endTicket.auth.domain.service.OAuthService
 import ac.kr.smu.endTicket.auth.domain.service.UserService
 import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.auth.ui.controller.AuthController
-import ac.kr.smu.endTicket.auth.ui.response.CreateTokenResponse
-import ac.kr.smu.endTicket.auth.ui.response.ReissueTokenResponse
+import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
 import ac.kr.smu.endTicket.auth.infra.config.SecurityConfig
-import ac.kr.smu.endTicket.auth.infra.OAuth2.OAuth2TokenResponse
+import ac.kr.smu.endTicket.auth.infra.oAuth2.OAuth2TokenResponse
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.jsonwebtoken.UnsupportedJwtException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -63,7 +61,7 @@ class AuthControllerTest @Autowired constructor(
             MockMvcRequestBuilders
                 .post("$BASE_URL/sns?socialType=$SOCIAL_TYPE&code=$AUTHORIZATION_CODE")
         )
-            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.status().isCreated)
             .andExpect(MockMvcResultMatchers.jsonPath("accessToken").value(ACCESS_TOKEN))
             .andExpect(MockMvcResultMatchers.jsonPath("refreshToken").value(REFRESH_TOKEN))
     }
@@ -71,23 +69,30 @@ class AuthControllerTest @Autowired constructor(
     @Test
     @DisplayName("리프레시 토큰으로 토큰 재발급 테스트")
     fun given_refreshToken_then_reissueToken_then_reissueAccessToken_and_refreshToken(){
-        val token = tokenService.createAccessAndRefreshToken(USER_ID)
+        Mockito.`when`(userService.findUserID(SOCIAL_TYPE, SOCIAL_UESR_NUMBER))
+            .thenReturn(USER_ID)
+
         Mockito.`when`(tokenService.reissueToken(Mockito.anyString()))
-            .thenReturn(ReissueTokenResponse(ACCESS_TOKEN,REFRESH_TOKEN))
+            .thenReturn(TokenResponse(ACCESS_TOKEN,REFRESH_TOKEN))
+
+        val token = tokenService
+            .createAccessAndRefreshToken(USER_ID)
+
 
         mvc.perform(
             MockMvcRequestBuilders
-                .post("$BASE_URL/reissueToken")
+                .post("$BASE_URL/reissue-token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(ObjectMapper().writeValueAsString(mapOf("refreshToken" to token.refreshToken)))
         )
+            .andExpect(MockMvcResultMatchers.status().isCreated)
             .andExpect(MockMvcResultMatchers.jsonPath("accessToken").value(ACCESS_TOKEN))
             .andExpect(MockMvcResultMatchers.jsonPath("refreshToken").value(REFRESH_TOKEN))
     }
 
     private fun mockTokenServiceForCreateTokenResponse(){
         Mockito.`when`(tokenService.createAccessAndRefreshToken(USER_ID))
-            .thenReturn(CreateTokenResponse(ACCESS_TOKEN,REFRESH_TOKEN))
+            .thenReturn(TokenResponse(ACCESS_TOKEN,REFRESH_TOKEN))
     }
     private fun mockOAuthService(){
         Mockito.`when`(oAuthService.oAuth(SOCIAL_TYPE,AUTHORIZATION_CODE))

@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema
 /**
  *  검증을 실패해 반환되는 응답, [ExceptionResponse]를 상속
  *  @param field 검증에 실패한 대표 필드
- *
  */
 @Schema(description = "검증을 실패해 반환되는 응답")
 class BindExceptionResponse(

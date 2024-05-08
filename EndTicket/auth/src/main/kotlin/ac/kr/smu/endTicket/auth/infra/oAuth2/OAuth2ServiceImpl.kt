@@ -1,9 +1,9 @@
-package ac.kr.smu.endTicket.auth.infra.OAuth2
+package ac.kr.smu.endTicket.auth.infra.oAuth2
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
-import ac.kr.smu.endTicket.auth.infra.OAuth2.exception.OAuth2RequestException
-import ac.kr.smu.endTicket.auth.infra.OAuth2.IDToken.IDTokenService
+import ac.kr.smu.endTicket.auth.infra.oAuth2.exception.OAuth2RequestException
+import ac.kr.smu.endTicket.auth.infra.oAuth2.idToken.IDTokenService
 import kotlinx.coroutines.*
 import org.springframework.http.MediaType
 import org.springframework.security.oauth2.client.registration.ClientRegistration
@@ -13,12 +13,11 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.reactive.function.client.awaitBody
-
-
 /**
  *
- * [OAuthService](ac.kr.smu.endticket.auth.domain.service.OAuthService)의 구현체
+ * [OAuthService]의 구현체
  * @property clientRegistrationRepository OAuth 클라이언트가 저장된 객체
+ * @property idTokenService ID 토큰을 위한 서비스
  */
 @Service
 class OAuth2ServiceImpl(
@@ -68,8 +67,13 @@ class OAuth2ServiceImpl(
                .bodyValue(tokenRequest(provider, code))
                .retrieve()
                .awaitBody()
-       }catch (e: WebClientResponseException){
-           throw OAuth2RequestException(e.getResponseBodyAs(Map::class.java).toString(), e)
+       }
+
+       catch (e: Exception){
+           if (e is WebClientResponseException)
+               throw OAuth2RequestException(e.getResponseBodyAs(Map::class.java).toString())
+           else
+               throw OAuth2RequestException(e.message)
        }
     }
 

@@ -1,8 +1,8 @@
-package ac.kr.smu.endTicket.auth.infra.OAuth2.IDToken
+package ac.kr.smu.endTicket.auth.infra.oAuth2.idToken
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
-import ac.kr.smu.endTicket.auth.infra.OAuth2.IDToken.exception.IDTokenNotVerifyException
-import ac.kr.smu.endTicket.auth.infra.OAuth2.IDToken.exception.JWKParseException
+import ac.kr.smu.endTicket.auth.infra.oAuth2.idToken.exception.UnverifiedIDTokenException
+import ac.kr.smu.endTicket.auth.infra.oAuth2.idToken.exception.JWKParseException
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Jwk
@@ -14,7 +14,6 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.reactive.function.client.awaitBody
 import java.security.KeyFactory
 import java.security.PublicKey
@@ -30,23 +29,24 @@ import java.util.*
 @Service
 class IDTokenService(
     private val clientRegistrationRepository: ClientRegistrationRepository,
-    private val redisTemplate: RedisTemplate<String, String>
+    private val redisTemplate: RedisTemplate<String, Any>
 ) {
+    private val JWK_REDIS_KEY_PREFIX = "JWK:"
     /**
      * ID 토큰을 이용해 SNS 사용자 번호를 반환하는 메소드
      * @param socialType ID 토큰을 발급받은 SNS
      * @param idToken ID 토큰
-     * @throws IDTokenNotVerifyException ID 토큰 검증 실패 의
+     * @throws UnverifiedIDTokenException ID 토큰 검증 실패 의
      */
-    @Throws(IDTokenNotVerifyException::class)
+    @Throws(UnverifiedIDTokenException::class)
     fun parseSocialUserNumber(socialType: SocialType, idToken: String): String{
         val (header, payload, _) = parseIDToken(idToken)
         val key = findPublicKey(socialType, header.kid)
 
         try {
             verifyIDToken(socialType,idToken, payload, key)
-        }catch (e:IllegalArgumentException){
-            throw IDTokenNotVerifyException(socialType,idToken ,e.message)
+        }catch (e: IllegalArgumentException){
+            throw UnverifiedIDTokenException(socialType,idToken ,e.message)
         }
 
         return payload.sub
@@ -61,7 +61,7 @@ class IDTokenService(
      * @throws IllegalArgumentException ID 토큰 검증 실패 시
      */
     @Throws(IllegalArgumentException::class)
-    private fun verifyIDToken(socialType: SocialType, idToken: String, payload: IDTokenPayLoad, key:PublicKey){
+    private fun verifyIDToken(socialType: SocialType, idToken: String, payload: IDTokenPayload, key:PublicKey){
         val provider = clientRegistrationRepository.findByRegistrationId(socialType.name.lowercase())
 
         require(payload.iss == provider.providerDetails.issuerUri){
@@ -93,9 +93,10 @@ class IDTokenService(
     @Throws(IllegalStateException::class)
     private fun findPublicKey(socialType: SocialType, kid: String): PublicKey {
         val provider = clientRegistrationRepository.findByRegistrationId(socialType.name.lowercase())
+
         return runBlocking {
             val jwkSet = getJwkSet(provider)
-            val key = jwkSet.filter { jwk: Jwk<*> -> jwk.id == kid }.firstOrNull()?.toKey()
+            val key = jwkSet.firstOrNull { jwk: Jwk<*> -> jwk.id == kid }?.toKey()
             checkNotNull(key)
 
             val keyFactory = KeyFactory.getInstance("RSA")
@@ -111,9 +112,10 @@ class IDTokenService(
      */
     @Throws(JWKParseException::class)
     private suspend fun getJwkSet(provider: ClientRegistration): JwkSet{
-        val vo = redisTemplate.opsForValue()
+        val key = "${JWK_REDIS_KEY_PREFIX}${provider.clientName.lowercase()}"
+        val jwks = redisTemplate.opsForValue().get(key) as? String
 
-        val json = vo.get("${provider.clientName.lowercase()}_jwk_set") ?:
+        val json = jwks ?:
 
         WebClient.create()
             .get()
@@ -122,11 +124,11 @@ class IDTokenService(
             .onStatus({ it.isError }) {
                 it.createException()
                     .map {
-                        JWKParseException(provider.clientName, it.getResponseBodyAs(Map::class.java).toString(), it)
+                        JWKParseException(provider.clientName, it.getResponseBodyAs(Map::class.java).toString(), it.rootCause)
                     }
             }
             .awaitBody<String>()
-            .also { vo.set("${provider.clientName.lowercase()}_jwk_set", it) }
+            .also { redisTemplate.opsForValue().set(key, it) }
 
         return Jwks.setParser().build().parse(json)
     }
@@ -144,10 +146,14 @@ class IDTokenService(
         val decodedPayload = String(decoder.decode(payload))
         val decodedHeader= String(decoder.decode(header))
 
-        return Triple(objectMapper.readValue(decodedHeader, IDTokenHeader::class.java)
-            , objectMapper.readValue(decodedPayload, IDTokenPayLoad::class.java), signature)
+        return IDToken(
+            objectMapper.readValue(decodedHeader, IDTokenHeader::class.java),
+            objectMapper.readValue(decodedPayload, IDTokenPayload::class.java),
+            signature
+        )
     }
 
 }
 
-private typealias IDToken = Triple<IDTokenHeader, IDTokenPayLoad,String>
+private typealias IDToken = Triple<IDTokenHeader, IDTokenPayload,String>
+

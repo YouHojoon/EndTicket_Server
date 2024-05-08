@@ -2,9 +2,8 @@ package ac.kr.smu.endTicket.auth.infra.config
 
 
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
-import ac.kr.smu.endTicket.auth.service.TokenService
-import ac.kr.smu.endTicket.auth.infra.OAuth2.filter.OAuth2AuthorizationFilter
-import ac.kr.smu.endTicket.auth.infra.OAuth2.filter.OAuth2ErrorHandlerFilter
+import ac.kr.smu.endTicket.auth.infra.oAuth2.filter.OAuth2AuthorizationFilter
+import ac.kr.smu.endTicket.auth.infra.oAuth2.filter.OAuth2ErrorHandlerFilter
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -18,6 +17,10 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter
 import org.springframework.security.web.AuthenticationEntryPoint
 import ac.kr.smu.endTicket.response.ExceptionResponse
+import ac.kr.smu.endTicket.security.baseConfig
+import ac.kr.smu.endTicket.security.baseExceptionHandling
+import ac.kr.smu.endTicket.security.configLogin
+import ac.kr.smu.endTicket.security.configSwaggerRequestPermitAll
 
 @Configuration
 @EnableWebSecurity
@@ -27,35 +30,12 @@ class SecurityConfig(
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain{
         http{
-            formLogin { disable() }
-            csrf { disable() }
-            sessionManagement {
-                sessionCreationPolicy = SessionCreationPolicy.STATELESS
-            }
+            baseConfig()
 
             authorizeRequests {
-                authorize("/actuator/**", permitAll)
-                authorize("/docs/**", permitAll)
-                authorize("/swagger-ui/**",permitAll)
-                authorize("/api-docs/**",permitAll)
                 authorize("/oauth/**",permitAll)
-                authorize("/auth/reissueToken", permitAll)
+                authorize("/auth/reissue-token", permitAll)
                 authorize(anyRequest, authenticated)
-            }
-
-            exceptionHandling {
-                authenticationEntryPoint = AuthenticationEntryPoint { _, response, e ->
-                    response.contentType = MediaType.APPLICATION_JSON_VALUE
-                    response.status = HttpStatus.UNAUTHORIZED.value()
-                    response.characterEncoding = "UTF-8"
-                    response.writer.write(ObjectMapper().writeValueAsString(
-                        ExceptionResponse(
-                            code = HttpStatus.UNAUTHORIZED.value(),
-                            message = "인증에 실패했습니다.",
-                            detail = e.message
-                        )
-                    ))
-                }
             }
 
             addFilterBefore<OAuth2LoginAuthenticationFilter>(OAuth2AuthorizationFilter(oAuthService))
