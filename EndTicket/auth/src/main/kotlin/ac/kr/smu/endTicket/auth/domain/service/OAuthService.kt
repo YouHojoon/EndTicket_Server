@@ -1,11 +1,11 @@
 package ac.kr.smu.endTicket.auth.domain.service
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
-import ac.kr.smu.endTicket.auth.infra.OAuth2.OAuth2TokenResponse
+import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2TokenResponse
 
 
 /**
- * 외부 SNS 서비스의 인증 기능을 위한 클래스
+ * 외부 SNS 서비스의 인증 기능을 위한 인터페이스
  */
 interface OAuthService {
     /**

@@ -2,10 +2,9 @@ package ac.kr.smu.endTicket.auth.ui.controller
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.domain.service.UserService
-import ac.kr.smu.endTicket.auth.infra.OAuth2.OAuth2User
+import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2User
 import ac.kr.smu.endTicket.auth.service.TokenService
-import ac.kr.smu.endTicket.auth.ui.response.CreateTokenResponse
-import ac.kr.smu.endTicket.auth.ui.response.ReissueTokenResponse
+import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.StringToClassMapItem
@@ -25,10 +24,12 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ac.kr.smu.endTicket.response.ExceptionResponse
+import io.swagger.v3.oas.annotations.tags.Tag
 
 
 @RequestMapping("/auth")
 @RestController
+@Tag(name = "/auth")
 class AuthController(
     private val tokenService: TokenService,
     private val userService: UserService
@@ -42,7 +43,7 @@ class AuthController(
             ApiResponse(description = "인증 성공", responseCode = "200",
                 content = [
                     Content(
-                        schema = Schema(implementation = CreateTokenResponse::class)
+                        schema = Schema(implementation = TokenResponse::class)
                     )
                 ]),
             ApiResponse(description = "파라미터 에러", responseCode = "400")
@@ -66,7 +67,9 @@ class AuthController(
                 .body(ExceptionResponse(503, "토큰을 발급하는 과정에서 에러가 발생했습니다.", "user서버와 통신에 실패했습니다"))
 
 
-        return ResponseEntity.ok(tokenService.createAccessAndRefreshToken(userID))
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(tokenService.createAccessAndRefreshToken(userID))
 
     }
 
@@ -78,7 +81,7 @@ class AuthController(
                 responseCode = "200",
                 content = [
                     Content(
-                        schema = Schema(implementation = ReissueTokenResponse::class)
+                        schema = Schema(implementation = TokenResponse::class)
                     )
                 ]),
             ApiResponse(
@@ -95,7 +98,7 @@ class AuthController(
                 ])
         ]
     )
-    @PostMapping("/reissueToken")
+    @PostMapping("/reissue-token")
     fun reissueToken(
         @Parameter(
             description = "refresh 토큰",
@@ -109,10 +112,15 @@ class AuthController(
         try {
             val token = tokenService.reissueToken(refreshToken)
 
-            return ResponseEntity.ok(token)
-        }catch (e: IllegalArgumentException){
+            return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(token)
+
+        }catch (e: IllegalStateException){
             log.info("{refreshToken: $refreshToken, message: ${e.message}}", e)
-            return ResponseEntity.badRequest().body(ExceptionResponse(400, "토큰을 재발급하는 과정에서 에러가 발생했습니다.", detail = e.message))
+            return ResponseEntity
+                .badRequest()
+                .body(ExceptionResponse(400, "토큰을 재발급하는 과정에서 에러가 발생했습니다.", detail = e.message))
         }
     }
 }

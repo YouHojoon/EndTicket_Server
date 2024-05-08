@@ -1,8 +1,8 @@
-package ac.kr.smu.endTicket.auth.infra.OAuth2.filter
+package ac.kr.smu.endTicket.auth.infra.oauth2.filter
 
-import ac.kr.smu.endTicket.auth.infra.OAuth2.IDToken.exception.IDTokenNotVerifyException
-import ac.kr.smu.endTicket.auth.infra.OAuth2.IDToken.exception.JWKParseException
-import ac.kr.smu.endTicket.auth.infra.OAuth2.exception.OAuth2RequestException
+import ac.kr.smu.endTicket.auth.infra.oauth2.idToken.exception.UnverifiedIDTokenException
+import ac.kr.smu.endTicket.auth.infra.oauth2.idToken.exception.JWKParseException
+import ac.kr.smu.endTicket.auth.infra.oauth2.exception.OAuth2RequestException
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -26,9 +26,15 @@ class OAuth2ErrorHandlerFilter: OncePerRequestFilter() {
         try {
             filterChain.doFilter(request,response)
         }catch (e: OAuth2RequestException){
-            log.error("{parameters: ${request.parameterMap}, stackTrace: ${e.stackTraceToString()}}", e)
+            log.error("{parameters: ${
+                request
+                    .parameterMap
+                    .map { "${it.key} : [${it.value.joinToString(", ")}]" }
+                    .joinToString(", ")
+            }",
+                e)
             sendResponse(response, HttpStatus.INTERNAL_SERVER_ERROR)
-        }catch (e: IDTokenNotVerifyException){
+        }catch (e: UnverifiedIDTokenException){
             log.info("{idToken: ${e.idToken}, message: ${e.message}}", e)
             sendResponse(response, HttpStatus.BAD_REQUEST)
         }catch (e: JWKParseException){

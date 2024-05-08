@@ -2,7 +2,7 @@ package ac.kr.smu.endTicket
 
 import ac.kr.smu.endTicket.auth.domain.service.UserService
 import ac.kr.smu.endTicket.auth.service.TokenService
-import ac.kr.smu.endTicket.auth.infra.config.JWTProperties
+import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
 import ac.kr.smu.protobuf.AccessToken
 import ac.kr.smu.protobuf.TokenServiceGrpc
 import ac.kr.smu.protobuf.TokenServiceGrpc.TokenServiceBlockingStub
@@ -34,7 +34,7 @@ class TokenServiceTest @Autowired constructor(
     @MockBean
     private val redisTemplate: RedisTemplate<String,String>,
     @MockBean
-    private val userService:UserService,
+    private val userService: UserService,
 
     private val service: TokenService
 ){
@@ -109,28 +109,35 @@ class TokenServiceTest @Autowired constructor(
     @DisplayName("refresh 토큰으로 사용자 ID 파싱 테스트")
     fun given_refreshToken_when_parseUserID_then_throw_UnsupportedJwtException(){
         val token = service.createAccessAndRefreshToken(USER_ID)
+        val refreshToken = token.refreshToken
 
-        assertThrows<UnsupportedJwtException> { service.parseUserID(token.refreshToken)}
+        assertNotNull(refreshToken)
+        assertThrows<UnsupportedJwtException> { service.parseUserID(refreshToken)}
     }
 
     @Test
     @DisplayName("access 토큰 재발급 테스트")
     fun given_refreshToken_when_reissueToken_then_success(){
         val token = service.createAccessAndRefreshToken(USER_ID)
+        val refreshToken = token.refreshToken
 
-        Mockito.`when`(ops.get(token.refreshToken))
+        assertNotNull(refreshToken)
+
+        Mockito.`when`(ops.get(refreshToken))
             .thenReturn(USER_ID.toString())
 
-        assertDoesNotThrow {service.reissueToken(token.refreshToken)}
+        assertDoesNotThrow {service.reissueToken(refreshToken)}
     }
 
     @Test
     @DisplayName("캐시에 저장되어 있지 않은 refresh 토큰으로 access 토큰 재발급 테스트")
     fun given_notStored_refreshToken_when_reissusToken_then_throw_IllegalArgumentException(){
         val token = service.createAccessAndRefreshToken(USER_ID)
+        val refreshToken = token.refreshToken
 
+        assertNotNull(refreshToken)
         assertThrows<IllegalArgumentException> {
-            service.reissueToken(token.refreshToken)
+            service.reissueToken(refreshToken)
         }
     }
 }

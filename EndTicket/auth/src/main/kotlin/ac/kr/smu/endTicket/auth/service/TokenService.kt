@@ -1,12 +1,10 @@
 package ac.kr.smu.endTicket.auth.service
 
-import ac.kr.smu.endTicket.auth.domain.exception.UserNotFoundException
+import ac.kr.smu.endTicket.auth.domain.exception.NotFoundUserException
 
-import ac.kr.smu.endTicket.auth.ui.response.CreateTokenResponse
-import ac.kr.smu.endTicket.auth.ui.response.ReissueTokenResponse
-import ac.kr.smu.endTicket.auth.infra.config.JWTProperties
+import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
+import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
 import ac.kr.smu.protobuf.*
-import com.google.protobuf.Int64Value
 
 import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
@@ -78,15 +76,15 @@ class TokenService(
      * @param userID 사용자 번호
      * @return JWT 토큰 발급
      */
-    @Throws(UserNotFoundException::class)
-    fun createAccessAndRefreshToken(userID: Long): CreateTokenResponse{
+    @Throws(NotFoundUserException::class)
+    fun createAccessAndRefreshToken(userID: Long): TokenResponse{
         val issuedAt = Date()
         val accessToken = createAccessToken(userID, issuedAt)
         val refreshToken = createRefreshToken(issuedAt)
 
         redisTemplate.setRefreshToken(userID, refreshToken)
 
-        return CreateTokenResponse(accessToken, refreshToken)
+        return TokenResponse(accessToken, refreshToken)
     }
 
     /**
@@ -106,13 +104,13 @@ class TokenService(
      * refresh 토큰을 이용해 access 토큰 재발급, 만약 refresh 토큰의 재발급 기준 시간 이하라면 같이 재발급한다.
      * @param refreshToken refresh 토큰
      * @return 재발급된 토큰들
-     * @throws IllegalArgumentException refresh 토큰이 Redis에 저장되어 있지 않을 때
+     * @throws IllegalStateException refresh 토큰이 Redis에 저장되어 있지 않을 때
      */
-    @Throws(IllegalArgumentException::class)
-    fun reissueToken(refreshToken: String): ReissueTokenResponse{
+    @Throws(IllegalStateException::class)
+    fun reissueToken(refreshToken: String): TokenResponse{
         val userID = redisTemplate.opsForValue().get(refreshToken)
 
-        requireNotNull(userID){
+        checkNotNull(userID){
             "비정상적인 Refresh 토큰입니다."
         }
 
@@ -120,7 +118,7 @@ class TokenService(
         val newRefreshToken = if (shouldReissueRefreshToken(refreshToken, issuedAt)) createRefreshToken(issuedAt) else null
         val accessToken = createAccessToken(userID.toLong(), issuedAt)
 
-        return ReissueTokenResponse(accessToken, newRefreshToken)
+        return TokenResponse(accessToken, newRefreshToken)
     }
 
     /**
