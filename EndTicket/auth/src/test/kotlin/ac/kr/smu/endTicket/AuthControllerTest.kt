@@ -8,6 +8,8 @@ import ac.kr.smu.endTicket.auth.ui.controller.AuthController
 import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
 import ac.kr.smu.endTicket.auth.infra.config.SecurityConfig
 import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2TokenResponse
+import ac.kr.smu.endTicket.auth.infra.oauth2.filter.OAuth2AuthorizationFilter
+import ac.kr.smu.endTicket.auth.infra.oauth2.filter.OAuth2ErrorHandlerFilter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
@@ -15,18 +17,20 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
+import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
+import org.springframework.web.context.WebApplicationContext
 
 @WebMvcTest(controllers = [AuthController::class])
-@AutoConfigureMockMvc
-@Import(SecurityConfig::class)
+@WebAppConfiguration
 class AuthControllerTest @Autowired constructor(
     @MockBean
     private val oAuthService: OAuthService,
@@ -34,9 +38,11 @@ class AuthControllerTest @Autowired constructor(
     private val tokenService: TokenService,
     @MockBean
     private val userService: UserService,
-    private val mvc: MockMvc
+    private val ctx: WebApplicationContext
+
 ) {
 
+    private lateinit var mvc: MockMvc
     private val AUTHORIZATION_CODE = "1"
     private val SOCIAL_TYPE = SocialType.KAKAO
     private val SOCIAL_UESR_NUMBER = "1"
@@ -47,6 +53,12 @@ class AuthControllerTest @Autowired constructor(
 
     @BeforeEach
     fun init(){
+
+        mvc = MockMvcBuilders
+            .webAppContextSetup(ctx)
+            .addFilters<DefaultMockMvcBuilder>(OAuth2ErrorHandlerFilter(), OAuth2AuthorizationFilter(oAuthService))
+            .build()
+
         mockOAuthService()
         mockTokenServiceForCreateTokenResponse()
     }
