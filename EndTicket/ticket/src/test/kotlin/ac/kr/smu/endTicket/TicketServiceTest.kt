@@ -4,29 +4,20 @@ import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
 import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
-import ac.kr.smu.endTicket.ticket.infra.config.RedisConfig
 import ac.kr.smu.endTicket.ticket.service.TicketService
-
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
-import org.mockito.Mock
 import org.mockito.Mockito
-import org.mockito.MockitoAnnotations
-import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.context.annotation.Import
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import org.springframework.scheduling.annotation.EnableScheduling
 import java.util.*
-import javax.swing.text.html.Option
-import kotlin.test.BeforeTest
+
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+
 
 @SpringBootTest(
     properties = [
@@ -46,8 +37,10 @@ class TicketServiceTest @Autowired constructor(
 
     private val service: TicketService
 ) {
+    companion object{
+        private const val USER_ID = 1L
+    }
 
-    private val USER_ID = 1L
 
     @BeforeEach
     fun init(){

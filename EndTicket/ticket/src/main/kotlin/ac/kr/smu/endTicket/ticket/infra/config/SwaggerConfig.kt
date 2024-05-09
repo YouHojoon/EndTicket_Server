@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.ticket.infra.config
 
+import ac.kr.smu.endTicket.swagger.AccessTokenSecurityScheme
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType
 import io.swagger.v3.oas.annotations.info.Contact
@@ -19,21 +20,14 @@ import org.springframework.context.annotation.Configuration
         contact = Contact(name = "유호준", email = "dbghwns11@gmail.com")
     )
 )
-@SecurityScheme(
-    type = SecuritySchemeType.HTTP,
-    name = "Access token",
-    bearerFormat = "JWT",
-    scheme = "bearer"
-)
+@AccessTokenSecurityScheme
 class SwaggerConfig(
     private val discoveryClient: DiscoveryClient
 ) {
     @Bean
-    fun openAPI(): OpenAPI{
-        return OpenAPI().apply {
-            discoveryClient.getInstances("gateway").forEach {
-                this.addServersItem(Server().url(it.uri.toString()))
+    fun openAPI(): OpenAPI =  OpenAPI().servers(
+            discoveryClient.getInstances("gateway").map {
+                Server().url(it.uri.toString()).description("gateway")
             }
-        }
-    }
+        )
 }
