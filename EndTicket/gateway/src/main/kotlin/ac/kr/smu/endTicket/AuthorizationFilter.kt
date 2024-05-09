@@ -16,7 +16,11 @@ import ac.kr.smu.endTicket.response.ExceptionResponse
 class AuthorizationFilter(
     private val tokenService: TokenService,
 ): AbstractGatewayFilterFactory<Any>() {
-    private val USER_ID_HEADER_NAME = "X-User-ID"
+    companion object{
+        private const val USER_ID_HEADER_NAME = "X-User-ID"
+    }
+
+
     override fun apply(config: Any): GatewayFilter {
         return GatewayFilter { exchange, chain ->
             val token = exchange.request.headers.getFirst("Authorization")
