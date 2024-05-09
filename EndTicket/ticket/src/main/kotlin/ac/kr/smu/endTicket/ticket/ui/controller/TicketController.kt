@@ -30,6 +30,7 @@ import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirements
 import org.slf4j.LoggerFactory
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.PatchMapping
 
@@ -120,10 +121,23 @@ class TicketController(
         id: Long,
 
         @Parameter(hidden = true)
-        @RequestHeader("X-User-ID") userID: Long): ResponseEntity<*>{
-        return ResponseEntity.ok().body(service.swipeTicket(id,userID))
+        @RequestHeader("X-User-ID")
+        userID: Long
+    ): ResponseEntity<*>{
+        return ResponseEntity.ok(service.swipeTicket(id,userID))
     }
 
+    @DeleteMapping("/swipe/{id}")
+    fun cancelSwipeTicket(
+        @PathVariable("id")
+        id: Long,
+
+        @Parameter(hidden = true)
+        @RequestHeader("X-User-ID")
+        userID: Long
+    ): ResponseEntity<*>{
+        return ResponseEntity.ok(service.cancelSwipeTicket(id, userID))
+    }
     @ExceptionHandler(NotFoundTicketException::class)
     fun handleNotFoundTicketException(e: NotFoundTicketException): ResponseEntity<ExceptionResponse>{
         log.info("id: ${e.id}", e)

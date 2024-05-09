@@ -35,7 +35,7 @@ class TicketService(
      * @param userID 티켓 생성을 요청한 user의 ID
      * @return 생성된 티켓
      */
-    @CachePut(cacheNames = ["ticket"], key = "#result.id")
+    @CachePut("ticket", key = "#result.id")
     @Transactional
     fun createTicket(request: TicketRequest, userID: Long): Ticket{
         return repo.save(Ticket(request,userID))
@@ -45,12 +45,13 @@ class TicketService(
      * 티켓을 수정하는 메소드
      * @param request 수정할 티켓 요청
      * @param id 티켓 id
+     * @param userID 티켓의 소유자 ID
      * @return 수정된 티켓
      * @throws NotFoundTicketException id로 조회한 티켓이 없을 시
      */
 
     @Throws(NotFoundTicketException::class)
-    @CachePut(cacheNames = ["ticket"], key = "#id")
+    @CachePut("ticket", key = "#id")
     @Transactional
     fun updateTicket(request: TicketRequest, id: Long, userID: Long): Ticket{
         val old = repo.findById(id).getOrNull() ?: throw NotFoundTicketException(id)
@@ -62,11 +63,12 @@ class TicketService(
 
     /**
      * 티켓 스와이프를 처리하는 메소드, 관련 결과는 캐시된다.
-     * @param 티켓의 id
+     * @param id 티켓의 id
+     * @param userID 티켓의 소유자 ID
      * @return 스와이프 결과가 반영된 티켓
      * @throws NotFoundTicketException id로 조회한 티켓이 없을 시
      */
-    @CachePut(cacheNames = ["ticket"], key = "#id")
+    @CachePut("ticket", key = "#id")
     @Transactional
     fun swipeTicket(id: Long, userID: Long): Ticket{
         val ticket = repo.findById(id).getOrNull() ?: throw NotFoundTicketException(id)
@@ -104,12 +106,25 @@ class TicketService(
         log.info("캐시 DB로 업데이트 작업 $elapsed ms의 시간으로 완료")
     }
 
+    /**
+     * 티켓 완료 메소드
+     * @param id 티켓의 iD
+     */
     @Transactional
     @CacheEvict("ticket", key = "#id")
-    fun completeTicket(id:Long){
+    fun completeTicket(id: Long){
         repo.deleteById(id)
     }
 
+    @Transactional
+    @CachePut("ticket", key = "#id")
+    fun cancelSwipeTicket(id: Long, userID: Long): Ticket{
+        val ticket = repo.findById(id).getOrNull() ?: throw NotFoundTicketException(id)
+
+        ticket.cancelSwipeTicket(userID)
+
+        return ticket
+    }
     /**
      * scan을 통해 패턴에 맞는 키를 가져오는 메소드
      * @param pattern 키의 패턴
