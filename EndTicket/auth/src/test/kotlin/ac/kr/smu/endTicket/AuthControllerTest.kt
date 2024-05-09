@@ -41,24 +41,25 @@ class AuthControllerTest @Autowired constructor(
     private val ctx: WebApplicationContext
 
 ) {
-
-    private lateinit var mvc: MockMvc
-    private val AUTHORIZATION_CODE = "1"
     private val SOCIAL_TYPE = SocialType.KAKAO
-    private val SOCIAL_UESR_NUMBER = "1"
-    private val USER_ID = 1L
-    private val BASE_URL = "http://localhost:8081/auth"
-    private val ACCESS_TOKEN = "a"
-    private val REFRESH_TOKEN = "a"
+    private val mvc: MockMvc = MockMvcBuilders
+        .webAppContextSetup(ctx)
+        .addFilters<DefaultMockMvcBuilder>(OAuth2ErrorHandlerFilter(), OAuth2AuthorizationFilter(oAuthService))
+        .build()
+
+    companion object{
+        private const val AUTHORIZATION_CODE = "1"
+        private const val SOCIAL_USER_NUMBER = "1"
+        private const val USER_ID = 1L
+        private const val BASE_URL = "http://localhost:8081/auth"
+        private const val ACCESS_TOKEN = "a"
+        private const val REFRESH_TOKEN = "a"
+    }
+
+
 
     @BeforeEach
     fun init(){
-
-        mvc = MockMvcBuilders
-            .webAppContextSetup(ctx)
-            .addFilters<DefaultMockMvcBuilder>(OAuth2ErrorHandlerFilter(), OAuth2AuthorizationFilter(oAuthService))
-            .build()
-
         mockOAuthService()
         mockTokenServiceForCreateTokenResponse()
     }
@@ -66,7 +67,7 @@ class AuthControllerTest @Autowired constructor(
     @Test
     @DisplayName("사용자 토큰 생성 테스트")
     fun given_user_when_createToken_then_return_accessToken_and_refreshToken(){
-        Mockito.`when`(userService.findUserID(SOCIAL_TYPE, SOCIAL_UESR_NUMBER))
+        Mockito.`when`(userService.findUserID(SOCIAL_TYPE, SOCIAL_USER_NUMBER))
             .thenReturn(USER_ID)
 
         mvc.perform(
@@ -81,7 +82,7 @@ class AuthControllerTest @Autowired constructor(
     @Test
     @DisplayName("리프레시 토큰으로 토큰 재발급 테스트")
     fun given_refreshToken_then_reissueToken_then_reissueAccessToken_and_refreshToken(){
-        Mockito.`when`(userService.findUserID(SOCIAL_TYPE, SOCIAL_UESR_NUMBER))
+        Mockito.`when`(userService.findUserID(SOCIAL_TYPE, SOCIAL_USER_NUMBER))
             .thenReturn(USER_ID)
 
         Mockito.`when`(tokenService.reissueToken(Mockito.anyString()))
@@ -122,6 +123,6 @@ class AuthControllerTest @Autowired constructor(
 
         Mockito
             .`when`(oAuthService.parseSocialUserNumber(SOCIAL_TYPE,"i"))
-            .thenReturn(SOCIAL_UESR_NUMBER)
+            .thenReturn(SOCIAL_USER_NUMBER)
     }
 }

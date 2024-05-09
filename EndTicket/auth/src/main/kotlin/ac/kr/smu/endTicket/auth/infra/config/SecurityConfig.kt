@@ -15,14 +15,13 @@ import ac.kr.smu.endTicket.security.baseConfig
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.cloud.client.discovery.DiscoveryClient
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
-import org.springframework.security.web.util.matcher.AnyRequestMatcher
 import org.springframework.security.web.util.matcher.IpAddressMatcher
 import org.springframework.security.web.util.matcher.RequestMatcher
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val oAuthService: OAuthService,
+    private val oauthService: OAuthService,
     private val discoveryClient: DiscoveryClient
 ) {
     @Bean
@@ -48,7 +47,7 @@ class SecurityConfig(
                 authorize(anyRequest, denyAll)
             }
 
-            addFilterBefore<OAuth2LoginAuthenticationFilter>(OAuth2AuthorizationFilter(oAuthService))
+            addFilterBefore<OAuth2LoginAuthenticationFilter>(OAuth2AuthorizationFilter(oauthService))
             addFilterBefore<OAuth2AuthorizationFilter>(OAuth2ErrorHandlerFilter())
         }
 

@@ -30,6 +30,10 @@ class TokenService(
     private val redisTemplate: RedisTemplate<String, String>,
     private val jwtProperties: JWTProperties
 ): TokenServiceGrpc.TokenServiceImplBase(){
+    /**
+     * JWT를 서명하기 위한 key
+     */
+    private val key = Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray())
 
     /**
      * access 토큰을 검증하는 메소드
@@ -64,12 +68,6 @@ class TokenService(
         }
         responseObserver.onCompleted()
     }
-
-
-    /**
-     * JWT를 서명하기 위한 key
-     */
-    private val key = Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray())
 
     /**
      * 토큰 생성 기능

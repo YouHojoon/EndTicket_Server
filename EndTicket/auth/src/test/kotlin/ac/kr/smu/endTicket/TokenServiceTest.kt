@@ -42,7 +42,11 @@ class TokenServiceTest @Autowired constructor(
     @Rule
     private val cleanupRule: GrpcCleanupRule = GrpcCleanupRule()
     private lateinit var stub: TokenServiceBlockingStub
-    private val USER_ID = 1L
+
+    companion object{
+        private const val USER_ID = 1L
+    }
+
 
     @BeforeTest
     fun setStub(){
