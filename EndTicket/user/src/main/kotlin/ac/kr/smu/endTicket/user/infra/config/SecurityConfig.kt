@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.user.config
+package ac.kr.smu.endTicket.user.infra.config
 
 import ac.kr.smu.endTicket.security.baseConfig
 import ac.kr.smu.endTicket.security.permitOnlyWhitelistRequest
@@ -21,7 +21,7 @@ class SecurityConfig(
     fun filterChain(http: HttpSecurity): SecurityFilterChain{
         http{
             baseConfig()
-            permitOnlyWhitelistRequest(discoveryClient.getInstances("gateway").map { it.uri.toString() })
+            permitOnlyWhitelistRequest(discoveryClient.getInstances("gateway").map { it.host })
         }
 
         return http.build()
