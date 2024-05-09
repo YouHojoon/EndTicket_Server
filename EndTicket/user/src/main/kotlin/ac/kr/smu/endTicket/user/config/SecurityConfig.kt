@@ -1,5 +1,7 @@
 package ac.kr.smu.endTicket.user.config
 
+import ac.kr.smu.endTicket.security.baseConfig
+import ac.kr.smu.endTicket.security.permitOnlyWhitelistRequest
 import org.springframework.cloud.client.discovery.DiscoveryClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -15,24 +17,11 @@ import org.springframework.security.web.util.matcher.IpAddressMatcher
 class SecurityConfig(
     private val discoveryClient: DiscoveryClient
 ) {
-
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain{
         http{
-            sessionManagement {
-               sessionCreationPolicy = SessionCreationPolicy.STATELESS
-            }
-            csrf { disable() }
-            formLogin { disable() }
-            authorizeRequests {
-                authorize("/docs/**", permitAll)
-                authorize("/swagger-ui/**",permitAll)
-                authorize("/api-docs/**",permitAll)
-                discoveryClient.getInstances("gateway").forEach {
-                    authorize(IpAddressMatcher(it.host), permitAll)
-                }
-                authorize(anyRequest, denyAll)
-            }
+            baseConfig()
+            permitOnlyWhitelistRequest(discoveryClient.getInstances("gateway").map { it.uri.toString() })
         }
 
         return http.build()

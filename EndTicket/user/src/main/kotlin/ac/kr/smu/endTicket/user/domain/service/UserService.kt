@@ -2,6 +2,7 @@ package ac.kr.smu.endTicket.user.domain.service
 
 import ac.kr.smu.endTicket.user.domain.model.User
 import ac.kr.smu.endTicket.user.domain.repository.UserRepository
+import ac.kr.smu.endTicket.user.ui.request.RegisterNicknameRequest
 import ac.kr.smu.protobuf.FindUserIDRequest
 import ac.kr.smu.protobuf.UserIDResponse
 import ac.kr.smu.protobuf.UserServiceGrpc
@@ -23,7 +24,7 @@ class UserService(
 ): UserServiceGrpc.UserServiceImplBase() {
 
     /**
-     * SNS 사용자 번호를 통해 해당 SNS의 사용자를 찾아 grpc를 통해 user id를 반환하는 메소드
+     * SNS 사용자 번호로 해당 SNS의 사용자를 찾아 grpc를 통해 user id를 반환하는 메소드, 만약에 없다면 저장한다.
      * @param socialType 해당 SNS로 회원가입한 사용자
      * @param socialUserNumber SNS 사용자 번호
      */
@@ -41,14 +42,16 @@ class UserService(
 
     /**
      * 사용자의 닉네임 등록
+     * @param request 닉네임 등록 요청
      * @param userID 닉네임을 등록할 사용자
-     * @param nickname 등록할 닉네임
+     * @throws IllegalStateException userID의 사용자가 없을 시
      */
+    @Throws(IllegalStateException::class)
     @Transactional
-    fun registerNickname(nickname: String, userID: Long){
+    fun registerNickname(request: RegisterNicknameRequest, userID: Long){
         val user = userRepo.findById(userID).getOrNull()
         checkNotNull(user){"해당 userID의 사용자를 찾을 수 없습니다."}
 
-        user.updateNickname(nickname)
+        user.requestNickname(request)
     }
 }

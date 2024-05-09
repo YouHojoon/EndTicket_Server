@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Profile
 @Profile("!test")
 @Configuration(proxyBeanMethods = false)
 class GrpcTracingConfig {
-
     @GrpcGlobalServerInterceptor
     fun tracingInterceptor(trace: Tracing): ServerInterceptor{
         return GrpcTracing.create(trace).newServerInterceptor()

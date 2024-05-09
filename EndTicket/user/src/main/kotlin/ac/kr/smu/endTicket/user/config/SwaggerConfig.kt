@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.user.config
 
+import ac.kr.smu.endTicket.swagger.AccessTokenSecurityScheme
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType
 import io.swagger.v3.oas.annotations.info.Contact
@@ -11,12 +12,5 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 @OpenAPIDefinition(info = Info(title = "EndTicket", description = "유저 서버 API 명세서", contact = Contact(name = "유호준", email = "dbghwns11@gmail.com")))
-@SecurityScheme(
-    name = "Access token",
-    type = SecuritySchemeType.HTTP,
-    bearerFormat = "JWT",
-    scheme = "bearer"
-)
-class SwaggerConfig {
-    
-}
+@AccessTokenSecurityScheme
+class SwaggerConfig
