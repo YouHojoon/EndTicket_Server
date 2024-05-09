@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.user.ui.controller
 
+import ac.kr.smu.endTicket.constant.HttpHeaderName
 import ac.kr.smu.endTicket.user.domain.service.UserService
 import ac.kr.smu.endTicket.user.ui.request.RegisterNicknameRequest
 
@@ -31,7 +32,10 @@ class  UserController(
 ) {
     private val log = LoggerFactory.getLogger(UserController::class.java)
     @PostMapping("nickname")
-    @Operation(summary = "닉네임을 등록하는 메소드", description = "닉네임이 등록되지 않은 사용자의 닉네임을 등록합니다.", security = [SecurityRequirement(name = "Access token")])
+    @Operation(
+        summary = "닉네임을 등록하는 메소드",
+        description = "닉네임이 등록되지 않은 사용자의 닉네임을 등록합니다.",
+        security = [SecurityRequirement(name = "Access token")])
     @ApiResponses(
         value = [
             ApiResponse(
@@ -60,11 +64,11 @@ class  UserController(
         @Parameter(description = "등록할 닉네임", schema = Schema(implementation = RegisterNicknameRequest::class))
         request: RegisterNicknameRequest,
 
-        @RequestHeader("X-User-ID")
+        @RequestHeader(HttpHeaderName.USER_ID)
         @Parameter(hidden = true)
         userID: Long): ResponseEntity<*>{
         try {
-            service.registerNickname(request.nickname, userID)
+            service.registerNickname(request, userID)
         }catch (e: IllegalStateException){
             log.info("{userID: $userID}", e)
             return ResponseEntity(ExceptionResponse(404, "닉네임 등록에 에러가 발생했습니다.", e.message), HttpStatus.NOT_FOUND)

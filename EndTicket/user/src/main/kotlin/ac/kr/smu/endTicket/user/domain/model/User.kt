@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.user.domain.model
 
+import ac.kr.smu.endTicket.user.ui.request.RegisterNicknameRequest
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -12,10 +13,10 @@ import jakarta.persistence.UniqueConstraint
 
 /**
  * 사용자를 추상화한 클래스
- * @property nickname 사용자의 별명, 3~8 자 사이여야 한다.
  * @property socialType SNS 로그인의 타입
  * @property socialUserId 각 SNS 별 회원번호
  * @property id 회원번호
+ * @property nickname 사용자의 별명, 3~8 자 사이여야 한다.
  */
 @Entity
 @Table(uniqueConstraints = [
@@ -55,17 +56,17 @@ class User(
     }
 
     /**
-     * 닉네임을 변경하는 메소드
-     * @param nickname 변경할 닉네임
+     * 닉네임을 등록하는 메소드
+     * @param nickname 등록할 닉네임
      * @throws IllegalStateException 닉네임이 null이 아닐 떄
      */
     @Throws(IllegalStateException::class)
-    fun updateNickname(nickname: String){
+    fun requestNickname(request: RegisterNicknameRequest){
         check(this.nickname == null){"닉네임을 변경할 수 없습니다."}
-        this.nickname = nickname
+        this.nickname = request.nickname
     }
 
     override fun toString(): String {
-        return  "id: $id, nickname: $nickname, $socialType: $socialType"
+        return  "{id: $id, nickname: $nickname, socialType: $socialType, socialUserNumber: $socialUserNumber}"
     }
 }
