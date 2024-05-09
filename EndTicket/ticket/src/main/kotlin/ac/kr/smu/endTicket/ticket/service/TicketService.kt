@@ -25,7 +25,10 @@ class TicketService(
     private val redisTemplate: RedisTemplate<String, Any>
 ) {
     private val log = LoggerFactory.getLogger(TicketService::class.java)
-    private val REDIS_KEY_PREFIX = "ticket::"
+    private companion object{
+        private const val REDIS_KEY_PREFIX = "ticket::"
+    }
+
     /**
      * 티켓을 생성하는 메소드
      * @param request 티켓 생성에 대한 요청
