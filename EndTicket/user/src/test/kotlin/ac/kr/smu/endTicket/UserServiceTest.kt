@@ -35,10 +35,10 @@ class UserServiceTest(
     @InjectMocks
     private lateinit var userService: UserService
     private lateinit var blockingStub: UserServiceGrpc.UserServiceBlockingStub
+    private val SOCIAL_TYPE = User.SocialType.KAKAO
 
     private companion object{
         private const val SOCIAL_USER_NUMBER = "1"
-        private val SOCIAL_TYPE = User.SocialType.KAKAO
         private const val USER_ID = 1L
     }
 
