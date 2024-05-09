@@ -23,6 +23,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.event.annotation.BeforeTestMethod
 import kotlin.test.*
 
 @SpringBootTest()
@@ -41,7 +42,11 @@ class TokenServiceTest @Autowired constructor(
     @Rule
     private val cleanupRule: GrpcCleanupRule = GrpcCleanupRule()
     private lateinit var stub: TokenServiceBlockingStub
-    private val USER_ID = 1L
+
+    companion object{
+        private const val USER_ID = 1L
+    }
+
 
     @BeforeTest
     fun setStub(){
@@ -136,7 +141,7 @@ class TokenServiceTest @Autowired constructor(
         val refreshToken = token.refreshToken
 
         assertNotNull(refreshToken)
-        assertThrows<IllegalArgumentException> {
+        assertThrows<IllegalStateException> {
             service.reissueToken(refreshToken)
         }
     }

@@ -8,6 +8,8 @@ import ac.kr.smu.endTicket.auth.ui.controller.AuthController
 import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
 import ac.kr.smu.endTicket.auth.infra.config.SecurityConfig
 import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2TokenResponse
+import ac.kr.smu.endTicket.auth.infra.oauth2.filter.OAuth2AuthorizationFilter
+import ac.kr.smu.endTicket.auth.infra.oauth2.filter.OAuth2ErrorHandlerFilter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
@@ -15,18 +17,20 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
+import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
+import org.springframework.web.context.WebApplicationContext
 
 @WebMvcTest(controllers = [AuthController::class])
-@AutoConfigureMockMvc
-@Import(SecurityConfig::class)
+@WebAppConfiguration
 class AuthControllerTest @Autowired constructor(
     @MockBean
     private val oAuthService: OAuthService,
@@ -34,16 +38,25 @@ class AuthControllerTest @Autowired constructor(
     private val tokenService: TokenService,
     @MockBean
     private val userService: UserService,
-    private val mvc: MockMvc
-) {
+    private val ctx: WebApplicationContext
 
-    private val AUTHORIZATION_CODE = "1"
+) {
     private val SOCIAL_TYPE = SocialType.KAKAO
-    private val SOCIAL_UESR_NUMBER = "1"
-    private val USER_ID = 1L
-    private val BASE_URL = "http://localhost:8081/auth"
-    private val ACCESS_TOKEN = "a"
-    private val REFRESH_TOKEN = "a"
+    private val mvc: MockMvc = MockMvcBuilders
+        .webAppContextSetup(ctx)
+        .addFilters<DefaultMockMvcBuilder>(OAuth2ErrorHandlerFilter(), OAuth2AuthorizationFilter(oAuthService))
+        .build()
+
+    companion object{
+        private const val AUTHORIZATION_CODE = "1"
+        private const val SOCIAL_USER_NUMBER = "1"
+        private const val USER_ID = 1L
+        private const val BASE_URL = "http://localhost:8081/auth"
+        private const val ACCESS_TOKEN = "a"
+        private const val REFRESH_TOKEN = "a"
+    }
+
+
 
     @BeforeEach
     fun init(){
@@ -54,7 +67,7 @@ class AuthControllerTest @Autowired constructor(
     @Test
     @DisplayName("사용자 토큰 생성 테스트")
     fun given_user_when_createToken_then_return_accessToken_and_refreshToken(){
-        Mockito.`when`(userService.findUserID(SOCIAL_TYPE, SOCIAL_UESR_NUMBER))
+        Mockito.`when`(userService.findUserID(SOCIAL_TYPE, SOCIAL_USER_NUMBER))
             .thenReturn(USER_ID)
 
         mvc.perform(
@@ -69,7 +82,7 @@ class AuthControllerTest @Autowired constructor(
     @Test
     @DisplayName("리프레시 토큰으로 토큰 재발급 테스트")
     fun given_refreshToken_then_reissueToken_then_reissueAccessToken_and_refreshToken(){
-        Mockito.`when`(userService.findUserID(SOCIAL_TYPE, SOCIAL_UESR_NUMBER))
+        Mockito.`when`(userService.findUserID(SOCIAL_TYPE, SOCIAL_USER_NUMBER))
             .thenReturn(USER_ID)
 
         Mockito.`when`(tokenService.reissueToken(Mockito.anyString()))
@@ -110,6 +123,6 @@ class AuthControllerTest @Autowired constructor(
 
         Mockito
             .`when`(oAuthService.parseSocialUserNumber(SOCIAL_TYPE,"i"))
-            .thenReturn(SOCIAL_UESR_NUMBER)
+            .thenReturn(SOCIAL_USER_NUMBER)
     }
 }

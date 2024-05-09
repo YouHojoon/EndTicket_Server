@@ -6,6 +6,7 @@ import ac.kr.smu.endTicket.auth.ui.converter.SocialTypeConverter
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.http.HttpMethod
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
@@ -20,9 +21,11 @@ class OAuth2AuthorizationFilter(
     private val oAuthService: OAuthService
 ): OncePerRequestFilter() {
     private val converter = SocialTypeConverter()
-    private val SOCIAL_TYPE_URI_VARIABLE_NAME = "socialType"
-    private val CODE_URI_VARIABLE_NAME = "code"
     private val matcher = AntPathRequestMatcher("/auth/sns")
+    companion object{
+        private const val SOCIAL_TYPE_URI_VARIABLE_NAME = "socialType"
+        private const val CODE_URI_VARIABLE_NAME = "code"
+    }
 
     @Throws(IllegalStateException::class)
     override fun doFilterInternal(
@@ -30,7 +33,7 @@ class OAuth2AuthorizationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        if (!matcher.matches(request) || request.method != "POST"){
+        if (!matcher.matches(request) || request.method != HttpMethod.POST.name()){
             filterChain.doFilter(request,response)
             return
         }
