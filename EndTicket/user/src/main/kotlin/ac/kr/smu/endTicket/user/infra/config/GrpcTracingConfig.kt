@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.user.config
+package ac.kr.smu.endTicket.user.infra.config
 
 import brave.Tracing
 import brave.grpc.GrpcTracing
