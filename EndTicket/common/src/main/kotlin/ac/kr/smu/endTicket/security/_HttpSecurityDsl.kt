@@ -7,6 +7,7 @@ import org.springframework.http.MediaType
 import org.springframework.security.config.annotation.web.HttpSecurityDsl
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.AuthenticationEntryPoint
+import org.springframework.security.web.util.matcher.IpAddressMatcher
 
 /**
  * 로그인 관련 기본 설정
@@ -23,7 +24,7 @@ fun HttpSecurityDsl.configLogin(){
 /**
  * Swagger 관련 요청을 모두 허용하도록 설정한다.
  */
-fun HttpSecurityDsl.configSwaggerRequestPermitAll(){
+fun HttpSecurityDsl.permitAllSwaggerRequest(){
     authorizeRequests {
         authorize("/docs/**", permitAll)
         authorize("/swagger-ui/**",permitAll)
@@ -52,12 +53,21 @@ fun HttpSecurityDsl.baseExceptionHandling(){
     }
 }
 
+fun HttpSecurityDsl.permitOnlyWhitelistRequest(whitelist: List<String>){
+    authorizeHttpRequests {
+        whitelist.forEach {
+            authorize(IpAddressMatcher(it), authenticated)
+        }
+        authorize(anyRequest, denyAll)
+    }
+}
+
 /**
  * 기본 설정
- * form 로그인 비활성화, 세션 비활성화, 기본 exception handling 설
+ * form 로그인 비활성화, 세션 비활성화, 기본 exception handling 설정
  */
 fun HttpSecurityDsl.baseConfig(){
     configLogin()
-    configSwaggerRequestPermitAll()
+    permitAllSwaggerRequest()
     baseExceptionHandling()
 }

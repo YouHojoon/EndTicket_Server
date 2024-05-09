@@ -3,6 +3,7 @@ package ac.kr.smu.endTicket
 import ac.kr.smu.endTicket.user.domain.model.User
 import ac.kr.smu.endTicket.user.domain.repository.UserRepository
 import ac.kr.smu.endTicket.user.domain.service.UserService
+import ac.kr.smu.endTicket.user.ui.request.RegisterNicknameRequest
 import ac.kr.smu.protobuf.FindUserIDRequest
 import ac.kr.smu.protobuf.SocialType
 import ac.kr.smu.protobuf.UserServiceGrpc
@@ -32,12 +33,15 @@ class UserServiceTest(
     @Rule
     private val grpcCleanup = GrpcCleanupRule()
     @InjectMocks
-    lateinit var userService: UserService
-    lateinit var blockingStub: UserServiceGrpc.UserServiceBlockingStub
+    private lateinit var userService: UserService
+    private lateinit var blockingStub: UserServiceGrpc.UserServiceBlockingStub
 
-    private val SOCIAL_USER_NUMBER = "1"
-    private val SOCIAL_TYPE = User.SocialType.KAKAO
-    private val USER_ID = 1L
+    private companion object{
+        private const val SOCIAL_USER_NUMBER = "1"
+        private val SOCIAL_TYPE = User.SocialType.KAKAO
+        private const val USER_ID = 1L
+    }
+
     @BeforeEach
     fun init(){
         MockitoAnnotations.openMocks(this)
@@ -78,29 +82,30 @@ class UserServiceTest(
     @Test
     @DisplayName("닉네임 등록 테스트")
     fun given_nickname_and_userID_when_updateNickname_then_updateNicknameOfUser(){
-        val nickname = "닉네임"
+        val request = RegisterNicknameRequest("닉네임")
         Mockito.
                 `when`(userRepo.findById(USER_ID))
                 .thenReturn(Optional.of(createUser()))
 
-        userService.registerNickname(nickname,USER_ID)
-        assertEquals(userRepo.findById(USER_ID).get().nickname, nickname)
+        userService.registerNickname(request,USER_ID)
+        assertEquals(userRepo.findById(USER_ID).get().nickname, request.nickname)
 
     }
 
     @Test
     @DisplayName("닉네임이 등록되어 있을 시 닉네임 변경 테스트")
     fun given_nickname_and_userID_of_user_whoseNicknameIsNotNull_when_updateNickname_then_throw_IllegalStateException(){
-        val nickname = "닉네임"
+        val request = RegisterNicknameRequest("닉네임")
+
         Mockito
             .`when`(userRepo.findById(USER_ID))
-            .thenReturn(Optional.of(User(SOCIAL_TYPE, SOCIAL_USER_NUMBER, USER_ID, nickname)))
+            .thenReturn(Optional.of(User(SOCIAL_TYPE, SOCIAL_USER_NUMBER, USER_ID, request.nickname)))
 
         assertThrows<IllegalStateException> {
-            userService.registerNickname(nickname, USER_ID)
+            userService.registerNickname(request, USER_ID)
         }
     }
-    @Test
+
     private fun createUser(): User{
         return User(SOCIAL_TYPE,SOCIAL_USER_NUMBER,USER_ID)
     }
