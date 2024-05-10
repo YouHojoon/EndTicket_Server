@@ -71,6 +71,7 @@ class Ticket(
 
     @Column(nullable = false)
     var swipeCount: Int = 0
+        private set
 
     @Transient
     var shouldUpdate = false
@@ -125,19 +126,27 @@ class Ticket(
      * 티켓을 스와이프하고 완료를 확인하는 메소드
      * @return 완료 여부
      * @throws NotOwnerOfTicketException 티켓의 소유자가 아닌 사용자가 요청했을 시
-     * @throws IllegalStateException maxSwipeCount 이상으로 스와이프 시도 시
      */
-    @Throws(NotOwnerOfTicketException::class, IllegalStateException::class)
+    @Throws(NotOwnerOfTicketException::class)
     fun swipeAndCheckCompletion(userID: Long): Boolean{
         checkOwnership(userID)
 
         if (swipeCount < maxSwipeCount.value) {
             setShouldUpdateTrue()
-            return ++swipeCount == maxSwipeCount.value
+            swipeCount++
         }
 
-        else
-            throw IllegalStateException("최대 스와이프 횟수 이상으로 스와이프 할 수 없습니다.")
+        return swipeCount == maxSwipeCount.value
+    }
+
+    @Throws(NotOwnerOfTicketException::class)
+    fun cancelSwipeTicket(userID: Long){
+        checkOwnership(userID)
+
+        if (swipeCount != 0){
+            setShouldUpdateTrue()
+            swipeCount--
+        }
     }
 
     /**

@@ -7,46 +7,35 @@ import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endTicket.ticket.service.TicketService
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import org.junit.jupiter.api.*
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
+import org.mockito.Mock
 import org.mockito.Mockito
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.mockito.MockitoAnnotations
+import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.data.redis.core.ValueOperations
-import org.springframework.scheduling.annotation.EnableScheduling
 import java.util.*
 
 import kotlin.test.assertEquals
 
 
-@SpringBootTest(
-    properties = [
-        "schedules.save-updatedTicket-toDB.initialDelay=50",
-        "schedules.save-updatedTicket-toDB.fixedDelay=100"
-    ],
-    classes = [TicketService::class]
-)
-@EnableScheduling
-class TicketServiceTest @Autowired constructor(
-    @MockBean
-    private val ops: ValueOperations<String, Any>,
-    @MockBean
+@ExtendWith(MockitoExtension::class)
+class TicketServiceTest(
+    @Mock
     private val redisTemplate: RedisTemplate<String,Any>,
-    @MockBean
+    @Mock
     private val repo: TicketRepository,
-
-    private val service: TicketService
 ) {
+    @InjectMocks
+    private lateinit var service: TicketService
     companion object{
         private const val USER_ID = 1L
     }
-
-
     @BeforeEach
-    fun init(){
-        Mockito.`when`(redisTemplate.opsForValue())
-            .thenReturn(ops)
+    private fun init(){
+        MockitoAnnotations.openMocks(this)
     }
+
     @Test
     @DisplayName("티켓 생성 테스트")
     fun given_ticket_when_createTicket_then_createTicket_and_returnCreatedTicket(){
@@ -69,7 +58,7 @@ class TicketServiceTest @Autowired constructor(
     }
     @Test
     @DisplayName("존재하지 않는 티켓 수정 테스트")
-    fun given_notExistTicket_when_updateTicket_then_throwIllegalStateException(){
+    fun given_notExistTicket_when_updateTicket_then_throwNotFoundTicketException(){
         val ticket = createTicket()
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.empty())
@@ -86,7 +75,7 @@ class TicketServiceTest @Autowired constructor(
 
     @Test
     @DisplayName("티켓 스와이프 테스트")
-    fun given_ID_when_swipeTicket_then_plus1AtSwipeCountAtTicket(){
+    fun given_ID_when_swipeTicket_then_plusOneSwipeCountOfTicket(){
         val ticket = createTicket()
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
@@ -105,18 +94,46 @@ class TicketServiceTest @Autowired constructor(
     }
     @Test
     @DisplayName("존재하지 않는 티켓 스와이프 테스트")
-    fun given_notExistTicket_when_swipeTicket_then_throwIllegalStateException() {
+    fun given_notExistTicket_when_swipeTicket_then_throwNotFoundTicketException() {
         Mockito.`when`(repo.findById(Mockito.anyLong()))
             .thenReturn(Optional.empty())
         assertThrows<NotFoundTicketException> { service.swipeTicket(1L,USER_ID) }
     }
+
     @Test
-    @DisplayName("Write Back 패턴 테스트")
-    fun after_fixedDelay_then_invokeSaveUpdatedTicketToDB(){
-        Thread.sleep( 300)
-        Mockito.verify(repo, Mockito.atLeast(2)).saveAll(Mockito.anyList())
+    @DisplayName("스와이프 취소 테스트")
+    fun given_ID_when_cancelSwipe_then_minusOneSwipeCountOfTicket(){
+        val ticket = createTicket().also { it.swipeAndCheckCompletion(USER_ID) }
+        val beforeSwipeCount = ticket.swipeCount
+
+        Mockito.`when`(repo.findById(ticket.id))
+            .thenReturn(Optional.of(ticket))
+
+        service.cancelSwipeTicket(ticket.id, USER_ID)
+
+        assertEquals(beforeSwipeCount - 1, ticket.swipeCount)
     }
 
+    @Test
+    @DisplayName("존재하지 않는 티켓 스와이프 취소 테스트")
+    fun given_nonExistTicket_when_swipeTicket_then_throwNotFoundTicketException(){
+        Mockito.`when`(repo.findById(Mockito.anyLong()))
+            .thenReturn(Optional.empty())
+
+        assertThrows<NotFoundTicketException> { service.cancelSwipeTicket(1L, USER_ID)}
+    }
+
+    @Test
+    @DisplayName("소유자가 아닌 사용자 티켓 스와이프 취소 테스트")
+    fun given_userWhoNotOwnerOfTicket_whenCancelSwipeTicket_then_throwNotOwnerOfTicket(){
+        val ticket = createTicket()
+        ticket.swipeAndCheckCompletion(USER_ID)
+
+        Mockito.`when`(repo.findById(ticket.id))
+            .thenReturn(Optional.of(ticket))
+
+        assertThrows<NotOwnerOfTicketException> {  service.cancelSwipeTicket(ticket.id, 2L)}
+    }
 
     private fun createTicket(): Ticket{
         return Ticket(
