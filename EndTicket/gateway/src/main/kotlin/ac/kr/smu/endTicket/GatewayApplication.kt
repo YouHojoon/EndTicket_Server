@@ -26,7 +26,7 @@ class GatewayApplication{
                 val headers = exchange.response.headers
 
                 headers.accessControlAllowOrigin = "http://localhost:8083"
-                headers.accessControlAllowMethods = listOf(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH, HttpMethod.OPTIONS, HttpMethod.HEAD)
+                headers.accessControlAllowMethods = listOf(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH, HttpMethod.OPTIONS, HttpMethod.HEAD, HttpMethod.DELETE)
                 headers.accessControlAllowCredentials = true
                 headers.accessControlAllowHeaders = listOf("Content-Type", "X-User-ID", "Authorization")
 
