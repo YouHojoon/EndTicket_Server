@@ -181,7 +181,7 @@ class TicketController(
     ): ResponseEntity<*>{
         return ResponseEntity.ok(service.cancelSwipeTicket(id, userID).toTicketResponse())
     }
-    
+
     @ExceptionHandler(NotFoundTicketException::class)
     fun handleNotFoundTicketException(e: NotFoundTicketException): ResponseEntity<ExceptionResponse>{
         log.info("id: ${e.id}", e)

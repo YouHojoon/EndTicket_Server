@@ -25,7 +25,7 @@ fun HttpSecurityDsl.configLogin(){
  * Swagger 관련 요청을 모두 허용하도록 설정한다.
  */
 fun HttpSecurityDsl.permitAllSwaggerRequest(){
-    authorizeHttpRequests {
+    authorizeRequests {
         authorize("/docs/**", permitAll)
         authorize("/swagger-ui/**",permitAll)
         authorize("/api-docs/**",permitAll)
@@ -54,7 +54,7 @@ fun HttpSecurityDsl.baseExceptionHandling(){
 }
 
 fun HttpSecurityDsl.permitOnlyWhitelistRequest(whitelist: List<String>){
-    authorizeHttpRequests {
+    authorizeRequests {
         whitelist.forEach {
             authorize(IpAddressMatcher(it), permitAll)
         }
