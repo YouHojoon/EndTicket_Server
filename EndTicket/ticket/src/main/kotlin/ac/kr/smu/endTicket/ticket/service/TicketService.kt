@@ -16,6 +16,7 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.event.TransactionalEventListener
 import kotlin.jvm.optionals.getOrNull
 import kotlin.system.measureTimeMillis
 
@@ -75,15 +76,14 @@ class TicketService(
      * @return 스와이프 처리된 티켓
      * @throws NotFoundTicketException id로 조회한 티켓이 없을 시
      */
-    @CachePut("ticket", key = "#id")
-    @Transactional
+    @Transactional("kafkaTransactionManager")
     fun swipeTicket(id: Long, userID: Long): Ticket{
         val ticket = repo.findById(id).getOrNull() ?: throw NotFoundTicketException(id)
 
-        if (ticket.swipeAndCheckCompletion(userID)) {
-            println("bbbbbbb")
+        if (ticket.swipeAndCheckCompletion(userID))
             completeTicket(ticket)
-        }
+        else
+            redisTemplate.opsForValue().set("${REDIS_KEY_PREFIX}${ticket.id}", ticket)
 
         return ticket
     }
@@ -92,16 +92,17 @@ class TicketService(
      * 캐시의 내용을 DB에 저장하는 메소드
      */
     @Scheduled(initialDelayString = "\${schedules.save-updatedTicket-toDB.initialDelay}",fixedDelayString = "\${schedules.save-updatedTicket-toDB.fixedDelay}")
-    @Transactional
+    @Transactional("transactionManager")
     fun saveUpdatedTicketToDB(){
         log.info("캐시 DB로 업데이트 작업 시작")
 
         val elapsed = measureTimeMillis {
-            val keys = redisTemplate.getKeysWithPattern("${REDIS_KEY_PREFIX}*")
+            val keys = redisTemplate
+                .getKeysWithPattern("${REDIS_KEY_PREFIX}*")
             val ops = redisTemplate.opsForValue()
 
             val ticketsOfCache = keys
-                .map { ops.get(it) as Ticket }
+                .mapNotNull { ops.get(it) as? Ticket }
                 .filter { it.shouldUpdate }
 
             repo.saveAll(ticketsOfCache)
@@ -120,13 +121,15 @@ class TicketService(
      * @param ticket 완료된 티켓
      */
     @Throws(NotFoundTicketException::class)
-    @Transactional
-    @CacheEvict("ticket", key = "#ticket.id")
     fun completeTicket(ticket: Ticket){
-        repo.deleteById(ticket.id)
-
-        kafkaTemplate
-            .send(KafkaTopic.TICKET_COMPLETION,"${ticket.userID}", ticket.toTicketResponse())
+        if (redisTemplate.delete("${REDIS_KEY_PREFIX}${ticket.id}")){
+            repo.deleteById(ticket.id)
+            kafkaTemplate
+                .send(KafkaTopic.TICKET_COMPLETION,"${ticket.userID}", ticket.toTicketResponse())
+                .whenComplete { t, u ->
+                    log.info("send end: ${t.producerRecord.value()}")
+                }
+        }
     }
 
     /**
@@ -137,7 +140,6 @@ class TicketService(
      * @throws NotFoundTicketException 티켓이 존재하지 않을 때
      */
     @Throws(NotFoundTicketException::class)
-    @Transactional
     @CachePut("ticket", key = "#id")
     fun cancelSwipeTicket(id: Long, userID: Long): Ticket{
         val ticket = repo.findById(id).getOrNull() ?: throw NotFoundTicketException(id)

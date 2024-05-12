@@ -188,7 +188,7 @@ class TicketController(
         return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(
             ExceptionResponse(
                 code = HttpStatus.NOT_FOUND.value(),
-                message = e.message,
+                message = "티켓 조회에 에러가 발생했습니다.",
                 detail = e.message
             )
         )
