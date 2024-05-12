@@ -1,6 +1,7 @@
 package ac.kr.smu.endTicket.ticket.service
 
 import ac.kr.smu.endTicket.constant.KafkaTopic
+import ac.kr.smu.endTicket.ticket.domain.exception.CacheEvictionFailureException
 import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
 import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
@@ -119,16 +120,17 @@ class TicketService(
     /**
      * 티켓 완료 메소드, kafka를 통해 이벤트를 전송하고 DB와 캐시에서 티켓을 지운다.
      * @param ticket 완료된 티켓
+     * @throws CacheEvictionFailureException 캐시 삭제에 실패했을 시
      */
-    @Throws(NotFoundTicketException::class)
     fun completeTicket(ticket: Ticket){
         if (redisTemplate.delete("${REDIS_KEY_PREFIX}${ticket.id}")){
             repo.deleteById(ticket.id)
             kafkaTemplate
                 .send(KafkaTopic.TICKET_COMPLETION,"${ticket.userID}", ticket.toTicketResponse())
-                .whenComplete { t, u ->
-                    log.info("send end: ${t.producerRecord.value()}")
-                }
+        }
+        else {
+            log.error("캐시 삭제 실패 : id: ${ticket.id}")
+            throw CacheEvictionFailureException()
         }
     }
 
