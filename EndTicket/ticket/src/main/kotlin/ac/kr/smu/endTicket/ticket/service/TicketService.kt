@@ -1,27 +1,19 @@
 package ac.kr.smu.endTicket.ticket.service
 
-import ac.kr.smu.endTicket.constant.KafkaTopic
-import ac.kr.smu.endTicket.ticket.domain.event.TicketCompletionEvent
+import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.ticket.domain.exception.CacheEvictionFailureException
 import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
-import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endTicket.ticket.domain.service.TicketCompletionEventService
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import org.slf4j.LoggerFactory
-import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.CachePut
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.data.redis.core.ScanOptions
-import org.springframework.kafka.core.KafkaTemplate
-import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.transaction.event.TransactionalEventListener
 import kotlin.jvm.optionals.getOrNull
-import kotlin.system.measureTimeMillis
 
 /**
  * 티켓 관련한 기능을 처리하는 클래스
@@ -92,18 +84,16 @@ class TicketService(
     }
 
     /**
-     * 티켓 완료 메소드, kafka를 통해 이벤트를 전송하고 DB와 캐시에서 티켓을 지운다.
+     * 티켓 완료 메소드, kafka를 통해 이벤트를 전송하고 캐시에서 티켓을 지운다.
      * @param ticket 완료된 티켓
      * @throws CacheEvictionFailureException 캐시 삭제에 실패했을 시
      */
-    fun completeTicket(ticket: Ticket){
+    private fun completeTicket(ticket: Ticket){
         if (redisTemplate.delete("${REDIS_KEY_PREFIX}${ticket.id}")) {
-            repo.deleteById(ticket.id)
-            completionEventService.eventPublish(TicketCompletionEvent.from(
-                TicketResponse.from(ticket),
-                ticket.userID
-            ))
+            repo.save(ticket)
+            completionEventService.eventPublish(TicketCompletionEvent.from(ticket))
         }
+
         else {
             log.error("캐시 삭제 실패 : id: ${ticket.id}")
             throw CacheEvictionFailureException()

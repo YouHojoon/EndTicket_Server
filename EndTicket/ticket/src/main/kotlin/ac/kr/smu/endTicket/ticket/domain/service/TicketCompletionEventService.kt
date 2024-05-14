@@ -1,6 +1,7 @@
 package ac.kr.smu.endTicket.ticket.domain.service
 
-import ac.kr.smu.endTicket.ticket.domain.event.TicketCompletionEvent
+import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service
 @Service
 class TicketCompletionEventService(
     private val eventPublisher: ApplicationEventPublisher,
-
 ) {
     fun eventPublish(event: TicketCompletionEvent){
         eventPublisher.publishEvent(event)

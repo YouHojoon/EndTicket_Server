@@ -4,10 +4,7 @@ import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.Column
-import jakarta.persistence.Embeddable
-import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
-import jakarta.persistence.EntityListeners
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
@@ -15,7 +12,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.Table
-import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import jakarta.persistence.Transient
 import java.time.LocalDateTime
 
 /**
@@ -31,7 +28,7 @@ import java.time.LocalDateTime
 @Table(name = "ticket", indexes = [
     Index(name = "idx_user_id", columnList = "user_id")
 ])
-class Ticket protected constructor(
+class Ticket private constructor(
     behavior: String,
     target: String,
     color: Color,
@@ -42,29 +39,25 @@ class Ticket protected constructor(
     val userID: Long,
 ){
     @Column(nullable = false)
-    var behavior: String protected set
+    var behavior: String private set
     @Column(nullable = false)
-    var target: String protected set
+    var target: String private set
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    var color: Color protected set
+    var color: Color private set
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    var type: Type protected set
+    var type: Type private set
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    var maxSwipeCount: MaxSwipeCount protected set
+    var maxSwipeCount: MaxSwipeCount private set
 
-    /**
-     * 객체가 업데이트 되야하는지 나타내는 필드
-     * 직렬화를 위해서 protected set 설정
-     */
     @Transient
     var shouldUpdate = false
-        protected set
+        private set
 
     init {
         this.behavior = behavior
@@ -96,14 +89,14 @@ class Ticket protected constructor(
 
     @Column(nullable = false)
     var swipeCount: Int = 0
-        protected set
+        private set
 
     @Column(updatable = false)
     val createdAt: LocalDateTime = LocalDateTime.now()
 
     @Column(nullable = true)
     var updatedAt: LocalDateTime? = null
-        protected set
+        private set
 
     enum class MaxSwipeCount(val value: Int){
         FIVE(5), TEN(10), FIFTEEN(15)

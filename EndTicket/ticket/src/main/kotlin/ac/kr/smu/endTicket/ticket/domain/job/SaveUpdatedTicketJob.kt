@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.ticket.domain.job
 
+import ac.kr.smu.endTicket.redis.getKeysWithPattern
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endTicket.ticket.service.TicketService
@@ -47,27 +48,5 @@ class SaveUpdatedTicketJob(
                 }
         }
         log.info("캐시 DB로 업데이트 작업 $elapsed ms의 시간으로 완료")
-    }
-
-    /**
-     * scan을 통해 패턴에 맞는 키를 가져오는 메소드
-     * @param pattern 키의 패턴
-     * @param count scan의 카운트, 기본값은 200
-     * @return 조건에 맞는 키의 set
-     */
-    private fun RedisTemplate<String, Any>.getKeysWithPattern(pattern: String, count: Long = 200): Set<String>{
-        val keys = HashSet<String>()
-
-        execute{
-            try {
-                scan(ScanOptions.scanOptions().match(pattern).count(count).build()).use {
-                    while (it.hasNext())
-                        keys.add(it.next())
-                }
-            }catch (e: Exception) {
-                throw e
-            }
-        }
-        return keys
     }
 }

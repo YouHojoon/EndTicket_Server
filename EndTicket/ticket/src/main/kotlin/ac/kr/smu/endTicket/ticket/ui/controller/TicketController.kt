@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController
 import ac.kr.smu.endTicket.response.ExceptionResponse
 import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.swagger.v3.oas.annotations.security.SecurityRequirements
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -39,7 +40,8 @@ import org.springframework.web.bind.annotation.PatchMapping
 @Tag(name = "/tickets")
 @SecurityRequirement(name = "Access token")
 class TicketController(
-    private val service: TicketService
+    private val service: TicketService,
+    private val om: ObjectMapper
 ) {
     private val log = LoggerFactory.getLogger(TicketController::class.java)
     @ApiResponses(
@@ -113,13 +115,12 @@ class TicketController(
         @Parameter(hidden = true)
         userID: Long
     ): ResponseEntity<*>{
+        println(om.visibilityChecker.toString())
         return ResponseEntity
                 .ok(
                     TicketResponse.from(service.updateTicket(request, id, userID))
                 )
     }
-
-
     @ApiResponses(
         ApiResponse(
             description = "스와이프 성공",

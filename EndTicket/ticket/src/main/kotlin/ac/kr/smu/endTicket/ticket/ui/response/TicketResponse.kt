@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema
  * @property maxSwipeCount 최대 스와이프 횟수
  */
 @Schema(description = "티켓에 대한 응답")
-data class TicketResponse(
+data class TicketResponse private constructor(
     @Schema(description = "티켓의 ID", example = "1")
     val id: Long = 0L,
 
@@ -35,8 +35,6 @@ data class TicketResponse(
 
     @Schema(description = "최대 스와이프 횟수", implementation = Ticket.MaxSwipeCount::class)
     val maxSwipeCount: Ticket.MaxSwipeCount
-
-
 ){
     companion object{
         fun from(ticket: Ticket) = TicketResponse(
