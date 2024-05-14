@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController
 import ac.kr.smu.endTicket.response.ExceptionResponse
 import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.swagger.v3.oas.annotations.security.SecurityRequirements
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -39,7 +40,8 @@ import org.springframework.web.bind.annotation.PatchMapping
 @Tag(name = "/tickets")
 @SecurityRequirement(name = "Access token")
 class TicketController(
-    private val service: TicketService
+    private val service: TicketService,
+    private val om: ObjectMapper
 ) {
     private val log = LoggerFactory.getLogger(TicketController::class.java)
     @ApiResponses(
@@ -66,7 +68,11 @@ class TicketController(
         @Parameter(hidden = true)
         userID: Long
     ): ResponseEntity<TicketResponse>{
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.createTicket(request, userID).toTicketResponse())
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(
+                TicketResponse.from(service.createTicket(request, userID))
+        )
     }
 
     @ApiResponses(
@@ -109,11 +115,12 @@ class TicketController(
         @Parameter(hidden = true)
         userID: Long
     ): ResponseEntity<*>{
+        println(om.visibilityChecker.toString())
         return ResponseEntity
-                .ok(service.updateTicket(request, id, userID).toTicketResponse())
+                .ok(
+                    TicketResponse.from(service.updateTicket(request, id, userID))
+                )
     }
-
-
     @ApiResponses(
         ApiResponse(
             description = "스와이프 성공",
@@ -145,7 +152,9 @@ class TicketController(
         @RequestHeader("X-User-ID")
         userID: Long
     ): ResponseEntity<*>{
-        return ResponseEntity.ok(service.swipeTicket(id,userID).toTicketResponse())
+        return ResponseEntity.ok(
+            TicketResponse.from(service.swipeTicket(id,userID))
+        )
     }
 
     @ApiResponses(
@@ -179,16 +188,18 @@ class TicketController(
         @RequestHeader("X-User-ID")
         userID: Long
     ): ResponseEntity<*>{
-        return ResponseEntity.ok(service.cancelSwipeTicket(id, userID).toTicketResponse())
+        return ResponseEntity.ok(
+            TicketResponse.from(service.cancelSwipeTicket(id, userID))
+        )
     }
-    
+
     @ExceptionHandler(NotFoundTicketException::class)
     fun handleNotFoundTicketException(e: NotFoundTicketException): ResponseEntity<ExceptionResponse>{
         log.info("id: ${e.id}", e)
         return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(
             ExceptionResponse(
                 code = HttpStatus.NOT_FOUND.value(),
-                message = e.message,
+                message = "티켓 조회에 에러가 발생했습니다.",
                 detail = e.message
             )
         )

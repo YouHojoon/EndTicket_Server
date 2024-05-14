@@ -4,9 +4,7 @@ import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endTicket.ticket.service.TicketService
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
-import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -22,7 +20,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
     classes = [TicketService::class]
 )
 @EnableScheduling
-class SaveUpdatedTicketToDBTest @Autowired constructor(
+class SaveUpdatedTicketJobTest @Autowired constructor(
     @MockBean
     private val ops: ValueOperations<String, Any>,
     @MockBean

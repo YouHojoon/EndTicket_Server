@@ -8,6 +8,7 @@ import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endTicket.aop.BindExceptionAdvice
 import ac.kr.smu.endTicket.constant.HttpHeaderName
 import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
+import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -34,7 +35,7 @@ class TicketControllerTest @Autowired constructor(
             .setControllerAdvice(BindExceptionAdvice())
             .build()
 
-    companion object{
+    private companion object{
         private const val BASE_URI = "http://localhost:8082/tickets"
         private const val USER_ID = 1L
     }
@@ -42,16 +43,19 @@ class TicketControllerTest @Autowired constructor(
     @Test
     @DisplayName("티켓 생성 테스트")
     fun given_ticketRequest_when_createTicket_then_expectStatusCode204_and_responseCreatedTicket(){
-        val ticket = createTicket()
-        val request = ticket.toTicketRequest()
+        val ticket = Ticket.from(ticketRequest, USER_ID)
 
         Mockito
-            .`when`(service.createTicket(request, USER_ID))
+            .`when`(service.createTicket(ticketRequest, USER_ID))
             .thenReturn(ticket)
 
-        createTicketRequest(request)
+        createTicketRequest(ticketRequest)
             .andExpect(MockMvcResultMatchers.status().isCreated)
-            .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(ticket.toTicketResponse())))
+            .andExpect(MockMvcResultMatchers.content().string(
+                ObjectMapper().writeValueAsString(
+                    TicketResponse.from(ticket)
+                )
+            ))
     }
 
     @Test
@@ -71,60 +75,75 @@ class TicketControllerTest @Autowired constructor(
     @Test
     @DisplayName("티켓 수정 테스트")
     fun given_ticketRequest_when_updateTicket_then_expectStatusCode200_and_responseUpdatedTicket(){
-        val ticket = createTicket()
-        ticket.behavior = "bb"
-        val request = ticket.toTicketRequest()
-        Mockito.`when`(service.updateTicket(request, ticket.id, USER_ID)).thenReturn(ticket)
+        val ticket = Ticket.from(ticketRequest, USER_ID)
+        val updateRequest = TicketRequest(
+            "abcde",
+            ticket.target,
+            ticket.color,
+            ticket.type,
+            ticket.maxSwipeCount
+        )
 
-        updateTicketRequest(request, ticket.id)
+
+        Mockito.`when`(service.updateTicket(updateRequest, ticket.id, USER_ID)).thenReturn(ticket)
+
+        updateTicketRequest(updateRequest, ticket.id)
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(ticket.toTicketResponse())))
+            .andExpect(MockMvcResultMatchers.content().string(
+                ObjectMapper().writeValueAsString(
+                    TicketResponse.from(ticket)
+                )
+            ))
     }
 
     @Test
     @DisplayName("비정상적인 티켓 수정 요청 테스트")
     fun given_invalidTicketRequest_when_updateTicket_then_expectStatusCode400(){
-        val ticket = createTicket()
-        ticket.behavior = ""
-        val request = ticket.toTicketRequest()
+        val ticket = Ticket.from(ticketRequest, USER_ID)
+        val updateRequest = TicketRequest(
+            "",
+            ticket.target,
+            ticket.color,
+            ticket.type,
+            ticket.maxSwipeCount
+        )
 
-        Mockito.`when`(service.updateTicket(request, ticket.id, USER_ID)).thenReturn(ticket)
 
-        updateTicketRequest(request,ticket.id).expectBindingException()
+        Mockito.`when`(service.updateTicket(updateRequest, ticket.id, USER_ID)).thenReturn(ticket)
+
+        updateTicketRequest(updateRequest,ticket.id).expectBindingException()
     }
 
     @Test
     @DisplayName("존재하지 않는 티켓 수정 요청 테스트")
     fun given_notExistTicket_when_updateTicket_then_expectStatusCode404(){
-        val ticket = createTicket()
-        val request = ticket.toTicketRequest()
+        val ticket = Ticket.from(ticketRequest, USER_ID)
 
-        Mockito.`when`(service.updateTicket(request, ticket.id, USER_ID))
+        Mockito.`when`(service.updateTicket(ticketRequest, ticket.id, USER_ID))
             .thenAnswer {
                 throw NotFoundTicketException(ticket.id)
             }
 
-        updateTicketRequest(request, ticket.id).andExpect(MockMvcResultMatchers.status().isNotFound)
+        updateTicketRequest(ticketRequest, ticket.id).andExpect(MockMvcResultMatchers.status().isNotFound)
     }
 
     @Test
     @DisplayName("티켓의 소유자가 아닌 사용자의 티켓 수정 요청 테스트")
     fun given_userWhoNotOwnerOfTicket_when_updateTicket_then_expectStatusCode403(){
-        val ticket = createTicket()
-        val request = ticket.toTicketRequest()
+        val ticket = Ticket.from(ticketRequest, USER_ID)
 
-        Mockito.`when`(service.updateTicket(request, ticket.id, USER_ID))
+        Mockito.`when`(service.updateTicket(ticketRequest, ticket.id, USER_ID))
             .thenAnswer {
                 throw NotOwnerOfTicketException(ticket.id, USER_ID)
             }
 
-        updateTicketRequest(request, ticket.id)
+        updateTicketRequest(ticketRequest, ticket.id)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
     }
     @Test
     @DisplayName("티켓 스와이프 테스트")
     fun given_ID_when_swipeTicket_then_responseSwipedTicket(){
-        val ticket = createTicket()
+        val ticket = Ticket.from(ticketRequest, USER_ID)
         val beforeSwipeCount = ticket.swipeCount
 
         Mockito.`when`(service.swipeTicket(ticket.id, USER_ID))
@@ -154,7 +173,7 @@ class TicketControllerTest @Autowired constructor(
     @Test
     @DisplayName("티켓의 소유자가 아닌 사용자의 스와이프 테스트")
     fun given_userWhoNotOwnerOfTicket_when_swipeTicket_then_expectStatusCode403(){
-        val ticket = createTicket()
+        val ticket = Ticket.from(ticketRequest, USER_ID)
 
         Mockito.`when`(service.swipeTicket(ticket.id, USER_ID))
             .thenAnswer {
@@ -168,7 +187,7 @@ class TicketControllerTest @Autowired constructor(
     @Test
     @DisplayName("티켓 스와이프 취소 테스트")
     fun given_ID_when_cancelSwipeTicket_then_responseCanceledSwipeTicket(){
-        val ticket = createTicket().also { it.swipeAndCheckCompletion(USER_ID) }
+        val ticket = Ticket.from(ticketRequest, USER_ID).also { it.swipeAndCheckCompletion(USER_ID) }
         val beforeSwipeCount = ticket.swipeCount
 
         Mockito.`when`(service.cancelSwipeTicket(ticket.id, USER_ID))
@@ -198,7 +217,7 @@ class TicketControllerTest @Autowired constructor(
     @Test
     @DisplayName("소유자가 아닌 사용자 티켓 스와이프 취소 테스트")
     fun given_userWhoNotOwnerOfTicket_when_cancelSwipeTicket_then_expectStatusCode403(){
-        val ticket = createTicket().also { it.swipeAndCheckCompletion(USER_ID) }
+        val ticket = Ticket.from(ticketRequest, USER_ID).also { it.swipeAndCheckCompletion(USER_ID) }
 
         Mockito.`when`(service.cancelSwipeTicket(ticket.id, USER_ID))
             .thenAnswer { throw NotOwnerOfTicketException(ticket.id, USER_ID) }
@@ -240,21 +259,12 @@ class TicketControllerTest @Autowired constructor(
             .andExpect(MockMvcResultMatchers.jsonPath("message").isString)
             .andExpect(MockMvcResultMatchers.jsonPath("detail").isString)
     }
-    private fun createTicket(): Ticket = Ticket(
+
+    private val ticketRequest = TicketRequest(
         behavior = "b",
         target = "t",
-        color = Ticket.Color.BLUE1,
+        color = Ticket.Color.RED1,
         type = Ticket.Type.HEALTH,
-        maxSwipeCount = Ticket.MaxSwipeCount.FIVE,
-        userID = USER_ID
+        maxSwipeCount = Ticket.MaxSwipeCount.TEN
     )
-
-    private fun Ticket.toTicketRequest() =
-        TicketRequest(
-            behavior = behavior,
-            target = target,
-            color = color,
-            type = type,
-            maxSwipeCount = maxSwipeCount
-        )
 }

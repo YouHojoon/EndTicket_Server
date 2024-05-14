@@ -41,6 +41,7 @@ subprojects{
         implementation("org.springframework.boot:spring-boot-starter-security")
         implementation("org.springframework.boot:spring-boot-starter-web")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
         implementation("org.springframework.boot:spring-boot-starter-actuator")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         runtimeOnly("com.mysql:mysql-connector-j")
@@ -58,6 +59,7 @@ subprojects{
         implementation("io.micrometer:micrometer-tracing-bridge-brave")
         implementation("io.zipkin.reporter2:zipkin-reporter-brave")
         implementation("io.zipkin.brave:brave-instrumentation-grpc")
+
     }
 
     tasks.withType<KotlinCompile> {
