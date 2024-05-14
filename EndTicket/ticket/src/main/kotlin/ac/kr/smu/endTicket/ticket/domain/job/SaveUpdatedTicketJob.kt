@@ -3,15 +3,18 @@ package ac.kr.smu.endTicket.ticket.domain.job
 import ac.kr.smu.endTicket.redis.getKeysWithPattern
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
-import ac.kr.smu.endTicket.ticket.service.TicketService
 import org.slf4j.LoggerFactory
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.data.redis.core.ScanOptions
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import kotlin.system.measureTimeMillis
 
+/**
+ * [Ticket] 캐시의 내용을 저장하는 Job
+ * @property redisTemplate Redis를 접근하기 위한 객체
+ * @property repo Ticket을 저장하고 있는 저장소
+ */
 @Component
 class SaveUpdatedTicketJob(
     private val redisTemplate: RedisTemplate<String, Any>,

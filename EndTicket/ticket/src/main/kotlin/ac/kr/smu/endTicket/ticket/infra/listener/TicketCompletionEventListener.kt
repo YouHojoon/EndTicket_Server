@@ -13,6 +13,11 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
 
+/**
+ * 티켓 완료 이벤트를 위한 Listener
+ * @property repo 이벤트를 저장하기 위한 저장소
+ * @property messageService 메시지를 전송하기 위한 서비스
+ */
 @Component
 class TicketCompletionEventListener(
     private val repo: TicketCompletionEventRepository,

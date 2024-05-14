@@ -9,6 +9,11 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import kotlin.system.measureTimeMillis
 
+/**
+ * [TicketCompletionEvent]의 관련된 일을 처리하는 Job
+ * @property repo TicketCompletionEvent를 저장하고 있는 저장소
+ * @property messageService 메시지를 전송을 담당하는 서비스
+ */
 @Component
 class TicketCompletionEventJob(
     private val repo: TicketCompletionEventRepository,
