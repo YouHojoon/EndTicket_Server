@@ -1,0 +1,73 @@
+package ac.kr.smu.endTicket.ticket.domain.job
+
+import ac.kr.smu.endTicket.ticket.domain.model.Ticket
+import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
+import ac.kr.smu.endTicket.ticket.service.TicketService
+import org.slf4j.LoggerFactory
+import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.core.ScanOptions
+import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
+import kotlin.system.measureTimeMillis
+
+@Component
+class SaveUpdatedTicketJob(
+    private val redisTemplate: RedisTemplate<String, Any>,
+    private val repo: TicketRepository
+) {
+    private companion object{
+        private const val REDIS_KEY_PREFIX = "ticket::"
+    }
+    private val log = LoggerFactory.getLogger(SaveUpdatedTicketJob::class.java)
+
+    /**
+     * 캐시의 내용을 DB에 저장하는 메소드
+     */
+    @Scheduled(initialDelayString = "\${schedules.save-updatedTicket-toDB.initialDelay}",fixedDelayString = "\${schedules.save-updatedTicket-toDB.fixedDelay}")
+    @Transactional
+    fun saveUpdatedTicketToDB(){
+        log.info("캐시 DB로 업데이트 작업 시작")
+
+        val elapsed = measureTimeMillis {
+            val keys = redisTemplate
+                .getKeysWithPattern("${REDIS_KEY_PREFIX}*")
+            val ops = redisTemplate.opsForValue()
+
+            val ticketsOfCache = keys
+                .mapNotNull { ops.get(it) as? Ticket }
+                .filter { it.shouldUpdate }
+
+            repo.saveAll(ticketsOfCache)
+
+            ticketsOfCache
+                .forEach {
+                    it.updateComplete()
+                    ops.setIfPresent("${REDIS_KEY_PREFIX}${it.id}", it)
+                }
+        }
+        log.info("캐시 DB로 업데이트 작업 $elapsed ms의 시간으로 완료")
+    }
+
+    /**
+     * scan을 통해 패턴에 맞는 키를 가져오는 메소드
+     * @param pattern 키의 패턴
+     * @param count scan의 카운트, 기본값은 200
+     * @return 조건에 맞는 키의 set
+     */
+    private fun RedisTemplate<String, Any>.getKeysWithPattern(pattern: String, count: Long = 200): Set<String>{
+        val keys = HashSet<String>()
+
+        execute{
+            try {
+                scan(ScanOptions.scanOptions().match(pattern).count(count).build()).use {
+                    while (it.hasNext())
+                        keys.add(it.next())
+                }
+            }catch (e: Exception) {
+                throw e
+            }
+        }
+        return keys
+    }
+}

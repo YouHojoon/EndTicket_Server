@@ -2,6 +2,7 @@ package ac.kr.smu.endTicket.config
 
 import ac.kr.smu.endTicket.annotation.EnableAutoRedisConfig
 import ac.kr.smu.endTicket.property.RedisClusterProperties
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.lettuce.core.ReadFrom
 import io.lettuce.core.cluster.ClusterClientOptions
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions
@@ -36,6 +37,12 @@ class AutoRedisConfig(
     private val log = LoggerFactory.getLogger(AutoRedisConfig::class.java)
 
     @Bean
+    fun valueSerializer() = GenericJackson2JsonRedisSerializer().apply {
+        configure {
+            it.registerModule(JavaTimeModule())
+        }
+    }
+    @Bean
     @ConditionalOnMissingBean(LettuceConnectionFactory::class)
     fun connectionFactory(): LettuceConnectionFactory {
         val topologyOption = ClusterTopologyRefreshOptions.builder()
@@ -67,7 +74,7 @@ class AutoRedisConfig(
     fun redisTemplate(connectionFactory: RedisConnectionFactory): RedisTemplate<String, Object> = RedisTemplate<String, Object>().apply {
         this.connectionFactory = connectionFactory
         keySerializer = StringRedisSerializer()
-        valueSerializer = GenericJackson2JsonRedisSerializer()
+        valueSerializer = valueSerializer()
     }
 
     @Bean
@@ -78,7 +85,7 @@ class AutoRedisConfig(
             .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(StringRedisSerializer()))
             .serializeValuesWith(
                 RedisSerializationContext.SerializationPair.fromSerializer(
-                    GenericJackson2JsonRedisSerializer()
+                    valueSerializer()
                 )
             )
             .entryTtl(Duration.ofHours(2))

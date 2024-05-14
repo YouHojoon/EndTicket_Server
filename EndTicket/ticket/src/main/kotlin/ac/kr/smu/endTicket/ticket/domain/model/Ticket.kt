@@ -2,11 +2,12 @@ package ac.kr.smu.endTicket.ticket.domain.model
 
 import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
-import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
-import com.fasterxml.jackson.annotation.JsonIgnore
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.Column
+import jakarta.persistence.Embeddable
+import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
@@ -14,6 +15,8 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.Table
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.time.LocalDateTime
 
 /**
  * 티켓을 추상화한 클래스
@@ -28,42 +31,64 @@ import jakarta.persistence.Table
 @Table(name = "ticket", indexes = [
     Index(name = "idx_user_id", columnList = "user_id")
 ])
-class Ticket(
-    @Column(nullable = false)
-    var behavior: String,
-
-    @Column(nullable = false)
-    var target: String,
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    var color: Color,
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    var type: Type,
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    var maxSwipeCount: MaxSwipeCount,
+class Ticket protected constructor(
+    behavior: String,
+    target: String,
+    color: Color,
+    type: Type,
+    maxSwipeCount: MaxSwipeCount,
 
     @Column(name = "user_id", updatable = false, nullable = false)
-    val userID: Long
-) {
+    val userID: Long,
+){
+    @Column(nullable = false)
+    var behavior: String protected set
+    @Column(nullable = false)
+    var target: String protected set
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    var color: Color protected set
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    var type: Type protected set
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    var maxSwipeCount: MaxSwipeCount protected set
+
     /**
-     * @constructor TicketRequest와 userID를 이용해서 생성하는 생성자
-     * @param request 생성에 이용할 요청
-     * @param userID 티켓의 소유자
+     * 객체가 업데이트 되야하는지 나타내는 필드
+     * 직렬화를 위해서 protected set 설정
      */
-    constructor(request: TicketRequest, userID: Long):
-            this(
+    @Transient
+    var shouldUpdate = false
+        protected set
+
+    init {
+        this.behavior = behavior
+        this.target = target
+        this.color = color
+        this.type = type
+        this.maxSwipeCount = maxSwipeCount
+    }
+    companion object{
+        /**
+         * [TicketRequest] 로부터 티켓을 생성하는 메소드
+         * @param request 생성에 이용할 요청
+         * @param userID 티켓의 소유자
+         */
+        fun from(request: TicketRequest, userID: Long) =
+            Ticket(
                 behavior = request.behavior,
                 target = request.target,
                 color = request.color,
                 type = request.type,
                 maxSwipeCount = request.maxSwipeCount,
                 userID = userID
-                )
+            )
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,10 +96,14 @@ class Ticket(
 
     @Column(nullable = false)
     var swipeCount: Int = 0
-        private set
+        protected set
 
-    @Transient
-    var shouldUpdate = false
+    @Column(updatable = false)
+    val createdAt: LocalDateTime = LocalDateTime.now()
+
+    @Column(nullable = true)
+    var updatedAt: LocalDateTime? = null
+        protected set
 
     enum class MaxSwipeCount(val value: Int){
         FIVE(5), TEN(10), FIFTEEN(15)
@@ -103,6 +132,7 @@ class Ticket(
         return o.id == id
     }
 
+
     /**
      * 티켓의 수정 메소드
      * @param request 수정에 사용할 요청
@@ -120,6 +150,7 @@ class Ticket(
         this.swipeCount = 0
         this.type = request.type
 
+        setShouldUpdateTrue()
     }
 
     /**
@@ -149,23 +180,15 @@ class Ticket(
         }
     }
 
-    /**
-     * 현재 티켓을 응답에 사용하는 객체로 변환하는 메소드
-     */
-    fun toTicketResponse(): TicketResponse = TicketResponse(
-        id = id,
-        behavior = behavior,
-        target = target,
-        type = type,
-        color = color,
-        swipeCount = swipeCount,
-        maxSwipeCount = maxSwipeCount
-    )
+    fun updateComplete(){
+        shouldUpdate = false
+    }
 
     /**
      * shouldUpdate가 false면 true로 변경하는 메소드
      */
     private fun setShouldUpdateTrue(){
+        updatedAt = LocalDateTime.now()
         if (!shouldUpdate)
             shouldUpdate = true
     }

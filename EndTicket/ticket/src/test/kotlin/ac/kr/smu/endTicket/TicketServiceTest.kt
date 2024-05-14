@@ -69,48 +69,52 @@ class TicketServiceTest @Autowired constructor(
 ) {
 
     private lateinit var container: KafkaMessageListenerContainer<String, TicketResponse>
-
+    private companion object{
+        private const val USER_ID = 1L
+    }
     @Test
     @DisplayName("티켓 생성 테스트")
     fun given_ticket_when_createTicket_then_createTicket_and_returnCreatedTicket(){
-        val ticket = createTicket()
+        val ticket = Ticket.from(ticketRequest, USER_ID)
         Mockito.`when`(repo.save(Mockito.any()))
             .thenReturn(ticket)
 
-        assertEquals(ticket, service.createTicket(ticket.toTicketRequest(), ticket.userID))
+        assertEquals(ticket, service.createTicket(ticketRequest, USER_ID))
     }
 
     @Test
     @DisplayName("티켓 수정 테스트")
     fun given_ticket_when_updateTicket_then_updateTicket_and_returnUpdatedTicket(){
-        val ticket = createTicket()
-        Mockito.`when`(repo.findById(Mockito.anyLong()))
-            .thenReturn(Optional.of(createTicket()))
-        ticket.behavior = "bb"
+        val ticket = Ticket.from(ticketRequest, USER_ID)
 
-        assertEquals(service.updateTicket(ticket.toTicketRequest(), ticket.id, ticket.userID) , ticket)
+
+            Mockito.`when`(repo.findById(Mockito.anyLong()))
+            .thenReturn(Optional.of(ticket))
+
+
+        assertEquals(service.updateTicket(updateRequest, ticket.id, USER_ID) , ticket)
     }
     @Test
     @DisplayName("존재하지 않는 티켓 수정 테스트")
     fun given_notExistTicket_when_updateTicket_then_throwNotFoundTicketException(){
-        val ticket = createTicket()
-        Mockito.`when`(repo.findById(ticket.id))
+        Mockito.`when`(repo.findById(Mockito.anyLong()))
             .thenReturn(Optional.empty())
-        assertThrows<NotFoundTicketException> {  service.updateTicket(ticket.toTicketRequest(), ticket.id, ticket.userID)}
+        assertThrows<NotFoundTicketException> {  service.updateTicket(updateRequest, 1L, USER_ID)}
     }
     @Test
     @DisplayName("티켓의 소유자가 아닌 사용자의 수정 테스트")
     fun given_userWhoNotOwnerOfTicket_then_throwNotOwnerOfTicketException(){
-        val ticket = createTicket()
+        val ticket = Ticket.from(ticketRequest, USER_ID)
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
-        assertThrows<NotOwnerOfTicketException> {  service.updateTicket(ticket.toTicketRequest(), ticket.id, 2L)}
+        assertThrows<NotOwnerOfTicketException> {  service.updateTicket(updateRequest, ticket.id, 2L)}
     }
 
     @Test
     @DisplayName("티켓 스와이프 테스트")
     fun given_ID_when_swipeTicket_then_plusOneSwipeCountOfTicket(){
-        val ticket = createTicket()
+        val ticket = Ticket.from(ticketRequest, USER_ID)
+
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
         val beforeSwipeCount = ticket.swipeCount
@@ -121,7 +125,8 @@ class TicketServiceTest @Autowired constructor(
     @Test
     @DisplayName("티켓 소유자가 아닌 사용자의 스와이프 테스트")
     fun given_userWhoNotOwnerOfTicket_whenSwipeTicket_then_throwNotOwnerOfTicket(){
-        val ticket = createTicket()
+        val ticket = Ticket.from(ticketRequest, USER_ID)
+
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
         assertThrows<NotOwnerOfTicketException> {  service.swipeTicket(ticket.id, 2L)}
@@ -138,7 +143,7 @@ class TicketServiceTest @Autowired constructor(
     @Test
     @DisplayName("스와이프 취소 테스트")
     fun given_ID_when_cancelSwipe_then_minusOneSwipeCountOfTicket(){
-        val ticket = createTicket().also { it.swipeAndCheckCompletion(it.userID) }
+        val ticket = Ticket.from(ticketRequest, USER_ID).also { it.swipeAndCheckCompletion(it.userID) }
         val beforeSwipeCount = ticket.swipeCount
 
         Mockito.`when`(repo.findById(ticket.id))
@@ -161,7 +166,7 @@ class TicketServiceTest @Autowired constructor(
     @Test
     @DisplayName("소유자가 아닌 사용자 티켓 스와이프 취소 테스트")
     fun given_userWhoNotOwnerOfTicket_whenCancelSwipeTicket_then_throwNotOwnerOfTicket(){
-        val ticket = createTicket()
+        val ticket = Ticket.from(ticketRequest, USER_ID)
         ticket.swipeAndCheckCompletion(ticket.userID)
 
         Mockito.`when`(repo.findById(ticket.id))
@@ -173,7 +178,7 @@ class TicketServiceTest @Autowired constructor(
     @Test
     @DisplayName("티켓 완료 테스트")
     fun given_ticketWhichRightBeforeCompletion_when_swipeTicket_then_runCompleteTicket(){
-        val ticket = createTicket()
+        val ticket = Ticket.from(ticketRequest, USER_ID)
         val queue: BlockingQueue<TicketResponse> = LinkedBlockingQueue()
         createConsumer(queue)
 
@@ -185,30 +190,27 @@ class TicketServiceTest @Autowired constructor(
         val response = queue.poll(5, TimeUnit.SECONDS)
 
         assertNotNull(response)
-        assertEquals(ticket.toTicketResponse(), response)
+        assertEquals(TicketResponse.from(ticket), response)
         Mockito.verify(repo).deleteById(ticket.id)
 
         container.stop()
     }
 
-    private fun createTicket(): Ticket{
-        return Ticket(
+    private val ticketRequest =
+        TicketRequest(
             behavior = "b",
             target = "t",
             color = Ticket.Color.BLUE1,
             type = Ticket.Type.SELF_IMPROVEMENT,
             maxSwipeCount = Ticket.MaxSwipeCount.FIVE,
-            userID = 1L
-            )
-    }
+    )
 
-    private fun Ticket.toTicketRequest() =
-        TicketRequest(
-        behavior = behavior,
-        target = target,
-        color = color,
-        type = type,
-        maxSwipeCount = maxSwipeCount
+    private val updateRequest = TicketRequest(
+        "abcde",
+        ticketRequest.target,
+        ticketRequest.color,
+        ticketRequest.type,
+        ticketRequest.maxSwipeCount
     )
 
     private fun createConsumer(queue: BlockingQueue<TicketResponse>){
@@ -233,8 +235,4 @@ class TicketServiceTest @Autowired constructor(
 
         ContainerTestUtils.waitForAssignment(container, broker.partitionsPerTopic)
     }
-
-//    private fun createProducer(): Producer<String,TicketResponse> = DefaultKafkaProducerFactory(
-//        KafkaTestUtils.producerProps(broker), StringSerializer(), JsonSerializer<TicketResponse>()
-//    ).createProducer()
 }

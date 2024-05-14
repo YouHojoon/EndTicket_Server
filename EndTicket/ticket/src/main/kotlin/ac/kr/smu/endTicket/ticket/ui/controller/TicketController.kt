@@ -66,7 +66,11 @@ class TicketController(
         @Parameter(hidden = true)
         userID: Long
     ): ResponseEntity<TicketResponse>{
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.createTicket(request, userID).toTicketResponse())
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(
+                TicketResponse.from(service.createTicket(request, userID))
+        )
     }
 
     @ApiResponses(
@@ -110,7 +114,9 @@ class TicketController(
         userID: Long
     ): ResponseEntity<*>{
         return ResponseEntity
-                .ok(service.updateTicket(request, id, userID).toTicketResponse())
+                .ok(
+                    TicketResponse.from(service.updateTicket(request, id, userID))
+                )
     }
 
 
@@ -145,7 +151,9 @@ class TicketController(
         @RequestHeader("X-User-ID")
         userID: Long
     ): ResponseEntity<*>{
-        return ResponseEntity.ok(service.swipeTicket(id,userID).toTicketResponse())
+        return ResponseEntity.ok(
+            TicketResponse.from(service.swipeTicket(id,userID))
+        )
     }
 
     @ApiResponses(
@@ -179,7 +187,9 @@ class TicketController(
         @RequestHeader("X-User-ID")
         userID: Long
     ): ResponseEntity<*>{
-        return ResponseEntity.ok(service.cancelSwipeTicket(id, userID).toTicketResponse())
+        return ResponseEntity.ok(
+            TicketResponse.from(service.cancelSwipeTicket(id, userID))
+        )
     }
 
     @ExceptionHandler(NotFoundTicketException::class)

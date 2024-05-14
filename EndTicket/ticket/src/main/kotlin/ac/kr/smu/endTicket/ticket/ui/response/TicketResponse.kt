@@ -35,4 +35,18 @@ data class TicketResponse(
 
     @Schema(description = "최대 스와이프 횟수", implementation = Ticket.MaxSwipeCount::class)
     val maxSwipeCount: Ticket.MaxSwipeCount
-)
+
+
+){
+    companion object{
+        fun from(ticket: Ticket) = TicketResponse(
+            id = ticket.id,
+            behavior = ticket.behavior,
+            target = ticket.target,
+            type = ticket.type,
+            color = ticket.color,
+            swipeCount = ticket.swipeCount,
+            maxSwipeCount = ticket.maxSwipeCount
+        )
+    }
+}

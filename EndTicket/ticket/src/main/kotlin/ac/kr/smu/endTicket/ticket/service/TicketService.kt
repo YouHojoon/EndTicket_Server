@@ -1,11 +1,13 @@
 package ac.kr.smu.endTicket.ticket.service
 
 import ac.kr.smu.endTicket.constant.KafkaTopic
+import ac.kr.smu.endTicket.ticket.domain.event.TicketCompletionEvent
 import ac.kr.smu.endTicket.ticket.domain.exception.CacheEvictionFailureException
 import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
 import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
+import ac.kr.smu.endTicket.ticket.domain.service.TicketCompletionEventService
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import org.slf4j.LoggerFactory
@@ -31,7 +33,7 @@ import kotlin.system.measureTimeMillis
 class TicketService(
     private val repo: TicketRepository,
     private val redisTemplate: RedisTemplate<String, Any>,
-    private val kafkaTemplate: KafkaTemplate<String, TicketResponse>
+    private val completionEventService: TicketCompletionEventService
 ) {
     private val log = LoggerFactory.getLogger(TicketService::class.java)
     private companion object{
@@ -47,7 +49,7 @@ class TicketService(
     @CachePut("ticket", key = "#result.id")
     @Transactional
     fun createTicket(request: TicketRequest, userID: Long): Ticket{
-        return repo.save(Ticket(request,userID))
+        return repo.save(Ticket.from(request,userID))
     }
 
     /**
@@ -77,7 +79,7 @@ class TicketService(
      * @return 스와이프 처리된 티켓
      * @throws NotFoundTicketException id로 조회한 티켓이 없을 시
      */
-    @Transactional("kafkaTransactionManager")
+    @Transactional
     fun swipeTicket(id: Long, userID: Long): Ticket{
         val ticket = repo.findById(id).getOrNull() ?: throw NotFoundTicketException(id)
 
@@ -90,43 +92,17 @@ class TicketService(
     }
 
     /**
-     * 캐시의 내용을 DB에 저장하는 메소드
-     */
-    @Scheduled(initialDelayString = "\${schedules.save-updatedTicket-toDB.initialDelay}",fixedDelayString = "\${schedules.save-updatedTicket-toDB.fixedDelay}")
-    @Transactional("transactionManager")
-    fun saveUpdatedTicketToDB(){
-        log.info("캐시 DB로 업데이트 작업 시작")
-
-        val elapsed = measureTimeMillis {
-            val keys = redisTemplate
-                .getKeysWithPattern("${REDIS_KEY_PREFIX}*")
-            val ops = redisTemplate.opsForValue()
-
-            val ticketsOfCache = keys
-                .mapNotNull { ops.get(it) as? Ticket }
-                .filter { it.shouldUpdate }
-
-            repo.saveAll(ticketsOfCache)
-
-            ticketsOfCache
-                .map { it.apply { shouldUpdate = false } }
-                .forEach { ops.setIfPresent("$REDIS_KEY_PREFIX${it.id}", it) }
-        }
-
-
-        log.info("캐시 DB로 업데이트 작업 $elapsed ms의 시간으로 완료")
-    }
-
-    /**
      * 티켓 완료 메소드, kafka를 통해 이벤트를 전송하고 DB와 캐시에서 티켓을 지운다.
      * @param ticket 완료된 티켓
      * @throws CacheEvictionFailureException 캐시 삭제에 실패했을 시
      */
     fun completeTicket(ticket: Ticket){
-        if (redisTemplate.delete("${REDIS_KEY_PREFIX}${ticket.id}")){
+        if (redisTemplate.delete("${REDIS_KEY_PREFIX}${ticket.id}")) {
             repo.deleteById(ticket.id)
-            kafkaTemplate
-                .send(KafkaTopic.TICKET_COMPLETION,"${ticket.userID}", ticket.toTicketResponse())
+            completionEventService.eventPublish(TicketCompletionEvent.from(
+                TicketResponse.from(ticket),
+                ticket.userID
+            ))
         }
         else {
             log.error("캐시 삭제 실패 : id: ${ticket.id}")
@@ -150,27 +126,4 @@ class TicketService(
 
         return ticket
     }
-    /**
-     * scan을 통해 패턴에 맞는 키를 가져오는 메소드
-     * @param pattern 키의 패턴
-     * @param count scan의 카운트, 기본값은 200
-     * @return 조건에 맞는 키의 set
-     */
-    private fun RedisTemplate<String, Any>.getKeysWithPattern(pattern: String, count: Long = 200): Set<String>{
-        val keys = HashSet<String>()
-
-        execute{
-            try {
-                scan(ScanOptions.scanOptions().match(pattern).count(count).build()).use {
-                    while (it.hasNext())
-                        keys.add(it.next())
-                }
-            }catch (e: Exception) {
-                throw e
-            }
-        }
-        return keys
-    }
-
-
 }
