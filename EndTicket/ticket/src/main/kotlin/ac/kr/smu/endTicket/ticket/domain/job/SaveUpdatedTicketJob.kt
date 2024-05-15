@@ -28,7 +28,7 @@ class SaveUpdatedTicketJob(
     /**
      * 캐시의 내용을 DB에 저장하는 메소드
      */
-    @Scheduled(initialDelayString = "\${schedules.save-updatedTicket-toDB.initialDelay}",fixedDelayString = "\${schedules.save-updatedTicket-toDB.fixedDelay}")
+    @Scheduled(initialDelayString = "\${schedules.save-updated-ticket.initialDelay}",fixedDelayString = "\${schedules.save-updated-ticket.fixedDelay}")
     @Transactional
     fun saveUpdatedTicketToDB(){
         log.info("캐시 DB로 업데이트 작업 시작")

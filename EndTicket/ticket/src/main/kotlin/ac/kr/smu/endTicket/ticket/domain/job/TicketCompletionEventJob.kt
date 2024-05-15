@@ -24,7 +24,7 @@ class TicketCompletionEventJob(
      * 발행된지 10분이 지났으나 메시지 전송이 되지 않은 이벤트를 재전송
      */
     @Transactional
-    @Scheduled(fixedDelayString = "\${schedules.resend-ticketCompletionEvent.fixedDelay}", initialDelayString = "\${schedules.resend-ticketCompletionEvent.fixedDelay}")
+    @Scheduled(fixedDelayString = "\${schedules.resend-ticket-completion-event.fixedDelay}", initialDelayString = "\${schedules.resend-ticket-completion-event.fixedDelay}")
     fun resendTicketCompletionEvent(){
         log.info("티켓 완료 이벤트 재전송 시작")
 
