@@ -30,7 +30,7 @@ class SaveUpdatedTicketJob(
      */
     @Scheduled(initialDelayString = "\${schedules.save-updated-ticket.initialDelay}",fixedDelayString = "\${schedules.save-updated-ticket.fixedDelay}")
     @Transactional
-    fun saveUpdatedTicketToDB(){
+    fun saveUpdatedTicket(){
         log.info("캐시 DB로 업데이트 작업 시작")
 
         val elapsed = measureTimeMillis {

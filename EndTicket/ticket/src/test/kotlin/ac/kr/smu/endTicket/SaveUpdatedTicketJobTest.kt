@@ -34,7 +34,7 @@ class SaveUpdatedTicketJobTest @Autowired constructor(
 
     @Test
     @DisplayName("Write Back 패턴 테스트")
-    fun after_fixedDelay_then_runSaveUpdatedTicketToDB(){
+    fun after_fixedDelay_then_runSaveUpdatedTicket(){
         Mockito.`when`(redisTemplate.opsForValue()).thenReturn(ops)
         Thread.sleep( 300)
         Mockito.verify(repo, Mockito.atLeast(1)).saveAll(Mockito.anyList())
