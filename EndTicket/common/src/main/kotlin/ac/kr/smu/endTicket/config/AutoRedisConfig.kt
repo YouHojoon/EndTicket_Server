@@ -26,6 +26,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.RedisSerializationContext
+import org.springframework.data.redis.serializer.RedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer
 import java.time.Duration
 
@@ -71,21 +72,21 @@ class AutoRedisConfig(
 
     @Bean
     @ConditionalOnMissingBean(RedisTemplate::class)
-    fun redisTemplate(connectionFactory: RedisConnectionFactory): RedisTemplate<String, Object> = RedisTemplate<String, Object>().apply {
+    fun redisTemplate(connectionFactory: RedisConnectionFactory, valueSerializer: GenericJackson2JsonRedisSerializer) = RedisTemplate<String, Object>().apply {
         this.connectionFactory = connectionFactory
         keySerializer = StringRedisSerializer()
-        valueSerializer = valueSerializer()
+        this.valueSerializer = valueSerializer
     }
 
     @Bean
     @ConditionalOnMissingBean(CacheManager::class)
-    fun cacheManager(factory: RedisConnectionFactory): CacheManager {
+    fun cacheManager(factory: RedisConnectionFactory, valueSerializer: GenericJackson2JsonRedisSerializer): CacheManager {
         val config = RedisCacheConfiguration
             .defaultCacheConfig()
             .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(StringRedisSerializer()))
             .serializeValuesWith(
                 RedisSerializationContext.SerializationPair.fromSerializer(
-                    valueSerializer()
+                    valueSerializer
                 )
             )
             .entryTtl(Duration.ofHours(2))

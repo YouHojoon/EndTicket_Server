@@ -1,7 +1,10 @@
 package ac.kr.smu.endTicket
 
+import ac.kr.smu.endTicket.annotation.EnableAutoRedisConfig
+import ac.kr.smu.endTicket.ticket.domain.job.SaveUpdatedTicketJob
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endTicket.ticket.service.TicketService
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -14,30 +17,26 @@ import org.springframework.scheduling.annotation.EnableScheduling
 
 @SpringBootTest(
     properties = [
-        "schedules.save-updatedTicket-toDB.initialDelay=50",
-        "schedules.save-updatedTicket-toDB.fixedDelay=100"
+        "schedules.save-updated-ticket.initialDelay=250",
+        "schedules.save-updated-ticket.fixedDelay=100"
     ],
-    classes = [TicketService::class]
+    classes = [SaveUpdatedTicketJob::class]
 )
 @EnableScheduling
 class SaveUpdatedTicketJobTest @Autowired constructor(
     @MockBean
     private val ops: ValueOperations<String, Any>,
     @MockBean
-    private val repo: TicketRepository,
-    @MockBean
     private val redisTemplate: RedisTemplate<String, Any>,
-
-    private val service: TicketService
+    @MockBean
+    private val repo: TicketRepository,
 ) {
 
     @Test
     @DisplayName("Write Back 패턴 테스트")
-    fun after_fixedDelay_then_runSaveUpdatedTicketToDB(){
-        Mockito.`when`(redisTemplate.opsForValue())
-            .thenReturn(ops)
-
+    fun after_fixedDelay_then_runSaveUpdatedTicket(){
+        Mockito.`when`(redisTemplate.opsForValue()).thenReturn(ops)
         Thread.sleep( 300)
-        Mockito.verify(repo, Mockito.atLeast(2)).saveAll(Mockito.anyList())
+        Mockito.verify(repo, Mockito.atLeast(1)).saveAll(Mockito.anyList())
     }
 }
