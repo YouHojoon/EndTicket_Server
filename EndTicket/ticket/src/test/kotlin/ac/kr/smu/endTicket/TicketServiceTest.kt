@@ -9,6 +9,7 @@ import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endTicket.ticket.service.TicketService
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
+import org.apache.catalina.User
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -75,17 +76,25 @@ class TicketServiceTest @Autowired constructor(
     }
     @Test
     @DisplayName("티켓 생성 테스트")
-    fun given_ticket_when_createTicket_then_createTicket_and_returnCreatedTicket(){
+    fun given_ticketRequest_when_createTicket_then_createTicket_and_returnCreatedTicket(){
         val ticket = Ticket.from(ticketRequest, USER_ID)
         Mockito.`when`(repo.save(Mockito.any()))
             .thenReturn(ticket)
 
         assertEquals(TicketResponse.from(ticket), service.createTicket(ticketRequest, USER_ID))
+        Mockito.verify(repo, Mockito.times(1)).countByUserID(USER_ID)
     }
+    @Test
+    @DisplayName("티켓 개수 제한 이상으로 생성 테스트")
+    fun given_userHasReachedTicketLimit_when_createTicket_then_throwIllegalStateException(){
+        Mockito.`when`(repo.countByUserID(USER_ID))
+            .thenReturn(5)
 
+        assertThrows<IllegalStateException> { service.createTicket(ticketRequest, USER_ID) }
+    }
     @Test
     @DisplayName("티켓 수정 테스트")
-    fun given_ticket_when_updateTicket_then_updateTicket_and_returnUpdatedTicket(){
+    fun given_ticketRequest_when_updateTicket_then_updateTicket_and_returnUpdatedTicket(){
         val ticket = Ticket.from(ticketRequest, USER_ID)
 
 
@@ -201,7 +210,7 @@ class TicketServiceTest @Autowired constructor(
     @DisplayName("미완료된 티켓 조회")
     fun given_userID_when_findIncompleteTickets_then_returnIncompleteTickets(){
         val tickets = listOf(Ticket.from(ticketRequest, USER_ID))
-        Mockito.`when`(repo.findByUserIDAndSwipeCountLessThanMaxSwipeCount(USER_ID))
+        Mockito.`when`(repo.findIncompleteTicketsOfUser(USER_ID))
             .thenReturn(tickets)
 
         assertEquals(tickets.map { TicketResponse.from(it) }, service.findIncompleteTicket(USER_ID))

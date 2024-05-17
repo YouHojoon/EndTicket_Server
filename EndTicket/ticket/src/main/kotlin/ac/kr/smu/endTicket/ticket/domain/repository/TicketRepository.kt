@@ -21,4 +21,10 @@ interface TicketRepository: JpaRepository<Ticket, Long> {
      */
     @Query("select t from Ticket as t where t.swipeCount < t.maxSwipeCount and t.userID = :userID")
     fun findIncompleteTicketsOfUser(userID: Long): List<Ticket>
+
+    /**
+     * 사용자의 티캣 개수를 조회하는 메소드
+     * @param userID 사용자의 ID
+     */
+    fun countByUserID(userID: Long): Int
 }

@@ -30,6 +30,7 @@ class TicketService(
     private val log = LoggerFactory.getLogger(TicketService::class.java)
     private companion object{
         private const val REDIS_KEY_PREFIX = "ticket::"
+        private const val TICKET_LIMIT = 5
     }
 
     /**
@@ -40,7 +41,14 @@ class TicketService(
      */
     @CachePut("ticket", key = "#result.id")
     @Transactional
-    fun createTicket(request: TicketRequest, userID: Long) = TicketResponse.from(repo.save(Ticket.from(request,userID)))
+    fun createTicket(request: TicketRequest, userID: Long): TicketResponse{
+        val count = repo.countByUserID(userID)
+
+        if (count >= TICKET_LIMIT)
+            throw IllegalStateException("티켓을 $TICKET_LIMIT 개 이상 생성할 수 없습니다.")
+
+        return TicketResponse.from(repo.save(Ticket.from(request,userID)))
+    }
 
 
     /**
