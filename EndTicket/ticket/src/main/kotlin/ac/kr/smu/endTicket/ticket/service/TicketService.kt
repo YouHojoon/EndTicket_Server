@@ -45,7 +45,7 @@ class TicketService(
     fun createTicket(request: TicketRequest, userID: Long): TicketResponse{
         val count = repo.countByUserID(userID)
 
-        check(count >= TICKET_LIMIT){"티켓을 $TICKET_LIMIT 개 이상 생성할 수 없습니다."}
+        check(count < TICKET_LIMIT){"티켓을 $TICKET_LIMIT 개 이상 생성할 수 없습니다."}
         return TicketResponse.from(repo.save(Ticket.from(request,userID)))
     }
 
@@ -65,7 +65,8 @@ class TicketService(
     fun updateTicket(request: TicketRequest, id: Long, userID: Long): TicketResponse{
         val old = repo.findById(id).getOrNull() ?: throw NotFoundTicketException(id)
 
-        old.update(request,userID)
+        if (old.updateAndCheckCompletion(request,userID))
+            completeTicket(old)
 
         return TicketResponse.from(old)
     }

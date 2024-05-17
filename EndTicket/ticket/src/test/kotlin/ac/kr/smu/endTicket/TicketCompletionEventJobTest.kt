@@ -60,7 +60,7 @@ class TicketCompletionEventJobTest @Autowired constructor(
     @Suppress("UNCHECKED_CAST")
     private fun <T> any(): T {
         Mockito.any<T>()
-        return  null as T
+        return null as T
     }
 
 

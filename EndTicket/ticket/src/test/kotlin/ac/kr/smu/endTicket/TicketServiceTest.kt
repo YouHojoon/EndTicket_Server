@@ -5,7 +5,10 @@ import ac.kr.smu.endTicket.constant.KafkaTopic
 import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
 import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
+import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
+import ac.kr.smu.endTicket.ticket.domain.service.TicketCompletionEventService
+import ac.kr.smu.endTicket.ticket.infra.listener.TicketCompletionEventListener
 import ac.kr.smu.endTicket.ticket.service.TicketService
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
@@ -23,6 +26,8 @@ import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient
+import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.core.ValueOperations
 import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
@@ -52,28 +57,30 @@ import kotlin.test.assertNotNull
 @SpringBootTest(
     properties = [
         "eureka.client.enabled=false"
-    ]
-)
-@EmbeddedKafka(
-    partitions = 3,
-    brokerProperties = [
-        "listeners=PLAINTEXT://localhost:9292"
     ],
-    ports = [9292]
+    classes = [TicketService::class]
 )
+@EnableAutoRedisConfig
 class TicketServiceTest @Autowired constructor(
     @MockBean
+    private val ops: ValueOperations<String,Any>,
+    @MockBean
+    private val redisTemplate: RedisTemplate<String, Any>,
+    @MockBean
     private val repo: TicketRepository,
-
-    private val broker: EmbeddedKafkaBroker,
+    @MockBean
+    private val eventService: TicketCompletionEventService,
     private val service: TicketService,
-    private val kafkaProperties: KafkaProperties
 ) {
-
-    private lateinit var container: KafkaMessageListenerContainer<String, TicketResponse>
     private companion object{
+        private const val REDIS_KEY_PREFIX = "ticket::"
         private const val USER_ID = 1L
     }
+    @BeforeEach
+    fun init(){
+        Mockito.`when`(redisTemplate.opsForValue()).thenReturn(ops)
+    }
+
     @Test
     @DisplayName("티켓 생성 테스트")
     fun given_ticketRequest_when_createTicket_then_createTicket_and_returnCreatedTicket(){
@@ -97,7 +104,6 @@ class TicketServiceTest @Autowired constructor(
     fun given_ticketRequest_when_updateTicket_then_updateTicket_and_returnUpdatedTicket(){
         val ticket = Ticket.from(ticketRequest, USER_ID)
 
-
             Mockito.`when`(repo.findById(Mockito.anyLong()))
             .thenReturn(Optional.of(ticket))
 
@@ -112,6 +118,33 @@ class TicketServiceTest @Autowired constructor(
         assertThrows<NotFoundTicketException> {  service.updateTicket(updateRequest, 1L, USER_ID)}
     }
     @Test
+    @DisplayName("티켓 수정 후 티켓 완료 테스트")
+    fun given_completeTicketAfterUpdate_when_updateTicket_then_runCompleteTicket(){
+        val ticket = Ticket.from(
+            TicketRequest(
+                "b",
+                "t",
+                Ticket.Color.RED2,
+                Ticket.Type.HEALTH,
+                Ticket.MaxSwipeCount.TEN
+            ),
+            USER_ID
+        )
+
+        repeat(Ticket.MaxSwipeCount.FIVE.value){
+            ticket.swipeAndCheckCompletion(USER_ID)
+        }
+
+        Mockito.`when`(redisTemplate.delete("$REDIS_KEY_PREFIX${ticket.id}")).thenReturn(true)
+        Mockito.`when`(repo.findById(ticket.id))
+            .thenReturn(Optional.of(ticket))
+
+        val updatedTicket = service.updateTicket(ticketRequest, ticket.id ,USER_ID)
+        assertEquals(TicketResponse.from(ticket), updatedTicket)
+        verifyCompleteTicket(ticket)
+    }
+
+    @Test
     @DisplayName("티켓의 소유자가 아닌 사용자의 수정 테스트")
     fun given_userWhoNotOwnerOfTicket_then_throwNotOwnerOfTicketException(){
         val ticket = Ticket.from(ticketRequest, USER_ID)
@@ -124,10 +157,11 @@ class TicketServiceTest @Autowired constructor(
     @DisplayName("티켓 스와이프 테스트")
     fun given_ID_when_swipeTicket_then_plusOneSwipeCountOfTicket(){
         val ticket = Ticket.from(ticketRequest, USER_ID)
+        val beforeSwipeCount = ticket.swipeCount
 
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
-        val beforeSwipeCount = ticket.swipeCount
+
         val swipedTicket = service.swipeTicket(ticket.id, ticket.userID)
 
         assertEquals(beforeSwipeCount + 1, swipedTicket.swipeCount)
@@ -189,21 +223,16 @@ class TicketServiceTest @Autowired constructor(
     @DisplayName("티켓 완료 테스트")
     fun given_ticketWhichRightBeforeCompletion_when_swipeTicket_then_runCompleteTicket(){
         val ticket = Ticket.from(ticketRequest, USER_ID)
-        val queue: BlockingQueue<TicketResponse> = LinkedBlockingQueue()
-        createConsumer(queue)
 
         Mockito.`when`(repo.findById(ticket.id)).thenReturn(Optional.of(ticket))
+        Mockito.`when`(redisTemplate.delete("$REDIS_KEY_PREFIX${ticket.id}"))
+            .thenReturn(true)
+
         repeat(ticket.maxSwipeCount.value){
             service.swipeTicket(ticket.id, ticket.userID)
         }
 
-        val response = queue.poll(5, TimeUnit.SECONDS)
-
-        assertNotNull(response)
-        assertEquals(TicketResponse.from(ticket), response)
-        Mockito.verify(repo).deleteById(ticket.id)
-
-        container.stop()
+        verifyCompleteTicket(ticket)
     }
 
     @Test
@@ -233,26 +262,16 @@ class TicketServiceTest @Autowired constructor(
         ticketRequest.maxSwipeCount
     )
 
-    private fun createConsumer(queue: BlockingQueue<TicketResponse>){
-        val config =
-            KafkaTestUtils.consumerProps("test","false",broker)
-        val deserializer = JsonDeserializer<TicketResponse>()
-        deserializer.addTrustedPackages(TicketResponse::class.java.packageName)
-
-        val consumerFactory = DefaultKafkaConsumerFactory(config, StringDeserializer(),deserializer)
-        val listener = ConcurrentKafkaListenerContainerFactory<String, TicketResponse>()
-
-        listener.consumerFactory = consumerFactory
-        listener.createContainer(KafkaTopic.TICKET_COMPLETION)
-
-        container = KafkaMessageListenerContainer(consumerFactory, ContainerProperties(KafkaTopic.TICKET_COMPLETION))
-        container.setupMessageListener(
-            MessageListener<String, TicketResponse> {
-                queue.add(it.value())
-            }
-        )
-        container.start()
-
-        ContainerTestUtils.waitForAssignment(container, broker.partitionsPerTopic)
+    @Suppress("UNCHECKED_CAST")
+    private fun <T> any(): T{
+        Mockito.any<T>()
+        return null as T
     }
+
+    private fun verifyCompleteTicket(ticket: Ticket){
+        Mockito.verify(redisTemplate, Mockito.times(1)).delete("$REDIS_KEY_PREFIX${ticket.id}")
+        Mockito.verify(eventService, Mockito.times(1)).eventPublish(any())
+    }
+
+
 }

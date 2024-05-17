@@ -137,7 +137,7 @@ class Ticket private constructor(
      * @throws NotOwnerOfTicketException 티켓의 소유자가 아닌 사용자가 요청했을 시
      */
     @Throws(NotOwnerOfTicketException::class)
-    fun update(request: TicketRequest, userID: Long){
+    fun updateAndCheckCompletion(request: TicketRequest, userID: Long): Boolean{
         checkOwnership(userID)
 
         this.behavior = request.behavior
@@ -147,6 +147,8 @@ class Ticket private constructor(
         this.type = request.type
 
         setShouldUpdateTrue()
+
+        return maxSwipeCount.value <= swipeCount
     }
 
     /**
