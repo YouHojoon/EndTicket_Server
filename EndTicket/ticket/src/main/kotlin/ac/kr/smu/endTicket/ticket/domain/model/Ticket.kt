@@ -101,7 +101,7 @@ class Ticket private constructor(
         FIVE(5), TEN(10), FIFTEEN(15);
         companion object {
             fun fromValue(value: Int): MaxSwipeCount{
-                return MaxSwipeCount.values().filter { it.value == value }.firstOrNull() ?: throw IllegalArgumentException("$value 의 MaxSwipeCount가 존재하지 않습니다.")
+                return values().firstOrNull { it.value == value } ?: throw IllegalArgumentException("$value 의 MaxSwipeCount가 존재하지 않습니다.")
             }
         }
     }
@@ -137,17 +137,18 @@ class Ticket private constructor(
      * @throws NotOwnerOfTicketException 티켓의 소유자가 아닌 사용자가 요청했을 시
      */
     @Throws(NotOwnerOfTicketException::class)
-    fun update(request: TicketRequest, userID: Long){
+    fun updateAndCheckCompletion(request: TicketRequest, userID: Long): Boolean{
         checkOwnership(userID)
 
         this.behavior = request.behavior
         this.target = request.target
         this.color = request.color
         this.maxSwipeCount = request.maxSwipeCount
-        this.swipeCount = 0
         this.type = request.type
 
         setShouldUpdateTrue()
+
+        return maxSwipeCount.value <= swipeCount
     }
 
     /**

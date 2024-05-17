@@ -70,7 +70,22 @@ class TicketController(
         @RequestHeader("X-User-ID")
         @Parameter(hidden = true)
         userID: Long
-    ): ResponseEntity<TicketResponse> = ResponseEntity.status(HttpStatus.CREATED).body(service.createTicket(request, userID))
+    ): ResponseEntity<*>{
+        return try{
+            ResponseEntity.status(HttpStatus.CREATED).body(service.createTicket(request, userID))
+        }
+        catch (e: IllegalStateException){
+            log.info("userID: $userID", e)
+            ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ExceptionResponse(
+                    code = HttpStatus.CONFLICT.value(),
+                    message = "티켓 생성 중 오류가 발생했습니다.",
+                    detail = e.message
+                )
+            )
+        }
+
+    }
 
     @ApiResponses(
         ApiResponse(

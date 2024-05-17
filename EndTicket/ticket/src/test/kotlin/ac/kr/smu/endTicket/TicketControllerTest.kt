@@ -74,6 +74,20 @@ class TicketControllerTest @Autowired constructor(
     }
 
     @Test
+    @DisplayName("티캣 개수 제한 이상으로 생성 테스트")
+    fun given_userHasReachedTicketLimit_when_createTicket_then_expectStatusCode409(){
+        Mockito
+            .`when`(service.createTicket(ticketRequest, USER_ID))
+            .thenAnswer { throw IllegalStateException("티켓 개수 제한 이상으로 생성할 수 없습니다.") }
+
+        createTicketRequest(ticketRequest)
+            .andExpect(MockMvcResultMatchers.status().isConflict)
+            .andExpect(MockMvcResultMatchers.jsonPath("code").value(409))
+            .andExpect(MockMvcResultMatchers.jsonPath("message").isString)
+            .andExpect(MockMvcResultMatchers.jsonPath("detail").isString)
+    }
+
+    @Test
     @DisplayName("티켓 수정 테스트")
     fun given_ticketRequest_when_updateTicket_then_expectStatusCode200_and_responseUpdatedTicket(){
         val ticket = Ticket.from(ticketRequest, USER_ID)
