@@ -199,7 +199,7 @@ class TicketController(
         @RequestHeader("X-User-ID")
         userID: Long
     ): ResponseEntity<*> = ResponseEntity.ok(mapOf("tickets" to service.findIncompleteTicket(userID)))
-    
+
     @ExceptionHandler(NotFoundTicketException::class)
     fun handleNotFoundTicketException(e: NotFoundTicketException): ResponseEntity<ExceptionResponse>{
         log.info("id: ${e.id}", e)

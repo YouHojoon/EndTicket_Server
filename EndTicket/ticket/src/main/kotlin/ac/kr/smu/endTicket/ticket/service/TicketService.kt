@@ -82,6 +82,11 @@ class TicketService(
         return TicketResponse.from(ticket)
     }
 
+    /**
+     * 사용자의 미완료된 티켓 조회
+     * @param userID 사용자의 ID
+     * @return 조회된 사용자의 티켓 리스트
+     */
     @Transactional(readOnly = true)
     fun findIncompleteTicket(userID: Long): List<TicketResponse> = repo.findByUserIDAndSwipeCountLessThanMaxSwipeCount(userID).map{TicketResponse.from(it)}
 
