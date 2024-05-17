@@ -80,7 +80,7 @@ class TicketController(
                 ExceptionResponse(
                     code = HttpStatus.CONFLICT.value(),
                     message = "티켓 생성 중 오류가 발생했습니다.",
-                    detail = "티켓 개수 제한보다 많이 생성할 수 없습니다."
+                    detail = e.message
                 )
             )
         }

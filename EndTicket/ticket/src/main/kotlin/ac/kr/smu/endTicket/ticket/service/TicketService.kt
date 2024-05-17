@@ -19,7 +19,7 @@ import kotlin.jvm.optionals.getOrNull
  * 티켓 관련한 기능을 처리하는 클래스
  * @property repo 티켓을 저장하기 위해 사용하는 저장소
  * @property redisTemplate Redis 캐시에 저장하기 위한 객체
- * @property kafkaTemplate Kafka를 통해 이벤트를 전송하기 위한 객체
+ * @property completionEventService 이벤트를 전송하기 위한 서비스
  */
 @Service
 class TicketService(
@@ -38,15 +38,14 @@ class TicketService(
      * @param request 티켓 생성에 대한 요청
      * @param userID 티켓 생성을 요청한 user의 ID
      * @return 생성된 티켓 응답
+     * @throws IllegalStateException 티켓 개수 제한 이상으로 생성을 시도할 시
      */
     @CachePut("ticket", key = "#result.id")
     @Transactional
     fun createTicket(request: TicketRequest, userID: Long): TicketResponse{
         val count = repo.countByUserID(userID)
 
-        if (count >= TICKET_LIMIT)
-            throw IllegalStateException("티켓을 $TICKET_LIMIT 개 이상 생성할 수 없습니다.")
-
+        check(count >= TICKET_LIMIT){"티켓을 $TICKET_LIMIT 개 이상 생성할 수 없습니다."}
         return TicketResponse.from(repo.save(Ticket.from(request,userID)))
     }
 
@@ -93,7 +92,7 @@ class TicketService(
     /**
      * 사용자의 미완료된 티켓 조회
      * @param userID 사용자의 ID
-     * @return 조회된 사용자의 티켓 리스
+     * @return 조회된 사용자의 티켓 리스트
      */
     @Transactional(readOnly = true)
     fun findIncompleteTicket(userID: Long): List<TicketResponse> = repo.findIncompleteTicketsOfUser(userID).map{TicketResponse.from(it)}
