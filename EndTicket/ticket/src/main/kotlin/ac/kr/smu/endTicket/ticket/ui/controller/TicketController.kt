@@ -29,6 +29,8 @@ import ac.kr.smu.endTicket.response.ExceptionResponse
 import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.swagger.v3.oas.annotations.media.ArraySchema
+import io.swagger.v3.oas.annotations.media.SchemaProperty
 import io.swagger.v3.oas.annotations.security.SecurityRequirements
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -175,15 +177,29 @@ class TicketController(
         userID: Long
     ): ResponseEntity<*> = ResponseEntity.ok(service.cancelSwipeTicket(id, userID))
 
-    @GetMapping
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "조회 성공",
+                content = [
+                    Content(
+                        schema = Schema(type = "object", requiredProperties = ["tickets"]),
+                        schemaProperties = [
+                            SchemaProperty(name = "tickets", array = ArraySchema(schema = Schema(implementation = TicketResponse::class)))
+                        ]
+                    )
+                ])
+        ]
+    )
     @Operation(summary = "미완료된 티켓 조회")
+    @GetMapping
     fun findIncompleteTicket(
         @Parameter(hidden = true)
         @RequestHeader("X-User-ID")
         userID: Long
     ): ResponseEntity<*> = ResponseEntity.ok(mapOf("tickets" to service.findIncompleteTicket(userID)))
-
-
+    
     @ExceptionHandler(NotFoundTicketException::class)
     fun handleNotFoundTicketException(e: NotFoundTicketException): ResponseEntity<ExceptionResponse>{
         log.info("id: ${e.id}", e)
