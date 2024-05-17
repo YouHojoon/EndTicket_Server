@@ -13,4 +13,7 @@ import java.util.Optional
 interface TicketRepository: JpaRepository<Ticket, Long> {
     @Cacheable(cacheNames = ["ticket"], key = "#id")
     override fun findById(id: Long): Optional<Ticket>
+
+    @Query("select t from Ticket as t where t.swipeCount < t.maxSwipeCount and t.userID = :userID")
+    fun findByUserIDAndSwipeCountLessThanMaxSwipeCount(userID: Long): List<Ticket>
 }

@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import kotlin.test.assertEquals
 
 @WebMvcTest(controllers = [TicketController::class])
 class TicketControllerTest @Autowired constructor(
@@ -47,7 +48,7 @@ class TicketControllerTest @Autowired constructor(
 
         Mockito
             .`when`(service.createTicket(ticketRequest, USER_ID))
-            .thenReturn(ticket)
+            .thenReturn(TicketResponse.from(ticket))
 
         createTicketRequest(ticketRequest)
             .andExpect(MockMvcResultMatchers.status().isCreated)
@@ -85,7 +86,7 @@ class TicketControllerTest @Autowired constructor(
         )
 
 
-        Mockito.`when`(service.updateTicket(updateRequest, ticket.id, USER_ID)).thenReturn(ticket)
+        Mockito.`when`(service.updateTicket(updateRequest, ticket.id, USER_ID)).thenReturn(TicketResponse.from(ticket))
 
         updateTicketRequest(updateRequest, ticket.id)
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -109,7 +110,7 @@ class TicketControllerTest @Autowired constructor(
         )
 
 
-        Mockito.`when`(service.updateTicket(updateRequest, ticket.id, USER_ID)).thenReturn(ticket)
+        Mockito.`when`(service.updateTicket(updateRequest, ticket.id, USER_ID)).thenReturn(TicketResponse.from(ticket))
 
         updateTicketRequest(updateRequest,ticket.id).expectBindingException()
     }
@@ -148,7 +149,7 @@ class TicketControllerTest @Autowired constructor(
 
         Mockito.`when`(service.swipeTicket(ticket.id, USER_ID))
             .thenReturn(
-                ticket.also { it.swipeAndCheckCompletion(USER_ID) }
+                TicketResponse.from(ticket.also { it.swipeAndCheckCompletion(USER_ID) })
             )
 
         swipeTicketRequest(ticket.id)
@@ -225,6 +226,27 @@ class TicketControllerTest @Autowired constructor(
         cancelSwipeTicketRequest(ticket.id)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
     }
+
+    @Test
+    @DisplayName("미완료된 티켓 조회")
+    fun given_userID_when_findIncompleteTickets_then_responseIncompleteTickets(){
+        val tickets = listOf(
+            TicketResponse.from((Ticket.from(ticketRequest, USER_ID))
+        ))
+        Mockito.`when`(service.findIncompleteTicket(USER_ID))
+            .thenReturn(tickets)
+
+        mvc.perform(
+            MockMvcRequestBuilders
+                .get(BASE_URI)
+                .header(HttpHeaderName.USER_ID, USER_ID)
+        )
+            .andDo { println(it.response.contentAsString) }
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("tickets").isArray)
+            .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(mapOf("tickets" to service.findIncompleteTicket(USER_ID)))))
+    }
+
     private fun createTicketRequest(request:TicketRequest) =
         mvc.perform(
             MockMvcRequestBuilders.post(BASE_URI)

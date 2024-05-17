@@ -15,6 +15,7 @@ import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mock
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
@@ -79,7 +80,7 @@ class TicketServiceTest @Autowired constructor(
         Mockito.`when`(repo.save(Mockito.any()))
             .thenReturn(ticket)
 
-        assertEquals(ticket, service.createTicket(ticketRequest, USER_ID))
+        assertEquals(TicketResponse.from(ticket), service.createTicket(ticketRequest, USER_ID))
     }
 
     @Test
@@ -92,7 +93,7 @@ class TicketServiceTest @Autowired constructor(
             .thenReturn(Optional.of(ticket))
 
 
-        assertEquals(service.updateTicket(updateRequest, ticket.id, USER_ID) , ticket)
+        assertEquals(service.updateTicket(updateRequest, ticket.id, USER_ID) , TicketResponse.from(ticket))
     }
     @Test
     @DisplayName("존재하지 않는 티켓 수정 테스트")
@@ -194,6 +195,16 @@ class TicketServiceTest @Autowired constructor(
         Mockito.verify(repo).deleteById(ticket.id)
 
         container.stop()
+    }
+
+    @Test
+    @DisplayName("미완료된 티켓 조회")
+    fun given_userID_when_findIncompleteTickets_then_returnIncompleteTickets(){
+        val tickets = listOf(Ticket.from(ticketRequest, USER_ID))
+        Mockito.`when`(repo.findByUserIDAndSwipeCountLessThanMaxSwipeCount(USER_ID))
+            .thenReturn(tickets)
+
+        assertEquals(tickets.map { TicketResponse.from(it) }, service.findIncompleteTicket(USER_ID))
     }
 
     private val ticketRequest =

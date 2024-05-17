@@ -33,6 +33,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirements
 import org.slf4j.LoggerFactory
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 
 @RestController
@@ -67,13 +68,7 @@ class TicketController(
         @RequestHeader("X-User-ID")
         @Parameter(hidden = true)
         userID: Long
-    ): ResponseEntity<TicketResponse>{
-        return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(
-                TicketResponse.from(service.createTicket(request, userID))
-        )
-    }
+    ): ResponseEntity<TicketResponse> = ResponseEntity.status(HttpStatus.CREATED).body(service.createTicket(request, userID))
 
     @ApiResponses(
         ApiResponse(
@@ -114,13 +109,8 @@ class TicketController(
         @RequestHeader("X-User-ID")
         @Parameter(hidden = true)
         userID: Long
-    ): ResponseEntity<*>{
-        println(om.visibilityChecker.toString())
-        return ResponseEntity
-                .ok(
-                    TicketResponse.from(service.updateTicket(request, id, userID))
-                )
-    }
+    ): ResponseEntity<*> = ResponseEntity.ok(service.updateTicket(request, id, userID))
+
     @ApiResponses(
         ApiResponse(
             description = "스와이프 성공",
@@ -151,11 +141,7 @@ class TicketController(
         @Parameter(hidden = true)
         @RequestHeader("X-User-ID")
         userID: Long
-    ): ResponseEntity<*>{
-        return ResponseEntity.ok(
-            TicketResponse.from(service.swipeTicket(id,userID))
-        )
-    }
+    ): ResponseEntity<*> = ResponseEntity.ok(service.swipeTicket(id,userID))
 
     @ApiResponses(
         ApiResponse(
@@ -187,11 +173,16 @@ class TicketController(
         @Parameter(hidden = true)
         @RequestHeader("X-User-ID")
         userID: Long
-    ): ResponseEntity<*>{
-        return ResponseEntity.ok(
-            TicketResponse.from(service.cancelSwipeTicket(id, userID))
-        )
-    }
+    ): ResponseEntity<*> = ResponseEntity.ok(service.cancelSwipeTicket(id, userID))
+
+    @GetMapping
+    @Operation(summary = "미완료된 티켓 조회")
+    fun findIncompleteTicket(
+        @Parameter(hidden = true)
+        @RequestHeader("X-User-ID")
+        userID: Long
+    ): ResponseEntity<*> = ResponseEntity.ok(mapOf("tickets" to service.findIncompleteTicket(userID)))
+
 
     @ExceptionHandler(NotFoundTicketException::class)
     fun handleNotFoundTicketException(e: NotFoundTicketException): ResponseEntity<ExceptionResponse>{

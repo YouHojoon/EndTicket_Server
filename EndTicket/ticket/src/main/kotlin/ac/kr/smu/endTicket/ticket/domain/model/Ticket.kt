@@ -52,7 +52,6 @@ class Ticket private constructor(
     var type: Type private set
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
     var maxSwipeCount: MaxSwipeCount private set
 
     @Transient
@@ -99,7 +98,12 @@ class Ticket private constructor(
         private set
 
     enum class MaxSwipeCount(val value: Int){
-        FIVE(5), TEN(10), FIFTEEN(15)
+        FIVE(5), TEN(10), FIFTEEN(15);
+        companion object {
+            fun fromValue(value: Int): MaxSwipeCount{
+                return MaxSwipeCount.values().filter { it.value == value }.firstOrNull() ?: throw IllegalArgumentException("$value 의 MaxSwipeCount가 존재하지 않습니다.")
+            }
+        }
     }
 
     @Schema(description = "분류")
