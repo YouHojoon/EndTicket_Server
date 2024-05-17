@@ -1,17 +1,22 @@
 package ac.kr.smu.endTicket
 
 import ac.kr.smu.endTicket.constant.KafkaTopic
-import ac.kr.smu.endTicket.ticket.domain.job.TicketCompletionEventJob
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
+import ac.kr.smu.endTicket.ticket.domain.service.TicketCompletionEventMessageService
+import ac.kr.smu.endTicket.ticket.domain.service.TicketCompletionEventService
+import ac.kr.smu.endTicket.ticket.infra.listener.TicketCompletionEventListener
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
+import org.apache.catalina.core.ApplicationContext
 import org.apache.kafka.common.serialization.StringDeserializer
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
+import org.mockito.Mock
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
@@ -24,65 +29,55 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.kafka.test.utils.ContainerTestUtils
 import org.springframework.kafka.test.utils.KafkaTestUtils
-import org.springframework.scheduling.annotation.EnableScheduling
-import java.time.LocalDateTime
+import org.springframework.test.context.TestExecutionListeners
+import org.springframework.test.context.event.ApplicationEventsTestExecutionListener
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
-import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-
-@SpringBootTest(
-    properties = [
-        "schedules.resend-ticket-completion-event.fixedDelay=200",
-        "schedules.resend-ticket-completion-event.initialDelay=0"
-    ],
-)
+@SpringBootTest
+@SpringJUnitConfig(classes = [
+    TicketCompletionEventService::class,
+    TicketCompletionEventListener::class,
+    TicketCompletionEventMessageService::class,
+    KafkaAutoConfiguration::class
+])
 @EmbeddedKafka(
     partitions = 3,
+    ports = [9292],
     brokerProperties = [
         "listeners=PLAINTEXT://localhost:9292"
-    ],
-    ports = [9292]
+    ]
 )
-@EnableScheduling
-class TicketCompletionEventJobTest @Autowired constructor(
+class TicketCompletionEventTest @Autowired constructor(
     @MockBean
     private val repo: TicketCompletionEventRepository,
+    private val eventService: TicketCompletionEventService,
     private val broker: EmbeddedKafkaBroker,
-    private val job: TicketCompletionEventJob
-
+    private val listener: TicketCompletionEventListener
 ) {
+
     private lateinit var container: KafkaMessageListenerContainer<String, TicketResponse>
 
-    @Suppress("UNCHECKED_CAST")
-    private fun <T> any(): T {
-        Mockito.any<T>()
-        return null as T
-    }
-
-
     @Test
-    @DisplayName("전송 실패한 티켓 완료 이벤트 재전송 테스트")
-    fun after_fixedDelay_then_runResendTicketCompletionEvent(){
-        val event = TicketCompletionEvent.from(
-            Ticket.from(TICKET_REQUEST, USER_ID)
-        )
-
-        Mockito.`when`(
-                repo.findByPublishedIsFalseAndCreateAtBefore(any())
-            ).thenReturn(
-                setOf(event)
-            )
-
+    @DisplayName("티켓 완료 이벤트 테스트")
+    fun given_ticketCompletionEvent_then_saveEvent_and_sendMessage(){
+        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
+        val event = TicketCompletionEvent.from(ticket)
         val queue = LinkedBlockingQueue<TicketResponse>()
         createConsumer(queue)
 
-        val message = queue.poll(500, TimeUnit.MILLISECONDS)
-        assertNotNull(message)
-        assertEquals(event.toResponse().payload, message)
+        eventService.eventPublish(event)
+        Mockito.verify(repo, Mockito.times(1)).save(event)
+
+        val response = queue.poll(500, TimeUnit.MILLISECONDS)
+        assertNotNull(response)
+        assertEquals(TicketResponse.from(ticket), response)
+
         container.stop()
     }
 
