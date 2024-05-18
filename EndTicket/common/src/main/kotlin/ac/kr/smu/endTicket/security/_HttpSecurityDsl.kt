@@ -13,7 +13,7 @@ import org.springframework.security.web.util.matcher.IpAddressMatcher
  * 로그인 관련 기본 설정
  * CSRF 비활성화 및 세션을 Stateless로 설정한다.
  */
-inline fun HttpSecurityDsl.configLogin(){
+fun HttpSecurityDsl.configLogin(){
     formLogin { disable() }
     csrf { disable() }
     sessionManagement {
@@ -24,7 +24,7 @@ inline fun HttpSecurityDsl.configLogin(){
 /**
  * Swagger 관련 요청을 모두 허용하도록 설정한다.
  */
-inline fun HttpSecurityDsl.permitAllSwaggerRequest(){
+fun HttpSecurityDsl.permitAllSwaggerRequest(){
     authorizeRequests {
         authorize("/docs/**", permitAll)
         authorize("/swagger-ui/**",permitAll)
@@ -35,7 +35,7 @@ inline fun HttpSecurityDsl.permitAllSwaggerRequest(){
 /**
  * 기본 exceptionHandling, 인증에 실패할 시 401 에러를 반환한다.
  */
-inline fun HttpSecurityDsl.baseExceptionHandling(){
+fun HttpSecurityDsl.baseExceptionHandling(){
     exceptionHandling {
         authenticationEntryPoint = AuthenticationEntryPoint { _, response, e ->
             response.contentType = MediaType.APPLICATION_JSON_VALUE
@@ -53,7 +53,7 @@ inline fun HttpSecurityDsl.baseExceptionHandling(){
     }
 }
 
-inline fun HttpSecurityDsl.permitOnlyWhitelistRequest(whitelist: List<String>){
+fun HttpSecurityDsl.permitOnlyWhitelistRequest(whitelist: List<String>){
     authorizeRequests {
         whitelist.forEach {
             authorize(IpAddressMatcher(it), permitAll)
@@ -66,7 +66,7 @@ inline fun HttpSecurityDsl.permitOnlyWhitelistRequest(whitelist: List<String>){
  * 기본 설정
  * form 로그인 비활성화, 세션 비활성화, 기본 exception handling 설정
  */
-inline fun HttpSecurityDsl.baseConfig(){
+fun HttpSecurityDsl.baseConfig(){
     configLogin()
     permitAllSwaggerRequest()
     baseExceptionHandling()

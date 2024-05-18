@@ -30,7 +30,7 @@ inline fun <reified T> ResultActions.andReturn(): T = ObjectMapper()
     )
 
 
-inline fun ResultActions.expectBindingException(): ResultActions{
+fun ResultActions.expectBindingException(): ResultActions{
     return andExpect(MockMvcResultMatchers.status().isBadRequest)
         .andExpect(MockMvcResultMatchers.jsonPath("field").isString)
         .andExpect(MockMvcResultMatchers.jsonPath("code").value(400))
