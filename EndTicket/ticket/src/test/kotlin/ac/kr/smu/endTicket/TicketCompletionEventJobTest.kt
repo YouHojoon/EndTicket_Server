@@ -1,10 +1,13 @@
 package ac.kr.smu.endTicket
 
 import ac.kr.smu.endTicket.constant.KafkaTopic
+import ac.kr.smu.endTicket.test.createKafkaContainer
+import ac.kr.smu.endTicket.test.messageListener
 import ac.kr.smu.endTicket.ticket.domain.job.TicketCompletionEventJob
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
+import ac.kr.smu.endTicket.ticket.domain.service.TicketCompletionEventMessageService
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
@@ -25,6 +29,8 @@ import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.kafka.test.utils.ContainerTestUtils
 import org.springframework.kafka.test.utils.KafkaTestUtils
 import org.springframework.scheduling.annotation.EnableScheduling
+import org.springframework.scheduling.annotation.SchedulingConfiguration
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import java.time.LocalDateTime
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
@@ -47,12 +53,16 @@ import kotlin.test.assertNotNull
     ],
     ports = [9292]
 )
-@EnableScheduling
+@SpringJUnitConfig(classes = [
+    TicketCompletionEventJob::class,
+    KafkaAutoConfiguration::class,
+    TicketCompletionEventMessageService::class,
+    SchedulingConfiguration::class
+])
 class TicketCompletionEventJobTest @Autowired constructor(
     @MockBean
     private val repo: TicketCompletionEventRepository,
     private val broker: EmbeddedKafkaBroker,
-    private val job: TicketCompletionEventJob
 
 ) {
     private lateinit var container: KafkaMessageListenerContainer<String, TicketResponse>
@@ -78,34 +88,19 @@ class TicketCompletionEventJobTest @Autowired constructor(
             )
 
         val queue = LinkedBlockingQueue<TicketResponse>()
-        createConsumer(queue)
+
+        container = createKafkaContainer(broker, KafkaTopic.TICKET_COMPLETION)
+        container.messageListener(broker){
+            queue.add(it.value())
+        }
 
         val message = queue.poll(500, TimeUnit.MILLISECONDS)
+
         assertNotNull(message)
         assertEquals(event.toResponse().payload, message)
+
         container.stop()
     }
 
-    private fun createConsumer(queue: BlockingQueue<TicketResponse>){
-        val config =
-            KafkaTestUtils.consumerProps("test","false",broker)
-        val deserializer = JsonDeserializer<TicketResponse>()
-        deserializer.addTrustedPackages(TicketResponse::class.java.packageName)
 
-        val consumerFactory = DefaultKafkaConsumerFactory(config, StringDeserializer(),deserializer)
-        val listener = ConcurrentKafkaListenerContainerFactory<String, TicketResponse>()
-
-        listener.consumerFactory = consumerFactory
-        listener.createContainer(KafkaTopic.TICKET_COMPLETION)
-
-        container = KafkaMessageListenerContainer(consumerFactory, ContainerProperties(KafkaTopic.TICKET_COMPLETION))
-        container.setupMessageListener(
-            MessageListener<String, TicketResponse> {
-                queue.add(it.value())
-            }
-        )
-        container.start()
-
-        ContainerTestUtils.waitForAssignment(container, broker.partitionsPerTopic)
-    }
 }

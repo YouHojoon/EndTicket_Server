@@ -3,6 +3,7 @@ package ac.kr.smu.endTicket.config
 import ac.kr.smu.endTicket.annotation.EnableAutoRedisConfig
 import ac.kr.smu.endTicket.property.RedisClusterProperties
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import io.lettuce.core.ReadFrom
 import io.lettuce.core.cluster.ClusterClientOptions
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions
@@ -38,8 +39,10 @@ class AutoRedisConfig(
     private val log = LoggerFactory.getLogger(AutoRedisConfig::class.java)
 
     @Bean
+    @ConditionalOnMissingBean(GenericJackson2JsonRedisSerializer::class)
     fun valueSerializer() = GenericJackson2JsonRedisSerializer().apply {
         configure {
+            it.registerModule(ParameterNamesModule())
             it.registerModule(JavaTimeModule())
         }
     }
@@ -71,6 +74,7 @@ class AutoRedisConfig(
     }
 
     @Bean
+    @ConditionalOnClass(GenericJackson2JsonRedisSerializer::class)
     @ConditionalOnMissingBean(RedisTemplate::class)
     fun redisTemplate(connectionFactory: RedisConnectionFactory, valueSerializer: GenericJackson2JsonRedisSerializer) = RedisTemplate<String, Object>().apply {
         this.connectionFactory = connectionFactory
@@ -79,6 +83,7 @@ class AutoRedisConfig(
     }
 
     @Bean
+    @ConditionalOnClass(GenericJackson2JsonRedisSerializer::class)
     @ConditionalOnMissingBean(CacheManager::class)
     fun cacheManager(factory: RedisConnectionFactory, valueSerializer: GenericJackson2JsonRedisSerializer): CacheManager {
         val config = RedisCacheConfiguration
