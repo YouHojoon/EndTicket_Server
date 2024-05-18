@@ -200,7 +200,7 @@ class TicketControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("티켓 스와이프 취소 테스트")
-    fun given_ID_when_cancelSwipeTicket_then_responseCanceledSwipeTicket(){
+    fun given_ID_when_cancelSwipeTicket_then_responseSwipeCanceledTicket(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID).also { it.swipeAndCheckCompletion(USER_ID) }
         val beforeSwipeCount = ticket.swipeCount
 

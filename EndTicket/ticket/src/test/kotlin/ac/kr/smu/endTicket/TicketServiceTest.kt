@@ -154,7 +154,7 @@ class TicketServiceTest @Autowired constructor(
 
     @Test
     @DisplayName("티켓 스와이프 테스트")
-    fun given_ID_when_swipeTicket_then_plusOneSwipeCountOfTicket(){
+    fun given_ID_when_swipeTicket_then_returnSwipedTicket(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
         val beforeSwipeCount = ticket.swipeCount
 
@@ -167,7 +167,7 @@ class TicketServiceTest @Autowired constructor(
     }
     @Test
     @DisplayName("티켓 소유자가 아닌 사용자의 스와이프 테스트")
-    fun given_userWhoNotOwnerOfTicket_whenSwipeTicket_then_throwNotOwnerOfTicket(){
+    fun given_userWhoNotOwnerOfTicket_whenSwipeTicket_then_throwNotOwnerOfTicketException(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
 
         Mockito.`when`(repo.findById(ticket.id))
@@ -185,7 +185,7 @@ class TicketServiceTest @Autowired constructor(
 
     @Test
     @DisplayName("스와이프 취소 테스트")
-    fun given_ID_when_cancelSwipe_then_minusOneSwipeCountOfTicket(){
+    fun given_ID_when_cancelSwipe_then_returnSwipeCanceledTicket(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID).also { it.swipeAndCheckCompletion(it.userID) }
         val beforeSwipeCount = ticket.swipeCount
 
