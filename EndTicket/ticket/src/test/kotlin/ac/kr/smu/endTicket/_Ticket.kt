@@ -13,3 +13,12 @@ val TICKET_REQUEST =
         type = Ticket.Type.SELF_IMPROVEMENT,
         maxSwipeCount = Ticket.MaxSwipeCount.FIVE,
 )
+
+
+val UPDATE_REQUEST = TicketRequest(
+    "abcd",
+    "abcd",
+    Ticket.Color.GRAY2,
+    Ticket.Type.PERSONALITY,
+    Ticket.MaxSwipeCount.FIFTEEN
+)

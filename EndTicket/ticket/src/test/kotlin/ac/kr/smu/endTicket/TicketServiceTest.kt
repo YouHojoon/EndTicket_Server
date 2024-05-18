@@ -107,14 +107,14 @@ class TicketServiceTest @Autowired constructor(
             .thenReturn(Optional.of(ticket))
 
 
-        assertEquals(service.updateTicket(updateRequest, ticket.id, USER_ID) , TicketResponse.from(ticket))
+        assertEquals(service.updateTicket(UPDATE_REQUEST, ticket.id, USER_ID) , TicketResponse.from(ticket))
     }
     @Test
     @DisplayName("존재하지 않는 티켓 수정 테스트")
     fun given_notExistTicket_when_updateTicket_then_throwNotFoundTicketException(){
         Mockito.`when`(repo.findById(Mockito.anyLong()))
             .thenReturn(Optional.empty())
-        assertThrows<NotFoundTicketException> {  service.updateTicket(updateRequest, 1L, USER_ID)}
+        assertThrows<NotFoundTicketException> {  service.updateTicket(UPDATE_REQUEST, 1L, USER_ID)}
     }
     @Test
     @DisplayName("티켓 수정 후 티켓 완료 테스트")
@@ -149,7 +149,7 @@ class TicketServiceTest @Autowired constructor(
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
-        assertThrows<NotOwnerOfTicketException> {  service.updateTicket(updateRequest, ticket.id, 2L)}
+        assertThrows<NotOwnerOfTicketException> {  service.updateTicket(UPDATE_REQUEST, ticket.id, 2L)}
     }
 
     @Test
@@ -243,14 +243,6 @@ class TicketServiceTest @Autowired constructor(
 
         assertEquals(tickets.map { TicketResponse.from(it) }, service.findIncompleteTicket(USER_ID))
     }
-
-    private val updateRequest = TicketRequest(
-        "abcde",
-        TICKET_REQUEST.target,
-        TICKET_REQUEST.color,
-        TICKET_REQUEST.type,
-        TICKET_REQUEST.maxSwipeCount
-    )
 
     @Suppress("UNCHECKED_CAST")
     private fun <T> any(): T{

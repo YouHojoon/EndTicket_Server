@@ -1,6 +1,8 @@
 package ac.kr.smu.endTicket
 
 import ac.kr.smu.endTicket.constant.KafkaTopic
+import ac.kr.smu.endTicket.test.createKafkaContainer
+import ac.kr.smu.endTicket.test.messageListener
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
@@ -69,7 +71,11 @@ class TicketCompletionEventTest @Autowired constructor(
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
         val event = TicketCompletionEvent.from(ticket)
         val queue = LinkedBlockingQueue<TicketResponse>()
-        createConsumer(queue)
+
+        container = createKafkaContainer(broker, KafkaTopic.TICKET_COMPLETION)
+        container.messageListener(broker){
+            queue.add(it.value())
+        }
 
         eventService.eventPublish(event)
         Mockito.verify(repo, Mockito.times(1)).save(event)
@@ -81,26 +87,4 @@ class TicketCompletionEventTest @Autowired constructor(
         container.stop()
     }
 
-    private fun createConsumer(queue: BlockingQueue<TicketResponse>){
-        val config =
-            KafkaTestUtils.consumerProps("test","false",broker)
-        val deserializer = JsonDeserializer<TicketResponse>()
-        deserializer.addTrustedPackages(TicketResponse::class.java.packageName)
-
-        val consumerFactory = DefaultKafkaConsumerFactory(config, StringDeserializer(),deserializer)
-        val listener = ConcurrentKafkaListenerContainerFactory<String, TicketResponse>()
-
-        listener.consumerFactory = consumerFactory
-        listener.createContainer(KafkaTopic.TICKET_COMPLETION)
-
-        container = KafkaMessageListenerContainer(consumerFactory, ContainerProperties(KafkaTopic.TICKET_COMPLETION))
-        container.setupMessageListener(
-            MessageListener<String, TicketResponse> {
-                queue.add(it.value())
-            }
-        )
-        container.start()
-
-        ContainerTestUtils.waitForAssignment(container, broker.partitionsPerTopic)
-    }
 }

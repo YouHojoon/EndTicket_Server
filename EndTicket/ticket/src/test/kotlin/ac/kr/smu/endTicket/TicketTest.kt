@@ -32,15 +32,8 @@ class TicketTest {
     @DisplayName("소유자가 아닌 사용자의 수정 요청 테스트")
     fun given_userWhoNotOwnerOfTicket_when_updateAndCheckCompletion_then_throwNotOwnerOfTicket(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
-        val updateRequest = TicketRequest(
-            "abcd",
-            "abcd",
-            Ticket.Color.GRAY2,
-            Ticket.Type.PERSONALITY,
-            Ticket.MaxSwipeCount.FIFTEEN
-        )
 
-        assertThrows<NotOwnerOfTicketException> {  ticket.updateAndCheckCompletion(updateRequest, 2L)}
+        assertThrows<NotOwnerOfTicketException> {  ticket.updateAndCheckCompletion(UPDATE_REQUEST, 2L)}
     }
 
     @Test

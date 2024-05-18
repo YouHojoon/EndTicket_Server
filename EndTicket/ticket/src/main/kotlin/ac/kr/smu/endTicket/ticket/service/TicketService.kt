@@ -40,13 +40,16 @@ class TicketService(
      * @return 생성된 티켓 응답
      * @throws IllegalStateException 티켓 개수 제한 이상으로 생성을 시도할 시
      */
-    @CachePut("ticket", key = "#result.id")
     @Transactional
     fun createTicket(request: TicketRequest, userID: Long): TicketResponse{
         val count = repo.countByUserID(userID)
 
         check(count < TICKET_LIMIT){"티켓을 $TICKET_LIMIT 개 이상 생성할 수 없습니다."}
-        return TicketResponse.from(repo.save(Ticket.from(request,userID)))
+
+        val ticket = repo.save(Ticket.from(request,userID))
+        redisTemplate.opsForValue().set("$REDIS_KEY_PREFIX${ticket.id}", ticket)
+
+        return TicketResponse.from(ticket)
     }
 
 
@@ -60,15 +63,16 @@ class TicketService(
      */
 
     @Throws(NotFoundTicketException::class)
-    @CachePut("ticket", key = "#id")
     @Transactional
     fun updateTicket(request: TicketRequest, id: Long, userID: Long): TicketResponse{
-        val old = repo.findById(id).getOrNull() ?: throw NotFoundTicketException(id)
+        val entity = repo.findById(id).getOrNull() ?: throw NotFoundTicketException(id)
 
-        if (old.updateAndCheckCompletion(request,userID))
-            completeTicket(old)
+        if (entity.updateAndCheckCompletion(request,userID))
+            completeTicket(entity)
 
-        return TicketResponse.from(old)
+        redisTemplate.saveTicket(entity)
+
+        return TicketResponse.from(entity)
     }
 
     /**
@@ -106,11 +110,11 @@ class TicketService(
      * @throws NotFoundTicketException 티켓이 존재하지 않을 때
      */
     @Throws(NotFoundTicketException::class)
-    @CachePut("ticket", key = "#id")
     fun cancelSwipeTicket(id: Long, userID: Long): TicketResponse{
         val ticket = repo.findById(id).getOrNull() ?: throw NotFoundTicketException(id)
 
         ticket.cancelSwipeTicket(userID)
+        redisTemplate.saveTicket(ticket)
 
         return TicketResponse.from(ticket)
     }
@@ -131,4 +135,6 @@ class TicketService(
             throw CacheEvictionFailureException()
         }
     }
+
+    private fun RedisTemplate<String, Any>.saveTicket(ticket: Ticket) = this.opsForValue().set("$REDIS_KEY_PREFIX${ticket.id}", ticket)
 }
