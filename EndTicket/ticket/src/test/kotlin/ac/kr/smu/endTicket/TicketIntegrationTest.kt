@@ -6,10 +6,7 @@ import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endTicket.aop.BindExceptionAdvice
 import ac.kr.smu.endTicket.constant.HttpHeaderName
 import ac.kr.smu.endTicket.constant.KafkaTopic
-import ac.kr.smu.endTicket.test.RedisTestConfig
-import ac.kr.smu.endTicket.test.andReturn
-import ac.kr.smu.endTicket.test.createKafkaContainer
-import ac.kr.smu.endTicket.test.messageListener
+import ac.kr.smu.endTicket.test.*
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
@@ -73,7 +70,7 @@ class TicketIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("티켓 생성 테스트")
     fun given_ticketRequest_when_createTicket_then_expectStatusCode204_and_responseCreatedTicket(){
-        createTicketRequest(TICKET_REQUEST)
+        mvc.createTicketRequest(TICKET_REQUEST)
             .andExpect(MockMvcResultMatchers.status().isCreated)
             .andExpect(MockMvcResultMatchers.jsonPath("behavior").value(TICKET_REQUEST.behavior))
             .andExpect(MockMvcResultMatchers.jsonPath("target").value(TICKET_REQUEST.target))
@@ -94,17 +91,17 @@ class TicketIntegrationTest @Autowired constructor(
             maxSwipeCount = Ticket.MaxSwipeCount.FIVE
         )
 
-        createTicketRequest(request).expectBindingException()
+        mvc.createTicketRequest(request).expectBindingException()
     }
 
     @Test
     @DisplayName("티캣 개수 제한 이상으로 생성 테스트")
     fun given_userHasReachedTicketLimit_when_createTicket_then_expectStatusCode409(){
         repeat(5){
-            createTicketRequest(TICKET_REQUEST)
+            mvc.createTicketRequest(TICKET_REQUEST)
         }
 
-        createTicketRequest(TICKET_REQUEST)
+        mvc.createTicketRequest(TICKET_REQUEST)
             .andExpect(MockMvcResultMatchers.status().isConflict)
             .andExpect(MockMvcResultMatchers.jsonPath("code").value(409))
             .andExpect(MockMvcResultMatchers.jsonPath("message").isString)
@@ -114,20 +111,16 @@ class TicketIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("티켓 수정 테스트")
     fun given_ticketRequest_when_updateTicket_then_expectStatusCode200_and_responseUpdatedTicket(){
-        val ticket =
-            createTicketRequest(TICKET_REQUEST)
-                .andReturn<TicketResponse>()
+        val ticket = mvc.createTicketRequest(TICKET_REQUEST).andReturn<TicketResponse>()
 
-        updateTicketRequest(UPDATE_REQUEST, ticket.id)
+        mvc.updateTicketRequest(UPDATE_REQUEST, ticket.id)
             .andExpect(MockMvcResultMatchers.status().isOk)
     }
 
     @Test
     @DisplayName("비정상적인 티켓 수정 요청 테스트")
     fun given_invalidTicketRequest_when_updateTicket_then_expectStatusCode400(){
-        val ticket =
-            createTicketRequest(TICKET_REQUEST)
-                .andReturn<TicketResponse>()
+        val ticket = mvc.createTicketRequest(TICKET_REQUEST).andReturn<TicketResponse>()
 
         val updateRequest = TicketRequest(
             "",
@@ -137,80 +130,75 @@ class TicketIntegrationTest @Autowired constructor(
             ticket.maxSwipeCount
         )
 
-        updateTicketRequest(updateRequest,ticket.id).expectBindingException()
+        mvc.updateTicketRequest(updateRequest,ticket.id).expectBindingException()
     }
 
     @Test
     @DisplayName("존재하지 않는 티켓 수정 요청 테스트")
-    fun given_notExistTicket_when_updateTicket_then_expectStatusCode404(){
-        updateTicketRequest(TICKET_REQUEST, 1L).andExpect(MockMvcResultMatchers.status().isNotFound)
-    }
+    fun given_notExistTicket_when_updateTicket_then_expectStatusCode404() = mvc.updateTicketRequest(TICKET_REQUEST, 1L).andExpect(MockMvcResultMatchers.status().isNotFound)
+
 
     @Test
     @DisplayName("티켓의 소유자가 아닌 사용자의 티켓 수정 요청 테스트")
     fun given_userWhoNotOwnerOfTicket_when_updateTicket_then_expectStatusCode403(){
-       val ticket = createTicketRequest(TICKET_REQUEST, 2L).andReturn<TicketResponse>()
+       val ticket = mvc.createTicketRequest(TICKET_REQUEST, 2L).andReturn<TicketResponse>()
 
-        updateTicketRequest(TICKET_REQUEST, ticket.id)
+        mvc.updateTicketRequest(TICKET_REQUEST, ticket.id)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
     }
     @Test
     @DisplayName("티켓 스와이프 테스트")
     fun given_ID_when_swipeTicket_then_responseSwipedTicket(){
-        val ticket = createTicketRequest(TICKET_REQUEST).andReturn<TicketResponse>()
+        val ticket = mvc.createTicketRequest(TICKET_REQUEST).andReturn<TicketResponse>()
 
-        swipeTicketRequest(ticket.id)
+        mvc.swipeTicketRequest(ticket.id)
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("swipeCount").value(ticket.swipeCount + 1))
     }
 
     @Test
     @DisplayName("존재하지 않는 티켓 스와이프 테스트")
-    fun given_notExistTicket_when_swipeTicket_then_expectStatusCode404(){
-        swipeTicketRequest(1L)
-            .andExpect(MockMvcResultMatchers.status().isNotFound)
-    }
+    fun given_notExistTicket_when_swipeTicket_then_expectStatusCode404() = mvc.swipeTicketRequest(1L).andExpect(MockMvcResultMatchers.status().isNotFound)
+
 
     @Test
     @DisplayName("티켓의 소유자가 아닌 사용자의 스와이프 테스트")
     fun given_userWhoNotOwnerOfTicket_when_swipeTicket_then_expectStatusCode403(){
-        val ticket = createTicketRequest(TICKET_REQUEST, 2L).andReturn<TicketResponse>()
+        val ticket = mvc.createTicketRequest(TICKET_REQUEST, 2L).andReturn<TicketResponse>()
 
-        swipeTicketRequest(ticket.id)
+        mvc.swipeTicketRequest(ticket.id)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
     }
 
     @Test
     @DisplayName("티켓 스와이프 취소 테스트")
     fun given_ID_when_cancelSwipeTicket_then_responseSwipeCanceledTicket(){
-        val ticket = createTicketRequest(TICKET_REQUEST).andReturn<TicketResponse>()
-        val beforeSwipeCount = swipeTicketRequest(ticket.id).andReturn<TicketResponse>().swipeCount
+        val ticket = mvc.createTicketRequest(TICKET_REQUEST).andReturn<TicketResponse>()
+        val beforeSwipeCount = mvc.swipeTicketRequest(ticket.id).andReturn<TicketResponse>().swipeCount
 
-        cancelSwipeTicketRequest(ticket.id)
+        mvc.cancelSwipeTicketRequest(ticket.id)
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("swipeCount").value(beforeSwipeCount - 1))
     }
 
     @Test
     @DisplayName("존재하지 않는 티켓 스와이프 취소 테스트")
-    fun given_notExistTicket_when_cancelSwipeTicket_then_expectStatusCode404(){
-        cancelSwipeTicketRequest(1L)
-            .andExpect(MockMvcResultMatchers.status().isNotFound)
-    }
+    fun given_notExistTicket_when_cancelSwipeTicket_then_expectStatusCode404() = mvc.cancelSwipeTicketRequest(1L).andExpect(MockMvcResultMatchers.status().isNotFound)
+
 
     @Test
     @DisplayName("소유자가 아닌 사용자 티켓 스와이프 취소 테스트")
     fun given_userWhoNotOwnerOfTicket_when_cancelSwipeTicket_then_expectStatusCode403(){
-        val ticket = createTicketRequest(TICKET_REQUEST, 2L).andReturn<TicketResponse>()
+        val ticket = mvc.createTicketRequest(TICKET_REQUEST, 2L).andReturn<TicketResponse>()
 
-        cancelSwipeTicketRequest(ticket.id)
+        mvc.cancelSwipeTicketRequest(ticket.id)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
     }
 
     @Test
     @DisplayName("미완료된 티켓 조회")
     fun given_userID_when_findIncompleteTickets_then_responseIncompleteTickets(){
-       val ticket = createTicketRequest(TICKET_REQUEST).andReturn<TicketResponse>()
+       val ticket = mvc.createTicketRequest(TICKET_REQUEST).andReturn<TicketResponse>()
 
         val json = mvc.perform(
             MockMvcRequestBuilders
@@ -231,13 +219,13 @@ class TicketIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("티켓 완료 테스트")
     fun given_ticketWhichRightBeforeCompletion_when_swipeTicket_then_responseCompleteTicket_and_sendTicketCompletionEvent(){
-        val ticket = createTicketRequest(TICKET_REQUEST).andReturn<TicketResponse>()
+        val ticket = mvc.createTicketRequest(TICKET_REQUEST).andReturn<TicketResponse>()
 
         repeat(ticket.maxSwipeCount.value - 1){
-            swipeTicketRequest(ticket.id)
+            mvc.swipeTicketRequest(ticket.id)
         }
 
-        val completeTicket = swipeTicketRequest(ticket.id)
+        val completeTicket = mvc.swipeTicketRequest(ticket.id)
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("swipeCount").value(ticket.maxSwipeCount.value))
             .andReturn<TicketResponse>()
@@ -252,40 +240,5 @@ class TicketIntegrationTest @Autowired constructor(
         val messageResponse = queue.poll(500, TimeUnit.MILLISECONDS)
         assertNotNull(messageResponse)
         assertEquals(completeTicket,messageResponse)
-    }
-
-    private fun createTicketRequest(request:TicketRequest, userID: Long = USER_ID) =
-        mvc.perform(
-            MockMvcRequestBuilders.post(BASE_URI)
-                .header(HttpHeaderName.USER_ID, userID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(ObjectMapper().writeValueAsString(request))
-                .characterEncoding(Charsets.UTF_8)
-        )
-    private fun updateTicketRequest(request: TicketRequest, id: Long) =
-        mvc.perform(
-            MockMvcRequestBuilders.put("$BASE_URI/$id")
-                .header(HttpHeaderName.USER_ID, USER_ID)
-                .content(ObjectMapper().writeValueAsString(request))
-                .contentType(MediaType.APPLICATION_JSON)
-        )
-
-    private fun swipeTicketRequest(id: Long) =
-        mvc.perform(
-            MockMvcRequestBuilders.patch("$BASE_URI/swipe/$id")
-                .header(HttpHeaderName.USER_ID, USER_ID)
-        )
-
-    private fun cancelSwipeTicketRequest(id: Long) =
-        mvc.perform(
-            MockMvcRequestBuilders.delete("$BASE_URI/swipe/$id")
-                .header(HttpHeaderName.USER_ID, USER_ID)
-        )
-    private fun ResultActions.expectBindingException(): ResultActions{
-        return andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .andExpect(MockMvcResultMatchers.jsonPath("field").isString)
-            .andExpect(MockMvcResultMatchers.jsonPath("code").value(400))
-            .andExpect(MockMvcResultMatchers.jsonPath("message").isString)
-            .andExpect(MockMvcResultMatchers.jsonPath("detail").isString)
     }
 }

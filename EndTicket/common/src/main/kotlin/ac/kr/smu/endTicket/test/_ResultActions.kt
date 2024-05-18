@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import java.lang.reflect.Type
 
 //참고 : https://techblog.woowahan.com/14874/
@@ -27,3 +28,12 @@ inline fun <reified T> ResultActions.andReturn(): T = ObjectMapper()
         andReturn().response.getContentAsString(Charsets.UTF_8),
         typeReference<T>().toJacksonTypeRef()
     )
+
+
+inline fun ResultActions.expectBindingException(): ResultActions{
+    return andExpect(MockMvcResultMatchers.status().isBadRequest)
+        .andExpect(MockMvcResultMatchers.jsonPath("field").isString)
+        .andExpect(MockMvcResultMatchers.jsonPath("code").value(400))
+        .andExpect(MockMvcResultMatchers.jsonPath("message").isString)
+        .andExpect(MockMvcResultMatchers.jsonPath("detail").isString)
+}
