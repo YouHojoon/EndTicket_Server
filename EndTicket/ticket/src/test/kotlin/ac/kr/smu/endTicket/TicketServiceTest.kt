@@ -74,7 +74,6 @@ class TicketServiceTest @Autowired constructor(
 ) {
     private companion object{
         private const val REDIS_KEY_PREFIX = "ticket::"
-        private const val USER_ID = 1L
     }
     @BeforeEach
     fun init(){
@@ -84,11 +83,11 @@ class TicketServiceTest @Autowired constructor(
     @Test
     @DisplayName("티켓 생성 테스트")
     fun given_ticketRequest_when_createTicket_then_createTicket_and_returnCreatedTicket(){
-        val ticket = Ticket.from(ticketRequest, USER_ID)
+        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
         Mockito.`when`(repo.save(Mockito.any()))
             .thenReturn(ticket)
 
-        assertEquals(TicketResponse.from(ticket), service.createTicket(ticketRequest, USER_ID))
+        assertEquals(TicketResponse.from(ticket), service.createTicket(TICKET_REQUEST, USER_ID))
         Mockito.verify(repo, Mockito.times(1)).countByUserID(USER_ID)
     }
     @Test
@@ -97,12 +96,12 @@ class TicketServiceTest @Autowired constructor(
         Mockito.`when`(repo.countByUserID(USER_ID))
             .thenReturn(5)
 
-        assertThrows<IllegalStateException> { service.createTicket(ticketRequest, USER_ID) }
+        assertThrows<IllegalStateException> { service.createTicket(TICKET_REQUEST, USER_ID) }
     }
     @Test
     @DisplayName("티켓 수정 테스트")
     fun given_ticketRequest_when_updateTicket_then_updateTicket_and_returnUpdatedTicket(){
-        val ticket = Ticket.from(ticketRequest, USER_ID)
+        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
 
             Mockito.`when`(repo.findById(Mockito.anyLong()))
             .thenReturn(Optional.of(ticket))
@@ -139,7 +138,7 @@ class TicketServiceTest @Autowired constructor(
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
 
-        val updatedTicket = service.updateTicket(ticketRequest, ticket.id ,USER_ID)
+        val updatedTicket = service.updateTicket(TICKET_REQUEST, ticket.id ,USER_ID)
         assertEquals(TicketResponse.from(ticket), updatedTicket)
         verifyCompleteTicket(ticket)
     }
@@ -147,7 +146,7 @@ class TicketServiceTest @Autowired constructor(
     @Test
     @DisplayName("티켓의 소유자가 아닌 사용자의 수정 테스트")
     fun given_userWhoNotOwnerOfTicket_then_throwNotOwnerOfTicketException(){
-        val ticket = Ticket.from(ticketRequest, USER_ID)
+        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
         assertThrows<NotOwnerOfTicketException> {  service.updateTicket(updateRequest, ticket.id, 2L)}
@@ -155,8 +154,8 @@ class TicketServiceTest @Autowired constructor(
 
     @Test
     @DisplayName("티켓 스와이프 테스트")
-    fun given_ID_when_swipeTicket_then_plusOneSwipeCountOfTicket(){
-        val ticket = Ticket.from(ticketRequest, USER_ID)
+    fun given_ID_when_swipeTicket_then_returnSwipedTicket(){
+        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
         val beforeSwipeCount = ticket.swipeCount
 
         Mockito.`when`(repo.findById(ticket.id))
@@ -168,8 +167,8 @@ class TicketServiceTest @Autowired constructor(
     }
     @Test
     @DisplayName("티켓 소유자가 아닌 사용자의 스와이프 테스트")
-    fun given_userWhoNotOwnerOfTicket_whenSwipeTicket_then_throwNotOwnerOfTicket(){
-        val ticket = Ticket.from(ticketRequest, USER_ID)
+    fun given_userWhoNotOwnerOfTicket_whenSwipeTicket_then_throwNotOwnerOfTicketException(){
+        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
 
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
@@ -186,8 +185,8 @@ class TicketServiceTest @Autowired constructor(
 
     @Test
     @DisplayName("스와이프 취소 테스트")
-    fun given_ID_when_cancelSwipe_then_minusOneSwipeCountOfTicket(){
-        val ticket = Ticket.from(ticketRequest, USER_ID).also { it.swipeAndCheckCompletion(it.userID) }
+    fun given_ID_when_cancelSwipe_then_returnSwipeCanceledTicket(){
+        val ticket = Ticket.from(TICKET_REQUEST, USER_ID).also { it.swipeAndCheckCompletion(it.userID) }
         val beforeSwipeCount = ticket.swipeCount
 
         Mockito.`when`(repo.findById(ticket.id))
@@ -210,7 +209,7 @@ class TicketServiceTest @Autowired constructor(
     @Test
     @DisplayName("소유자가 아닌 사용자 티켓 스와이프 취소 테스트")
     fun given_userWhoNotOwnerOfTicket_whenCancelSwipeTicket_then_throwNotOwnerOfTicket(){
-        val ticket = Ticket.from(ticketRequest, USER_ID)
+        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
         ticket.swipeAndCheckCompletion(ticket.userID)
 
         Mockito.`when`(repo.findById(ticket.id))
@@ -222,7 +221,7 @@ class TicketServiceTest @Autowired constructor(
     @Test
     @DisplayName("티켓 완료 테스트")
     fun given_ticketWhichRightBeforeCompletion_when_swipeTicket_then_runCompleteTicket(){
-        val ticket = Ticket.from(ticketRequest, USER_ID)
+        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
 
         Mockito.`when`(repo.findById(ticket.id)).thenReturn(Optional.of(ticket))
         Mockito.`when`(redisTemplate.delete("$REDIS_KEY_PREFIX${ticket.id}"))
@@ -238,28 +237,19 @@ class TicketServiceTest @Autowired constructor(
     @Test
     @DisplayName("미완료된 티켓 조회")
     fun given_userID_when_findIncompleteTickets_then_returnIncompleteTickets(){
-        val tickets = listOf(Ticket.from(ticketRequest, USER_ID))
+        val tickets = listOf(Ticket.from(TICKET_REQUEST, USER_ID))
         Mockito.`when`(repo.findIncompleteTicketsOfUser(USER_ID))
             .thenReturn(tickets)
 
         assertEquals(tickets.map { TicketResponse.from(it) }, service.findIncompleteTicket(USER_ID))
     }
 
-    private val ticketRequest =
-        TicketRequest(
-            behavior = "b",
-            target = "t",
-            color = Ticket.Color.BLUE1,
-            type = Ticket.Type.SELF_IMPROVEMENT,
-            maxSwipeCount = Ticket.MaxSwipeCount.FIVE,
-    )
-
     private val updateRequest = TicketRequest(
         "abcde",
-        ticketRequest.target,
-        ticketRequest.color,
-        ticketRequest.type,
-        ticketRequest.maxSwipeCount
+        TICKET_REQUEST.target,
+        TICKET_REQUEST.color,
+        TICKET_REQUEST.type,
+        TICKET_REQUEST.maxSwipeCount
     )
 
     @Suppress("UNCHECKED_CAST")
@@ -272,6 +262,4 @@ class TicketServiceTest @Autowired constructor(
         Mockito.verify(redisTemplate, Mockito.times(1)).delete("$REDIS_KEY_PREFIX${ticket.id}")
         Mockito.verify(eventService, Mockito.times(1)).eventPublish(any())
     }
-
-
 }
