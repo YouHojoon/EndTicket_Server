@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.auth.ui.converter
+package ac.kr.smu.endTicket.auth.domain.converter
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import org.springframework.core.convert.converter.Converter
