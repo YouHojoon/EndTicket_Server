@@ -136,5 +136,5 @@ class TicketService(
         }
     }
 
-    private inline fun RedisTemplate<String, Any>.saveTicket(ticket: Ticket) = this.opsForValue().set("$REDIS_KEY_PREFIX${ticket.id}", ticket)
+    private fun RedisTemplate<String, Any>.saveTicket(ticket: Ticket) = this.opsForValue().set("$REDIS_KEY_PREFIX${ticket.id}", ticket)
 }

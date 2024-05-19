@@ -36,7 +36,7 @@ class TicketControllerTest @Autowired constructor(
         MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(BindExceptionAdvice())
             .build()
-    
+
     @Test
     @DisplayName("티켓 생성 테스트")
     fun given_ticketRequest_when_createTicket_then_expectStatusCode204_and_responseCreatedTicket(){
