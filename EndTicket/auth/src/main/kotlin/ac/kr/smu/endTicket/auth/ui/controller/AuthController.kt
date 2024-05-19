@@ -123,7 +123,7 @@ class AuthController(
                 .body(token)
         }catch (e: IllegalStateException){
             log.info("{refreshToken: $refreshToken, message: ${e.message}}", e)
-            
+
             return ResponseEntity
                 .badRequest()
                 .body(ExceptionResponse(400, message, e.message))

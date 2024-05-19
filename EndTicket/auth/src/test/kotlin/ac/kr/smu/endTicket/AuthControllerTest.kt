@@ -41,7 +41,6 @@ class AuthControllerTest @Autowired constructor(
     private val ctx: WebApplicationContext
 
 ) {
-    private val SOCIAL_TYPE = SocialType.KAKAO
     private val mvc: MockMvc = MockMvcBuilders
         .webAppContextSetup(ctx)
         .addFilters<DefaultMockMvcBuilder>(OAuth2ErrorHandlerFilter(), OAuth2AuthorizationFilter(oAuthService))
@@ -53,9 +52,10 @@ class AuthControllerTest @Autowired constructor(
         private const val USER_ID = 1L
         private const val BASE_URL = "http://localhost:8081/auth"
         private const val ACCESS_TOKEN = "a"
-        private const val REFRESH_TOKEN = "a"
+        private const val REFRESH_TOKEN = "r"
+        private const val ID_TOKEN = "i"
     }
-
+    private val SOCIAL_TYPE = SocialType.KAKAO
 
 
     @BeforeEach
@@ -85,7 +85,7 @@ class AuthControllerTest @Autowired constructor(
         Mockito.`when`(userService.findUserID(SOCIAL_TYPE, SOCIAL_USER_NUMBER))
             .thenReturn(USER_ID)
 
-        Mockito.`when`(tokenService.reissueToken(Mockito.anyString()))
+        Mockito.`when`(tokenService.reissueToken(REFRESH_TOKEN))
             .thenReturn(TokenResponse(ACCESS_TOKEN,REFRESH_TOKEN))
 
         val token = tokenService
@@ -111,9 +111,9 @@ class AuthControllerTest @Autowired constructor(
         Mockito.`when`(oAuthService.oAuth(SOCIAL_TYPE,AUTHORIZATION_CODE))
             .thenReturn(
                 OAuth2TokenResponse(
-                    accessToken = "a",
-                    refreshToken = "r",
-                    idToken = "i",
+                    accessToken = ACCESS_TOKEN,
+                    refreshToken = REFRESH_TOKEN,
+                    idToken = ID_TOKEN,
                     expiresIn = 1,
                     tokenType = "t",
                     scope = "",
@@ -122,7 +122,7 @@ class AuthControllerTest @Autowired constructor(
             )
 
         Mockito
-            .`when`(oAuthService.parseSocialUserNumber(SOCIAL_TYPE,"i"))
+            .`when`(oAuthService.parseSocialUserNumber(SOCIAL_TYPE, ID_TOKEN))
             .thenReturn(SOCIAL_USER_NUMBER)
     }
 }

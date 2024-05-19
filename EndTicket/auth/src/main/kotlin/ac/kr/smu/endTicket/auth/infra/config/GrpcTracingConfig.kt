@@ -9,7 +9,6 @@ import io.grpc.ServerInterceptor
 import net.devh.boot.grpc.server.interceptor.GrpcGlobalServerInterceptor
 import org.springframework.context.annotation.Profile
 
-@Profile("!test")
 @Configuration(proxyBeanMethods = false)
 class GrpcTracingConfig {
     @GrpcGlobalClientInterceptor
