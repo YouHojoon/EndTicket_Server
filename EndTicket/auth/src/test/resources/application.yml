@@ -1,0 +1,10 @@
+jwt:
+  secret: testtesttesttesttesttesttesttesttesttesttesttest
+  access-token-expiration: 1 # 1시간
+  refresh-token-expiration: 1000000 # 30일
+
+spring:
+  data:
+    redis:
+      port: 6382
+      host: localhost

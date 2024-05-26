@@ -51,13 +51,15 @@ class AuthController(
     )
     fun createToken(
         @Parameter(description = "인증에 사용한 SNS", schema = Schema(implementation = SocialType::class))
-        @RequestParam("socialType") socialType: SocialType,
+        @RequestParam("socialType")
+        socialType: SocialType,
 
         @Parameter(description = "인증 후 받은 authorization code", example = "d-MKlV0eZz8d6x9upP3Z7mTd8w2nRSHMHORMV01xfAnMhtFN0n6MyGP-LyMKPXOaAAABjiie8OaBPKUF0hG4dQ")
-        @RequestParam("code") code: String,
+        @RequestParam("code")
+        code: String,
 
-        
-        @AuthenticationPrincipal oAuth2User: OAuth2User
+        @AuthenticationPrincipal
+        oAuth2User: OAuth2User
     ): ResponseEntity<*>{
         val userID = userService.findUserID(socialType, oAuth2User.name)
 
@@ -102,25 +104,29 @@ class AuthController(
     fun reissueToken(
         @Parameter(
             description = "refresh 토큰",
-            schema = Schema(type = "object", requiredProperties = ["refreshToken"], properties = [
-                StringToClassMapItem(String::class, key = "refreshToken")
-            ]),
+            schema = Schema(
+                type = "object",
+                requiredProperties = ["refreshToken"],
+                properties = [StringToClassMapItem(String::class, key = "refreshToken")]
+            ),
         )
         @RequestBody body: Map<String, String>
     ): ResponseEntity<*>{
-        val refreshToken = body["refreshToken"] ?: return ResponseEntity.badRequest().body(ExceptionResponse(400, "토큰을 재발급하는 과정에서 에러가 발생했습니다.","refresh 토큰이 존재하지 않습니다."))
+        val message = "토큰을 재발급하는 과정에서 에러가 발생했습니다."
+        val refreshToken = body["refreshToken"] ?: return ResponseEntity.badRequest().body(ExceptionResponse(400,message,"refresh 토큰이 존재하지 않습니다."))
+
         try {
             val token = tokenService.reissueToken(refreshToken)
 
             return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(token)
-
         }catch (e: IllegalStateException){
             log.info("{refreshToken: $refreshToken, message: ${e.message}}", e)
+
             return ResponseEntity
                 .badRequest()
-                .body(ExceptionResponse(400, "토큰을 재발급하는 과정에서 에러가 발생했습니다.", detail = e.message))
+                .body(ExceptionResponse(400, message, e.message))
         }
     }
 }

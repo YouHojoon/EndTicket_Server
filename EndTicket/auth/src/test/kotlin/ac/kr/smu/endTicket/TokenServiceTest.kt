@@ -3,6 +3,7 @@ package ac.kr.smu.endTicket
 import ac.kr.smu.endTicket.auth.domain.service.UserService
 import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
+import ac.kr.smu.endTicket.test.RedisTestConfig
 import ac.kr.smu.protobuf.AccessToken
 import ac.kr.smu.protobuf.TokenServiceGrpc
 import ac.kr.smu.protobuf.TokenServiceGrpc.TokenServiceBlockingStub
@@ -17,29 +18,40 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.context.annotation.Import
+import org.springframework.context.annotation.Profile
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.event.annotation.BeforeTestMethod
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import kotlin.test.*
 
-@SpringBootTest()
-@ActiveProfiles("test")
+@SpringBootTest
+@TestPropertySource(
+    locations = ["/application.yml"]
+)
+@SpringJUnitConfig(
+    TokenService::class
+)
+@Import(RedisTestConfig::class)
 @EnableConfigurationProperties(JWTProperties::class)
 class TokenServiceTest @Autowired constructor(
     @MockBean
     private val ops: ValueOperations<String,String>,
     @MockBean
     private val redisTemplate: RedisTemplate<String,String>,
-    @MockBean
-    private val userService: UserService,
+//    @MockBean
+//    private val userService: UserService,
 
     private val service: TokenService
 ){
-    @Rule
+    @get:Rule
     private val cleanupRule: GrpcCleanupRule = GrpcCleanupRule()
     private lateinit var stub: TokenServiceBlockingStub
 
@@ -47,9 +59,8 @@ class TokenServiceTest @Autowired constructor(
         private const val USER_ID = 1L
     }
 
-
     @BeforeTest
-    fun setStub(){
+    fun init(){
         val server = InProcessServerBuilder.generateName()
         cleanupRule.register(
             InProcessServerBuilder.forName(server)
@@ -60,9 +71,7 @@ class TokenServiceTest @Autowired constructor(
             cleanupRule.register(
             InProcessChannelBuilder.forName(server).directExecutor().build()
         ))
-    }
-    @BeforeTest
-    fun setRedis(){
+
         Mockito.`when`(redisTemplate.opsForValue()).thenReturn(ops)
     }
 
@@ -81,7 +90,7 @@ class TokenServiceTest @Autowired constructor(
         assertEquals(response.userID, USER_ID)
     }
     @Test
-    @DisplayName("grpc 리프레시로 토큰 검증 테스트")
+    @DisplayName("grpc 리프레시 토큰으로 토큰 검증 테스트")
     fun given_refreshToken_when_validationToken_then_returnResponseOfStatus400(){
         val createTokenResponse = service.createAccessAndRefreshToken(USER_ID)
         val response = stub.validateAccessToken(
