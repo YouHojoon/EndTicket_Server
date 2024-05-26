@@ -44,18 +44,16 @@ import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 
-
 @SpringBootTest(
     classes = [
         AuthController::class,
         TokenService::class,
         WebMvcAutoConfiguration::class,
-        RedisAutoConfiguration::class
+        RedisAutoConfiguration::class,
     ]
 )
-@EnableAutoRedisConfig
+@Import(RedisTestConfig::class,SecurityTestConfig::class, AutoRedisConfig::class)
 @EnableConfigurationProperties(JWTProperties::class)
-@Import(SecurityTestConfig::class, RedisTestConfig::class)
 class AuthIntegrationTest @Autowired constructor(
     @MockBean
     private val oAuthService: OAuthService,
@@ -107,7 +105,7 @@ class AuthIntegrationTest @Autowired constructor(
             .andExpect(MockMvcResultMatchers.jsonPath("accessToken").isString)
             .andExpect(MockMvcResultMatchers.jsonPath("refreshToken").isString)
     }
-//
+
     @Test
     @DisplayName("리프레시 토큰으로 토큰 재발급 테스트")
     fun given_refreshToken_then_reissueToken_then_reissueAccessToken_and_refreshToken(){

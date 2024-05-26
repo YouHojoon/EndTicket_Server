@@ -8,6 +8,3 @@ spring:
     redis:
       port: 6382
       host: localhost
-
-  main:
-    allow-bean-definition-overriding: true
