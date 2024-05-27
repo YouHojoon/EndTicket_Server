@@ -41,7 +41,6 @@ class UserControllerTest @Autowired constructor(
     companion object{
         private const val BASE_URL = "http://localhost:8080"
         private const val USER_ID = 1L
-
     }
 
     @Test
@@ -68,6 +67,7 @@ class UserControllerTest @Autowired constructor(
         val lowLengthNickname = RegisterNicknameRequest("a")
         val patternMismatchedNickname = RegisterNicknameRequest("$^&@(a")
         val mapper = ObjectMapper()
+
         fun registerNickname(request: RegisterNicknameRequest): ResultActions =
             mockMvc.perform(
                 MockMvcRequestBuilders.post("$BASE_URL/users/nickname")

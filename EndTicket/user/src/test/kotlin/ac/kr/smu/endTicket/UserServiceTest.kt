@@ -7,6 +7,8 @@ import ac.kr.smu.endTicket.user.ui.request.RegisterNicknameRequest
 import ac.kr.smu.protobuf.FindUserIDRequest
 import ac.kr.smu.protobuf.SocialType
 import ac.kr.smu.protobuf.UserServiceGrpc
+import io.grpc.ManagedChannel
+import io.grpc.Server
 import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.inprocess.InProcessServerBuilder
 import org.junit.jupiter.api.BeforeEach
@@ -18,10 +20,8 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.jupiter.MockitoExtension
-import java.sql.SQLIntegrityConstraintViolationException
 import kotlin.test.Test
-import io.grpc.testing.GrpcCleanupRule
-import org.junit.Rule
+import org.junit.jupiter.api.AfterEach
 import java.util.*
 import kotlin.test.assertEquals
 
@@ -30,40 +30,30 @@ class UserServiceTest(
     @Mock
     private val userRepo: UserRepository
 ) {
-    @Rule
-    private val grpcCleanup = GrpcCleanupRule()
     @InjectMocks
     private lateinit var userService: UserService
     private lateinit var blockingStub: UserServiceGrpc.UserServiceBlockingStub
+    private lateinit var grpcServer: Server
+    private lateinit var channel: ManagedChannel
     private val SOCIAL_TYPE = User.SocialType.KAKAO
 
     private companion object{
         private const val SOCIAL_USER_NUMBER = "1"
         private const val USER_ID = 1L
+        private const val NICKNAME = "닉네임"
     }
 
     @BeforeEach
     fun init(){
         MockitoAnnotations.openMocks(this)
-
-        val server = InProcessServerBuilder.generateName()
-        grpcCleanup.register(
-            InProcessServerBuilder
-                .forName(server).directExecutor()
-                .addService(userService).build().start()
-        )
-
-        blockingStub = UserServiceGrpc.newBlockingStub(
-            grpcCleanup.register(
-                InProcessChannelBuilder.forName(server).directExecutor().build()
-            )
-        )
     }
+
 
     @Test
     @DisplayName("user id grpc 테스트")
     fun given_socialType_and_socialUserNumber_when_findUserID_then_returnUserID(){
         val user = createUser()
+        setGrpc()
 
         Mockito
             .`when`(userRepo.findBySocialTypeAndSocialUserNumber(user.socialType, SOCIAL_USER_NUMBER))
@@ -77,12 +67,14 @@ class UserServiceTest(
         )
 
         assertEquals(userIDResponse.userId, user.id)
+        shutdownGrpc()
     }
 
     @Test
     @DisplayName("닉네임 등록 테스트")
     fun given_nickname_and_userID_when_updateNickname_then_updateNicknameOfUser(){
-        val request = RegisterNicknameRequest("닉네임")
+        val request = RegisterNicknameRequest(NICKNAME)
+
         Mockito.
                 `when`(userRepo.findById(USER_ID))
                 .thenReturn(Optional.of(createUser()))
@@ -95,7 +87,7 @@ class UserServiceTest(
     @Test
     @DisplayName("닉네임이 등록되어 있을 시 닉네임 변경 테스트")
     fun given_nickname_and_userID_of_user_whoseNicknameIsNotNull_when_updateNickname_then_throw_IllegalStateException(){
-        val request = RegisterNicknameRequest("닉네임")
+        val request = RegisterNicknameRequest(NICKNAME)
 
         Mockito
             .`when`(userRepo.findById(USER_ID))
@@ -108,5 +100,18 @@ class UserServiceTest(
 
     private fun createUser(): User{
         return User(SOCIAL_TYPE,SOCIAL_USER_NUMBER,USER_ID)
+    }
+    private fun setGrpc(){
+        val server = InProcessServerBuilder.generateName()
+        grpcServer = InProcessServerBuilder
+            .forName(server).directExecutor()
+            .addService(userService).build().start()
+
+        channel = InProcessChannelBuilder.forName(server).directExecutor().build()
+        blockingStub = UserServiceGrpc.newBlockingStub(channel)
+    }
+    private fun shutdownGrpc(){
+        grpcServer.shutdownNow()
+        channel.shutdownNow()
     }
 }
