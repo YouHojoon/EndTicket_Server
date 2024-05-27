@@ -52,6 +52,6 @@ class UserService(
         val user = userRepo.findById(userID).getOrNull()
         checkNotNull(user){"해당 userID의 사용자를 찾을 수 없습니다."}
 
-        user.requestNickname(request)
+        user.registerNickname(request)
     }
 }

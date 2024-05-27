@@ -91,7 +91,7 @@ class UserServiceTest(
 
         Mockito
             .`when`(userRepo.findById(USER_ID))
-            .thenReturn(Optional.of(User(SOCIAL_TYPE, SOCIAL_USER_NUMBER, USER_ID, request.nickname)))
+            .thenReturn(Optional.of(User(SOCIAL_TYPE, SOCIAL_USER_NUMBER, request.nickname)))
 
         assertThrows<IllegalStateException> {
             userService.registerNickname(request, USER_ID)
@@ -99,7 +99,7 @@ class UserServiceTest(
     }
 
     private fun createUser(): User{
-        return User(SOCIAL_TYPE,SOCIAL_USER_NUMBER,USER_ID)
+        return User(SOCIAL_TYPE,SOCIAL_USER_NUMBER)
     }
     private fun setGrpc(){
         val server = InProcessServerBuilder.generateName()

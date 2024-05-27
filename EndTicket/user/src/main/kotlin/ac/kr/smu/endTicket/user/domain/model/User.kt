@@ -29,18 +29,19 @@ class User(
 
     @Column(name = "social_user_number", nullable = false, updatable = false)
     private val socialUserNumber: String,
+    nickname: String? = null
+)
+{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, insertable = false, updatable = false)
-    val id: Long = 0L,
+    val id: Long = 0L
 
-    nickname: String? = null
-)
-{
     @Column
     var nickname: String?
         private set
+
     init {
         this.nickname = nickname
     }
@@ -61,7 +62,7 @@ class User(
      * @throws IllegalStateException 닉네임이 null이 아닐 떄
      */
     @Throws(IllegalStateException::class)
-    fun requestNickname(request: RegisterNicknameRequest){
+    fun registerNickname(request: RegisterNicknameRequest){
         check(this.nickname == null){"닉네임을 변경할 수 없습니다."}
         this.nickname = request.nickname
     }
