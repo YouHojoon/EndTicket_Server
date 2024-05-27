@@ -39,7 +39,6 @@ class UserServiceTest(
 
     private companion object{
         private const val SOCIAL_USER_NUMBER = "1"
-        private const val USER_ID = 1L
         private const val NICKNAME = "닉네임"
     }
 
@@ -74,13 +73,14 @@ class UserServiceTest(
     @DisplayName("닉네임 등록 테스트")
     fun given_nickname_and_userID_when_updateNickname_then_updateNicknameOfUser(){
         val request = RegisterNicknameRequest(NICKNAME)
+        val user = createUser()
 
         Mockito.
-                `when`(userRepo.findById(USER_ID))
-                .thenReturn(Optional.of(createUser()))
+                `when`(userRepo.findById(user.id))
+                .thenReturn(Optional.of(user))
 
-        userService.registerNickname(request,USER_ID)
-        assertEquals(userRepo.findById(USER_ID).get().nickname, request.nickname)
+        userService.registerNickname(request,user.id)
+        assertEquals(userRepo.findById(user.id).get().nickname, request.nickname)
 
     }
 
@@ -88,19 +88,18 @@ class UserServiceTest(
     @DisplayName("닉네임이 등록되어 있을 시 닉네임 변경 테스트")
     fun given_nickname_and_userID_of_user_whoseNicknameIsNotNull_when_updateNickname_then_throw_IllegalStateException(){
         val request = RegisterNicknameRequest(NICKNAME)
+        val user = User(SOCIAL_TYPE, SOCIAL_USER_NUMBER, request.nickname)
 
         Mockito
-            .`when`(userRepo.findById(USER_ID))
-            .thenReturn(Optional.of(User(SOCIAL_TYPE, SOCIAL_USER_NUMBER, request.nickname)))
+            .`when`(userRepo.findById(user.id))
+            .thenReturn(Optional.of(user))
 
         assertThrows<IllegalStateException> {
-            userService.registerNickname(request, USER_ID)
+            userService.registerNickname(request, user.id)
         }
     }
 
-    private fun createUser(): User{
-        return User(SOCIAL_TYPE,SOCIAL_USER_NUMBER)
-    }
+    private fun createUser() = User(SOCIAL_TYPE,SOCIAL_USER_NUMBER)
     private fun setGrpc(){
         val server = InProcessServerBuilder.generateName()
         grpcServer = InProcessServerBuilder
