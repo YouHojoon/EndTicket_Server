@@ -67,16 +67,16 @@ class  UserController(
 
         @RequestHeader(HttpHeaderName.USER_ID)
         @Parameter(hidden = true)
-        userID: Long): ResponseEntity<*> =
+        id: Long): ResponseEntity<*> =
         try {
-            service.registerNickname(request, userID)
+            service.registerNickname(request, id)
             ResponseEntity.noContent().build<Void>()
         }catch (e: IllegalStateException){
-            log.info("{userID: $userID}", e)
+            log.info("{id: $id}", e)
             ResponseEntity(ExceptionResponse(409, "닉네임 등록에 에러가 발생했습니다.", e.message), HttpStatus.CONFLICT)
         }
         catch (e: NotFoundUserException){
-            log.info("{userID: $userID}", e)
+            log.info("{id: $id}", e)
             ResponseEntity(ExceptionResponse(404, "닉네임 등록에 에러가 발생했습니다.", e.message), HttpStatus.NOT_FOUND)
         }
 }

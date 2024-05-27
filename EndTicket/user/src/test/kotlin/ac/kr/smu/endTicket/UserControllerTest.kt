@@ -65,13 +65,6 @@ class UserControllerTest @Autowired constructor(
         val lowLengthNickname = RegisterNicknameRequest("a")
         val patternMismatchedNickname = RegisterNicknameRequest("$^&@(a")
 
-        fun ResultActions.expectBindingException() =
-            andExpect(MockMvcResultMatchers.status().isBadRequest)
-                .andExpect(MockMvcResultMatchers.jsonPath("field").isString)
-                .andExpect(MockMvcResultMatchers.jsonPath("code").value(400))
-                .andExpect(MockMvcResultMatchers.jsonPath("message").isString)
-                .andExpect(MockMvcResultMatchers.jsonPath("detail").isString)
-
         mockMvc.registerNickname(lowLengthNickname).expectBindingException()
         mockMvc.registerNickname(patternMismatchedNickname).expectBindingException()
     }

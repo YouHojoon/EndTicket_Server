@@ -19,9 +19,10 @@ import jakarta.persistence.UniqueConstraint
  * @property nickname 사용자의 별명, 3~8 자 사이여야 한다.
  */
 @Entity
-@Table(uniqueConstraints = [
-    UniqueConstraint(columnNames = ["social_type", "social_user_number"])
-])
+@Table(
+    name = "\"user\"",
+    uniqueConstraints = [UniqueConstraint(columnNames = ["social_type", "social_user_number"])]
+)
 class User(
     @Column(name="social_type", nullable = false, updatable = false)
     @Enumerated(value = EnumType.STRING)
@@ -35,10 +36,9 @@ class User(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, insertable = false, updatable = false)
     val id: Long = 0L
 
-    @Column
+    @Column(nullable = true)
     var nickname: String?
         private set
 

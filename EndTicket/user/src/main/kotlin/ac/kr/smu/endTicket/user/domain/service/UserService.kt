@@ -45,7 +45,7 @@ class UserService(
      * 사용자의 닉네임 등록
      * @param request 닉네임 등록 요청
      * @param id 닉네임을 등록할 사용자
-     * @throws NotFoundUserException userID의 사용자가 없을 시
+     * @throws NotFoundUserException id의 사용자가 없을 시
      */
     @Throws(NotFoundUserException::class)
     @Transactional
