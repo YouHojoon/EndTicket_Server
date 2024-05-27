@@ -14,6 +14,6 @@ dependencies {
     testImplementation("io.grpc:grpc-testing:1.62.2")
     testImplementation("io.grpc:grpc-inprocess:1.62.2")
 
-
+    testRuntimeOnly("com.h2database:h2")
 
 }

@@ -6,6 +6,8 @@ import ac.kr.smu.endTicket.user.domain.service.UserService
 import ac.kr.smu.endTicket.user.ui.controller.UserController
 import ac.kr.smu.endTicket.aop.BindExceptionAdvice
 import ac.kr.smu.endTicket.constant.HttpHeaderName
+import ac.kr.smu.endTicket.test.expectBindingException
+import ac.kr.smu.endTicket.user.domain.exception.NotFoundUserException
 import ac.kr.smu.endTicket.user.ui.request.RegisterNicknameRequest
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
@@ -29,6 +31,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 @WebMvcTest(controllers = [UserController::class])
 class UserControllerTest @Autowired constructor(
     private val controller: UserController,
+
     @MockBean
     private val service: UserService
 ) {
@@ -39,23 +42,17 @@ class UserControllerTest @Autowired constructor(
         .build()
 
     companion object{
-        private const val BASE_URL = "http://localhost:8080"
-        private const val USER_ID = 1L
-
+        private const val NICKNAME = "닉네임"
     }
 
     @Test
     @DisplayName("닉네임 등록")
     fun given_nickname_when_updateNickname_then_updateNicknameOfUser(){
-        val request = RegisterNicknameRequest("nickname")
+        val request = RegisterNicknameRequest(NICKNAME)
 
-        mockMvc.perform(
-            MockMvcRequestBuilders
-                .post("$BASE_URL/users/nickname")
-                .header(HttpHeaderName.USER_ID, USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(ObjectMapper().writeValueAsString(request))
-        ).andExpect(MockMvcResultMatchers.status().isNoContent)
+        mockMvc
+            .registerNickname(request)
+            .andExpect(MockMvcResultMatchers.status().isNoContent)
 
         Mockito
             .verify(service, Mockito.times(1))
@@ -63,25 +60,38 @@ class UserControllerTest @Autowired constructor(
     }
 
     @Test
-    @DisplayName("닉네임 조건 테스트")
+    @DisplayName("부적절한 닉네임 등록 테스트")
     fun given_invalidNickname_when_updateNickname_then_expect400Error(){
         val lowLengthNickname = RegisterNicknameRequest("a")
         val patternMismatchedNickname = RegisterNicknameRequest("$^&@(a")
-        val mapper = ObjectMapper()
-        fun registerNickname(request: RegisterNicknameRequest): ResultActions =
-            mockMvc.perform(
-                MockMvcRequestBuilders.post("$BASE_URL/users/nickname")
-                    .header(HttpHeaderName.USER_ID, USER_ID)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(mapper.writeValueAsString(request))
-            ).andExpect(MockMvcResultMatchers.status().isBadRequest)
-                .andExpect(MockMvcResultMatchers.jsonPath("field").isString)
-                .andExpect(MockMvcResultMatchers.jsonPath("code").value(400))
-                .andExpect(MockMvcResultMatchers.jsonPath("message").isString)
-                .andExpect(MockMvcResultMatchers.jsonPath("detail").isString)
 
+        mockMvc.registerNickname(lowLengthNickname).expectBindingException()
+        mockMvc.registerNickname(patternMismatchedNickname).expectBindingException()
+    }
 
-        registerNickname(lowLengthNickname)
-        registerNickname(patternMismatchedNickname)
+    @Test
+    @DisplayName("존재하지 않는 사용자의 닉네임 등록 테스트")
+    fun given_notExistUser_when_registerNickname_then_expectStatusCode404(){
+        val request = RegisterNicknameRequest(NICKNAME)
+
+        Mockito.`when`(service.registerNickname(request, USER_ID))
+            .thenAnswer { throw NotFoundUserException(USER_ID) }
+
+        mockMvc
+            .registerNickname(request)
+            .andExpect(MockMvcResultMatchers.status().isNotFound)
+    }
+
+    @Test
+    @DisplayName("닉네임이 등록되어 있는 사용자의 닉네임 등록 테스트")
+    fun given_userWithNicknameAlreadyRegistered_when_registerNickname_then_expectStatus409(){
+        val request = RegisterNicknameRequest(NICKNAME)
+
+        Mockito.`when`(service.registerNickname(request, USER_ID))
+            .thenAnswer { throw IllegalStateException() }
+
+        mockMvc
+            .registerNickname(request)
+            .andExpect(MockMvcResultMatchers.status().isConflict)
     }
 }
