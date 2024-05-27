@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ac.kr.smu.endTicket.response.BindExceptionResponse
 import ac.kr.smu.endTicket.response.ExceptionResponse
+import ac.kr.smu.endTicket.user.domain.exception.NotFoundUserException
 
 @RestController
 @RequestMapping("/users")
@@ -66,15 +67,16 @@ class  UserController(
 
         @RequestHeader(HttpHeaderName.USER_ID)
         @Parameter(hidden = true)
-        userID: Long): ResponseEntity<*>{
+        userID: Long): ResponseEntity<*> =
         try {
             service.registerNickname(request, userID)
+            ResponseEntity.noContent().build<Void>()
         }catch (e: IllegalStateException){
             log.info("{userID: $userID}", e)
-            return ResponseEntity(ExceptionResponse(404, "닉네임 등록에 에러가 발생했습니다.", e.message), HttpStatus.NOT_FOUND)
+            ResponseEntity(ExceptionResponse(409, "닉네임 등록에 에러가 발생했습니다.", e.message), HttpStatus.CONFLICT)
         }
-
-        return ResponseEntity.noContent().build<Void>()
-    }
-
+        catch (e: NotFoundUserException){
+            log.info("{userID: $userID}", e)
+            ResponseEntity(ExceptionResponse(404, "닉네임 등록에 에러가 발생했습니다.", e.message), HttpStatus.NOT_FOUND)
+        }
 }

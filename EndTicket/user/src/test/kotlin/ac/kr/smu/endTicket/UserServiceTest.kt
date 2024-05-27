@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket
 
+import ac.kr.smu.endTicket.user.domain.exception.NotFoundUserException
 import ac.kr.smu.endTicket.user.domain.model.User
 import ac.kr.smu.endTicket.user.domain.repository.UserRepository
 import ac.kr.smu.endTicket.user.domain.service.UserService
@@ -49,7 +50,7 @@ class UserServiceTest(
 
 
     @Test
-    @DisplayName("user id grpc 테스트")
+    @DisplayName("grpc 통신을 이용한 userID 반환 테스트")
     fun given_socialType_and_socialUserNumber_when_findUserID_then_returnUserID(){
         val user = createUser()
         setGrpc()
@@ -86,7 +87,7 @@ class UserServiceTest(
 
     @Test
     @DisplayName("닉네임이 등록되어 있을 시 닉네임 변경 테스트")
-    fun given_nickname_and_userID_of_user_whoseNicknameIsNotNull_when_updateNickname_then_throw_IllegalStateException(){
+    fun given_userWithNicknameAlreadyRegistered_when_registerNickname_then_throwIllegalStateException(){
         val request = RegisterNicknameRequest(NICKNAME)
         val user = User(SOCIAL_TYPE, SOCIAL_USER_NUMBER, request.nickname)
 
@@ -98,7 +99,14 @@ class UserServiceTest(
             userService.registerNickname(request, user.id)
         }
     }
+    @Test
+    @DisplayName("존재하지 않는 사용자 닉네임 등록 테스트")
+    fun given_notExistUser_when_registerNickname_then_throwNotFoundUserException() {
+        Mockito.`when`(userRepo.findById(Mockito.anyLong()))
+            .thenReturn(Optional.empty())
 
+        assertThrows<NotFoundUserException> { userService.registerNickname(RegisterNicknameRequest(NICKNAME), 1L)}
+    }
     private fun createUser() = User(SOCIAL_TYPE,SOCIAL_USER_NUMBER)
     private fun setGrpc(){
         val server = InProcessServerBuilder.generateName()
