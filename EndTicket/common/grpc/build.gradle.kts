@@ -10,10 +10,12 @@ ext["protobufVersion"] = "1.62.2"
 ext["protobufKotlinVersion"] = "1.4.1"
 
 dependencies{
-    api("io.grpc:grpc-kotlin-stub:${property("protobufKotlinVersion")}")
-    api("io.grpc:grpc-protobuf:${property("protobufVersion")}")
-    api("com.google.protobuf:protobuf-kotlin:${property("grpcVersion")}")
     api ("net.devh:grpc-spring-boot-starter:${property("grpcStarterVersion")}")
+
+    implementation("io.grpc:grpc-kotlin-stub:${property("protobufKotlinVersion")}")
+    implementation("io.grpc:grpc-protobuf:${property("protobufVersion")}")
+    implementation("com.google.protobuf:protobuf-kotlin:${property("grpcVersion")}")
+
     testImplementation("io.grpc:grpc-testing:${property("protobufVersion")}")
     testImplementation("io.grpc:grpc-inprocess:${property("protobufVersion")}")
 }

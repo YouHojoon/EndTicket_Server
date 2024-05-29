@@ -12,7 +12,6 @@ dependencies{
     implementation("io.jsonwebtoken:jjwt-impl:0.12.5")
     implementation("io.jsonwebtoken:jjwt-jackson:0.12.5")
 
-
     implementation(files("../grpc.jar"))
     implementation(project(":common:web"))
     implementation(project(":common:redis"))

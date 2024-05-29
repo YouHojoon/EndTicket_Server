@@ -4,7 +4,9 @@ import ac.kr.smu.endTicket.auth.domain.exception.NotFoundUserException
 
 import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
 import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
-import ac.kr.smu.protobuf.*
+import ac.kr.smu.endTicket.protobuf.AccessToken
+import ac.kr.smu.endTicket.protobuf.TokenServiceGrpc
+import ac.kr.smu.endTicket.protobuf.ValidateAccessTokenResponse
 
 import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
