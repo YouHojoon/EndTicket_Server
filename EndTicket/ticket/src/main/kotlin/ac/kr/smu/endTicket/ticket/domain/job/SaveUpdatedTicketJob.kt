@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.ticket.domain.job
 
-import ac.kr.smu.endTicket.redis.getKeysWithPattern
+import ac.kr.smu.endTicket.common.redis.getKeysWithPattern
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
 import org.slf4j.LoggerFactory

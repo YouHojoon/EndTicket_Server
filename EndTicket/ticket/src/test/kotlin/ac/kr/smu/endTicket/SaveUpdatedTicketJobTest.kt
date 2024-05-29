@@ -1,10 +1,7 @@
 package ac.kr.smu.endTicket
 
-import ac.kr.smu.endTicket.annotation.EnableAutoRedisConfig
 import ac.kr.smu.endTicket.ticket.domain.job.SaveUpdatedTicketJob
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
-import ac.kr.smu.endTicket.ticket.service.TicketService
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito

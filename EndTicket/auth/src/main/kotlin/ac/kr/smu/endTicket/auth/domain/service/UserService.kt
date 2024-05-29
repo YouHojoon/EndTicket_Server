@@ -1,13 +1,9 @@
 package ac.kr.smu.endTicket.auth.domain.service
 
-
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
-import ac.kr.smu.protobuf.FindUserIDRequest
-import ac.kr.smu.protobuf.UserServiceGrpc
-import io.github.resilience4j.circuitbreaker.CallNotPermittedException
+import ac.kr.smu.endTicket.protobuf.FindUserIDRequest
+import ac.kr.smu.endTicket.protobuf.UserServiceGrpc
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
-import io.github.resilience4j.timelimiter.annotation.TimeLimiter
-import io.micrometer.observation.annotation.Observed
 import net.devh.boot.grpc.client.inject.GrpcClient
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
@@ -33,10 +29,10 @@ class UserService{
     fun findUserID(socialType: SocialType, socialUserNumber: String): Long{
         return userStub.findUserID(
             FindUserIDRequest.newBuilder()
-                .setSocialType(ac.kr.smu.protobuf.SocialType.valueOf(socialType.name))
+                .setSocialType(ac.kr.smu.endTicket.protobuf.SocialType.valueOf(socialType.name))
                 .setSocialUserNumber(socialUserNumber)
                 .build()
-        ).userId
+        ).userID
     }
 
     /**

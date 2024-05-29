@@ -1,6 +1,5 @@
 package ac.kr.smu.endTicket
 
-import ac.kr.smu.endTicket.annotation.EnableAutoRedisConfig
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
 import ac.kr.smu.endTicket.auth.domain.service.UserService
@@ -11,9 +10,9 @@ import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
 import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.auth.ui.controller.AuthController
 import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
-import ac.kr.smu.endTicket.config.AutoRedisConfig
+import ac.kr.smu.endTicket.common.redis.config.AutoRedisConfig
 import ac.kr.smu.endTicket.test.RedisTestConfig
-import ac.kr.smu.endTicket.test.andReturn
+import ac.kr.smu.endTicket.common.web.test.andReturn
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -24,19 +23,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
-import org.springframework.context.annotation.Profile
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.http.MediaType
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers

@@ -5,17 +5,16 @@ plugins {
     id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.spring") version "1.9.22"
-    kotlin("plugin.jpa") version "1.9.22"
 }
-
-
+tasks.withType<JavaCompile> {
+    enabled = false
+}
 allprojects{
     group = "ac.kr.smu"
     version = "0.0.1-SNAPSHOT"
     extra["springCloudVersion"] = "2022.0.4"
-    extra["grpcStarterVersion"] = "2.15.0.RELEASE"
+
     apply(plugin = "org.jetbrains.kotlin.plugin.spring")
-    apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.springframework.boot")
     apply(plugin = "io.spring.dependency-management")
@@ -37,29 +36,14 @@ subprojects{
     }
 
     dependencies {
-        implementation("org.springframework.boot:spring-boot-starter-validation")
-        implementation("org.springframework.boot:spring-boot-starter-security")
-        implementation("org.springframework.boot:spring-boot-starter-web")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-
-        implementation("org.springframework.boot:spring-boot-starter-actuator")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
-        runtimeOnly("com.mysql:mysql-connector-j")
-        implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")
         implementation("org.springframework.boot:spring-boot-starter-aop")
-
-
         testImplementation("org.springframework.boot:spring-boot-starter-test")
-        testImplementation("org.springframework.security:spring-security-test")
         testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 
         // https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
         implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
-        // https://mvnrepository.com/artifact/io.zipkin.brave/brave-instrumentation-grpc
-        implementation("io.micrometer:micrometer-tracing-bridge-brave")
-        implementation("io.zipkin.reporter2:zipkin-reporter-brave")
-        implementation("io.zipkin.brave:brave-instrumentation-grpc")
-
     }
 
     tasks.withType<KotlinCompile> {
