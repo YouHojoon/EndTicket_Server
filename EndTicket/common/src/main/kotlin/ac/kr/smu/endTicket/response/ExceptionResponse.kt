@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema
  * @property message 간단한 에러 메시지
  * @property detail 에러 발생의 자세한 이유
  */
-@Schema
+@Schema(description = "에러 발생 시 반환을 정의하는 클래스")
 open class ExceptionResponse(
     @Schema(description = "에러 코드, 현재는 HttpStatusCode", example = "404")
     val code: Int,

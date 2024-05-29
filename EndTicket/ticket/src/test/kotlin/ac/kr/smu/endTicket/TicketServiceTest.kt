@@ -1,56 +1,24 @@
 package ac.kr.smu.endTicket
 
-import ac.kr.smu.endTicket.annotation.EnableAutoRedisConfig
-import ac.kr.smu.endTicket.constant.KafkaTopic
+import ac.kr.smu.endTicket.common.redis.annotation.EnableAutoRedisConfig
 import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
 import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
-import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endTicket.ticket.domain.service.TicketCompletionEventService
-import ac.kr.smu.endTicket.ticket.infra.listener.TicketCompletionEventListener
 import ac.kr.smu.endTicket.ticket.service.TicketService
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
-import org.apache.catalina.User
-import org.apache.kafka.clients.consumer.ConsumerConfig
-import org.apache.kafka.clients.producer.Producer
-import org.apache.kafka.common.serialization.StringDeserializer
-import org.apache.kafka.common.serialization.StringSerializer
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.Mock
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
-import org.springframework.kafka.annotation.EnableKafka
-import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory
-import org.springframework.kafka.core.DefaultKafkaProducerFactory
-import org.springframework.kafka.listener.ContainerProperties
-import org.springframework.kafka.listener.KafkaMessageListenerContainer
-import org.springframework.kafka.listener.MessageListener
-import org.springframework.kafka.support.KafkaUtils
-import org.springframework.kafka.support.serializer.JsonDeserializer
-import org.springframework.kafka.support.serializer.JsonSerializer
-import org.springframework.kafka.test.EmbeddedKafkaBroker
-import org.springframework.kafka.test.context.EmbeddedKafka
-import org.springframework.kafka.test.utils.ContainerTestUtils
-import org.springframework.kafka.test.utils.KafkaTestUtils
-import org.springframework.test.context.TestPropertySource
 import java.util.*
-import java.util.concurrent.BlockingQueue
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayDeque
 
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 
 //@EnableAutoRedisConfig
