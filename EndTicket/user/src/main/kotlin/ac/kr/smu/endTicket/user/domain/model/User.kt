@@ -19,9 +19,10 @@ import jakarta.persistence.UniqueConstraint
  * @property nickname 사용자의 별명, 3~8 자 사이여야 한다.
  */
 @Entity
-@Table(uniqueConstraints = [
-    UniqueConstraint(columnNames = ["social_type", "social_user_number"])
-])
+@Table(
+    name = "\"user\"",
+    uniqueConstraints = [UniqueConstraint(columnNames = ["social_type", "social_user_number"])]
+)
 class User(
     @Column(name="social_type", nullable = false, updatable = false)
     @Enumerated(value = EnumType.STRING)
@@ -29,18 +30,18 @@ class User(
 
     @Column(name = "social_user_number", nullable = false, updatable = false)
     private val socialUserNumber: String,
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, insertable = false, updatable = false)
-    val id: Long = 0L,
-
     nickname: String? = null
 )
 {
-    @Column
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0L
+
+    @Column(nullable = true)
     var nickname: String?
         private set
+
     init {
         this.nickname = nickname
     }
@@ -61,7 +62,7 @@ class User(
      * @throws IllegalStateException 닉네임이 null이 아닐 떄
      */
     @Throws(IllegalStateException::class)
-    fun requestNickname(request: RegisterNicknameRequest){
+    fun registerNickname(request: RegisterNicknameRequest){
         check(this.nickname == null){"닉네임을 변경할 수 없습니다."}
         this.nickname = request.nickname
     }

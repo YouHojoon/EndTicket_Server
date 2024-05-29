@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.user.domain.service
 
+import ac.kr.smu.endTicket.user.domain.exception.NotFoundUserException
 import ac.kr.smu.endTicket.user.domain.model.User
 import ac.kr.smu.endTicket.user.domain.repository.UserRepository
 import ac.kr.smu.endTicket.user.ui.request.RegisterNicknameRequest
@@ -43,15 +44,13 @@ class UserService(
     /**
      * 사용자의 닉네임 등록
      * @param request 닉네임 등록 요청
-     * @param userID 닉네임을 등록할 사용자
-     * @throws IllegalStateException userID의 사용자가 없을 시
+     * @param id 닉네임을 등록할 사용자
+     * @throws NotFoundUserException id의 사용자가 없을 시
      */
-    @Throws(IllegalStateException::class)
+    @Throws(NotFoundUserException::class)
     @Transactional
-    fun registerNickname(request: RegisterNicknameRequest, userID: Long){
-        val user = userRepo.findById(userID).getOrNull()
-        checkNotNull(user){"해당 userID의 사용자를 찾을 수 없습니다."}
-
-        user.requestNickname(request)
+    fun registerNickname(request: RegisterNicknameRequest, id: Long){
+        val user = userRepo.findById(id).getOrNull() ?: throw NotFoundUserException(id)
+        user.registerNickname(request)
     }
 }
