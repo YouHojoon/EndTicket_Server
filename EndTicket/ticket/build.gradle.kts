@@ -1,11 +1,11 @@
 dependencies{
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-
     implementation(project(":common:security"))
     implementation(project(":common:web"))
     implementation(project(":common:jpa"))
     implementation(project(":common:redis"))
     implementation(project(":common:kafka"))
     implementation(project(":common:zipkin"))
+    testRuntimeOnly("com.h2database:h2")
 }
