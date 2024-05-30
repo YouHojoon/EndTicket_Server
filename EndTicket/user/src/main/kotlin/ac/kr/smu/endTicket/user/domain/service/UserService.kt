@@ -1,17 +1,16 @@
 package ac.kr.smu.endTicket.user.domain.service
 
+import ac.kr.smu.endTicket.protobuf.FindUserIDRequest
+import ac.kr.smu.endTicket.protobuf.UserIDResponse
+import ac.kr.smu.endTicket.protobuf.UserServiceGrpc
 import ac.kr.smu.endTicket.user.domain.exception.NotFoundUserException
 import ac.kr.smu.endTicket.user.domain.model.User
 import ac.kr.smu.endTicket.user.domain.repository.UserRepository
 import ac.kr.smu.endTicket.user.ui.request.RegisterNicknameRequest
-import ac.kr.smu.protobuf.FindUserIDRequest
-import ac.kr.smu.protobuf.UserIDResponse
-import ac.kr.smu.protobuf.UserServiceGrpc
 import io.grpc.stub.StreamObserver
 import net.devh.boot.grpc.server.service.GrpcService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.sql.SQLIntegrityConstraintViolationException
 import kotlin.jvm.optionals.getOrNull
 
 /**
@@ -35,7 +34,7 @@ class UserService(
         val id = userRepo.findBySocialTypeAndSocialUserNumber(socialType, request.socialUserNumber)?.id ?: userRepo.save(User(socialType, request.socialUserNumber)).id
 
         responseObserver.onNext(
-            UserIDResponse.newBuilder().setUserId(id).build()
+            UserIDResponse.newBuilder().setUserID(id).build()
         )
         responseObserver.onCompleted()
     }

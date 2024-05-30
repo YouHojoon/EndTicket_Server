@@ -1,13 +1,13 @@
 package ac.kr.smu.endTicket
 
+import ac.kr.smu.endTicket.protobuf.FindUserIDRequest
+import ac.kr.smu.endTicket.protobuf.SocialType
+import ac.kr.smu.endTicket.protobuf.UserServiceGrpc
 import ac.kr.smu.endTicket.user.domain.exception.NotFoundUserException
 import ac.kr.smu.endTicket.user.domain.model.User
 import ac.kr.smu.endTicket.user.domain.repository.UserRepository
 import ac.kr.smu.endTicket.user.domain.service.UserService
 import ac.kr.smu.endTicket.user.ui.request.RegisterNicknameRequest
-import ac.kr.smu.protobuf.FindUserIDRequest
-import ac.kr.smu.protobuf.SocialType
-import ac.kr.smu.protobuf.UserServiceGrpc
 import io.grpc.ManagedChannel
 import io.grpc.Server
 import io.grpc.inprocess.InProcessChannelBuilder
@@ -21,9 +21,8 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.jupiter.MockitoExtension
-import kotlin.test.Test
-import org.junit.jupiter.api.AfterEach
 import java.util.*
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @ExtendWith(MockitoExtension::class)
@@ -66,7 +65,7 @@ class UserServiceTest(
             .setSocialUserNumber(SOCIAL_USER_NUMBER).build()
         )
 
-        assertEquals(userIDResponse.userId, user.id)
+        assertEquals(userIDResponse.userID, user.id)
         shutdownGrpc()
     }
 

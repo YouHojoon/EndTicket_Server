@@ -1,35 +1,26 @@
 package ac.kr.smu.endTicket
 
-import ac.kr.smu.endTicket.aop.BindExceptionAdvice
-import ac.kr.smu.endTicket.user.domain.exception.NotFoundUserException
+import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endTicket.user.domain.model.User
 import ac.kr.smu.endTicket.user.domain.repository.UserRepository
 import ac.kr.smu.endTicket.user.domain.service.UserService
 import ac.kr.smu.endTicket.user.ui.controller.UserController
 import ac.kr.smu.endTicket.user.ui.request.RegisterNicknameRequest
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-import org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryDependsOnPostProcessor
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
-import org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import kotlin.properties.Delegates
-import kotlin.test.BeforeTest
 
 @SpringBootTest(
     classes = [
