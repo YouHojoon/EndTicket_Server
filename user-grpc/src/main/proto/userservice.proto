@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "ac.kr.smu.protobuf";
+option java_package = "ac.kr.smu.endTicket.protobuf";
 option java_outer_classname = "UserServiceProto";
 
 service UserService{
@@ -14,7 +14,7 @@ message FindUserIDRequest{
 }
 
 message UserIDResponse{
-  int64 user_id = 1;
+  int64 user_iD = 1;
 }
 
 enum SocialType{
