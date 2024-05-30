@@ -6,7 +6,7 @@ plugins {
 
 ext["grpcStarterVersion"] = "2.15.0.RELEASE"
 ext["grpcVersion"] = "3.25.3"
-ext["protobufVersion"] = "1.62.2"
+ext["protobufVersion"] = "1.58.0"
 ext["protobufKotlinVersion"] = "1.4.1"
 
 dependencies{

@@ -11,7 +11,7 @@ import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.auth.ui.controller.AuthController
 import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
 import ac.kr.smu.endTicket.common.redis.config.AutoRedisConfig
-import ac.kr.smu.endTicket.test.RedisTestConfig
+import ac.kr.smu.endTicket.common.redis.test.RedisTestConfig
 import ac.kr.smu.endTicket.common.web.test.andReturn
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.AfterEach

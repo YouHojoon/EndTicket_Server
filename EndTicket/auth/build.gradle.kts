@@ -19,4 +19,5 @@ dependencies{
     implementation(project(":common:grpc"))
     implementation(project(":common:zipkin"))
 
+    testImplementation("org.springframework.security:spring-security-test")
 }

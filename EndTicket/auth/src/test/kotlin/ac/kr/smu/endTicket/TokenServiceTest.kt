@@ -1,34 +1,29 @@
 package ac.kr.smu.endTicket
 
-import ac.kr.smu.endTicket.auth.domain.service.UserService
-import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
-import ac.kr.smu.endTicket.test.RedisTestConfig
-import ac.kr.smu.protobuf.AccessToken
-import ac.kr.smu.protobuf.TokenServiceGrpc
-import ac.kr.smu.protobuf.TokenServiceGrpc.TokenServiceBlockingStub
+import ac.kr.smu.endTicket.auth.service.TokenService
+import ac.kr.smu.endTicket.common.redis.test.RedisTestConfig
+import ac.kr.smu.endTicket.protobuf.AccessToken
+import ac.kr.smu.endTicket.protobuf.TokenServiceGrpc
+import ac.kr.smu.endTicket.protobuf.TokenServiceGrpc.TokenServiceBlockingStub
+import io.grpc.ManagedChannel
+import io.grpc.Server
 import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.inprocess.InProcessServerBuilder
-import io.grpc.testing.GrpcCleanupRule
 import io.jsonwebtoken.UnsupportedJwtException
-import org.junit.Rule
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
-import org.springframework.context.annotation.Profile
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
-import org.springframework.test.context.event.annotation.BeforeTestMethod
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import kotlin.test.*
 
@@ -46,32 +41,17 @@ class TokenServiceTest @Autowired constructor(
     private val ops: ValueOperations<String,String>,
     @MockBean
     private val redisTemplate: RedisTemplate<String,String>,
-//    @MockBean
-//    private val userService: UserService,
-
     private val service: TokenService
 ){
-    @get:Rule
-    private val cleanupRule: GrpcCleanupRule = GrpcCleanupRule()
     private lateinit var stub: TokenServiceBlockingStub
-
+    private lateinit var channel: ManagedChannel
+    private lateinit var server: Server
     companion object{
         private const val USER_ID = 1L
     }
 
     @BeforeTest
     fun init(){
-        val server = InProcessServerBuilder.generateName()
-        cleanupRule.register(
-            InProcessServerBuilder.forName(server)
-                .directExecutor().addService(service)
-                .build().start()
-        )
-        stub = TokenServiceGrpc.newBlockingStub(
-            cleanupRule.register(
-            InProcessChannelBuilder.forName(server).directExecutor().build()
-        ))
-
         Mockito.`when`(redisTemplate.opsForValue()).thenReturn(ops)
     }
 
@@ -79,7 +59,7 @@ class TokenServiceTest @Autowired constructor(
     @DisplayName("grpc 토큰 검증 테스트")
     fun given_accessToken_when_validationToken_then_returnResponse(){
         val createToken = service.createAccessAndRefreshToken(USER_ID)
-
+        setGrpc()
         val response = stub.validateAccessToken(
             AccessToken.newBuilder()
                 .setToken(createToken.accessToken)
@@ -88,19 +68,22 @@ class TokenServiceTest @Autowired constructor(
 
         assertNotNull(response.userID)
         assertEquals(response.userID, USER_ID)
+        shutdownGrpc()
     }
     @Test
     @DisplayName("grpc 리프레시 토큰으로 토큰 검증 테스트")
     fun given_refreshToken_when_validationToken_then_returnResponseOfStatus400(){
+        setGrpc()
         val createTokenResponse = service.createAccessAndRefreshToken(USER_ID)
         val response = stub.validateAccessToken(
             AccessToken.newBuilder()
                 .setToken(createTokenResponse.refreshToken)
                 .build()
         )
-
+        println(response.userID)
         assertEquals(response.userID, -1)
         assertEquals(response.status, 400)
+        shutdownGrpc()
     }
     @Test
     @DisplayName("정상 유저 토큰 발급 테스트")
@@ -154,6 +137,22 @@ class TokenServiceTest @Autowired constructor(
             service.reissueToken(refreshToken)
         }
     }
+
+    private fun setGrpc(){
+        val name = InProcessServerBuilder.generateName()
+        server = InProcessServerBuilder.forName(name)
+            .directExecutor().addService(service)
+            .build().start()
+
+        channel = InProcessChannelBuilder.forName(name).directExecutor().build()
+        stub = TokenServiceGrpc.newBlockingStub(channel)
+    }
+
+    private fun shutdownGrpc(){
+        server.shutdownNow()
+        channel.shutdownNow()
+    }
+
 }
 
 
