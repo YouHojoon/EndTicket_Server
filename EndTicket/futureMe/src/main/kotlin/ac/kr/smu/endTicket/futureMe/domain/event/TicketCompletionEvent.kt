@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.futureMe.domain.model.event
+package ac.kr.smu.endTicket.futureMe.domain.event
 
 /**
  * 티켓 완료 이벤트

@@ -1,6 +1,7 @@
-package ac.kr.smu.endTicket.futureMe.domain.model
+package ac.kr.smu.endTicket.futureMe.domain.imagination.model
 
 import ac.kr.smu.endTicket.common.jpa.Audit
+import ac.kr.smu.endTicket.futureMe.domain.model.FutureMe
 import ac.kr.smu.endTicket.futureMe.ui.request.ImaginationRequest
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
@@ -20,16 +21,16 @@ class Imagination private constructor(
     behavior: String,
     target: String,
     color: Color,
-    @OneToOne
-    private val futureMe: FutureMe
+    @Column(updatable = false, nullable = false)
+    private val userID: Long
 ) {
     companion object{
-        fun from(request: ImaginationRequest, futureMe: FutureMe) =
+        fun from(request: ImaginationRequest, userID: Long) =
             Imagination(
                 behavior = request.behavior,
                 target = request.target,
                 color = request.color,
-                futureMe = futureMe
+                userID = userID
             )
     }
     @Column(nullable = false, length = 10)
@@ -64,4 +65,13 @@ class Imagination private constructor(
 
     @Embedded
     val audit: Audit = Audit()
+
+    fun update(request: ImaginationRequest, userID: Long){
+        if (userID != userID)
+            throw IllegalStateException("소유자가 아닙니다.")
+
+        this.color = request.color
+        this.behavior = request.behavior
+        this.target = request.target
+    }
 }

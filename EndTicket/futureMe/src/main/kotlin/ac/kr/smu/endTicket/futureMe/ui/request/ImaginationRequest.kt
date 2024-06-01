@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.futureMe.ui.request
 
-import ac.kr.smu.endTicket.futureMe.domain.model.Imagination
+import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size

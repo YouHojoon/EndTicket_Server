@@ -19,10 +19,6 @@ class FutureMe(
 
     @Embedded
     val character: Character? = null
-
-    @OneToMany(mappedBy = "imagination", cascade = [CascadeType.PERSIST, CascadeType.REMOVE], orphanRemoval = true)
-    val imaginations: List<Imagination> = emptyList()
-
     /**
      * 제목을 업데이트 하는 메소드
      */
