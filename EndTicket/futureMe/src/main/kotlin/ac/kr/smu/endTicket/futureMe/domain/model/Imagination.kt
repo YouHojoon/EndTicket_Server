@@ -1,6 +1,7 @@
 package ac.kr.smu.endTicket.futureMe.domain.model
 
 import ac.kr.smu.endTicket.common.jpa.Audit
+import ac.kr.smu.endTicket.futureMe.ui.request.ImaginationRequest
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
@@ -22,10 +23,19 @@ class Imagination private constructor(
     @OneToOne
     private val futureMe: FutureMe
 ) {
-    @Column(nullable = false, length = 8)
+    companion object{
+        fun from(request: ImaginationRequest, futureMe: FutureMe) =
+            Imagination(
+                behavior = request.behavior,
+                target = request.target,
+                color = request.color,
+                futureMe = futureMe
+            )
+    }
+    @Column(nullable = false, length = 10)
     var behavior: String private set
 
-    @Column(nullable = false, length = 13)
+    @Column(nullable = false, length = 20)
     var target: String private set
 
     @Enumerated(EnumType.STRING)
@@ -54,5 +64,4 @@ class Imagination private constructor(
 
     @Embedded
     val audit: Audit = Audit()
-
 }
