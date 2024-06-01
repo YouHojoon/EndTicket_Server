@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.futureMe
 
-import ac.kr.smu.endTicket.futureMe.domain.FutureMe
+import ac.kr.smu.endTicket.futureMe.domain.model.FutureMe
 import ac.kr.smu.endTicket.futureMe.ui.request.UpdateTitleOfFutureMeRequest
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test

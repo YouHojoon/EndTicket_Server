@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.futureMe.domain
+package ac.kr.smu.endTicket.futureMe.domain.model
 
 import ac.kr.smu.endTicket.common.jpa.Audit
 import io.swagger.v3.oas.annotations.media.Schema

@@ -1,5 +1,8 @@
-package ac.kr.smu.endTicket.futureMe.domain
+package ac.kr.smu.endTicket.futureMe.domain.model
 
+import ac.kr.smu.endTicket.futureMe.domain.model.event.Event
+import ac.kr.smu.endTicket.futureMe.domain.model.event.FutureMeCompletionEvent
+import ac.kr.smu.endTicket.futureMe.domain.model.event.TicketCompletionEvent
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 import jakarta.persistence.EnumType
@@ -44,7 +47,19 @@ class Character(
     enum class Type{
         KIA, CHEESE, VEGA;
 
-        // 캐릭터의 이미지 파일
+        // 캐릭터의 이미지 파목
         var image = ClassPathResource("characters/${name.lowercase()}.svg")
+    }
+
+    fun gainExperiencePoints(event: Event){
+        when(event){
+            is FutureMeCompletionEvent -> experiencePoints += 10
+            is TicketCompletionEvent -> experiencePoints += 20
+        }
+
+        if (experiencePoints >= MAX_EXPERIENCE_POINTS && level < MAX_LEVEL){
+            level++
+            experiencePoints = 0
+        }
     }
 }
