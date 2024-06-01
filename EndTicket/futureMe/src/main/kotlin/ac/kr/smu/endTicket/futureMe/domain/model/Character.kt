@@ -48,7 +48,7 @@ class Character(
         KIA, CHEESE, VEGA;
 
         // 캐릭터의 이미지 파목
-        var image = ClassPathResource("characters/${name.lowercase()}.svg")
+        var imageResource = ClassPathResource("characters/${name.lowercase()}.svg")
     }
 
     /**

@@ -13,7 +13,7 @@ class CharacterTest {
     @Test
     @DisplayName("캐릭터 각 타입별 이미지가 존재하는 지 테스트")
     fun test_eachTypeImageIsExist(){
-        assertTrue(Character.Type.values().map { it.image.exists() }.none { !it })
+        assertTrue(Character.Type.values().map { it.imageResource.exists() }.none { !it })
     }
 
     @Test
