@@ -26,4 +26,38 @@ class CharacterTest {
 
         assertEquals(30, character.experiencePoints)
     }
+
+    @Test
+    @DisplayName("레벨 업 테스트")
+    fun given_characterWithReachedMaxExperiencePoints_when_gainExperiencePoints_then_increasedLevel(){
+        val character = Character(Character.Type.CHEESE)
+        val beforeLevel = character.level
+
+        repeat(5){
+            character.gainExperiencePoints(TicketCompletionEvent())
+        }
+
+        assertEquals(beforeLevel + 1, character.level)
+        assertEquals(0, character.experiencePoints)
+    }
+
+    @Test
+    @DisplayName("레벨 및 경험치 최대치 테스트")
+    fun given_characterWithReachedMaxLevel_when_gainExperiencePoints_then_nothingChange(){
+        val character = Character(Character.Type.CHEESE)
+        repeat(40 * 1000 / 20){
+            character.gainExperiencePoints(TicketCompletionEvent())
+        }
+        assertEquals(40, character.level)
+        assertEquals(100, character.experiencePoints)
+    }
+
+    @Test
+    @DisplayName("타입 변경 테스트")
+    fun given_type_whenUpdateType_then_updateType(){
+        val character = Character(Character.Type.CHEESE)
+        val updateType = Character.Type.KIA
+        character.updateType(updateType)
+        assertEquals(updateType, character.type)
+    }
 }

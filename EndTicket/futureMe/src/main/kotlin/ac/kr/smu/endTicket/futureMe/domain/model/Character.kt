@@ -51,15 +51,39 @@ class Character(
         var image = ClassPathResource("characters/${name.lowercase()}.svg")
     }
 
+    /**
+     * 이벤트를 받아 각 이벤트에 맞는 경험치를 상승한다.
+     * 만약 경험치가 최대 경험치 이상이고, 레벨이 최대 레벨이 아니라면 레벨업한다.
+     * @param event 발생한 이벤트
+     */
     fun gainExperiencePoints(event: Event){
         when(event){
             is FutureMeCompletionEvent -> experiencePoints += 10
             is TicketCompletionEvent -> experiencePoints += 20
         }
 
-        if (experiencePoints >= MAX_EXPERIENCE_POINTS && level < MAX_LEVEL){
+        if (experiencePoints >= MAX_EXPERIENCE_POINTS)
+            levelUpWhenLowerThanMaxLevel()
+
+    }
+
+    /**
+     * 캐릭터의 타입을 업데이트한다. 업데이트를 수행하면 레벨과 경험치는 초기화된다.
+     * @param type 변경할 타입
+     */
+    fun updateType(type: Type){
+        this.type = type
+        this.level = MIN_LEVEL
+        this.experiencePoints = MIN_EXPERIENCE_POINTS
+    }
+
+    private fun levelUpWhenLowerThanMaxLevel(){
+        if (level < MAX_LEVEL){
             level++
             experiencePoints = 0
         }
+        else
+            experiencePoints = 100
     }
+
 }
