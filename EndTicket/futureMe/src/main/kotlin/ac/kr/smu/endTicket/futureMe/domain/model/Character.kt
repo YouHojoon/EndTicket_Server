@@ -39,7 +39,7 @@ class Character(
     enum class Type{
         KIA, CHEESE, VEGA;
 
-        // 캐릭터의 이미지 파목
+        // 캐릭터의 이미지 파일
         var imageResource = ClassPathResource("characters/${name.lowercase()}.svg")
     }
 

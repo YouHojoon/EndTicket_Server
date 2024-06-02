@@ -66,6 +66,12 @@ class Imagination private constructor(
     @Embedded
     val audit: Audit = Audit()
 
+    /**
+     * 수정을 요청하는 메소드
+     * @param request 수정 요청
+     * @param userID 수정을 요청한 사용자
+     * @throws IllegalStateException 소유자가 아닐 시
+     */
     fun update(request: ImaginationRequest, userID: Long){
         if (userID != userID)
             throw IllegalStateException("소유자가 아닙니다.")

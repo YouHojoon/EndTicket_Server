@@ -27,6 +27,13 @@ class FutureMe(
         this.title = request.title
     }
 
+    /**
+     * 캐릭터를 설정하는 메소드, 이미 캐릭터가 있다면 초기화된다.
+     * @param type 캐릭터의 종류
+     * @param userID 설정을 요청하는 사용자 ID
+     * @throws IllegalStateException 소유자가 아닐 때
+     */
+    @Throws(IllegalStateException::class)
     fun setCharacter(type: Character.Type, userID: Long){
         if (userID != this.userID)
             throw IllegalStateException("소유자가 아닙니다.")
