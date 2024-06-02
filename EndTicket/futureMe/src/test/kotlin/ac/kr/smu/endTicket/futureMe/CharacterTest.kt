@@ -51,13 +51,4 @@ class CharacterTest {
         assertEquals(40, character.level)
         assertEquals(100, character.experiencePoints)
     }
-
-    @Test
-    @DisplayName("타입 변경 테스트")
-    fun given_type_whenUpdateType_then_updateType(){
-        val character = Character(Character.Type.CHEESE)
-        val updateType = Character.Type.KIA
-        character.updateType(updateType)
-        assertEquals(updateType, character.type)
-    }
 }

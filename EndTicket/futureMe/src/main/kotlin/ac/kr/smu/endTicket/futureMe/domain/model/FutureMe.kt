@@ -18,11 +18,19 @@ class FutureMe(
         private set
 
     @Embedded
-    val character: Character? = null
+    var character: Character? = null
+        private set
     /**
      * 제목을 업데이트 하는 메소드
      */
     fun updateTitle(request: UpdateTitleOfFutureMeRequest){
         this.title = request.title
+    }
+
+    fun setCharacter(type: Character.Type, userID: Long){
+        if (userID != this.userID)
+            throw IllegalStateException("소유자가 아닙니다.")
+
+        character = Character(type)
     }
 }

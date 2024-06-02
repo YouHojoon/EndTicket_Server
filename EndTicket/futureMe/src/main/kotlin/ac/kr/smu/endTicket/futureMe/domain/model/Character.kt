@@ -16,21 +16,13 @@ import org.springframework.core.io.ClassPathResource
  */
 @Embeddable
 class Character(
-    type: Type
-) {
-    companion object{
-        private val MIN_LEVEL = 1
-        private val MAX_LEVEL = 40
-        private val MIN_EXPERIENCE_POINTS = 0
-        private val MAX_EXPERIENCE_POINTS = 100
-    }
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var type: Type
-        private set
-
-    init {
-        this.type = type
+    val type: Type
+) {
+    companion object{
+        private const val MAX_LEVEL = 40
+        private const val MAX_EXPERIENCE_POINTS = 100
     }
 
     @Column
@@ -64,17 +56,6 @@ class Character(
 
         if (experiencePoints >= MAX_EXPERIENCE_POINTS)
             levelUpWhenLowerThanMaxLevel()
-
-    }
-
-    /**
-     * 캐릭터의 타입을 업데이트한다. 업데이트를 수행하면 레벨과 경험치는 초기화된다.
-     * @param type 변경할 타입
-     */
-    fun updateType(type: Type){
-        this.type = type
-        this.level = MIN_LEVEL
-        this.experiencePoints = MIN_EXPERIENCE_POINTS
     }
 
     private fun levelUpWhenLowerThanMaxLevel(){
