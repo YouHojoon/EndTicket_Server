@@ -6,6 +6,7 @@ import ac.kr.smu.endTicket.futureMe.ui.request.ImaginationRequest
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import kotlin.jvm.Transient
 
 /**
  * 상상해보기를 추상화한 객체
@@ -66,18 +67,41 @@ class Imagination private constructor(
     @Embedded
     val audit: Audit = Audit()
 
+    @Column
+    private var isComplete = false
+
     /**
      * 수정을 요청하는 메소드
      * @param request 수정 요청
      * @param userID 수정을 요청한 사용자
-     * @throws IllegalStateException 소유자가 아닐 시
      */
     fun update(request: ImaginationRequest, userID: Long){
-        if (userID != userID)
-            throw IllegalStateException("소유자가 아닙니다.")
+        checkOwnership(userID)
 
         this.color = request.color
         this.behavior = request.behavior
         this.target = request.target
+    }
+
+
+    /**
+     * 상상해보기 완료를 요청하는 메소드
+     * @param userID 완료를 요청한 사용자
+     */
+    fun complete(userID: Long){
+        checkOwnership(userID)
+        isComplete = true
+    }
+
+    /**
+     * 소유권을 확인하는 메소드
+     * @param userID 사용자 ID
+     * @throws IllegalStateException 사용자가 소유자가 아닐 시
+     */
+    @Throws(IllegalStateException::class)
+    fun checkOwnership(userID: Long){
+        if (this.userID != userID)
+            throw IllegalStateException("소유자가 아닙니다.")
+
     }
 }
