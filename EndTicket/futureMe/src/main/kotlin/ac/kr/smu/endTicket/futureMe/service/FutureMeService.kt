@@ -27,9 +27,11 @@ class FutureMeService(
      * 미래의 나의 제목을 수정하는 메소드
      * @param request 수정 요청
      * @param userID 사용자 ID
+     * @return 수정된 미래의 나
      * @throws NotFoundFutureMeException 미래의 나가 존재하지 않을 떄
      */
     @Transactional
+    @Throws(NotFoundFutureMeException::class)
     fun updateTitle(request: UpdateTitleOfFutureMeRequest, userID: Long): FutureMe{
         val futureMe = repo.findById(userID).getOrNull() ?: throw NotFoundFutureMeException(userID)
 
@@ -38,12 +40,14 @@ class FutureMeService(
     }
 
     /**
-     * 미래의 나의 제목을 수정하는 메소드
+     * 미래의 나의 캐릭터를 수정하는 메소드
      * @param type 수정할 캐릭터 타입
      * @param userID 사용자 ID
+     * @return 수정된 미래의 나
      * @throws NotFoundFutureMeException 미래의 나가 존재하지 않을 떄
      */
     @Transactional
+    @Throws(NotFoundFutureMeException::class)
     fun changeCharacter(type: Character.Type, userID: Long): FutureMe{
         val futureMe = repo.findById(userID).getOrNull() ?: throw NotFoundFutureMeException(userID)
 
