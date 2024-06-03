@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.futureMe
 
-import ac.kr.smu.endTicket.futureMe.domain.model.Character
+import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import ac.kr.smu.endTicket.futureMe.domain.event.FutureMeCompletionEvent
 import ac.kr.smu.endTicket.futureMe.domain.event.TicketCompletionEvent
 import org.junit.jupiter.api.DisplayName

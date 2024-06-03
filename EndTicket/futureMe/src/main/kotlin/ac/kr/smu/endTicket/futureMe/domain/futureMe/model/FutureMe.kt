@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.futureMe.domain.model
+package ac.kr.smu.endTicket.futureMe.domain.futureMe.model
 
 import ac.kr.smu.endTicket.futureMe.ui.request.UpdateTitleOfFutureMeRequest
 import jakarta.persistence.*
@@ -11,17 +11,24 @@ import jakarta.persistence.*
 @Table
 class FutureMe(
     @Id
-    val userID: Long
+    val userID: Long,
+    type: Character.Type
 ) {
     @Column(length = 13)
     var title: String = ""
         private set
 
     @Embedded
-    var character: Character? = null
+    var character: Character
         private set
+
+    init {
+        character = Character(type)
+    }
+
     /**
-     * 제목을 업데이트 하는 메소드
+     * 제목을 수정하는 메소드
+     * @param request 제못 수정 요청
      */
     fun updateTitle(request: UpdateTitleOfFutureMeRequest){
         this.title = request.title
