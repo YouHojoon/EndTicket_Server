@@ -10,9 +10,9 @@ import jakarta.persistence.*
 @Entity
 @Table
 class FutureMe(
+    type: Character.Type,
     @Id
-    val userID: Long,
-    type: Character.Type
+    val userID: Long
 ) {
     @Column(length = 13)
     var title: String = ""

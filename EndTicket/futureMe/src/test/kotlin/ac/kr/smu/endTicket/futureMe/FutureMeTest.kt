@@ -13,7 +13,7 @@ class FutureMeTest {
     @Test
     @DisplayName("미래의 나 제목 변경 테스트")
     fun given_updateTitleOfFutureMeRequest_when_updateTitle_then_updateTitle(){
-        val futureMe = FutureMe(USER_ID, Character.Type.CHEESE)
+        val futureMe = FutureMe(Character.Type.CHEESE,USER_ID)
         val request = UpdateTitleOfFutureMeRequest("테스트")
 
         futureMe.updateTitle(request)
@@ -24,7 +24,7 @@ class FutureMeTest {
     @Test
     @DisplayName("캐릭터 설정 테스트")
     fun given_type_when_setCharacter_then_success(){
-        val futureMe = FutureMe(USER_ID, Character.Type.CHEESE)
+        val futureMe = FutureMe(Character.Type.CHEESE,USER_ID)
         val type = Character.Type.VEGA
         futureMe.setCharacter(type, USER_ID)
 
@@ -37,7 +37,7 @@ class FutureMeTest {
     @Test
     @DisplayName("소유자가 아닌 사용자의 캐릭터 설정 테스트")
     fun given_userWhoNotOwner_setCharacter_then_throwIllegalException(){
-        val futureMe = FutureMe(USER_ID, Character.Type.CHEESE)
+        val futureMe = FutureMe(Character.Type.CHEESE,USER_ID)
         val type = Character.Type.VEGA
 
         assertThrows<IllegalStateException> {
