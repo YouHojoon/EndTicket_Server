@@ -23,6 +23,6 @@ data class ImaginationRequest(
     @field:NotBlank
     val target: String,
 
-    @Schema(description = "색")
+    @Schema(description = "색", example = "BLUE1")
     val color: Imagination.Color
 )
