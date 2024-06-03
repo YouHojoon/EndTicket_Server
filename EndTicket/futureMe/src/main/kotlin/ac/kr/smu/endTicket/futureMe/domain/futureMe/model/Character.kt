@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.futureMe.domain.model
+package ac.kr.smu.endTicket.futureMe.domain.futureMe.model
 
 import ac.kr.smu.endTicket.futureMe.domain.event.Event
 import ac.kr.smu.endTicket.futureMe.domain.event.FutureMeCompletionEvent
