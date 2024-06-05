@@ -1,16 +1,19 @@
 package ac.kr.smu.endTicket.futureMe.service
 
+import ac.kr.smu.endTicket.futureMe.domain.event.ImaginationCompletionEvent
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotFoundImaginationException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.domain.imagination.repository.ImaginationRepository
 import ac.kr.smu.endTicket.futureMe.ui.request.ImaginationRequest
 import ac.kr.smu.endTicket.futureMe.ui.response.ImaginationResponse
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import kotlin.jvm.optionals.getOrNull
 
 @Service
 class ImaginationService(
-    private val repo: ImaginationRepository
+    private val repo: ImaginationRepository,
+    private val futureMeEventService: FutureMeEventService
 ) {
     companion object{
         const val IMAGINATION_LIMIT = 6
@@ -42,5 +45,18 @@ class ImaginationService(
 
         imagination.update(request,userID)
         return ImaginationResponse.from(imagination)
+    }
+
+    /**
+     * 상상해보기 완료를 수행하는 메소드, 완료를 성공하면 [ImaginationCompletionEvent]를 발행한다.
+     * @param id
+     * @throws IllegalStateException 상상해보기가 존재하지 않을 시
+     */
+    @Transactional
+    fun completeImagination(id: Long, userID: Long){
+        val imagination = repo.findById(id).getOrNull() ?: throw NotFoundImaginationException(id)
+
+        imagination.complete(userID)
+        futureMeEventService.eventPublish(ImaginationCompletionEvent(imagination))
     }
 }
