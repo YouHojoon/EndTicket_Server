@@ -8,4 +8,5 @@ dependencies {
     implementation(project(":common:security"))
     implementation(project(":common:jpa"))
     implementation(project(":common:zipkin"))
+    testRuntimeOnly("com.h2database:h2")
 }

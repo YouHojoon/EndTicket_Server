@@ -1,14 +1,18 @@
 package ac.kr.smu.endTicket
 
-import ac.kr.smu.endTicket.ticket.domain.model.Ticket
-import ac.kr.smu.endTicket.ticket.ui.controller.TicketController
-import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
-import ac.kr.smu.endTicket.aop.BindExceptionAdvice
+import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
+import ac.kr.smu.endTicket.common.kafka.test.messageListener
+import ac.kr.smu.endTicket.common.redis.test.RedisTestConfig
+import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
+import ac.kr.smu.endTicket.common.web.test.andReturn
+import ac.kr.smu.endTicket.common.web.test.expectBindingException
 import ac.kr.smu.endTicket.constant.HttpHeaderName
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
-import ac.kr.smu.endTicket.test.*
+import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
+import ac.kr.smu.endTicket.ticket.ui.controller.TicketController
+import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName

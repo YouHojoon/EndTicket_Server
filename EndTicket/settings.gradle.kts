@@ -19,3 +19,4 @@ include("common:kafka")
 findProject(":common:kafka")?.name = "kafka"
 include("common:zipkin")
 findProject(":common:zipkin")?.name = "zipkin"
+include("futureMe")

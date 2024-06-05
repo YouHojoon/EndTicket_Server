@@ -1,14 +1,14 @@
 package ac.kr.smu.endTicket
 
+import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
+import ac.kr.smu.endTicket.common.web.test.expectBindingException
+import ac.kr.smu.endTicket.constant.HttpHeaderName
+import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
 import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.service.TicketService
 import ac.kr.smu.endTicket.ticket.ui.controller.TicketController
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
-import ac.kr.smu.endTicket.aop.BindExceptionAdvice
-import ac.kr.smu.endTicket.constant.HttpHeaderName
-import ac.kr.smu.endTicket.test.expectBindingException
-import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.DisplayName
@@ -17,13 +17,10 @@ import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import kotlin.test.assertEquals
 
 @WebMvcTest(controllers = [TicketController::class])
 class TicketControllerTest @Autowired constructor(
@@ -194,7 +191,7 @@ class TicketControllerTest @Autowired constructor(
             .thenAnswer {
                 ticket.cancelSwipeTicket(USER_ID)
 
-                ticket
+                TicketResponse.from(ticket)
             }
 
         mvc.cancelSwipeTicketRequest(ticket.id)
