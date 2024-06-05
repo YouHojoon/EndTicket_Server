@@ -2,6 +2,7 @@ package ac.kr.smu.endTicket.common.kafka.test
 
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.common.serialization.StringDeserializer
+import org.jetbrains.annotations.TestOnly
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 import org.springframework.kafka.listener.ContainerProperties
 import org.springframework.kafka.listener.KafkaMessageListenerContainer
@@ -11,6 +12,13 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.utils.ContainerTestUtils
 import org.springframework.kafka.test.utils.KafkaTestUtils
 
+/**
+ * 테스트를 위한 KafkaMessageListenerContainer를 생성하는 메소드
+ * @param broker 테스트를 위한 카프카 브로커
+ * @param topic 테스트할 카프카 토픽
+ * @return 생성된 카프카 컨테이너
+ */
+@TestOnly
 inline fun <reified V> createKafkaContainer(broker: EmbeddedKafkaBroker, topic:String): KafkaMessageListenerContainer<String, V> {
     val config = KafkaTestUtils.consumerProps("test", "false", broker)
     val deserializer = JsonDeserializer<V>()
@@ -21,6 +29,12 @@ inline fun <reified V> createKafkaContainer(broker: EmbeddedKafkaBroker, topic:S
     return KafkaMessageListenerContainer(consumerFactory, ContainerProperties(topic))
 }
 
+/**
+ * KafkaMessageListenerContainer에 MessageListener를 추가하고 컨테이너를 시작하는 메소드
+ * @param broker 테스트를 위한 카프카 브로커
+ * @param onMessage 메시지를 수신 시 호출되는 콜백 메소드
+ */
+@TestOnly
 inline fun <reified V> KafkaMessageListenerContainer<String, V>.messageListener(broker: EmbeddedKafkaBroker, crossinline onMessage: (ConsumerRecord<String, V>) -> Unit){
     setupMessageListener(
         MessageListener{

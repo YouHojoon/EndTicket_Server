@@ -52,6 +52,10 @@ fun HttpSecurityDsl.baseExceptionHandling(){
     }
 }
 
+/**
+ * 화이트 리스트만 접근을 허용하도록 설정하는 메소드
+ * @param whitelist 허용할 화이트 리스트
+ */
 fun HttpSecurityDsl.permitOnlyWhitelistRequest(whitelist: List<String>){
     authorizeRequests {
         whitelist.forEach {
