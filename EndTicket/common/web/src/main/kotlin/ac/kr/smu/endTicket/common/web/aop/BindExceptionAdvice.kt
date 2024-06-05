@@ -19,7 +19,8 @@ class BindExceptionAdvice {
      * [BindException]을 처리하는 메소드
      * @param e 발생한 에러
      * @param bindingResult binding의 결과
-     * @return 에러에 대한 내용을 반환한다. [BindException]
+     * @return 에러에 대한 내용을 반환한다.
+     * @see BindExceptionResponse
      */
     @ExceptionHandler(BindException::class)
     fun handleBindingException(e: BindException, bindingResult: BindingResult): ResponseEntity<*>{
