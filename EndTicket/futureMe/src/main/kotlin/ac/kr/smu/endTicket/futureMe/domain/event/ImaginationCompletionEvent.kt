@@ -12,14 +12,17 @@ import java.time.LocalDateTime
 
 /**
  * 상상해보기 완료 이벤트
- * @param id 상상해보기 id
- * @param userID 사용자의 id
+ * @property imagination 완료된 상상해보기
  */
 @Entity
 class ImaginationCompletionEvent(
     @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
     private val imagination: Imagination,
 ) : Event(imagination.id, imagination.userID){
+
+    /**
+     * 이벤트 메시지로 변환하는 메소드
+     */
     fun toMessage() = ImaginationCompletionEventMessage(
         key = imagination.userID,
         payload =
@@ -31,9 +34,15 @@ class ImaginationCompletionEvent(
         )
     )
 
+    /**
+     * 이벤트의 메시지가 발행되었는지 나타내는 필드
+     */
     @Column
     private var isSent = false
 
+    /**
+     * 이벤트의 메시지 발행 완료 메소드
+     */
     fun successSend(){
         isSent = true
     }
