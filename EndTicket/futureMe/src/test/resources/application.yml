@@ -6,6 +6,23 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+
+  kafka:
+    consumer:
+      group-id: futureMe
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.LongDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "ac.kr.smu.endTicket.futureMe.ui.response"
+    listener:
+      concurrency: 3
+      ack-mode: manual_immediate
+
 logging:
   level:
     org.hibernate.type.descriptor.sql : trace
