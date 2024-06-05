@@ -1,0 +1,17 @@
+spring:
+  kafka:
+    bootstrap-servers:
+      - http://localhost:9190
+      - http://localhost:9191
+      - http://localhost:9192
+    consumer:
+      group-id: futureMe
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.LongDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    listener:
+      concurrency: 3
+      ack-mode: manual
+
+

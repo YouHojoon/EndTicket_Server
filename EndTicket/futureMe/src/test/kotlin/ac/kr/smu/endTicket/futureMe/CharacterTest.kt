@@ -34,7 +34,7 @@ class CharacterTest {
         val beforeLevel = character.level
 
         repeat(5){
-            character.gainExperiencePoints(TicketCompletionEvent())
+            character.gainExperiencePoints(Mockito.mock<TicketCompletionEvent>())
         }
 
         assertEquals(beforeLevel + 1, character.level)
@@ -46,7 +46,7 @@ class CharacterTest {
     fun given_characterWithReachedMaxLevel_when_gainExperiencePoints_then_nothingChange(){
         val character = Character(Character.Type.CHEESE)
         repeat(40 * 1000 / 20){
-            character.gainExperiencePoints(TicketCompletionEvent())
+            character.gainExperiencePoints(Mockito.mock<TicketCompletionEvent>())
         }
         assertEquals(40, character.level)
         assertEquals(100, character.experiencePoints)

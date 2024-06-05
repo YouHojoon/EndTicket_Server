@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.futureMe.service
 
+import ac.kr.smu.endTicket.futureMe.domain.event.Event
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.NotFoundFutureMeException
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
@@ -53,5 +54,11 @@ class FutureMeService(
 
         futureMe.setCharacter(type, userID)
         return futureMe
+    }
+
+    @Transactional
+    fun gainExperiencePoints(event: Event){
+        val futureMe = repo.findById(event.userID).getOrNull() ?: throw NotFoundFutureMeException(event.userID)
+        futureMe.character.gainExperiencePoints(event)
     }
 }
