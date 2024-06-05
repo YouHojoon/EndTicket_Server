@@ -23,7 +23,7 @@ class Imagination private constructor(
     target: String,
     color: Color,
     @Column(updatable = false, nullable = false)
-    private val userID: Long
+    val userID: Long
 ) {
     companion object{
         fun from(request: ImaginationRequest, userID: Long) =

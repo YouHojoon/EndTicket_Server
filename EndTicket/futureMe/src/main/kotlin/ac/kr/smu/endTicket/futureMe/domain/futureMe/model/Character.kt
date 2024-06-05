@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.futureMe.domain.futureMe.model
 
 import ac.kr.smu.endTicket.futureMe.domain.event.Event
-import ac.kr.smu.endTicket.futureMe.domain.event.FutureMeCompletionEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.ImaginationCompletionEvent
 import ac.kr.smu.endTicket.futureMe.domain.event.TicketCompletionEvent
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
@@ -50,7 +50,7 @@ class Character(
      */
     fun gainExperiencePoints(event: Event){
         when(event){
-            is FutureMeCompletionEvent -> experiencePoints += 10
+            is ImaginationCompletionEvent -> experiencePoints += 10
             is TicketCompletionEvent -> experiencePoints += 20
         }
 

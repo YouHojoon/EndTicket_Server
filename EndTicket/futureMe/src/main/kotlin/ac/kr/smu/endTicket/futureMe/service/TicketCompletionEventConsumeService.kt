@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.futureMe.service
 
-import ac.kr.smu.endTicket.constant.KafkaTopic
+import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.futureMe.domain.event.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.event.TicketCompletionEvent
 import ac.kr.smu.endTicket.futureMe.ui.response.TicketResponse
@@ -20,10 +20,10 @@ class TicketCompletionEventConsumeService(
     private val log = LoggerFactory.getLogger(TicketCompletionEventConsumeService::class.java)
     @KafkaListener(topics = [KafkaTopic.TICKET_COMPLETION])
     @Transactional
-    fun consume(record: ConsumerRecord<Long, TicketResponse>, ack: Acknowledgment){
+    fun consume(record: ConsumerRecord<String, TicketResponse>, ack: Acknowledgment){
         try {
             if (repo.findByEventIDAndType(record.value().id, "TicketCompletionEvent") == null){
-                val event = TicketCompletionEvent(record.value().id, record.key())
+                val event = TicketCompletionEvent(record.value().id, record.key().toLong())
 
                 futureMeService.gainExperiencePoints(event)
                 repo.save(event)

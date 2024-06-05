@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.futureMe
 
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
-import ac.kr.smu.endTicket.futureMe.domain.event.FutureMeCompletionEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.ImaginationCompletionEvent
 import ac.kr.smu.endTicket.futureMe.domain.event.TicketCompletionEvent
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -22,7 +22,7 @@ class CharacterTest {
         val character = Character(Character.Type.CHEESE)
 
         character.gainExperiencePoints(Mockito.mock<TicketCompletionEvent>())
-        character.gainExperiencePoints(Mockito.mock<FutureMeCompletionEvent>())
+        character.gainExperiencePoints(Mockito.mock<ImaginationCompletionEvent>())
 
         assertEquals(30, character.experiencePoints)
     }
