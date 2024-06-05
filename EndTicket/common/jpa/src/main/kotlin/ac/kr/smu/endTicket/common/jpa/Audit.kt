@@ -5,6 +5,9 @@ import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import java.time.LocalDateTime
 
+/**
+ * 생성일자와 수정일자를 나태내기 위한 클래스
+ */
 @Embeddable
 class Audit{
     @CreatedDate
