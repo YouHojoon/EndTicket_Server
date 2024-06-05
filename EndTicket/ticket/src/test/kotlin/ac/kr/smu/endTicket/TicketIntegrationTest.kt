@@ -7,7 +7,7 @@ import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endTicket.common.web.test.andReturn
 import ac.kr.smu.endTicket.common.web.test.expectBindingException
 import ac.kr.smu.endTicket.constant.HttpHeaderName
-import ac.kr.smu.endTicket.constant.KafkaTopic
+import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository

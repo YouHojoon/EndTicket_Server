@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.ticket.domain.service
 
-import ac.kr.smu.endTicket.constant.KafkaTopic
+import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
 
