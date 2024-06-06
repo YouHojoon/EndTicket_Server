@@ -21,7 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 @GrpcService
 class UserService(
     private val userRepo: UserRepository
-): UserServiceGrpc.UserServiceImplBase() {
+): ac.kr.smu.endTicket.protobuf.UserServiceGrpc.UserServiceImplBase() {
 
     /**
      * SNS 사용자 번호로 해당 SNS의 사용자를 찾아 grpc를 통해 user id를 반환하는 메소드, 만약에 없다면 저장한다.
@@ -29,12 +29,12 @@ class UserService(
      * @param socialUserNumber SNS 사용자 번호
      */
     @Transactional
-    override fun findUserID(request: FindUserIDRequest, responseObserver: StreamObserver<UserIDResponse>) {
+    override fun findUserID(request: ac.kr.smu.endTicket.protobuf.FindUserIDRequest, responseObserver: StreamObserver<ac.kr.smu.endTicket.protobuf.UserIDResponse>) {
         val socialType = User.SocialType.valueOf(request.socialType.name)
         val id = userRepo.findBySocialTypeAndSocialUserNumber(socialType, request.socialUserNumber)?.id ?: userRepo.save(User(socialType, request.socialUserNumber)).id
 
         responseObserver.onNext(
-            UserIDResponse.newBuilder().setUserID(id).build()
+            ac.kr.smu.endTicket.protobuf.UserIDResponse.newBuilder().setUserID(id).build()
         )
         responseObserver.onCompleted()
     }

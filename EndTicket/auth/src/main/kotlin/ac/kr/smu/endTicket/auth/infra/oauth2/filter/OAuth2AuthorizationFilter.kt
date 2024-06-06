@@ -20,7 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 class OAuth2AuthorizationFilter(
     private val oAuthService: OAuthService
 ): OncePerRequestFilter() {
-    private val converter = SocialTypeConverter()
+    private val converter = ac.kr.smu.endTicket.auth.domain.converter.SocialTypeConverter()
     private val matcher = AntPathRequestMatcher("/auth/sns")
     companion object{
         private const val SOCIAL_TYPE_URI_VARIABLE_NAME = "socialType"

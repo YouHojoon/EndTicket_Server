@@ -61,7 +61,7 @@ class TokenServiceTest @Autowired constructor(
         val createToken = service.createAccessAndRefreshToken(USER_ID)
         setGrpc()
         val response = stub.validateAccessToken(
-            AccessToken.newBuilder()
+            ac.kr.smu.endTicket.protobuf.AccessToken.newBuilder()
                 .setToken(createToken.accessToken)
                 .build()
         )
@@ -76,7 +76,7 @@ class TokenServiceTest @Autowired constructor(
         setGrpc()
         val createTokenResponse = service.createAccessAndRefreshToken(USER_ID)
         val response = stub.validateAccessToken(
-            AccessToken.newBuilder()
+            ac.kr.smu.endTicket.protobuf.AccessToken.newBuilder()
                 .setToken(createTokenResponse.refreshToken)
                 .build()
         )
@@ -145,7 +145,7 @@ class TokenServiceTest @Autowired constructor(
             .build().start()
 
         channel = InProcessChannelBuilder.forName(name).directExecutor().build()
-        stub = TokenServiceGrpc.newBlockingStub(channel)
+        stub = ac.kr.smu.endTicket.protobuf.TokenServiceGrpc.newBlockingStub(channel)
     }
 
     private fun shutdownGrpc(){

@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.ticket.domain.service
+package ac.kr.smu.endTicket.ticket.service
 
 import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
 import com.fasterxml.jackson.databind.ObjectMapper

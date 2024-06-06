@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket
+package ac.kr.smu.endTicket.ticket
 
 import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endTicket.common.web.test.expectBindingException
@@ -15,14 +15,23 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
-@WebMvcTest(controllers = [TicketController::class])
+@SpringBootTest(
+    properties = [
+        "eureka.client.enabled=false"
+    ],
+    classes = [
+        TicketController::class,
+        JacksonAutoConfiguration::class
+    ]
+)
 class TicketControllerTest @Autowired constructor(
     @MockBean
     private val service: TicketService,
@@ -239,6 +248,8 @@ class TicketControllerTest @Autowired constructor(
         )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("tickets").isArray)
-            .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(mapOf("tickets" to service.findIncompleteTicket(USER_ID)))))
+            .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(mapOf("tickets" to service.findIncompleteTicket(
+                USER_ID
+            )))))
     }
 }

@@ -1,10 +1,11 @@
-package ac.kr.smu.endTicket.ticket.domain.service
+package ac.kr.smu.endTicket.ticket.service
 
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
 
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
+import org.slf4j.LoggerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
@@ -21,21 +22,24 @@ class TicketCompletionEventMessageService(
     private val repo: TicketCompletionEventRepository
 
 ) {
+    private val log = LoggerFactory.getLogger(TicketCompletionEventMessageService::class.java)
     /**
      * 이벤트 전송, 전송이 완료되면 완료 여부를 저장한다.
      * @param event 전송할 이벤트
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun send(event: TicketCompletionEvent){
-        val response = event.toResponse()
+        val message = event.toMessage()
 
         kafkaTemplate
-            .send(KafkaTopic.TICKET_COMPLETION,"${response.key}", response.payload)
+            .send(KafkaTopic.TICKET_COMPLETION,"${message.key}", message.payload)
             .whenCompleteAsync { _, e ->
                 if (e == null){
-                    event.successPublish()
+                    event.successSent()
                     repo.save(event)
                 }
+                else
+                    log.error("{key: ${message.key}, payload: ${message.payload}}", e)
             }
     }
 }

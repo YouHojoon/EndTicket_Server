@@ -1,5 +1,6 @@
-package ac.kr.smu.endTicket
+package ac.kr.smu.endTicket.ticket
 
+import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endTicket.common.kafka.test.messageListener
 import ac.kr.smu.endTicket.common.redis.test.RedisTestConfig
@@ -8,12 +9,12 @@ import ac.kr.smu.endTicket.common.web.test.andReturn
 import ac.kr.smu.endTicket.common.web.test.expectBindingException
 import ac.kr.smu.endTicket.constant.HttpHeaderName
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
-import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endTicket.ticket.ui.controller.TicketController
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
+import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -231,15 +232,17 @@ class TicketIntegrationTest @Autowired constructor(
             .andExpect(MockMvcResultMatchers.jsonPath("swipeCount").value(ticket.maxSwipeCount.value))
             .andReturn<TicketResponse>()
 
-        val queue = LinkedBlockingQueue<TicketResponse>()
+        val queue = LinkedBlockingQueue<ConsumerRecord<String, TicketResponse>>()
 
         container = createKafkaContainer(broker, KafkaTopic.TICKET_COMPLETION)
         container.messageListener(broker){
-            queue.add(it.value())
+            queue.add(it)
         }
 
-        val messageResponse = queue.poll(500, TimeUnit.MILLISECONDS)
-        assertNotNull(messageResponse)
-        assertEquals(completeTicket,messageResponse)
+        val record = queue.poll(500, TimeUnit.MILLISECONDS)
+
+        assertNotNull(record)
+        assertEquals(USER_ID, record.key().toLong())
+        assertEquals(completeTicket, record.value())
     }
 }

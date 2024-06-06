@@ -3,16 +3,7 @@ package ac.kr.smu.endTicket.ticket.domain.model
 import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import io.swagger.v3.oas.annotations.media.Schema
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Index
-import jakarta.persistence.Table
-import jakarta.persistence.Transient
+import jakarta.persistence.*
 import java.time.LocalDateTime
 
 /**

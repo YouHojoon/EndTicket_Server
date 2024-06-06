@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 @Service
 class UserService{
     @GrpcClient("user")
-    private lateinit var userStub: UserServiceGrpc.UserServiceBlockingStub
+    private lateinit var userStub: ac.kr.smu.endTicket.protobuf.UserServiceGrpc.UserServiceBlockingStub
     private val log = LoggerFactory.getLogger(UserService::class.java)
 
     /**
@@ -28,7 +28,7 @@ class UserService{
     @CircuitBreaker(name = "find-userID", fallbackMethod = "fallbackFindUserID")
     fun findUserID(socialType: SocialType, socialUserNumber: String): Long{
         return userStub.findUserID(
-            FindUserIDRequest.newBuilder()
+            ac.kr.smu.endTicket.protobuf.FindUserIDRequest.newBuilder()
                 .setSocialType(ac.kr.smu.endTicket.protobuf.SocialType.valueOf(socialType.name))
                 .setSocialUserNumber(socialUserNumber)
                 .build()
