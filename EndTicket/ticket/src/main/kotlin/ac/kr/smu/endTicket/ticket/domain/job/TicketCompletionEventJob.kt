@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.ticket.domain.job
 
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
-import ac.kr.smu.endTicket.ticket.domain.service.TicketCompletionEventMessageService
+import ac.kr.smu.endTicket.ticket.service.TicketCompletionEventMessageService
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -30,7 +30,7 @@ class TicketCompletionEventJob(
 
         val elapsed = measureTimeMillis {
             repo
-                .findByPublishedIsFalseAndCreateAtBefore(LocalDateTime.now().minusMinutes(10))
+                .findByIsSentFalseAndAuditCreatedAtBefore(LocalDateTime.now().minusMinutes(10))
                 .forEach {
                     messageService.send(it)
                 }

@@ -5,7 +5,7 @@ package ac.kr.smu.endTicket.ticket.ui.response
  * @property key kafka 메시지의 key
  * @property payload kafka 메시지의 payload
  */
-data class TicketCompletionEventResponse(
+data class TicketCompletionEventMessage(
     val key: Long,
     val payload: TicketResponse
 )

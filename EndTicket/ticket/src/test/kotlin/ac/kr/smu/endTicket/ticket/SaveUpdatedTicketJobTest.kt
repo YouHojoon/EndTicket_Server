@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket
+package ac.kr.smu.endTicket.ticket
 
 import ac.kr.smu.endTicket.ticket.domain.job.SaveUpdatedTicketJob
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
