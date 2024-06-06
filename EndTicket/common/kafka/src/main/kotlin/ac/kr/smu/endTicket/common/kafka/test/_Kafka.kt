@@ -1,13 +1,18 @@
 package ac.kr.smu.endTicket.common.kafka.test
 
 import org.apache.kafka.clients.consumer.ConsumerRecord
+import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.common.serialization.StringDeserializer
+import org.apache.kafka.common.serialization.StringSerializer
+import org.apache.kafka.common.utils.Serializer
 import org.jetbrains.annotations.TestOnly
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
+import org.springframework.kafka.core.DefaultKafkaProducerFactory
 import org.springframework.kafka.listener.ContainerProperties
 import org.springframework.kafka.listener.KafkaMessageListenerContainer
 import org.springframework.kafka.listener.MessageListener
 import org.springframework.kafka.support.serializer.JsonDeserializer
+import org.springframework.kafka.support.serializer.JsonSerializer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.utils.ContainerTestUtils
 import org.springframework.kafka.test.utils.KafkaTestUtils
@@ -47,3 +52,8 @@ inline fun <reified V> KafkaMessageListenerContainer<String, V>.messageListener(
     ContainerTestUtils.waitForAssignment(this, broker.partitionsPerTopic)
 }
 
+@TestOnly
+fun<T> createProducer(broker: EmbeddedKafkaBroker): Producer<String, T>{
+    val properties = KafkaTestUtils.producerProps(broker)
+    return DefaultKafkaProducerFactory(properties, StringSerializer(), JsonSerializer<T>()).createProducer()
+}
