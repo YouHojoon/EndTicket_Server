@@ -1,15 +1,17 @@
 package ac.kr.smu.endTicket.futureMe.service
 
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
-import ac.kr.smu.endTicket.futureMe.domain.event.EventRepository
-import ac.kr.smu.endTicket.futureMe.domain.event.ImaginationCompletionEvent
-import ac.kr.smu.endTicket.futureMe.ui.response.ImaginationCompletionEventMessage
+import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
+import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
 import ac.kr.smu.endTicket.futureMe.ui.response.ImaginationCompletionEventResponse
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.kafka.support.SendResult
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
+import java.util.concurrent.CompletableFuture
 
 /**
  * 상상해보기 완료 이벤트의 메시지 발행을 담당하는 서비스
@@ -29,18 +31,43 @@ class ImaginationCompletionEventMessageService(
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun sendMessage(event: ImaginationCompletionEvent){
-        val message = event.toMessage()
-
         kafkaTemplate
-            .send(KafkaTopic.IMAGINATION_COMPLETION, message.key.toString(), message.payload)
+            .send(event)
             .whenCompleteAsync { _, e ->
                 if (e == null){
                     event.successSend()
                     repo.save(event)
                 }
                 else
-                    log.error("{key: ${message.key}, payload:${message.payload}}", e)
-
+                    log.error(event, e)
             }
+    }
+
+    /**
+     * 상상해보기 이벤트 완료 메시지들을 전송하는 메소드, 전송에 성공한 것들을 기록한다.
+     * @param events 전송할 이벤트들
+     */
+    fun sendMessages(events: Collection<ImaginationCompletionEvent>) {
+        events
+            .forEach {
+                kafkaTemplate.send(it)
+                    .whenCompleteAsync { _, e ->
+                        if (e == null) {
+                            it.successSend()
+                        } else
+                            log.error(it, e)
+
+                    }
+            }
+    }
+
+    private fun Logger.error(event: ImaginationCompletionEvent, e:Throwable){
+        val message = event.toMessage()
+        error("{key: ${message.key}, payload:${message.payload}}", e)
+    }
+    private fun KafkaTemplate<String, ImaginationCompletionEventResponse>.send(event: ImaginationCompletionEvent): CompletableFuture<SendResult<String, ImaginationCompletionEventResponse>> {
+        val message = event.toMessage()
+
+        return send(KafkaTopic.IMAGINATION_COMPLETION, message.key.toString(), message.payload)
     }
 }

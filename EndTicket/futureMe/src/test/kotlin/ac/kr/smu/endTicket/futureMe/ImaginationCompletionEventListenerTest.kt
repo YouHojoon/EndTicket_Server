@@ -3,13 +3,12 @@ package ac.kr.smu.endTicket.futureMe
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endTicket.common.kafka.test.messageListener
-import ac.kr.smu.endTicket.futureMe.domain.event.EventRepository
-import ac.kr.smu.endTicket.futureMe.domain.event.ImaginationCompletionEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
+import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.listener.ImaginationCompletionEventListener
 import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService
 import ac.kr.smu.endTicket.futureMe.service.ImaginationCompletionEventMessageService
-import ac.kr.smu.endTicket.futureMe.ui.response.ImaginationCompletionEventMessage
 import ac.kr.smu.endTicket.futureMe.ui.response.ImaginationCompletionEventResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.DisplayName
@@ -25,7 +24,6 @@ import org.springframework.kafka.test.context.EmbeddedKafka
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 @SpringBootTest(
     classes = [

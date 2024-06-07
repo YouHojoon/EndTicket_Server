@@ -1,15 +1,14 @@
 package ac.kr.smu.endTicket.futureMe
 
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
-import ac.kr.smu.endTicket.futureMe.domain.event.EventRepository
-import ac.kr.smu.endTicket.futureMe.domain.event.TicketCompletionEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
+import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
 import ac.kr.smu.endTicket.futureMe.service.TicketCompletionEventConsumeService
 import ac.kr.smu.endTicket.futureMe.ui.response.TicketResponse
 import ac.kr.smu.endTicket.test.mockAny
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
-import org.apache.kafka.common.serialization.LongSerializer
 import org.apache.kafka.common.serialization.StringSerializer
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -23,7 +22,6 @@ import org.springframework.kafka.support.serializer.JsonSerializer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.kafka.test.utils.KafkaTestUtils
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 
 
 @SpringBootTest(classes = [
