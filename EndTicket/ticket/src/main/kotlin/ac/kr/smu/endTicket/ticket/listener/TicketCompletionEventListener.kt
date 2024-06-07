@@ -28,6 +28,6 @@ class TicketCompletionEventListener(
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun sendMessage(event: TicketCompletionEvent){
-        messageService.send(event)
+        messageService.sendMessage(event)
     }
 }

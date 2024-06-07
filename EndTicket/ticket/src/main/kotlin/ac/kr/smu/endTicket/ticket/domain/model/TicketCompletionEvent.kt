@@ -34,7 +34,7 @@ class TicketCompletionEvent(
      */
     fun toMessage(): TicketCompletionEventMessage = TicketCompletionEventMessage(ticket.userID, TicketResponse.from(ticket))
 
-    fun successSent(){
+    fun successSend(){
         isSent = true
     }
 }
