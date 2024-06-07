@@ -21,7 +21,6 @@ class ImaginationCompletionEventJob(
     private val messageService: ImaginationCompletionEventMessageService
 ) {
     private val log = LoggerFactory.getLogger(ImaginationCompletionEventMessageService::class.java)
-    
     /**
      * 미전송된 이벤트를 재전송하는 메소드, 전송이 완료된 이벤트는 전송 완료를 저장한다.
      */

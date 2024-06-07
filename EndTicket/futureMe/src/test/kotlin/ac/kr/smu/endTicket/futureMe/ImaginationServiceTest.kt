@@ -6,6 +6,7 @@ import ac.kr.smu.endTicket.futureMe.domain.imagination.repository.ImaginationRep
 import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService
 import ac.kr.smu.endTicket.futureMe.service.ImaginationService
 import ac.kr.smu.endTicket.futureMe.ui.request.ImaginationRequest
+import ac.kr.smu.endTicket.futureMe.ui.response.ImaginationResponse
 import ac.kr.smu.endTicket.test.mockAny
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -40,7 +41,7 @@ class ImaginationServiceTest(
     @Test
     @DisplayName("제한 개수 이상으로 상상해보기 생성 테스트")
     fun given_requestMoreThanImaginationLimit_when_createImagination_then_throwIllegalStateException(){
-        Mockito.`when`(repo.countByIdAndIsCompleteIsFalse(USER_ID))
+        Mockito.`when`(repo.countByUserIDAndIsCompleteIsFalse(USER_ID))
             .thenReturn(6)
 
         assertThrows<IllegalStateException> {  service.createImagination(request, USER_ID)}
@@ -109,7 +110,7 @@ class ImaginationServiceTest(
 
     @Test
     @DisplayName("소유자가 아닌 사용자의 상상해보기 완료 테스트")
-    fun given_usreWhoNotOwner__when_completeImagination_then_throwIllegalStateException(){
+    fun given_userWhoNotOwner__when_completeImagination_then_throwIllegalStateException(){
         val imagination = Imagination.from(request, USER_ID)
 
         Mockito.`when`(repo.findById(imagination.id))
@@ -117,6 +118,22 @@ class ImaginationServiceTest(
 
         assertThrows<IllegalStateException> {
             service.completeImagination(imagination.id, 2L)
+        }
+    }
+
+    @Test
+    @DisplayName("상상해보기 조회 테스트")
+    fun given_user_when_findImagination_then_return_imaginations(){
+        val imaginations = setOf(Imagination.from(request, USER_ID))
+
+        Mockito.`when`(repo.findByUserIDAndIsCompleteIsFalse(USER_ID))
+            .thenReturn(imaginations)
+
+        val result = service.findImaginations(USER_ID)
+        assertTrue(result.isNotEmpty())
+
+        for((lhs,rhs) in imaginations.zip(result)){
+            assertEquals(ImaginationResponse.from(lhs),rhs)
         }
     }
 }
