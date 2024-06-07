@@ -22,6 +22,7 @@ inline fun <reified T> ParameterizedTypeReference<T>.toJacksonTypeRef(): TypeRef
 
 /**
  * [MockMvcResultHandlers] 의 Body를 역직렬화해 반환하는 메소드
+ * @return 역직렬화한 결과
  */
 inline fun <reified T> ResultActions.andReturn(): T = ObjectMapper()
     .apply {
@@ -33,10 +34,22 @@ inline fun <reified T> ResultActions.andReturn(): T = ObjectMapper()
         typeReference<T>().toJacksonTypeRef()
     )
 
+/**
+ * 요청의 응답으로 [ExceptionResponse]을 예상하는 메소드
+ * @see ExceptionResponse
+ * @return ExceptionResponse를 예상하는 ResultActions
+ */
+@TestOnly
+fun ResultActions.expectExceptionResponse(): ResultActions{
+    return andExpect(MockMvcResultMatchers.jsonPath("code").isNumber)
+        .andExpect(MockMvcResultMatchers.jsonPath("message").isString)
+        .andExpect(MockMvcResultMatchers.jsonPath("detail").isString)
+}
 
 /**
  * 요청의 결과로 BindingException을 예상하는 메소드
  * @see BindExceptionResponse
+ * @return BindindException을 예상하는 ResultActions
  */
 @TestOnly
 fun ResultActions.expectBindingException(): ResultActions{
@@ -46,3 +59,4 @@ fun ResultActions.expectBindingException(): ResultActions{
         .andExpect(MockMvcResultMatchers.jsonPath("message").isString)
         .andExpect(MockMvcResultMatchers.jsonPath("detail").isString)
 }
+
