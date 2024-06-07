@@ -1,6 +1,7 @@
 package ac.kr.smu.endTicket.futureMe.futureMe
 
 import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
+import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.NotFoundFutureMeException
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
@@ -48,8 +49,6 @@ class FutureMeControllerTest @Autowired constructor(
 
         mvc.findFutureMe()
             .andExpect(MockMvcResultMatchers.status().isNotFound)
-            .andExpect(MockMvcResultMatchers.jsonPath("code").isNumber)
-            .andExpect(MockMvcResultMatchers.jsonPath("message").isString)
-            .andExpect(MockMvcResultMatchers.jsonPath("detail").isString)
+            .expectExceptionResponse()
     }
 }
