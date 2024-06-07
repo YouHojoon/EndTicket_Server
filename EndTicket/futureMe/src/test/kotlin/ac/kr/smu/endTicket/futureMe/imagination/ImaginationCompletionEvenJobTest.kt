@@ -1,25 +1,21 @@
-package ac.kr.smu.endTicket.futureMe
+package ac.kr.smu.endTicket.futureMe.imagination
 
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endTicket.common.kafka.test.messageListener
-import ac.kr.smu.endTicket.futureMe.domain.event.model.Event
 import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.job.ImaginationCompletionEventJob
 import ac.kr.smu.endTicket.futureMe.service.ImaginationCompletionEventMessageService
 import ac.kr.smu.endTicket.futureMe.ui.response.ImaginationCompletionEventResponse
-import ac.kr.smu.endTicket.futureMe.ui.response.TicketResponse
 import ac.kr.smu.endTicket.test.mockAny
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.listener.KafkaMessageListenerContainer

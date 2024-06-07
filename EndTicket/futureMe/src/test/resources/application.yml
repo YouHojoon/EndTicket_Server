@@ -1,3 +1,5 @@
+
+
 schedules:
   resend-imagination-completion-event:
     fixedDelay: 200 # 10분
@@ -33,3 +35,5 @@ spring:
 logging:
   level:
     org.hibernate.type.descriptor.sql : trace
+server:
+  port: 8084

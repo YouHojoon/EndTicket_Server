@@ -1,8 +1,8 @@
-package ac.kr.smu.endTicket.futureMe
+package ac.kr.smu.endTicket.futureMe.futureMe
 
-import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
 import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent
+import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito

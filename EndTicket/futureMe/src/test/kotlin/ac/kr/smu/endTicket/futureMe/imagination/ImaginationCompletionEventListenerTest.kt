@@ -1,10 +1,10 @@
-package ac.kr.smu.endTicket.futureMe
+package ac.kr.smu.endTicket.futureMe.imagination
 
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endTicket.common.kafka.test.messageListener
-import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.listener.ImaginationCompletionEventListener
 import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService

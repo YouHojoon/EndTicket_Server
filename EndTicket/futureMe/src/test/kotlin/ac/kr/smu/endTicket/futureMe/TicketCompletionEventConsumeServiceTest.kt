@@ -3,6 +3,7 @@ package ac.kr.smu.endTicket.futureMe
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent
+import ac.kr.smu.endTicket.futureMe.futureMe.USER_ID
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
 import ac.kr.smu.endTicket.futureMe.service.TicketCompletionEventConsumeService
 import ac.kr.smu.endTicket.futureMe.ui.response.TicketResponse

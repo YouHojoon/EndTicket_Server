@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.futureMe
+package ac.kr.smu.endTicket.futureMe.imagination
 
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.ui.request.ImaginationRequest

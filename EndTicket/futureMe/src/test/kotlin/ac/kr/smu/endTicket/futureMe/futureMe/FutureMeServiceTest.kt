@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.futureMe
+package ac.kr.smu.endTicket.futureMe.futureMe
 
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.NotFoundFutureMeException
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
@@ -79,5 +79,24 @@ class FutureMeServiceTest(
             .thenReturn(Optional.empty())
 
         assertThrows<NotFoundFutureMeException> {  service.changeCharacter(type, USER_ID)}
+    }
+
+    @Test
+    @DisplayName("미래의 나 조회 테스트")
+    fun given_user_when_findFutureMe_then_return_futureMe(){
+        val futureMe = FutureMe( Character.Type.VEGA, USER_ID)
+        Mockito.`when`(repo.findById(USER_ID))
+            .thenReturn(Optional.of(futureMe))
+
+        assertEquals(futureMe, service.findFutureMe(USER_ID))
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 미래의 나 조회 테스트")
+    fun given_userHasNotFutureMe_when_findFutureMe_then_throwNotFoundFutureMeException(){
+        Mockito.`when`(repo.findById(USER_ID))
+            .thenReturn(Optional.empty())
+
+        assertThrows<NotFoundFutureMeException> {  service.findFutureMe(USER_ID)}
     }
 }

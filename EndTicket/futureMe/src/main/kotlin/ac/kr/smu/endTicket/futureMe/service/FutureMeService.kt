@@ -59,11 +59,20 @@ class FutureMeService(
     /**
      * 각 이벤트에 해당되는 경헝치를 획득하는 메소드
      * @param event 발생된 이벤트
-     * @throws 상상해보기가 존재하지 않을 시
+     * @throws NotFoundFutureMeException 상상해보기가 존재하지 않을 시
      */
     @Transactional
     fun gainExperiencePoints(event: Event){
         val futureMe = repo.findById(event.userID).getOrNull() ?: throw NotFoundFutureMeException(event.userID)
         futureMe.character.gainExperiencePoints(event)
     }
+
+    /**
+     * 미래의 나 조회
+     * @param userID 사용자 ID
+     * @return 조회된 미래의 나
+     * @throws NotFoundFutureMeException 미래의 나가 존재하지 않을 시
+     */
+    @Transactional(readOnly = true)
+    fun findFutureMe(userID: Long): FutureMe = repo.findById(userID).getOrNull() ?: throw NotFoundFutureMeException(userID)
 }
