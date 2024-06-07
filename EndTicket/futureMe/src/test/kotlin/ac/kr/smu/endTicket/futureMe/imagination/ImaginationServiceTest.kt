@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.futureMe
+package ac.kr.smu.endTicket.futureMe.imagination
 
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotFoundImaginationException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
@@ -19,7 +19,6 @@ import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.jupiter.MockitoExtension
 import java.util.*
-import javax.swing.text.html.Option
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
