@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ImaginationRepository: JpaRepository<Imagination, Long>{
-    fun countById(long: Long): Int
+    fun countByIdAndIsCompleteIsFalse(long: Long): Int
 }
