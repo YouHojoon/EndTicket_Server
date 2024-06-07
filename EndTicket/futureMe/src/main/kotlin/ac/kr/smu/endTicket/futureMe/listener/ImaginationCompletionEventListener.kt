@@ -32,6 +32,7 @@ class ImaginationCompletionEventListener(
     /**
      * 이벤트 처리가 완료되면 이벤트의 메시지를 전송하는 메소드
      * 비동기로 동작한다.
+     * @param event 처리가 완료된 완료된 이벤트
      */
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)

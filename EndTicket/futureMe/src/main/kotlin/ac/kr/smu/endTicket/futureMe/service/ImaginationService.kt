@@ -27,7 +27,7 @@ class ImaginationService(
      */
     @Throws(IllegalStateException::class)
     fun createImagination(request: ImaginationRequest, userID: Long){
-        check (repo.countById(userID) < IMAGINATION_LIMIT){"$IMAGINATION_LIMIT 이상으로 상상해보기를 생성할 수 없습니다."}
+        check (repo.countByUserIDAndIsCompleteIsFalse(userID) < IMAGINATION_LIMIT){"$IMAGINATION_LIMIT 이상으로 상상해보기를 생성할 수 없습니다."}
         ImaginationResponse.from(repo.save(Imagination.from(request,userID)))
     }
 
@@ -48,9 +48,10 @@ class ImaginationService(
     }
 
     /**
-     * 상상해보기 완료를 수행하는 메소드, 완료를 성공하면 [ImaginationCompletionEvent]를 발행한다.
-     * @param id
-     * @throws IllegalStateException 상상해보기가 존재하지 않을 시
+     * 상상해보기 완료 메소드, 완료를 성공하면 [ImaginationCompletionEvent]를 발행한다.
+     * @param id 상상해보기 id
+     * @param userID 사용자 id
+     * @throws NotFoundImaginationException 상상해보기가 존재하지 않을 시
      */
     @Transactional
     fun completeImagination(id: Long, userID: Long){
@@ -59,4 +60,16 @@ class ImaginationService(
         imagination.complete(userID)
         futureMeEventService.eventPublish(ImaginationCompletionEvent(imagination))
     }
+
+    /**
+     * 상상해보기 조회 메소드
+     * @param userID 사용자 id
+     * @return 미완료된 상상해보기 반환
+     */
+
+    @Transactional(readOnly = true)
+    fun findImaginations(userID: Long): Set<ImaginationResponse> =
+        repo.findByUserIDAndIsCompleteIsFalse(userID)
+            .map { ImaginationResponse.from(it) }
+            .toSet()
 }

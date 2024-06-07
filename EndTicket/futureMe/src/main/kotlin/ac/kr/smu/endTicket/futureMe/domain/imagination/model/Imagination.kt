@@ -5,6 +5,7 @@ import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
 import ac.kr.smu.endTicket.futureMe.ui.request.ImaginationRequest
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
+import jakarta.validation.Constraint
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import kotlin.jvm.Transient
 
@@ -16,7 +17,11 @@ import kotlin.jvm.Transient
  * @property futureMe 연관되어 있는 미래의 나
  */
 @Entity
-@Table
+@Table(
+    indexes = [
+        Index(name = "idx_user_id", columnList = "user_id")
+    ]
+)
 @EntityListeners(AuditingEntityListener::class)
 class Imagination private constructor(
     behavior: String,
