@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 
 @SpringBootTest(
@@ -59,12 +60,12 @@ class TicketCompletionEventJobTest @Autowired constructor(
     @Test
     @DisplayName("전송 실패한 티켓 완료 이벤트 재전송 테스트")
     fun after_fixedDelay_then_runResendTicketCompletionEvent(){
-        val event = TicketCompletionEvent(Ticket.from(TICKET_REQUEST, USER_ID))
+        val events = setOf(TicketCompletionEvent(Ticket.from(TICKET_REQUEST, USER_ID)))
 
         Mockito.`when`(
                 repo.findByIsSentFalseAndAuditCreatedAtBefore(mockAny())
             ).thenReturn(
-                setOf(event)
+                events
             )
 
         val queue = LinkedBlockingQueue<ConsumerRecord<String, TicketResponse>>()
@@ -74,13 +75,18 @@ class TicketCompletionEventJobTest @Autowired constructor(
             queue.add(it)
         }
 
-        val record = queue.poll(500, TimeUnit.MILLISECONDS)
-        val message = event.toMessage()
+        Thread.sleep(500)
 
-        assertNotNull(record)
-        assertEquals(message.payload,record.value())
-        assertEquals(message.key,record.key().toLong())
 
+        assertTrue(queue.isNotEmpty())
+        for ((event, record) in events.zip(queue)){
+            val message = event.toMessage()
+
+            assertEquals(message.key, record.key().toLong())
+            assertEquals(message.payload, record.value())
+        }
+
+        Mockito.verify(repo, Mockito.atLeast(1)).saveAll(mockAny<Collection<TicketCompletionEvent>>())
         container.stop()
     }
 
