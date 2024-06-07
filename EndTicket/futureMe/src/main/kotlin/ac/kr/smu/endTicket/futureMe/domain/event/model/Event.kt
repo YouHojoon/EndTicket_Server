@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.futureMe.domain.event
+package ac.kr.smu.endTicket.futureMe.domain.event.model
 
 import ac.kr.smu.endTicket.common.jpa.Audit
 import jakarta.persistence.*

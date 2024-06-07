@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.futureMe.service
 
-import ac.kr.smu.endTicket.futureMe.domain.event.Event
+import ac.kr.smu.endTicket.futureMe.domain.event.model.Event
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.NotFoundFutureMeException
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe

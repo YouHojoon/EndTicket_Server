@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.futureMe.service
 
-import ac.kr.smu.endTicket.futureMe.domain.event.ImaginationCompletionEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotFoundImaginationException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.domain.imagination.repository.ImaginationRepository

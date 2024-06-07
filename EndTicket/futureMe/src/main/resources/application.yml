@@ -1,3 +1,7 @@
+schedules:
+  resend-imagination-completion-event:
+    fixedDelay: 600000 # 10분
+    initialDelay: 60000 # 1분
 spring:
   kafka:
     bootstrap-servers:

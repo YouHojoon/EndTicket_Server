@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.futureMe.domain.event
+package ac.kr.smu.endTicket.futureMe.domain.event.model
 
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.ui.response.ImaginationCompletionEventMessage
@@ -18,7 +18,7 @@ import java.time.LocalDateTime
 class ImaginationCompletionEvent(
     @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
     private val imagination: Imagination,
-) : Event(imagination.id, imagination.userID){
+) : Event(imagination.id, imagination.userID) {
 
     /**
      * 이벤트 메시지로 변환하는 메소드
@@ -38,12 +38,13 @@ class ImaginationCompletionEvent(
      * 이벤트의 메시지가 발행되었는지 나타내는 필드
      */
     @Column
-    private var isSent = false
+    var isSent = false
+        private set
 
     /**
      * 이벤트의 메시지 발행 완료 메소드
      */
-    fun successSend(){
+    fun successSend() {
         isSent = true
     }
 }

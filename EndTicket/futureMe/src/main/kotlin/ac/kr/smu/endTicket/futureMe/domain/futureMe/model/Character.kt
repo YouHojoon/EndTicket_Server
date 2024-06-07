@@ -1,8 +1,8 @@
 package ac.kr.smu.endTicket.futureMe.domain.futureMe.model
 
-import ac.kr.smu.endTicket.futureMe.domain.event.Event
-import ac.kr.smu.endTicket.futureMe.domain.event.ImaginationCompletionEvent
-import ac.kr.smu.endTicket.futureMe.domain.event.TicketCompletionEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.model.Event
+import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 import jakarta.persistence.EnumType

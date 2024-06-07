@@ -1,8 +1,8 @@
 package ac.kr.smu.endTicket.futureMe.service
 
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
-import ac.kr.smu.endTicket.futureMe.domain.event.EventRepository
-import ac.kr.smu.endTicket.futureMe.domain.event.TicketCompletionEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
+import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.futureMe.ui.response.TicketResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.LoggerFactory
