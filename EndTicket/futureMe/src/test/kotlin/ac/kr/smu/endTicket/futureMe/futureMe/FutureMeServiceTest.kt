@@ -5,7 +5,8 @@ import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.repository.FutureMeRepository
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
-import ac.kr.smu.endTicket.futureMe.ui.request.UpdateTitleOfFutureMeRequest
+import ac.kr.smu.endTicket.futureMe.ui.request.CreateFutureMeRequest
+import ac.kr.smu.endTicket.futureMe.ui.request.UpdateFutureMeTitleRequest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -37,12 +38,12 @@ class FutureMeServiceTest(
     @Test
     @DisplayName("제목 수정 테스트")
     fun given_updateTitleOfFutureMeRequest_when_updateTitle_then_returnUpdatedFutureMe(){
-        val futureMe = FutureMe(Character.Type.CHEESE, USER_ID)
+        val futureMe = FutureMe.from(CreateFutureMeRequest(Character.Type.CHEESE), USER_ID)
         val title = "테스트"
         Mockito.`when`(repo.findById(USER_ID))
             .thenReturn(Optional.of(futureMe))
 
-        val updated = service.updateTitle(UpdateTitleOfFutureMeRequest(title), USER_ID)
+        val updated = service.updateTitle(UpdateFutureMeTitleRequest(title), USER_ID)
 
         assertEquals(title, updated.title)
     }
@@ -54,13 +55,13 @@ class FutureMeServiceTest(
         Mockito.`when`(repo.findById(USER_ID))
             .thenReturn(Optional.empty())
 
-        assertThrows<NotFoundFutureMeException> { service.updateTitle(UpdateTitleOfFutureMeRequest(title), USER_ID) }
+        assertThrows<NotFoundFutureMeException> { service.updateTitle(UpdateFutureMeTitleRequest(title), USER_ID) }
     }
 
     @Test
     @DisplayName("캐릭터 수정 테스트")
     fun given_type_when_setCharacter_then_success(){
-        val futureMe = FutureMe(Character.Type.CHEESE, USER_ID)
+        val futureMe = FutureMe.from(CreateFutureMeRequest(Character.Type.CHEESE), USER_ID)
         val type = Character.Type.VEGA
 
         Mockito.`when`(repo.findById(USER_ID))
@@ -84,7 +85,7 @@ class FutureMeServiceTest(
     @Test
     @DisplayName("미래의 나 조회 테스트")
     fun given_user_when_findFutureMe_then_return_futureMe(){
-        val futureMe = FutureMe( Character.Type.VEGA, USER_ID)
+        val futureMe = FutureMe.from(CreateFutureMeRequest(Character.Type.CHEESE), USER_ID)
         Mockito.`when`(repo.findById(USER_ID))
             .thenReturn(Optional.of(futureMe))
 

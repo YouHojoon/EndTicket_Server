@@ -6,7 +6,7 @@ import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.repository.FutureMeRepository
 import ac.kr.smu.endTicket.futureMe.ui.request.CreateFutureMeRequest
-import ac.kr.smu.endTicket.futureMe.ui.request.UpdateTitleOfFutureMeRequest
+import ac.kr.smu.endTicket.futureMe.ui.request.UpdateFutureMeTitleRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import kotlin.jvm.optionals.getOrNull
@@ -23,7 +23,7 @@ class FutureMeService(
      * @return 생성된 미래의 나
      */
     @Transactional
-    fun createFutureMe(request: CreateFutureMeRequest, userID: Long) = repo.save(FutureMe(request.type,userID))
+    fun createFutureMe(request: CreateFutureMeRequest, userID: Long) = repo.save(FutureMe.from(request,userID))
 
     /**
      * 미래의 나의 제목을 수정하는 메소드
@@ -34,7 +34,7 @@ class FutureMeService(
      */
     @Transactional
     @Throws(NotFoundFutureMeException::class)
-    fun updateTitle(request: UpdateTitleOfFutureMeRequest, userID: Long): FutureMe{
+    fun updateTitle(request: UpdateFutureMeTitleRequest, userID: Long): FutureMe{
         val futureMe = repo.findById(userID).getOrNull() ?: throw NotFoundFutureMeException(userID)
 
         futureMe.updateTitle(request)

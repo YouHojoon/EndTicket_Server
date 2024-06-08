@@ -16,9 +16,11 @@ import org.springframework.core.io.ClassPathResource
  * @property type 캐릭터의 종류
  */
 @Embeddable
+@Schema(description = "캐릭터")
 class Character(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Schema(description = "캐릭터 종류", example = "VEGA")
     val type: Type
 ) {
     companion object{
@@ -27,10 +29,12 @@ class Character(
     }
 
     @Column
+    @Schema(description = "레벨", example = "1", minimum = "0", maximum = "$MAX_LEVEL")
     var level: Int = 1
         private set
 
     @Column
+    @Schema(description = "경험치", example = "100", minimum = "0", maximum = "$MAX_EXPERIENCE_POINTS")
     var experiencePoints: Int = 0
         private set
 
@@ -60,10 +64,14 @@ class Character(
             levelUpWhenLowerThanMaxLevel()
     }
 
+    /**
+     * 최대 레벨이 아니라면 레벨업한다.
+     * 최대 레벨이라면 경험치를 최대 경험치로 고정한다.
+     */
     private fun levelUpWhenLowerThanMaxLevel(){
         if (level < MAX_LEVEL){
             level++
-            experiencePoints = 0
+            experiencePoints -= MAX_EXPERIENCE_POINTS
         }
         else
             experiencePoints = 100
