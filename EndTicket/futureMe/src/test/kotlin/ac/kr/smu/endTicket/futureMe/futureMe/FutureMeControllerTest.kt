@@ -14,18 +14,21 @@ import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.web.context.WebApplicationContext
 
 @WebMvcTest(controllers = [FutureMeController::class])
 class FutureMeControllerTest @Autowired constructor(
     @MockBean
     private val service: FutureMeService,
-    private val controller: FutureMeController
+    private val controller: FutureMeController,
+    private val ctx: WebApplicationContext
 ) {
     private val mvc = MockMvcBuilders
-        .standaloneSetup(controller)
-        .setControllerAdvice(BindExceptionAdvice())
+        .webAppContextSetup(ctx)
         .build()
 
     @Test
@@ -50,5 +53,24 @@ class FutureMeControllerTest @Autowired constructor(
         mvc.findFutureMe()
             .andExpect(MockMvcResultMatchers.status().isNotFound)
             .expectExceptionResponse()
+    }
+
+    @Test
+    @DisplayName("캐릭터 이미지 조회 테스트")
+    fun given_type_when_findCharacterImage_then_responseCharacterImage(){
+        val type = Character.Type.CHEESE
+
+        mvc.findCharacterImage(type)
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.valueOf("image/svg+xml")))
+            .andExpect(MockMvcResultMatchers.content().bytes(type.imageResource.contentAsByteArray))
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 캐릭터 이미지 조회 테스트")
+    fun given_notExistType_when_findCharacterImage_then_expectStatusCode404(){
+        mvc.perform(
+            MockMvcRequestBuilders.get("$BASE_URL/future-me/characters/xxx")
+        ).andExpect(MockMvcResultMatchers.status().isNotFound)
     }
 }
