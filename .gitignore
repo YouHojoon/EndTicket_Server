@@ -8,7 +8,7 @@ application.yaml
 dump.rdb
 logs/
 nodes-**
-
+application.yml
 # Created by https://www.toptal.com/developers/gitignore/api/intellij,kotlin,macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij,kotlin,macos
 
@@ -185,3 +185,4 @@ Temporary Items
 *.icloud
 .gitsecret/keys/random_seed
 !*.secret
+EndTicket/futureMe/src/main/resources/application.yml
