@@ -3,6 +3,7 @@ package ac.kr.smu.endTicket.futureMe.domain.futureMe.model
 import ac.kr.smu.endTicket.futureMe.domain.event.model.Event
 import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
 import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 import jakarta.persistence.EnumType
@@ -36,6 +37,7 @@ class Character(
     /**
      * 캐릭터의 종류
      */
+    @Schema(description = "캐릭터의 종류")
     enum class Type{
         KIA, CHEESE, VEGA;
 

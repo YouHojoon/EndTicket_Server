@@ -73,4 +73,18 @@ class FutureMeControllerTest @Autowired constructor(
             MockMvcRequestBuilders.get("$BASE_URL/future-me/characters/xxx")
         ).andExpect(MockMvcResultMatchers.status().isNotFound)
     }
+
+    @Test
+    @DisplayName("미래의 나 생성 테스트")
+    fun given_type_when_createFutureMe_then_responseCreatedFutureMe(){
+        val type = Character.Type.CHEESE
+
+        Mockito.`when`(service.createFutureMe(type, USER_ID))
+            .thenReturn(FutureMe(type, USER_ID))
+
+        mvc
+            .createFutureMe(type)
+            .andExpect(MockMvcResultMatchers.status().isCreated)
+            .andExpect(MockMvcResultMatchers.jsonPath("character.type").value(type.name))
+    }
 }

@@ -1,6 +1,7 @@
 package ac.kr.smu.endTicket.futureMe.domain.futureMe.model
 
 import ac.kr.smu.endTicket.futureMe.ui.request.UpdateTitleOfFutureMeRequest
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 
 /**
@@ -12,6 +13,7 @@ import jakarta.persistence.*
 class FutureMe(
     type: Character.Type,
     @Id
+    @JsonIgnore
     val userID: Long
 ) {
     @Column(length = 13)

@@ -5,6 +5,7 @@ import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.NotFoundFutureMeEx
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.repository.FutureMeRepository
+import ac.kr.smu.endTicket.futureMe.ui.request.CreateFutureMeRequest
 import ac.kr.smu.endTicket.futureMe.ui.request.UpdateTitleOfFutureMeRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,12 +18,12 @@ class FutureMeService(
 
     /**
      * 미래의 나를 생성하는 메소드
+     * @param request 생성 요청
      * @param userID 생성을 요청하는 사용자
-     * @param type 캐릭터 종류
      * @return 생성된 미래의 나
      */
     @Transactional
-    fun createFutureMe( type: Character.Type, userID: Long,) = repo.save(FutureMe(type,userID))
+    fun createFutureMe(request: CreateFutureMeRequest, userID: Long) = repo.save(FutureMe(request.type,userID))
 
     /**
      * 미래의 나의 제목을 수정하는 메소드

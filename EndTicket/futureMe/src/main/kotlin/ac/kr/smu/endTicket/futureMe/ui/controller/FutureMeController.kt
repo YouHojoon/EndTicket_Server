@@ -5,6 +5,7 @@ import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.NotFoundFutureMeEx
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
+import ac.kr.smu.endTicket.futureMe.ui.request.CreateFutureMeRequest
 import ac.kr.smu.endTicket.response.ExceptionResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -23,6 +24,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -81,11 +84,46 @@ class FutureMeController(
             )
         ]
     )
-    fun findCharacterImage(@PathVariable("type") type: Character.Type) =
+    fun findCharacterImage(
+        @Parameter(
+            name = "캐릭터의 타입",
+            schema = Schema(implementation = Character.Type::class),
+            required = true
+        )
+        @PathVariable("type")
+        type: Character.Type
+    ) =
         ResponseEntity
             .ok()
             .contentType(MediaType.valueOf("image/svg+xml"))
             .body(type.imageResource)
+
+    @PostMapping
+    @Operation(description = "미래의 나 생성")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "201",
+                description = "생성 성공",
+                content = [
+                    Content(schema = Schema(implementation = FutureMe::class))
+                ]
+            )
+        ]
+    )
+    fun createFutureMe(
+        @Parameter(
+            name = "캐릭터의 타입",
+            schema = Schema(implementation = CreateFutureMeRequest::class),
+            required = true
+        )
+        @RequestBody
+        request: CreateFutureMeRequest,
+
+        @Parameter(hidden = true)
+        @RequestHeader(HttpHeaderName.USER_ID)
+        userID: Long
+    ) = ResponseEntity.status(HttpStatus.CREATED).body(service.createFutureMe(request,userID))
 
     @ExceptionHandler(NotFoundFutureMeException::class)
     fun handleNotFoundFutureMeException(e: NotFoundFutureMeException) =
