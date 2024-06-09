@@ -5,7 +5,7 @@ import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.NotFoundFutureMeEx
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.repository.FutureMeRepository
-import ac.kr.smu.endTicket.futureMe.ui.request.CreateFutureMeRequest
+import ac.kr.smu.endTicket.futureMe.ui.request.FutureMeCharacterRequest
 import ac.kr.smu.endTicket.futureMe.ui.request.UpdateFutureMeTitleRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -18,12 +18,12 @@ class FutureMeService(
 
     /**
      * 미래의 나를 생성하는 메소드
-     * @param request 생성 요청
+     * @param request 생성 요
      * @param userID 생성을 요청하는 사용자
      * @return 생성된 미래의 나
      */
     @Transactional
-    fun createFutureMe(request: CreateFutureMeRequest, userID: Long) = repo.save(FutureMe.from(request,userID))
+    fun createFutureMe(request: FutureMeCharacterRequest, userID: Long) = repo.save(FutureMe.from(request,userID))
 
     /**
      * 미래의 나의 제목을 수정하는 메소드
@@ -50,10 +50,10 @@ class FutureMeService(
      */
     @Transactional
     @Throws(NotFoundFutureMeException::class)
-    fun changeCharacter(type: Character.Type, userID: Long): FutureMe{
+    fun updateCharacter(request: FutureMeCharacterRequest, userID: Long): FutureMe{
         val futureMe = repo.findById(userID).getOrNull() ?: throw NotFoundFutureMeException(userID)
 
-        futureMe.setCharacter(type, userID)
+        futureMe.updateCharacter(request,userID)
         return futureMe
     }
 

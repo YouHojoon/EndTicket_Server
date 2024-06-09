@@ -1,13 +1,13 @@
 package ac.kr.smu.endTicket.futureMe.futureMe
 
-import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
+import ac.kr.smu.endTicket.common.web.test.expectBindingException
 import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.NotFoundFutureMeException
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
 import ac.kr.smu.endTicket.futureMe.ui.controller.FutureMeController
-import ac.kr.smu.endTicket.futureMe.ui.request.CreateFutureMeRequest
+import ac.kr.smu.endTicket.futureMe.ui.request.FutureMeCharacterRequest
 import ac.kr.smu.endTicket.futureMe.ui.request.UpdateFutureMeTitleRequest
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.DisplayName
@@ -36,7 +36,7 @@ class FutureMeControllerTest @Autowired constructor(
     @Test
     @DisplayName("미래의 나 조회 테스트")
     fun given_user_when_findFutureMe_then_responseFutureMe(){
-        val futureMe = FutureMe.from(CreateFutureMeRequest(Character.Type.CHEESE), USER_ID)
+        val futureMe = FutureMe.from(FutureMeCharacterRequest(Character.Type.CHEESE), USER_ID)
 
         Mockito.`when`(service.findFutureMe(USER_ID))
             .thenReturn(futureMe)
@@ -48,7 +48,7 @@ class FutureMeControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("존재하지 않는 미래의 나 조회 테스트")
-    fun given_userHasNotFutureMe_when_findFutureMe_then_expectStatusCode404(){
+    fun given_userHasNotFutureMe_when_findFutureMe_then_expectStatusCode404_and_responseExceptionResponse(){
         Mockito.`when`(service.findFutureMe(USER_ID))
             .thenAnswer { throw NotFoundFutureMeException(USER_ID) }
 
@@ -70,16 +70,17 @@ class FutureMeControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("존재하지 않는 캐릭터 이미지 조회 테스트")
-    fun given_notExistType_when_findCharacterImage_then_expectStatusCode404(){
+    fun given_notExistType_when_findCharacterImage_then_expectStatusCode404_and_responseExceptionResponse(){
         mvc.perform(
             MockMvcRequestBuilders.get("$BASE_URL/future-me/characters/xxx")
         ).andExpect(MockMvcResultMatchers.status().isNotFound)
+            .expectExceptionResponse()
     }
 
     @Test
     @DisplayName("미래의 나 생성 테스트")
     fun given_type_when_createFutureMe_then_responseCreatedFutureMe(){
-        val request = CreateFutureMeRequest(Character.Type.CHEESE)
+        val request = FutureMeCharacterRequest(Character.Type.CHEESE)
 
         Mockito.`when`(service.createFutureMe(request, USER_ID))
             .thenReturn(FutureMe.from(request, USER_ID))
@@ -94,7 +95,7 @@ class FutureMeControllerTest @Autowired constructor(
     @DisplayName("미래의 나 제목 등록/변경 테스트")
     fun given_request_when_updateTitle_then_responseUpdatedFutureMe(){
         val request = UpdateFutureMeTitleRequest("테스트")
-        val futureMe = FutureMe.from(CreateFutureMeRequest(Character.Type.CHEESE), USER_ID)
+        val futureMe = FutureMe.from(FutureMeCharacterRequest(Character.Type.CHEESE), USER_ID)
         futureMe.updateTitle(request)
 
         Mockito.`when`(service.updateTitle(request, USER_ID))
@@ -108,7 +109,7 @@ class FutureMeControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("미래의 나가 없는 사용자의 제목 등록/변경 테스트")
-    fun given_userHasNotFutureMe_when_updateTitle_then_expectStatusCode404(){
+    fun given_userHasNotFutureMe_when_updateTitle_then_expectStatusCode404_and_responseExceptionResponse(){
         val request = UpdateFutureMeTitleRequest("테스트")
 
         Mockito
@@ -117,6 +118,42 @@ class FutureMeControllerTest @Autowired constructor(
 
         mvc
             .updateTitle(request)
+            .andExpect(MockMvcResultMatchers.status().isNotFound)
+            .expectExceptionResponse()
+    }
+
+    @Test
+    @DisplayName("미래의 나 길이 초과된 제목으로 등록/변경 테스트")
+    fun given_requestWithExceedMaxLength_when_updateTitle_then_expectStatusCode400_and_responseBindingExceptionResponse(){
+        val request = UpdateFutureMeTitleRequest("미래의 나 길이 초과된 제목 테스트")
+
+        mvc.updateTitle(request)
+            .expectBindingException()
+    }
+    @Test
+    @DisplayName("미래의 나 캐릭터 변경")
+    fun given_request_when_updateCharacter_then_responseUpdatedFutureMe(){
+        val futureMe = FutureMe.from(FutureMeCharacterRequest(Character.Type.VEGA), USER_ID)
+        val request = FutureMeCharacterRequest(Character.Type.CHEESE)
+        futureMe.updateCharacter(request, USER_ID)
+
+        Mockito.`when`(service.updateCharacter(request, USER_ID))
+            .thenReturn(futureMe)
+
+        mvc.updateCharacter(request)
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("character.type").value(request.type.name))
+    }
+
+    @Test
+    @DisplayName("미래의 나가 없는 사용자의 캐릭터 변경 테스트")
+    fun given_userHasNotFutureMe_when_updateCharacter_then_expectStatusCode404_and_responseExceptionResponse(){
+        val request = FutureMeCharacterRequest(Character.Type.CHEESE)
+
+        Mockito.`when`(service.updateCharacter(request, USER_ID))
+            .thenAnswer { throw NotFoundFutureMeException(USER_ID) }
+
+        mvc.updateCharacter(request)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
             .expectExceptionResponse()
     }
