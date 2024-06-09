@@ -2,7 +2,7 @@ package ac.kr.smu.endTicket.futureMe.futureMe
 
 import ac.kr.smu.endTicket.constant.HttpHeaderName
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
-import ac.kr.smu.endTicket.futureMe.ui.request.CreateFutureMeRequest
+import ac.kr.smu.endTicket.futureMe.ui.request.FutureMeCharacterRequest
 import ac.kr.smu.endTicket.futureMe.ui.request.UpdateFutureMeTitleRequest
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.MediaType
@@ -23,7 +23,7 @@ fun MockMvc.findCharacterImage(type: Character.Type): ResultActions = perform(
         .get("$BASE_URL/characters/${type.name.lowercase()}")
 )
 
-fun MockMvc.createFutureMe(request: CreateFutureMeRequest): ResultActions = perform(
+fun MockMvc.createFutureMe(request: FutureMeCharacterRequest): ResultActions = perform(
     MockMvcRequestBuilders
         .post(BASE_URL)
         .header(HttpHeaderName.USER_ID, USER_ID)
@@ -35,7 +35,17 @@ fun MockMvc.createFutureMe(request: CreateFutureMeRequest): ResultActions = perf
 
 fun MockMvc.updateTitle(request:UpdateFutureMeTitleRequest): ResultActions = perform(
     MockMvcRequestBuilders
-        .put("$BASE_URL/title")
+        .patch("$BASE_URL/title")
+        .header(HttpHeaderName.USER_ID, USER_ID)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(
+            ObjectMapper().writeValueAsString(request)
+        )
+)
+
+fun MockMvc.updateCharacter(request: FutureMeCharacterRequest) = perform(
+    MockMvcRequestBuilders
+        .patch("$BASE_URL/character")
         .header(HttpHeaderName.USER_ID, USER_ID)
         .contentType(MediaType.APPLICATION_JSON)
         .content(
