@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.futureMe.futureMe
 
+import ac.kr.smu.endTicket.common.web.test.expectBindingException
 import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.NotFoundFutureMeException
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
@@ -120,6 +121,14 @@ class FutureMeControllerTest @Autowired constructor(
             .expectExceptionResponse()
     }
 
+    @Test
+    @DisplayName("미래의 나 길이 초과된 제목으로 등록/변경 테스트")
+    fun given_requestWithExceedMaxLength_when_updateTitle_then_expectStatusCode400_and_responseBindingExceptionResponse(){
+        val request = UpdateFutureMeTitleRequest("미래의 나 길이 초과된 제목 테스트")
+
+        mvc.updateTitle(request)
+            .expectBindingException()
+    }
     @Test
     @DisplayName("미래의 나 캐릭터 변경")
     fun given_request_when_updateCharacter_then_responseUpdatedFutureMe(){
