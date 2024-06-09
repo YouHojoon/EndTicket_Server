@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.futureMe.imagination
 
+import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.service.ImaginationService
 import ac.kr.smu.endTicket.futureMe.ui.controller.ImaginationController
@@ -42,5 +43,30 @@ class ImaginationControllerTest @Autowired constructor(
         mvc.findImaginations()
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(mapOf("imaginations" to imaginations))))
+    }
+
+    @Test
+    @DisplayName("상상해보기 생성 테스트")
+    fun given_request_when_createImagination_then_responseCreatedImagination(){
+        val imagination = ImaginationResponse.from(Imagination.from(request, USER_ID))
+
+        Mockito.`when`(service.createImagination(request, USER_ID))
+            .thenReturn(imagination)
+
+        mvc
+            .createImagination(request)
+            .andExpect(MockMvcResultMatchers.status().isCreated)
+            .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(imagination)))
+    }
+
+    @Test
+    @DisplayName("최대 개수 이상으로 상상해보기 생성 테스트")
+    fun given_requestExceedImaginationLimit_when_createImagination_then_expectStatusCode409(){
+        Mockito.`when`(service.createImagination(request, USER_ID))
+            .thenAnswer { throw IllegalStateException("") }
+
+        mvc.createImagination(request)
+            .andExpect(MockMvcResultMatchers.status().isConflict)
+            .expectExceptionResponse()
     }
 }

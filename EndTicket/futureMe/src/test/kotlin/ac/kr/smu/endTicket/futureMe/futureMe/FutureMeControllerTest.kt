@@ -74,6 +74,7 @@ class FutureMeControllerTest @Autowired constructor(
         mvc.perform(
             MockMvcRequestBuilders.get("$BASE_URL/future-me/characters/xxx")
         ).andExpect(MockMvcResultMatchers.status().isNotFound)
+            .expectExceptionResponse()
     }
 
     @Test

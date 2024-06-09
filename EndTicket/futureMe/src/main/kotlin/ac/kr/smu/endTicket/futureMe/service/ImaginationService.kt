@@ -26,9 +26,9 @@ class ImaginationService(
      * @throws IllegalStateException 최대 개수 이상으로 생성 시도할 시
      */
     @Throws(IllegalStateException::class)
-    fun createImagination(request: ImaginationRequest, userID: Long){
+    fun createImagination(request: ImaginationRequest, userID: Long): ImaginationResponse{
         check (repo.countByUserIDAndIsCompleteIsFalse(userID) < IMAGINATION_LIMIT){"$IMAGINATION_LIMIT 이상으로 상상해보기를 생성할 수 없습니다."}
-        ImaginationResponse.from(repo.save(Imagination.from(request,userID)))
+        return ImaginationResponse.from(repo.save(Imagination.from(request,userID)))
     }
 
     /**
