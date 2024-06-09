@@ -37,3 +37,6 @@ logging:
     org.hibernate.type.descriptor.sql : trace
 server:
   port: 8084
+eureka:
+  client:
+    enabled: false

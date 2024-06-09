@@ -1,6 +1,7 @@
 package ac.kr.smu.endTicket.futureMe.imagination
 
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotFoundImaginationException
+import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotOwnerOfImaginationException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.domain.imagination.repository.ImaginationRepository
 import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService
@@ -63,14 +64,14 @@ class ImaginationServiceTest(
 
     @Test
     @DisplayName("소유자가 아닌 사용자의 상상해보기 테스트")
-    fun given_userWhoNotOwner_when_updateImagination_then_throwIllegalStateException(){
+    fun given_userWhoNotOwner_when_updateImagination_then_throwNotOwnerOfImaginationException(){
         val imagination = Imagination.from(request, USER_ID)
 
         Mockito.`when`(repo.findById(imagination.id))
             .thenReturn(Optional.of(imagination))
 
         val request = ImaginationRequest("xx", "zzz", Imagination.Color.GRAY2)
-        assertThrows<IllegalStateException> {  service.updateImagination(request, imagination.id, 2L)}
+        assertThrows<NotOwnerOfImaginationException> {  service.updateImagination(request, imagination.id, 2L)}
     }
 
     @Test
@@ -109,13 +110,13 @@ class ImaginationServiceTest(
 
     @Test
     @DisplayName("소유자가 아닌 사용자의 상상해보기 완료 테스트")
-    fun given_userWhoNotOwner__when_completeImagination_then_throwIllegalStateException(){
+    fun given_userWhoNotOwner__when_completeImagination_then_throwNotOwnerOfImaginationException(){
         val imagination = Imagination.from(request, USER_ID)
 
         Mockito.`when`(repo.findById(imagination.id))
             .thenReturn(Optional.of(imagination))
 
-        assertThrows<IllegalStateException> {
+        assertThrows<NotOwnerOfImaginationException> {
             service.completeImagination(imagination.id, 2L)
         }
     }

@@ -9,3 +9,16 @@ val request = ImaginationRequest(
     "t",
     Imagination.Color.BLUE1
 )
+
+
+
+val invalidBehaviorRequest = ImaginationRequest(
+    behavior = "new behavior",
+    target = "target",
+    color = Imagination.Color.GRAY2
+)
+val invalidTargetRequest = ImaginationRequest(
+    behavior = "behavior",
+    target = "new target with exceed",
+    color = Imagination.Color.GRAY2
+)

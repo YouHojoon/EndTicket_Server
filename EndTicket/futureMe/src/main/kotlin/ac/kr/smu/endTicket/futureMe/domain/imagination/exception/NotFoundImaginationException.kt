@@ -5,5 +5,5 @@ package ac.kr.smu.endTicket.futureMe.domain.imagination.exception
  * @property id 존재하지 않는 id
  */
 class NotFoundImaginationException(
-    private val id: Long
+    val id: Long
 ): RuntimeException("$id 의 상상해보기가 존재하지 않습니다.")

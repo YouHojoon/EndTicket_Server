@@ -2,6 +2,7 @@ package ac.kr.smu.endTicket.futureMe.domain.imagination.model
 
 import ac.kr.smu.endTicket.common.jpa.Audit
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
+import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotOwnerOfImaginationException
 import ac.kr.smu.endTicket.futureMe.ui.request.ImaginationRequest
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
@@ -101,12 +102,12 @@ class Imagination private constructor(
     /**
      * 소유권을 확인하는 메소드
      * @param userID 사용자 ID
-     * @throws IllegalStateException 사용자가 소유자가 아닐 시
+     * @throws NotOwnerOfImaginationException 사용자가 소유자가 아닐 시
      */
-    @Throws(IllegalStateException::class)
+    @Throws(NotOwnerOfImaginationException::class)
     fun checkOwnership(userID: Long){
         if (this.userID != userID)
-            throw IllegalStateException("소유자가 아닙니다.")
+            throw NotOwnerOfImaginationException(id, userID)
 
     }
 }

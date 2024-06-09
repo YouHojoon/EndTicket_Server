@@ -1,9 +1,12 @@
 package ac.kr.smu.endTicket.futureMe.imagination
 
+import ac.kr.smu.endTicket.common.web.test.expectBindingException
 import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
+import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotFoundImaginationException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.service.ImaginationService
 import ac.kr.smu.endTicket.futureMe.ui.controller.ImaginationController
+import ac.kr.smu.endTicket.futureMe.ui.request.ImaginationRequest
 import ac.kr.smu.endTicket.futureMe.ui.response.ImaginationResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.DisplayName
@@ -58,10 +61,18 @@ class ImaginationControllerTest @Autowired constructor(
             .andExpect(MockMvcResultMatchers.status().isCreated)
             .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(imagination)))
     }
+    @Test
+    @DisplayName("비정상적인 상상해보기 생성 테스트")
+    fun given_invalidRequest_when_createImagination_then_expectStatusCode400_and_responseBindExceptionResponse(){
+        mvc.createImagination(invalidBehaviorRequest)
+            .expectBindingException()
+        mvc.createImagination(invalidTargetRequest)
+            .expectBindingException()
+    }
 
     @Test
     @DisplayName("최대 개수 이상으로 상상해보기 생성 테스트")
-    fun given_requestExceedImaginationLimit_when_createImagination_then_expectStatusCode409(){
+    fun given_requestExceedImaginationLimit_when_createImagination_then_expectStatusCode409_and_responseExceptionResponse(){
         Mockito.`when`(service.createImagination(request, USER_ID))
             .thenAnswer { throw IllegalStateException("") }
 
@@ -69,4 +80,53 @@ class ImaginationControllerTest @Autowired constructor(
             .andExpect(MockMvcResultMatchers.status().isConflict)
             .expectExceptionResponse()
     }
+
+    @Test
+    @DisplayName("상상해보기 수정 테스트")
+    fun given_request_when_updateImagination_then_responseUpdatedImagination(){
+        val id = 1L
+        val request = ImaginationRequest(
+            behavior = "new behav",
+            target = "new target",
+            color = Imagination.Color.GRAY2
+        )
+        val response =  ImaginationResponse.from(Imagination.from(request, USER_ID))
+
+        Mockito.`when`(
+            service.updateImagination(request, id, USER_ID)
+        ).thenReturn(response)
+
+        mvc.updateImagination(request, id, USER_ID)
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(response)))
+
+        Mockito.verify(service, Mockito.times(1)).updateImagination(request,id, USER_ID)
+    }
+
+    @Test
+    @DisplayName("비정상적인 상상해보기 수정 테스트")
+    fun given_invalidRequest_when_updateImagination_then_expectStatusCode400_and_responseBindExceptionResponse(){
+        val id = 1L
+
+       mvc.updateImagination(invalidBehaviorRequest, id, USER_ID)
+           .expectBindingException()
+        mvc.updateImagination(invalidTargetRequest, id, USER_ID)
+            .expectBindingException()
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 상상해보기 수정 테스트")
+    fun given_notExistImagination_when_updateImagination_then_expectStatusCode404_and_responseExceptionResponse(){
+        val id = 1L
+
+        Mockito.`when`(
+            service.updateImagination(request, id, USER_ID)
+        )
+            .thenAnswer { throw  NotFoundImaginationException(id)}
+
+        mvc.updateImagination(request,id, USER_ID)
+            .andExpect(MockMvcResultMatchers.status().isNotFound)
+            .expectExceptionResponse()
+    }
+
 }

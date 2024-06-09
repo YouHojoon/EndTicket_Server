@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -37,6 +38,8 @@ import org.springframework.web.bind.annotation.RestController
 class FutureMeController(
     private val service: FutureMeService
 ) {
+    private val log = LoggerFactory.getLogger(FutureMeController::class.java)
+
     @GetMapping
     @Operation(description = "미래의 나 조회")
     @ApiResponses(
@@ -176,11 +179,15 @@ class FutureMeController(
     ) = ResponseEntity.ok(service.updateCharacter(request, userID))
 
     @ExceptionHandler(NotFoundFutureMeException::class)
-    fun handleNotFoundFutureMeException(e: NotFoundFutureMeException) =
-        ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+    fun handleNotFoundFutureMeException(e: NotFoundFutureMeException): ResponseEntity<ExceptionResponse>{
+        log.info("{userID: ${e.userID}}", e)
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
             ExceptionResponse(
-            code = 404,
-            message = "미래의 나 조회에 에러가 발생했습니다.",
-            detail = e.message
-        ))
+                code = 404,
+                message = "미래의 나 조회에 에러가 발생했습니다.",
+                detail = e.message
+            ))
+    }
+
 }

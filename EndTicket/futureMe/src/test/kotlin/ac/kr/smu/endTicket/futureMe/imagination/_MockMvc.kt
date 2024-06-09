@@ -23,3 +23,11 @@ fun MockMvc.createImagination(request: ImaginationRequest, userID: Long = USER_I
         .contentType(MediaType.APPLICATION_JSON)
         .content(ObjectMapper().writeValueAsString(request))
 )
+
+fun MockMvc.updateImagination(request: ImaginationRequest,id: Long ,userID: Long = USER_ID) = perform(
+    MockMvcRequestBuilders
+        .put("$BASE_URL/$id")
+        .header(HttpHeaderName.USER_ID, userID)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(ObjectMapper().writeValueAsString(request))
+)
