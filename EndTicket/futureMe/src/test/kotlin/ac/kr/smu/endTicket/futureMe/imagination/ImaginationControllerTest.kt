@@ -3,6 +3,7 @@ package ac.kr.smu.endTicket.futureMe.imagination
 import ac.kr.smu.endTicket.common.web.test.expectBindingException
 import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotFoundImaginationException
+import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotOwnerOfImaginationException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.service.ImaginationService
 import ac.kr.smu.endTicket.futureMe.ui.controller.ImaginationController
@@ -11,6 +12,8 @@ import ac.kr.smu.endTicket.futureMe.ui.response.ImaginationResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -19,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
+import java.util.*
 
 @WebMvcTest(
     controllers = [ImaginationController::class]
@@ -129,4 +133,48 @@ class ImaginationControllerTest @Autowired constructor(
             .expectExceptionResponse()
     }
 
+    @Test
+    @DisplayName("소유자가 아닌 사용자 상상해보기 수정 테스트")
+    fun given_userWhoNotOwner_when_updateImagination_then_expectStatusCode404_and_responseExceptionResponse(){
+        val id = 1L
+
+        Mockito.`when`(
+            service.updateImagination(request, id, USER_ID)
+        )
+            .thenAnswer { throw  NotOwnerOfImaginationException(id, USER_ID)}
+
+        mvc.updateImagination(request,id, USER_ID)
+            .andExpect(MockMvcResultMatchers.status().isForbidden)
+            .expectExceptionResponse()
+    }
+
+    @Test
+    @DisplayName("상상해보기 삭제 테스트")
+    fun given_id_when_deleteImagination_then_expectStatusCode204(){
+        mvc.deleteImagination(1L)
+            .andExpect(MockMvcResultMatchers.status().isNoContent)
+
+        Mockito.verify(service, Mockito.times(1)).deleteImagination(1L, USER_ID)
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 상상해보기 삭제 테스트")
+    fun given_notExistImagination_when_deleteImagination_then_expectStatusCode404_and_responseExceptionResponse(){
+        Mockito.`when`(service.deleteImagination(Mockito.anyLong(), Mockito.anyLong()))
+            .thenAnswer { throw NotFoundImaginationException(1L) }
+
+        mvc.deleteImagination(1L)
+            .andExpect(MockMvcResultMatchers.status().isNotFound)
+            .expectExceptionResponse()
+    }
+    @Test
+    @DisplayName("소유자가 아닌 사용자의 상상해보기 삭제 테스트")
+    fun given_userWhoNotOwner_when_deleteImagination_then_expectStatusCode403_and_responseExceptionResponse(){
+        Mockito.`when`(service.deleteImagination(Mockito.anyLong(), Mockito.anyLong()))
+            .thenAnswer { throw NotOwnerOfImaginationException(1L, USER_ID) }
+
+        mvc.deleteImagination(1L)
+            .andExpect(MockMvcResultMatchers.status().isForbidden)
+            .expectExceptionResponse()
+    }
 }

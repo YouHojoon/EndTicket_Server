@@ -23,6 +23,7 @@ import jakarta.validation.Valid
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -172,6 +173,41 @@ class ImaginationController(
         @Parameter(hidden = true)
         userID: Long
     ) = ResponseEntity.ok(service.updateImagination(request, id, userID))
+
+    @DeleteMapping("{id}")
+    @Operation(description = "상상해보기 삭제")
+    @ApiResponses(
+        ApiResponse(
+            responseCode = "204",
+            description = "삭제 성공"
+        ),
+        ApiResponse(
+            responseCode = "404",
+            description = "존재하지 않는 상상해보기",
+            content = [Content(schema = Schema(implementation = ExceptionResponse::class))]
+        ),
+        ApiResponse(
+            responseCode = "403",
+            description = "소유자가 아닌 사용자",
+            content = [Content(schema = Schema(implementation = ExceptionResponse::class))]
+        )
+    )
+    fun deleteImagination(
+        @PathVariable("id")
+        @Parameter(
+            description = "상상해보기 id",
+            example = "1",
+            required = true
+        )
+        id: Long,
+
+        @RequestHeader(HttpHeaderName.USER_ID)
+        @Parameter(hidden = true)
+        userID: Long
+    ): ResponseEntity<Void>{
+        service.deleteImagination(id,userID)
+        return ResponseEntity.noContent().build()
+    }
 
 
     @ExceptionHandler(NotFoundImaginationException::class)

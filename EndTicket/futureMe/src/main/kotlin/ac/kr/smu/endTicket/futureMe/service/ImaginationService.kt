@@ -72,4 +72,18 @@ class ImaginationService(
         repo.findByUserIDAndIsCompleteIsFalse(userID)
             .map { ImaginationResponse.from(it) }
             .toSet()
+
+    /**
+     * 상상해보기 삭제
+     * @param id 상상해보기 id
+     * @param userID 사용자 id
+     * @throws NotFoundImaginationException 상상해보기가 존재하지 않을 시
+     */
+    @Transactional
+    fun deleteImagination(id: Long, userID: Long){
+        val imagination = repo.findById(id).getOrNull() ?: throw NotFoundImaginationException(id)
+
+        imagination.checkOwnership(userID)
+        repo.delete(imagination)
+    }
 }
