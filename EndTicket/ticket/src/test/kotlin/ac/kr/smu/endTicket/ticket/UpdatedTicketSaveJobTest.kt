@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.ticket
 
-import ac.kr.smu.endTicket.ticket.domain.job.SaveUpdatedTicketJob
+import ac.kr.smu.endTicket.ticket.job.UpdatedTicketSaveJob
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -17,10 +17,10 @@ import org.springframework.scheduling.annotation.EnableScheduling
         "schedules.save-updated-ticket.initialDelay=250",
         "schedules.save-updated-ticket.fixedDelay=100"
     ],
-    classes = [SaveUpdatedTicketJob::class]
+    classes = [UpdatedTicketSaveJob::class]
 )
 @EnableScheduling
-class SaveUpdatedTicketJobTest @Autowired constructor(
+class UpdatedTicketSaveJobTest @Autowired constructor(
     @MockBean
     private val ops: ValueOperations<String, Any>,
     @MockBean

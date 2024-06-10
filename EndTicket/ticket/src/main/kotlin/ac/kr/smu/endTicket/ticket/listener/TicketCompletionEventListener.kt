@@ -2,11 +2,9 @@ package ac.kr.smu.endTicket.ticket.listener
 
 import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
-import ac.kr.smu.endTicket.ticket.service.TicketCompletionEventMessageService
+import ac.kr.smu.endTicket.ticket.infra.messaging.TicketCompletionEventMessageService
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
 

@@ -187,7 +187,7 @@ class Ticket private constructor(
      * @throws NotOwnerOfTicketException 소유자가 아닐 시
      */
     @Throws(NotOwnerOfTicketException::class)
-    private fun checkOwnership(userID: Long){
+    fun checkOwnership(userID: Long){
         if (userID != this.userID)
             throw NotOwnerOfTicketException(id,userID)
     }

@@ -4,11 +4,11 @@ import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endTicket.common.kafka.test.messageListener
 import ac.kr.smu.endTicket.test.mockAny
-import ac.kr.smu.endTicket.ticket.domain.job.TicketCompletionEventJob
+import ac.kr.smu.endTicket.ticket.job.TicketCompletionEventJob
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
-import ac.kr.smu.endTicket.ticket.service.TicketCompletionEventMessageService
+import ac.kr.smu.endTicket.ticket.infra.messaging.TicketCompletionEventMessageService
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.DisplayName
@@ -21,12 +21,9 @@ import org.springframework.kafka.listener.KafkaMessageListenerContainer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.scheduling.annotation.SchedulingConfiguration
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.TimeUnit
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 
