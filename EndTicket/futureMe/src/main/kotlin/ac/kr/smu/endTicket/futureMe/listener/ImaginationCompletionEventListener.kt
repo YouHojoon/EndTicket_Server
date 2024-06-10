@@ -2,9 +2,11 @@ package ac.kr.smu.endTicket.futureMe.listener
 
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
-import ac.kr.smu.endTicket.futureMe.service.ImaginationCompletionEventMessageService
+import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventMessageService
+import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
@@ -19,6 +21,7 @@ class ImaginationCompletionEventListener(
     val repo: EventRepository,
     val messageService: ImaginationCompletionEventMessageService
 ) {
+    private val log = LoggerFactory.getLogger(ImaginationCompletionEventListener::class.java)
     /**
      * 상상해보기 완료 이벤트가 발행되면 저장소에 저장하는 메소드
      * @param event 발행된 이벤트
@@ -30,13 +33,19 @@ class ImaginationCompletionEventListener(
     }
 
     /**
-     * 이벤트 처리가 완료되면 이벤트의 메시지를 전송하는 메소드
+     * 이벤트 처리가 완료되면 이벤트의 메시지를 전송하는 메소드, 메시지 전송에 성공하면 이를 기록하고 저장한다.
      * 비동기로 동작한다.
      * @param event 처리가 완료된 완료된 이벤트
      */
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun sendEvent(event: ImaginationCompletionEvent){
-        messageService.sendMessage(event)
+        messageService.sendMessage(event){_, e ->
+            if (e == null)
+                repo.save(event.also { it.successSend() })
+            else
+                log.error("{id: ${event.eventID}}", e)
+        }
     }
 }

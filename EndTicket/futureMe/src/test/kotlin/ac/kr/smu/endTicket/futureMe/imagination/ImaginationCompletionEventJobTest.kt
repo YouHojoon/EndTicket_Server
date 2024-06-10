@@ -7,8 +7,8 @@ import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEven
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.job.ImaginationCompletionEventJob
-import ac.kr.smu.endTicket.futureMe.service.ImaginationCompletionEventMessageService
-import ac.kr.smu.endTicket.futureMe.ui.response.ImaginationCompletionEventResponse
+import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventMessageService
+import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventResponse
 import ac.kr.smu.endTicket.test.mockAny
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.DisplayName
@@ -41,7 +41,7 @@ import kotlin.test.assertTrue
     ],
     ports = [9292]
 )
-class ImaginationCompletionEvenJobTest @Autowired constructor(
+class ImaginationCompletionEventJobTest @Autowired constructor(
     @MockBean
     private val repo: EventRepository,
     private val broker: EmbeddedKafkaBroker

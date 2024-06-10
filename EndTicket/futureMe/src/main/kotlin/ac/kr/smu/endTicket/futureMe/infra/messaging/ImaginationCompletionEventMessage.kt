@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.futureMe.ui.response
+package ac.kr.smu.endTicket.futureMe.infra.messaging
 
 /**
  * 상상해보기 완료 이벤트 메시지를 나타내는 클래스

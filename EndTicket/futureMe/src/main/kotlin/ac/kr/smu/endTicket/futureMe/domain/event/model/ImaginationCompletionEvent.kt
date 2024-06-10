@@ -1,8 +1,8 @@
 package ac.kr.smu.endTicket.futureMe.domain.event.model
 
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
-import ac.kr.smu.endTicket.futureMe.ui.response.ImaginationCompletionEventMessage
-import ac.kr.smu.endTicket.futureMe.ui.response.ImaginationCompletionEventResponse
+import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventMessage
+import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventResponse
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -22,11 +22,13 @@ class ImaginationCompletionEvent(
 
     /**
      * 이벤트 메시지로 변환하는 메소드
+     * @return 변환된 메시지
      */
     fun toMessage() = ImaginationCompletionEventMessage(
         key = imagination.userID,
         payload =
         ImaginationCompletionEventResponse(
+            id = imagination.id,
             behavior = imagination.behavior,
             target = imagination.target,
             color = imagination.color,

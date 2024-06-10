@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.futureMe.job
 
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
-import ac.kr.smu.endTicket.futureMe.service.ImaginationCompletionEventMessageService
+import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventMessageService
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
@@ -33,9 +33,17 @@ class ImaginationCompletionEventJob(
 
         val elapsed = measureTimeMillis {
             val events = repo.findNotSentEventBefore(LocalDateTime.now().minusMinutes(10))
+            val ids = mutableSetOf<Long>()
 
-            messageService.sendMessages(events)
-            repo.saveAll(events.filter { it.isSent })
+            messageService.sendMessages(events){sendResult, e ->
+                val id = sendResult.producerRecord.value().id
+
+                if (e == null)
+                    ids.add(id)
+                else
+                    log.error("{id: $id}",e)
+            }
+            repo.saveAll(events.filter { it.eventID in ids }.map { it.also { it.successSend() } })
         }
 
         log.info("상상해보기 이벤트 재전송 $elapsed ms 시간으로 완료")
