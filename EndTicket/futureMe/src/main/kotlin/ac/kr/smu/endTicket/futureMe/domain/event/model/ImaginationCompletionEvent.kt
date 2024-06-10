@@ -25,7 +25,7 @@ class ImaginationCompletionEvent(
      * @return 변환된 메시지
      */
     fun toMessage() = ImaginationCompletionEventMessage(
-        key = imagination.userID,
+        key = imagination.userID.toString(),
         payload =
         ImaginationCompletionEventResponse(
             id = imagination.id,
