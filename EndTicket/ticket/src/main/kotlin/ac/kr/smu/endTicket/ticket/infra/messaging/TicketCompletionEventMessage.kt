@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.ticket.infra.messaging
 
+import ac.kr.smu.endTicket.common.kafka.KafkaMessage
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 
 /**
@@ -7,7 +8,6 @@ import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
  * @property key kafka 메시지의 key
  * @property payload kafka 메시지의 payload
  */
-data class TicketCompletionEventMessage(
-    val key: Long,
-    val payload: TicketResponse
-)
+class TicketCompletionEventMessage(
+    key: String, payload: TicketResponse
+):KafkaMessage<String, TicketResponse>(key,payload)

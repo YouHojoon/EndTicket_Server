@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.common.kafka.test
 
+import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -24,14 +25,14 @@ import org.springframework.kafka.test.utils.KafkaTestUtils
  * @return 생성된 카프카 컨테이너
  */
 @TestOnly
-inline fun <reified V> createKafkaContainer(broker: EmbeddedKafkaBroker, topic:String): KafkaMessageListenerContainer<String, V> {
+inline fun <reified V> createKafkaContainer(broker: EmbeddedKafkaBroker, topic:KafkaTopic): KafkaMessageListenerContainer<String, V> {
     val config = KafkaTestUtils.consumerProps("test", "false", broker)
     val deserializer = JsonDeserializer<V>()
     deserializer.addTrustedPackages(V::class.java.packageName)
 
     val consumerFactory = DefaultKafkaConsumerFactory(config, StringDeserializer(), deserializer)
 
-    return KafkaMessageListenerContainer(consumerFactory, ContainerProperties(topic))
+    return KafkaMessageListenerContainer(consumerFactory, ContainerProperties(topic.topicName))
 }
 
 /**
