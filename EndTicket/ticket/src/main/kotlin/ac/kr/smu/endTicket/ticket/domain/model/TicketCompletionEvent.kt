@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.ticket.domain.model
 
 import ac.kr.smu.endTicket.common.jpa.Audit
-import ac.kr.smu.endTicket.ticket.ui.response.TicketCompletionEventMessage
+import ac.kr.smu.endTicket.ticket.infra.messaging.TicketCompletionEventMessage
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener

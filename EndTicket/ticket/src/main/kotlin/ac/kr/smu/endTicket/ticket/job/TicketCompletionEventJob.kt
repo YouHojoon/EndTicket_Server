@@ -1,11 +1,10 @@
-package ac.kr.smu.endTicket.ticket.domain.job
+package ac.kr.smu.endTicket.ticket.job
 
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
-import ac.kr.smu.endTicket.ticket.service.TicketCompletionEventMessageService
+import ac.kr.smu.endTicket.ticket.infra.messaging.TicketCompletionEventMessageService
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import kotlin.system.measureTimeMillis
 

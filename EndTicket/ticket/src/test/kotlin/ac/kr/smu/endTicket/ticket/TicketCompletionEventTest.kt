@@ -8,7 +8,7 @@ import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
 import ac.kr.smu.endTicket.ticket.listener.TicketCompletionEventListener
-import ac.kr.smu.endTicket.ticket.service.TicketCompletionEventMessageService
+import ac.kr.smu.endTicket.ticket.infra.messaging.TicketCompletionEventMessageService
 import ac.kr.smu.endTicket.ticket.service.TicketCompletionEventService
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -22,7 +22,6 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.listener.KafkaMessageListenerContainer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals

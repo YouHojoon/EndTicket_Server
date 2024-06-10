@@ -1,6 +1,8 @@
 package ac.kr.smu.endTicket.ticket
 
 import ac.kr.smu.endTicket.common.redis.annotation.EnableAutoRedisConfig
+import ac.kr.smu.endTicket.test.mockAny
+import ac.kr.smu.endTicket.ticket.domain.exception.CacheEvictionFailureException
 import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
 import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
@@ -66,7 +68,7 @@ class TicketServiceTest @Autowired constructor(
 
     @Test
     @DisplayName("티켓 생성 테스트")
-    fun given_ticketRequest_when_createTicket_then_createTicket_and_returnCreatedTicket(){
+    fun given_ticketRequest_when_createTicket_then_returnCreatedTicket(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
         Mockito.`when`(repo.save(ticket))
             .thenReturn(ticket)
@@ -84,7 +86,7 @@ class TicketServiceTest @Autowired constructor(
     }
     @Test
     @DisplayName("티켓 수정 테스트")
-    fun given_ticketRequest_when_updateTicket_then_updateTicket_and_returnUpdatedTicket(){
+    fun given_ticketRequest_when_updateTicket_then_returnUpdatedTicket(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
 
             Mockito.`when`(repo.findById(Mockito.anyLong()))
@@ -138,7 +140,7 @@ class TicketServiceTest @Autowired constructor(
 
     @Test
     @DisplayName("티켓 스와이프 테스트")
-    fun given_ID_when_swipeTicket_then_returnSwipedTicket(){
+    fun given_id_when_swipeTicket_then_returnSwipedTicket(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
         val beforeSwipeCount = ticket.swipeCount
 
@@ -169,7 +171,7 @@ class TicketServiceTest @Autowired constructor(
 
     @Test
     @DisplayName("스와이프 취소 테스트")
-    fun given_ID_when_cancelSwipe_then_returnSwipeCanceledTicket(){
+    fun given_id_when_cancelSwipe_then_returnSwipeCanceledTicket(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID).also { it.swipeAndCheckCompletion(it.userID) }
         val beforeSwipeCount = ticket.swipeCount
 
@@ -220,6 +222,23 @@ class TicketServiceTest @Autowired constructor(
     }
 
     @Test
+    @DisplayName("티켓 완료 시 캐시 삭제 실패 테스트")
+    fun given_cacheEvictionFail_when_completeTicket_then_throwCacheEvictionFailureException(){
+        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
+
+        Mockito.`when`(repo.findById(ticket.id)).thenReturn(Optional.of(ticket))
+        Mockito.`when`(redisTemplate.delete("$REDIS_KEY_PREFIX${ticket.id}"))
+            .thenReturn(false)
+        Mockito.`when`(em.merge(ticket)).thenReturn(ticket)
+
+        repeat(ticket.maxSwipeCount.value - 1){
+            service.swipeTicket(ticket.id, ticket.userID)
+        }
+
+        assertThrows<CacheEvictionFailureException> {  service.swipeTicket(ticket.id, ticket.userID)}
+    }
+
+    @Test
     @DisplayName("미완료된 티켓 조회")
     fun given_userID_when_findIncompleteTickets_then_returnIncompleteTickets(){
         val tickets = listOf(Ticket.from(TICKET_REQUEST, USER_ID))
@@ -229,14 +248,56 @@ class TicketServiceTest @Autowired constructor(
         assertEquals(tickets.map { TicketResponse.from(it) }, service.findIncompleteTicket(USER_ID))
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun <T> any(): T{
-        Mockito.any<T>()
-        return null as T
+    @Test
+    @DisplayName("티켓 삭제 테스트")
+    fun given_id_when_deleteTicket_then_success(){
+        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
+
+        Mockito.`when`(repo.findById(ticket.id))
+            .thenReturn(Optional.of(ticket))
+        Mockito.`when`(redisTemplate.delete("$REDIS_KEY_PREFIX${ticket.id}"))
+            .thenReturn(true)
+
+        service.deleteTicket(ticket.id, USER_ID)
+
+        Mockito.verify(repo, Mockito.times(1)).delete(ticket)
+        Mockito.verify(redisTemplate, Mockito.times(1)).delete("$REDIS_KEY_PREFIX${ticket.id}")
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 티켓 삭제 테스트")
+    fun given_notExistTicket_when_deleteTicket_then_throwNotFoundTicketException(){
+        Mockito.`when`(repo.findById(mockAny()))
+            .thenReturn(Optional.empty())
+
+        assertThrows<NotFoundTicketException> {  service.deleteTicket(1L, USER_ID)}
+    }
+
+    @Test
+    @DisplayName("소유자가 아닌 사용자의 티켓 삭제 테스트")
+    fun given_userWhoNotOwner_when_deleteTicket_then_throwNotOwnerOfTicketException(){
+        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
+
+        Mockito.`when`(repo.findById(ticket.id))
+            .thenReturn(Optional.of(ticket))
+
+        assertThrows<NotOwnerOfTicketException> {  service.deleteTicket(ticket.id, 2)}
+    }
+
+    @Test
+    @DisplayName("티켓 삭제시 캐시 삭제 실패 테스트")
+    fun given_cacheEvictionFail_when_deleteTicket_then_throwCacheEvictionFailureException(){
+        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
+        Mockito.`when`(repo.findById(ticket.id))
+            .thenReturn(Optional.of(ticket))
+        Mockito.`when`(redisTemplate.delete("$REDIS_KEY_PREFIX${ticket.id}"))
+            .thenReturn(false)
+
+        assertThrows<CacheEvictionFailureException> { service.deleteTicket(ticket.id, USER_ID) }
     }
 
     private fun verifyCompleteTicket(ticket: Ticket){
         Mockito.verify(redisTemplate, Mockito.times(1)).delete("$REDIS_KEY_PREFIX${ticket.id}")
-        Mockito.verify(eventService, Mockito.times(1)).eventPublish(any())
+        Mockito.verify(eventService, Mockito.times(1)).eventPublish(mockAny())
     }
 }

@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.ticket.service
+package ac.kr.smu.endTicket.ticket.infra.messaging
 
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
