@@ -25,14 +25,14 @@ import org.springframework.kafka.test.utils.KafkaTestUtils
  * @return 생성된 카프카 컨테이너
  */
 @TestOnly
-inline fun <reified V> createKafkaContainer(broker: EmbeddedKafkaBroker, topic:KafkaTopic): KafkaMessageListenerContainer<String, V> {
+inline fun <reified V> createKafkaContainer(broker: EmbeddedKafkaBroker, topic:String): KafkaMessageListenerContainer<String, V> {
     val config = KafkaTestUtils.consumerProps("test", "false", broker)
     val deserializer = JsonDeserializer<V>()
     deserializer.addTrustedPackages(V::class.java.packageName)
 
     val consumerFactory = DefaultKafkaConsumerFactory(config, StringDeserializer(), deserializer)
 
-    return KafkaMessageListenerContainer(consumerFactory, ContainerProperties(topic.topicName))
+    return KafkaMessageListenerContainer(consumerFactory, ContainerProperties(topic))
 }
 
 /**
@@ -53,6 +53,11 @@ inline fun <reified V> KafkaMessageListenerContainer<String, V>.messageListener(
     ContainerTestUtils.waitForAssignment(this, broker.partitionsPerTopic)
 }
 
+/**
+ * 카프카 프로듀서를 생성하는 메소드
+ * @param broker 테스트를 위한 카프카 브로커
+ * @return 생성된 카프카 프로듀서
+ */
 @TestOnly
 fun<T> createProducer(broker: EmbeddedKafkaBroker): Producer<String, T>{
     val properties = KafkaTestUtils.producerProps(broker)
