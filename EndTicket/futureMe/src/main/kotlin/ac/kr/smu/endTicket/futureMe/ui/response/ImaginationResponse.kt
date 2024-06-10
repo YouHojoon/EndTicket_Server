@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.media.Schema
  */
 @Schema(description = "상상해보기에 대한 응답 클래스")
 data class ImaginationResponse private constructor(
+    @Schema(description = "상상해보기의 id", example = "1")
+    val id: Long,
     @Schema(description = "행동", example = "운동하기")
     val behavior: String,
     @Schema(description = "목표", example = "체력도 늘고 할력도 되찾는 나의 모습")
@@ -23,6 +25,7 @@ data class ImaginationResponse private constructor(
          * 상상해보기로부터 응답을 만들어내는 메소드
          */
         fun from(imagination: Imagination) = ImaginationResponse(
+            id = imagination.id,
             behavior = imagination.behavior,
             target = imagination.target,
             color = imagination.color

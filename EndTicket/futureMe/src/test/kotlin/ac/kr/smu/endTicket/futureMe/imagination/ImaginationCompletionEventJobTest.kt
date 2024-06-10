@@ -41,7 +41,7 @@ import kotlin.test.assertTrue
     ],
     ports = [9292]
 )
-class ImaginationCompletionEvenJobTest @Autowired constructor(
+class ImaginationCompletionEventJobTest @Autowired constructor(
     @MockBean
     private val repo: EventRepository,
     private val broker: EmbeddedKafkaBroker

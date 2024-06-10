@@ -16,7 +16,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 @EntityListeners(AuditingEntityListener::class)
 sealed class Event(
     @Column(nullable = false, updatable = false)
-    private val eventID: Long,
+    val eventID: Long,
     @Column(nullable = false, updatable = false)
     val userID: Long
 ){
@@ -25,17 +25,8 @@ sealed class Event(
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0L
+    private val id: Long = 0L
 
     @Embedded
     val audit = Audit()
-//    @Column
-//    private var isCompleted = false
-//
-//    /**
-//     * 이벤트 처리를 완료하는 메소드
-//     */
-//    fun complete(){
-//        isCompleted = true
-//    }
 }

@@ -22,11 +22,13 @@ class ImaginationCompletionEvent(
 
     /**
      * 이벤트 메시지로 변환하는 메소드
+     * @return 변환된 메시지
      */
     fun toMessage() = ImaginationCompletionEventMessage(
         key = imagination.userID,
         payload =
         ImaginationCompletionEventResponse(
+            id = imagination.id,
             behavior = imagination.behavior,
             target = imagination.target,
             color = imagination.color,
