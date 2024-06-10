@@ -28,11 +28,20 @@ class TicketCompletionEventJob(
         log.info("티켓 완료 이벤트 재전송 시작")
 
         val elapsed = measureTimeMillis {
-            val events =repo
-                .findByIsSentFalseAndAuditCreatedAtBefore(LocalDateTime.now().minusMinutes(10))
+            val events = repo.findByIsSentFalseAndAuditCreatedAtBefore(LocalDateTime.now().minusMinutes(10))
+            val messages = events.map { it.toMessage() }
+            val ids = mutableSetOf<Long>()
 
-            messageService.sendMessages(events)
-            repo.saveAll(events.filter { it.isSent })
+            messageService.sendMessages(messages){record,e ->
+                val id = record.producerRecord.value().id
+
+                if (e == null)
+                    ids.add(id)
+                else
+                    log.error("{key: ${record.producerRecord.key()}}, payload: ${record.producerRecord.value()}", e)
+            }
+
+            repo.saveAll(events.filter { it.id in ids }.map { it.also { it.successSend() } })
         }
 
         log.info("티켓 완료 이벤트 재전송 $elapsed ms 시간으로 완료")

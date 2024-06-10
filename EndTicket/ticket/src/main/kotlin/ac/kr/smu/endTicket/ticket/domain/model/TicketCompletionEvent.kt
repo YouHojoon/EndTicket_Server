@@ -25,14 +25,14 @@ class TicketCompletionEvent(
     var isSent: Boolean = false
 
     @Id
-    private val id: Long = 0L
+    val id: Long = 0L
 
     @Embedded
     val audit = Audit()
     /**
      * 메시지를 전송하기 위한 응답으로 변환하는 메소드
      */
-    fun toMessage(): TicketCompletionEventMessage = TicketCompletionEventMessage(ticket.userID, TicketResponse.from(ticket))
+    fun toMessage(): TicketCompletionEventMessage = TicketCompletionEventMessage(ticket.userID.toString(), TicketResponse.from(ticket))
 
     fun successSend(){
         isSent = true

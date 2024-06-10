@@ -79,7 +79,7 @@ class TicketCompletionEventJobTest @Autowired constructor(
         for ((event, record) in events.zip(queue)){
             val message = event.toMessage()
 
-            assertEquals(message.key, record.key().toLong())
+            assertEquals(message.key, record.key())
             assertEquals(message.payload, record.value())
         }
 

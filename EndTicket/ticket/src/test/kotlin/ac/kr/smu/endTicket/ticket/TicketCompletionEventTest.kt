@@ -72,7 +72,7 @@ class TicketCompletionEventTest @Autowired constructor(
         Mockito.verify(repo, Mockito.times(2)).save(mockAny())
         assertNotNull(record)
         assertEquals(message.payload, record.value())
-        assertEquals(message.key, record.key().toLong())
+        assertEquals(message.key, record.key())
 
         container.stop()
     }
