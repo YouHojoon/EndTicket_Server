@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.futureMe.ui.response
+package ac.kr.smu.endTicket.futureMe.infra.messaging
 
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import java.time.LocalDateTime

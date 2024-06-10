@@ -27,7 +27,7 @@ spring:
         spring:
           json:
             trusted:
-              packages: "ac.kr.smu.endTicket.futureMe.ui.response"
+              packages: "ac.kr.smu.endTicket.futureMe.infra.messaging"
     listener:
       concurrency: 3
       ack-mode: manual_immediate

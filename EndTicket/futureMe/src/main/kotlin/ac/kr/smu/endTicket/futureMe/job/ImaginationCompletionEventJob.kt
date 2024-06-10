@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.futureMe.job
 
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
-import ac.kr.smu.endTicket.futureMe.service.ImaginationCompletionEventMessageService
+import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventMessageService
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled

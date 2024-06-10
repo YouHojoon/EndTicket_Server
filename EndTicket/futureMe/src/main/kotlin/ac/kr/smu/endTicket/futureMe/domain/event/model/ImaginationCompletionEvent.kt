@@ -1,8 +1,8 @@
 package ac.kr.smu.endTicket.futureMe.domain.event.model
 
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
-import ac.kr.smu.endTicket.futureMe.ui.response.ImaginationCompletionEventMessage
-import ac.kr.smu.endTicket.futureMe.ui.response.ImaginationCompletionEventResponse
+import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventMessage
+import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventResponse
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity

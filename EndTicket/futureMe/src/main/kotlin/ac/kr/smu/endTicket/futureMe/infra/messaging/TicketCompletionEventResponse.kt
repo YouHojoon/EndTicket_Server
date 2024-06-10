@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.futureMe.ui.response
+package ac.kr.smu.endTicket.futureMe.infra.messaging
 
 import io.swagger.v3.oas.annotations.media.Schema
 
@@ -7,6 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema
  * @property id 티켓의 ID
  */
 @Schema(description = "티켓에 대한 응답")
-data class TicketResponse(
+data class TicketCompletionEventResponse(
     val id: Long = 0L,
 )

@@ -6,7 +6,7 @@ import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.futureMe.futureMe.USER_ID
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
 import ac.kr.smu.endTicket.futureMe.service.TicketCompletionEventConsumeService
-import ac.kr.smu.endTicket.futureMe.ui.response.TicketResponse
+import ac.kr.smu.endTicket.futureMe.infra.messaging.TicketCompletionEventResponse
 import ac.kr.smu.endTicket.test.mockAny
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -49,21 +49,20 @@ class TicketCompletionEventConsumeServiceTest @Autowired constructor(
     @DisplayName("티켓 완료 이벤트 처리 테스트")
     fun given_ticketCompletionEvent_when_consume_then_gainExperiencePoints_and_saveEvent(){
         val producer = createProducer()
-        val ticketResponse = TicketResponse(1L)
-        val record = ProducerRecord(KafkaTopic.TICKET_COMPLETION, USER_ID.toString(), ticketResponse)
+        val eventResponse = TicketCompletionEventResponse(1L)
+        val record = ProducerRecord(KafkaTopic.TICKET_COMPLETION, USER_ID.toString(), eventResponse)
 
-        Mockito.`when`(repo.findByEventIDAndType(ticketResponse.id, "TicketCompletionEvent"))
+        Mockito.`when`(repo.findByEventIDAndType(eventResponse.id, "TicketCompletionEvent"))
             .thenReturn(null)
         producer.send(record)
         Thread.sleep(1000)
-
-
+        
         Mockito.verify(repo).save(mockAny<TicketCompletionEvent>())
         Mockito.verify(futureMeService).gainExperiencePoints(mockAny<TicketCompletionEvent>())
     }
 
-    private fun createProducer(): Producer<String, TicketResponse>{
+    private fun createProducer(): Producer<String, TicketCompletionEventResponse>{
         val properties = KafkaTestUtils.producerProps(broker)
-        return DefaultKafkaProducerFactory(properties, StringSerializer(), JsonSerializer<TicketResponse>()).createProducer()
+        return DefaultKafkaProducerFactory(properties, StringSerializer(), JsonSerializer<TicketCompletionEventResponse>()).createProducer()
     }
 }
