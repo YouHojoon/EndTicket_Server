@@ -34,14 +34,15 @@ class ImaginationCompletionEventJob(
         val elapsed = measureTimeMillis {
             val events = repo.findNotSentEventBefore(LocalDateTime.now().minusMinutes(10))
             val ids = mutableSetOf<Long>()
+            val messages = events.map { it.toMessage() }
 
-            messageService.sendMessages(events){sendResult, e ->
-                val id = sendResult.producerRecord.value().id
+            messageService.sendMessages(messages){record, e ->
+                val id = record.producerRecord.value().id
 
                 if (e == null)
                     ids.add(id)
                 else
-                    log.error("{id: $id}",e)
+                    log.error("{key: ${record.producerRecord.key()}, payload: ${record.producerRecord.value()}}",e)
             }
             repo.saveAll(events.filter { it.eventID in ids }.map { it.also { it.successSend() } })
         }

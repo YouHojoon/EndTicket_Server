@@ -70,7 +70,7 @@ class ImaginationCompletionEventJobTest @Autowired constructor(
         for ((event, record) in events.zip(queue)){
             val message = event.toMessage()
 
-            assertEquals(message.key, record.key().toLong())
+            assertEquals(message.key, record.key())
             assertEquals(message.payload.behavior, record.value().behavior)
             assertEquals(message.payload.target, record.value().target)
             assertEquals(message.payload.color, record.value().color)
