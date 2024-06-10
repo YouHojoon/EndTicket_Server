@@ -6,6 +6,6 @@ package ac.kr.smu.endTicket.common.kafka
  * @property payload 카프카 메시지의 페이로드
  */
 open class KafkaMessage<K:Any, V:Any>(
-    open val key: K,
-    open val payload: V
+    val key: K,
+    val payload: V
 )
