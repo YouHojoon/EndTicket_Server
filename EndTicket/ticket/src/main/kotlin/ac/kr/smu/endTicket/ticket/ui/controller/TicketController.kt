@@ -24,7 +24,7 @@ class TicketController(
     private val service: TicketService
 ) {
     private val log = LoggerFactory.getLogger(TicketController::class.java)
-    @CreateTicketResponse
+    @CreateTicketResponses
     @PostMapping
     fun createTicket(
         @Valid
@@ -52,7 +52,7 @@ class TicketController(
 
     }
 
-    @UpdateTicketResponse
+    @UpdateTicketResponses
     @PutMapping("/{id}")
     fun updateTicket(
         @Valid
@@ -68,7 +68,7 @@ class TicketController(
         userID: Long
     ): ResponseEntity<*> = ResponseEntity.ok(service.updateTicket(request, id, userID))
 
-    @SwipeTicketResponse
+    @SwipeTicketResponses
     @PatchMapping("/swipe/{id}")
     fun swipeTicket(
         @PathVariable("id")
@@ -81,7 +81,7 @@ class TicketController(
     ): ResponseEntity<*> = ResponseEntity.ok(service.swipeTicket(id,userID))
 
 
-    @CancelSwipeTicketResponse
+    @CancelSwipeTicketResponses
     @DeleteMapping("/swipe/{id}")
     fun cancelSwipeTicket(
         @Parameter(description = "티켓의 ID", example = "1", required = true)
@@ -93,7 +93,7 @@ class TicketController(
         userID: Long
     ): ResponseEntity<*> = ResponseEntity.ok(service.cancelSwipeTicket(id, userID))
 
-    @FindIncompleteTicketResponse
+    @FindIncompleteTicketResponses
     @GetMapping
     fun findIncompleteTicket(
         @Parameter(hidden = true)
@@ -101,7 +101,7 @@ class TicketController(
         userID: Long
     ): ResponseEntity<*> = ResponseEntity.ok(mapOf("tickets" to service.findIncompleteTicket(userID)))
 
-    @DeleteTicketResponse
+    @DeleteTicketResponses
     @DeleteMapping("{id}")
     fun deleteTicket(
         @Parameter(description = "티켓의 ID", example = "1", required = true)

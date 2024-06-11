@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.ticket.infra.swagger
 
+import ac.kr.smu.endTicket.response.BindExceptionResponse
 import ac.kr.smu.endTicket.response.ExceptionResponse
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import io.swagger.v3.oas.annotations.Operation
@@ -10,25 +11,30 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 
 @ApiResponses(
     ApiResponse(
-        description = "스와이프 성공",
+        description = "수정 성공",
         responseCode = "200",
-        content = [
-            Content(schema = Schema(implementation = TicketResponse::class))
-        ]
+        content = [Content(schema = Schema(implementation = TicketResponse::class))]
     ),
+
     ApiResponse(
-        description = "티켓 소유자가 아닌 사용자의 티켓 스와이프 요청",
+        description = "비정상적인 수정 요청",
+        responseCode = "400",
+        content = [Content(schema = Schema(implementation = BindExceptionResponse::class))]
+    ),
+
+    ApiResponse(
+        description = "티켓 소유자가 아닌 사용자의 티켓 수정 요청",
         responseCode = "403",
         content = [Content(schema = Schema(implementation = ExceptionResponse::class))]
     ),
 
     ApiResponse(
-        description = "존재하지 않는 티켓의 스와이프 요청",
+        description = "존재하지 않는 티켓의 수정 요청",
         responseCode = "404",
         content = [Content(schema = Schema(implementation = ExceptionResponse::class))]
     )
 )
-@Operation(summary = "티켓 스와이프", description = "티켓을 스와이프 합니다. 티켓이 완료일 시에는 완료 이벤트가 발생됩니다.")
+@Operation(summary = "티켓 수정")
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class SwipeTicketResponse
+annotation class UpdateTicketResponses
