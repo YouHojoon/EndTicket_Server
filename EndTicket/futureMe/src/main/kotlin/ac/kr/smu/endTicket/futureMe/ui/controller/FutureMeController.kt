@@ -3,17 +3,13 @@ package ac.kr.smu.endTicket.futureMe.ui.controller
 import ac.kr.smu.endTicket.constant.HttpHeaderName
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.NotFoundFutureMeException
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
-import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
+import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponse.futureMe.*
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
 import ac.kr.smu.endTicket.futureMe.ui.request.FutureMeCharacterRequest
 import ac.kr.smu.endTicket.futureMe.ui.request.UpdateFutureMeTitleRequest
 import ac.kr.smu.endTicket.response.ExceptionResponse
-import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
-import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.responses.ApiResponse
-import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -41,24 +37,7 @@ class FutureMeController(
     private val log = LoggerFactory.getLogger(FutureMeController::class.java)
 
     @GetMapping
-    @Operation(description = "미래의 나 조회")
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = "200",
-                description = "조회 성공",
-                content = [
-                    Content(schema = Schema(implementation = FutureMe::class))
-                ]),
-            ApiResponse(
-                responseCode = "404",
-                description = "미래의 나가 존재하지 않음",
-                content = [
-                    Content(schema = Schema(implementation = ExceptionResponse::class))
-                ]
-            )
-        ]
-    )
+    @FindFutureMeApiResponses
     fun findFutureMe(
         @Parameter(hidden = true)
         @RequestHeader(HttpHeaderName.USER_ID)
@@ -66,27 +45,7 @@ class FutureMeController(
     ) = ResponseEntity.ok().body(service.findFutureMe(userID))
 
     @GetMapping("characters/{type}")
-    @Operation(description = "캐릭터 이미지 조회")
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = "200",
-                description = "조회 성공",
-                content = [
-                Content(
-                    mediaType = "image/svg+xml",
-                    schema = Schema(type = "string", format = "binary")
-                )
-            ]),
-            ApiResponse(
-                responseCode = "404",
-                description = "존재하지 않는 캐릭터",
-                content = [
-                    Content(schema = Schema(implementation = ExceptionResponse::class))
-                ]
-            )
-        ]
-    )
+    @FindCharacterImageResponses
     fun findCharacterImage(
         @Parameter(
             name = "캐릭터의 타입",
@@ -102,18 +61,7 @@ class FutureMeController(
             .body(type.imageResource)
 
     @PostMapping
-    @Operation(description = "미래의 나 생성")
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = "201",
-                description = "생성 성공",
-                content = [
-                    Content(schema = Schema(implementation = FutureMe::class))
-                ]
-            )
-        ]
-    )
+    @CreateFutureMeApiResponses
     fun createFutureMe(
         @Parameter(
             name = "캐릭터의 타입",
@@ -129,25 +77,7 @@ class FutureMeController(
     ) = ResponseEntity.status(HttpStatus.CREATED).body(service.createFutureMe(request,userID))
 
     @PatchMapping("/title")
-    @Operation(description = "미래의 나 제목 등록/변경")
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = "200",
-                description = "미래의 나 제목 등록/변경 성공",
-                content = [
-                    Content(schema = Schema(implementation = FutureMe::class))
-                ]
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "미래의 나가 존재하지 않음",
-                content = [
-                    Content(schema = Schema(implementation = ExceptionResponse::class))
-                ]
-            )
-        ]
-    )
+    @UpdateTitleApiResponses
     fun updateTitle(
         @Parameter(
             description = "미래의 나 제목 등록/변경 요청",
@@ -164,7 +94,8 @@ class FutureMeController(
     ) = ResponseEntity.ok(service.updateTitle(request,userID))
 
     @PatchMapping("/character")
-    fun changeCharacter(
+    @UpdateCharacterApiResponses
+    fun updateCharacter(
         @Parameter(
             description = "미래의 나 캐릭터 변경 요청",
             required = true,

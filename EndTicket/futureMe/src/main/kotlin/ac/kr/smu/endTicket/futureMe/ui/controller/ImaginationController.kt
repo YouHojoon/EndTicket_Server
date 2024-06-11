@@ -3,20 +3,15 @@ package ac.kr.smu.endTicket.futureMe.ui.controller
 import ac.kr.smu.endTicket.constant.HttpHeaderName
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotFoundImaginationException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotOwnerOfImaginationException
-import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
+import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponse.imagination.CreateImaginationApiResponses
+import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponse.imagination.DeleteImaginationApiResponses
+import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponse.imagination.FindImaginationsApiResponses
+import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponse.imagination.UpdateImaginationApiResponses
 import ac.kr.smu.endTicket.futureMe.service.ImaginationService
 import ac.kr.smu.endTicket.futureMe.ui.request.ImaginationRequest
-import ac.kr.smu.endTicket.futureMe.ui.response.ImaginationResponse
-import ac.kr.smu.endTicket.response.BindExceptionResponse
 import ac.kr.smu.endTicket.response.ExceptionResponse
-import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
-import io.swagger.v3.oas.annotations.media.ArraySchema
-import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.media.SchemaProperty
-import io.swagger.v3.oas.annotations.responses.ApiResponse
-import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -44,25 +39,7 @@ class ImaginationController(
     private val log = LoggerFactory.getLogger(ImaginationController::class.java)
 
     @GetMapping
-    @Operation(description = "상상해보기 나 조회")
-    @ApiResponses(
-        ApiResponse(
-            responseCode = "200",
-            description = "조회 성공",
-            content = [
-                Content(
-                    schema =
-                    Schema(
-                        type = "object",
-                        requiredProperties = ["imaginations"]
-                    ),
-                    schemaProperties = [
-                        SchemaProperty(name = "imaginations", array = ArraySchema(items = Schema(implementation = ImaginationResponse::class)))
-                    ]
-                )
-            ]
-        )
-    )
+    @FindImaginationsApiResponses
     fun findImaginations(
         @RequestHeader(HttpHeaderName.USER_ID)
         @Parameter(hidden = true)
@@ -72,28 +49,7 @@ class ImaginationController(
     )
 
     @PostMapping
-    @Operation(description = "상상해보기 생성")
-    @ApiResponses(
-        ApiResponse(
-            responseCode = "201",
-            description = "생성 성공",
-            content = [
-                Content(schema = Schema(implementation = ImaginationResponse::class))
-            ]
-        ),
-        ApiResponse(
-            responseCode = "400",
-            description = "비정상적인 요청",
-            content = [Content(schema = Schema(implementation = BindExceptionResponse::class))]
-        ),
-        ApiResponse(
-            responseCode = "409",
-            description = "최대 개수 이상으로 생성 요청",
-            content = [
-                Content(schema = Schema(implementation = ExceptionResponse::class))
-            ]
-        )
-    )
+    @CreateImaginationApiResponses
     fun createImagination(
         @RequestBody
         @Parameter(
@@ -127,30 +83,7 @@ class ImaginationController(
         }
 
     @PutMapping("{id}")
-    @Operation(description = "상상해보기 수정")
-    @ApiResponses(
-        ApiResponse(
-            responseCode = "200",
-            description = "수정 성공",
-            content = [Content(schema = Schema(implementation = ImaginationResponse::class))]
-        ),
-        ApiResponse(
-            responseCode = "400",
-            description = "비정상적인 요청",
-            content = [Content(schema = Schema(implementation = BindExceptionResponse::class))]
-        ),
-        ApiResponse(
-            responseCode = "404",
-            description = "존재하지 않는 상상해보기",
-            content = [Content(schema = Schema(implementation = ExceptionResponse::class))]
-        ),
-        ApiResponse(
-            responseCode = "403",
-            description = "소유자가 아닌 사용자",
-            content = [Content(schema = Schema(implementation = ExceptionResponse::class))]
-        )
-    )
-
+    @UpdateImaginationApiResponses
     fun updateImagination(
         @PathVariable("id")
         @Parameter(
@@ -175,23 +108,7 @@ class ImaginationController(
     ) = ResponseEntity.ok(service.updateImagination(request, id, userID))
 
     @DeleteMapping("{id}")
-    @Operation(description = "상상해보기 삭제")
-    @ApiResponses(
-        ApiResponse(
-            responseCode = "204",
-            description = "삭제 성공"
-        ),
-        ApiResponse(
-            responseCode = "404",
-            description = "존재하지 않는 상상해보기",
-            content = [Content(schema = Schema(implementation = ExceptionResponse::class))]
-        ),
-        ApiResponse(
-            responseCode = "403",
-            description = "소유자가 아닌 사용자",
-            content = [Content(schema = Schema(implementation = ExceptionResponse::class))]
-        )
-    )
+    @DeleteImaginationApiResponses
     fun deleteImagination(
         @PathVariable("id")
         @Parameter(
