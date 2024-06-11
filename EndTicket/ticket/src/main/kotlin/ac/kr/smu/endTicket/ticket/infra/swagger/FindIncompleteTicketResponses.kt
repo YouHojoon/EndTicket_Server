@@ -27,4 +27,4 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 @Operation(summary = "미완료된 티켓 조회")
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class FindIncompleteTicketResponse
+annotation class FindIncompleteTicketResponses

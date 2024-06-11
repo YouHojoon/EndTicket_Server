@@ -23,4 +23,4 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
     )
 )
 @Operation(summary = "티켓 생성")
-annotation class CreateTicketResponse
+annotation class CreateTicketResponses
