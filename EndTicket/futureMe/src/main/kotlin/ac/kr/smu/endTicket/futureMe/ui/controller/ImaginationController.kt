@@ -3,10 +3,10 @@ package ac.kr.smu.endTicket.futureMe.ui.controller
 import ac.kr.smu.endTicket.constant.HttpHeaderName
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotFoundImaginationException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotOwnerOfImaginationException
-import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponse.imagination.CreateImaginationApiResponses
-import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponse.imagination.DeleteImaginationApiResponses
-import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponse.imagination.FindImaginationsApiResponses
-import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponse.imagination.UpdateImaginationApiResponses
+import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponses.imagination.CreateImaginationApiResponses
+import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponses.imagination.DeleteImaginationApiResponses
+import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponses.imagination.FindImaginationsApiResponses
+import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponses.imagination.UpdateImaginationApiResponses
 import ac.kr.smu.endTicket.futureMe.service.ImaginationService
 import ac.kr.smu.endTicket.futureMe.ui.request.ImaginationRequest
 import ac.kr.smu.endTicket.response.ExceptionResponse

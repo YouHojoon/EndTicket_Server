@@ -29,4 +29,7 @@ sealed class Event(
 
     @Embedded
     val audit = Audit()
+
+    @Column(insertable = false, updatable = false)
+    private val type = ""
 }

@@ -2,8 +2,9 @@ package ac.kr.smu.endTicket.futureMe.ui.controller
 
 import ac.kr.smu.endTicket.constant.HttpHeaderName
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.NotFoundFutureMeException
+import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.UnsupportedCharacterException
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
-import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponse.futureMe.*
+import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponses.futureMe.*
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
 import ac.kr.smu.endTicket.futureMe.ui.request.FutureMeCharacterRequest
 import ac.kr.smu.endTicket.futureMe.ui.request.UpdateFutureMeTitleRequest
@@ -55,10 +56,15 @@ class FutureMeController(
         @PathVariable("type")
         type: Character.Type
     ) =
-        ResponseEntity
-            .ok()
-            .contentType(MediaType.valueOf("image/svg+xml"))
-            .body(type.imageResource)
+        if (type == null)
+            ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ExceptionResponse(code = 404, message = "캐릭터 이미지 조회 중 에러가 발생했습니다.", detail = "존재하지 않는 캐릭터 입니다."))
+        else
+            ResponseEntity
+                .ok()
+                .contentType(MediaType.valueOf("image/svg+xml"))
+                .body(type.imageResource)
 
     @PostMapping
     @CreateFutureMeApiResponses
@@ -74,7 +80,7 @@ class FutureMeController(
         @Parameter(hidden = true)
         @RequestHeader(HttpHeaderName.USER_ID)
         userID: Long
-    ) = ResponseEntity.status(HttpStatus.CREATED).body(service.createFutureMe(request,userID))
+    ) = ResponseEntity.status(HttpStatus.CREATED).body(service.createFutureMe(request,userID)).also { println("?") }
 
     @PatchMapping("/title")
     @UpdateTitleApiResponses
@@ -111,12 +117,27 @@ class FutureMeController(
 
     @ExceptionHandler(NotFoundFutureMeException::class)
     fun handleNotFoundFutureMeException(e: NotFoundFutureMeException): ResponseEntity<ExceptionResponse>{
+        val status = HttpStatus.NOT_FOUND
         log.info("{userID: ${e.userID}}", e)
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+        return ResponseEntity.status(status).body(
             ExceptionResponse(
-                code = 404,
+                code = status.value(),
                 message = "미래의 나 조회에 에러가 발생했습니다.",
+                detail = e.message
+            ))
+    }
+
+    @ExceptionHandler(UnsupportedCharacterException::class)
+    fun handleMethodArgumentTypeMismatchException(e: UnsupportedCharacterException): ResponseEntity<ExceptionResponse>{
+        val status = HttpStatus.BAD_REQUEST
+        log.info("{input: ${e.input}}",e)
+
+        return ResponseEntity
+            .status(status)
+            .body(ExceptionResponse(
+                code = status.value(),
+                message = "캐릭터 조회 중 에러가 발생했습니다.",
                 detail = e.message
             ))
     }
