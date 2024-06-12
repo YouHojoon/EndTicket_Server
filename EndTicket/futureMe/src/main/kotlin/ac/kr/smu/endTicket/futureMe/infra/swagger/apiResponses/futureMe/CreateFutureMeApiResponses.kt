@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponse.futureMe
+package ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponses.futureMe
 
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
 import io.swagger.v3.oas.annotations.Operation

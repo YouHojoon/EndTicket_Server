@@ -1,5 +1,3 @@
-
-
 schedules:
   resend-imagination-completion-event:
     fixedDelay: 200 # 10분

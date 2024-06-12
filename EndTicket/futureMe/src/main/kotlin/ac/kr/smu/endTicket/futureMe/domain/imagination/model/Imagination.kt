@@ -28,7 +28,7 @@ class Imagination private constructor(
     behavior: String,
     target: String,
     color: Color,
-    @Column(updatable = false, nullable = false)
+    @Column(name = "user_id", updatable = false, nullable = false)
     val userID: Long
 ) {
     companion object{

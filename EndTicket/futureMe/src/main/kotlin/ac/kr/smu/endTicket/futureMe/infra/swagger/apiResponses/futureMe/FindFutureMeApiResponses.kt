@@ -1,5 +1,6 @@
-package ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponse.futureMe
+package ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponses.futureMe
 
+import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
 import ac.kr.smu.endTicket.response.ExceptionResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -7,21 +8,18 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 
-@Operation(description = "캐릭터 이미지 조회")
+@Operation(description = "미래의 나 조회")
 @ApiResponses(
     value = [
         ApiResponse(
             responseCode = "200",
             description = "조회 성공",
             content = [
-                Content(
-                    mediaType = "image/svg+xml",
-                    schema = Schema(type = "string", format = "binary")
-                )
+                Content(schema = Schema(implementation = FutureMe::class))
             ]),
         ApiResponse(
             responseCode = "404",
-            description = "존재하지 않는 캐릭터",
+            description = "미래의 나가 존재하지 않음",
             content = [
                 Content(schema = Schema(implementation = ExceptionResponse::class))
             ]
@@ -30,4 +28,4 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 )
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class FindCharacterImageResponses
+annotation class FindFutureMeApiResponses

@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponse.imagination
+package ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponses.imagination
 
 import ac.kr.smu.endTicket.response.ExceptionResponse
 import io.swagger.v3.oas.annotations.Operation
