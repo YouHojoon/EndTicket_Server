@@ -3,6 +3,7 @@ package ac.kr.smu.endTicket.futureMe.listener
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
 import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventMessageService
+import ac.kr.smu.endTicket.futureMe.service.FutureMeService
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
@@ -15,11 +16,13 @@ import org.springframework.transaction.event.TransactionalEventListener
  * 상상해보기 완료 이벤트를 처리하는 클래스
  * @property repo 이벤트를 저장하기 위한 저장소
  * @property messageService 메시지를 전송하기 위한 서비스
+ * @property futureMeService 상상해보기 완료의 경험치 상승을 위한 서비스
  */
 @Component
 class ImaginationCompletionEventListener(
-    val repo: EventRepository,
-    val messageService: ImaginationCompletionEventMessageService
+    private val repo: EventRepository,
+    private val messageService: ImaginationCompletionEventMessageService,
+    private val futureMeService: FutureMeService
 ) {
     private val log = LoggerFactory.getLogger(ImaginationCompletionEventListener::class.java)
     /**
@@ -29,6 +32,7 @@ class ImaginationCompletionEventListener(
     @Transactional
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     fun saveEvent(event: ImaginationCompletionEvent){
+        futureMeService.gainExperiencePoints(event)
         repo.save(event)
     }
 

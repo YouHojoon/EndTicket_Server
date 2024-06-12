@@ -5,7 +5,6 @@ import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.futureMe.futureMe.USER_ID
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
-import ac.kr.smu.endTicket.futureMe.service.TicketCompletionEventConsumeService
 import ac.kr.smu.endTicket.futureMe.infra.messaging.TicketCompletionEventResponse
 import ac.kr.smu.endTicket.test.mockAny
 import org.apache.kafka.clients.producer.Producer
@@ -26,7 +25,7 @@ import org.springframework.kafka.test.utils.KafkaTestUtils
 
 
 @SpringBootTest(classes = [
-    TicketCompletionEventConsumeService::class,
+    TicketCompletionEvent::class,
     KafkaAutoConfiguration::class
 ])
 @EmbeddedKafka(
@@ -57,8 +56,8 @@ class TicketCompletionEventConsumeServiceTest @Autowired constructor(
         producer.send(record)
         Thread.sleep(1000)
         
-        Mockito.verify(repo).save(mockAny<TicketCompletionEvent>())
-        Mockito.verify(futureMeService).gainExperiencePoints(mockAny<TicketCompletionEvent>())
+        Mockito.verify(repo).save(mockAny<ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent>())
+        Mockito.verify(futureMeService).gainExperiencePoints(mockAny<ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent>())
     }
 
     private fun createProducer(): Producer<String, TicketCompletionEventResponse>{

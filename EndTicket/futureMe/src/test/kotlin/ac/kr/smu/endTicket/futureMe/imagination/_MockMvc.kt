@@ -37,3 +37,8 @@ fun MockMvc.deleteImagination(id: Long, userID: Long = USER_ID) = perform(
     MockMvcRequestBuilders.delete("$BASE_URL/$id")
         .header(HttpHeaderName.USER_ID, userID)
 )
+
+fun MockMvc.completeImagination(id: Long, userID: Long = USER_ID) = perform(
+    MockMvcRequestBuilders.post("$BASE_URL/complete/$id")
+        .header(HttpHeaderName.USER_ID, userID)
+)

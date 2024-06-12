@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
 
 /**
- * 티켓 완료 이벤트를 처리하는 클래스
+ * 이벤트를 처리하는 클래스
  * @property repo 이벤트를 저장하기 위한 저장소
  * @property futureMeService 경험치 증가를 위한 미래의 나 서비스
  */
@@ -22,7 +22,7 @@ class TicketCompletionEventConsumeService(
     private val repo: EventRepository,
     private val futureMeService: FutureMeService
 ) {
-    private val log = LoggerFactory.getLogger(TicketCompletionEventConsumeService::class.java)
+    private val log = LoggerFactory.getLogger(TicketCompletionEvent::class.java)
 
     /**
      * 티켓 완료 이벤트를 받는 메소드,
