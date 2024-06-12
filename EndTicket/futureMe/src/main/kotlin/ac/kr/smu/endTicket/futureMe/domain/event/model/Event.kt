@@ -10,12 +10,16 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
  * @property userID 사용자의 ID
  */
 @Entity
-@Table
+@Table(
+    indexes = [
+        Index(name = "idx_event_id", columnList = "event_id")
+    ]
+)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type")
 @EntityListeners(AuditingEntityListener::class)
 sealed class Event(
-    @Column(nullable = false, updatable = false)
+    @Column(name = "event_id",nullable = false, updatable = false)
     val eventID: Long,
     @Column(nullable = false, updatable = false)
     val userID: Long

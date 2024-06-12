@@ -10,6 +10,7 @@ import ac.kr.smu.endTicket.futureMe.listener.ImaginationCompletionEventListener
 import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService
 import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventMessageService
 import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventResponse
+import ac.kr.smu.endTicket.futureMe.service.FutureMeService
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -43,6 +44,8 @@ import kotlin.test.assertEquals
 class ImaginationCompletionEventListenerTest @Autowired constructor(
     @MockBean
     private val repo: EventRepository,
+    @MockBean
+    private val futureMeService: FutureMeService,
 
     private val broker: EmbeddedKafkaBroker,
     private val eventService: FutureMeEventService
@@ -63,10 +66,13 @@ class ImaginationCompletionEventListenerTest @Autowired constructor(
         }
 
         eventService.eventPublish(event)
+
         val record = queue.poll(1000, TimeUnit.MILLISECONDS)
         val expectPayload = event.toMessage().payload
 
+        Mockito.verify(futureMeService, Mockito.times(1)).gainExperiencePoints(event)
         Mockito.verify(repo, Mockito.times(2)).save(event)
+
         assertEquals(expectPayload.behavior, record.value().behavior)
         assertEquals(expectPayload.target, record.value().target)
         assertEquals(expectPayload.color, record.value().color)

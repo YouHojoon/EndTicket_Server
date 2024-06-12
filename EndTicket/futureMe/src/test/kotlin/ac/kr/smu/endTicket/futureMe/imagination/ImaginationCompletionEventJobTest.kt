@@ -78,5 +78,6 @@ class ImaginationCompletionEventJobTest @Autowired constructor(
         }
 
         Mockito.verify(repo, Mockito.atLeast(1)).saveAll(mockAny<Collection<ImaginationCompletionEvent>>())
+        container.stop()
     }
 }

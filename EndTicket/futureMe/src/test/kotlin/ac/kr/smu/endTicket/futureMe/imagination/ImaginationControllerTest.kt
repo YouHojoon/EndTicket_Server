@@ -6,15 +6,18 @@ import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotFoundImaginationException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotOwnerOfImaginationException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
+import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService
 import ac.kr.smu.endTicket.futureMe.service.ImaginationService
 import ac.kr.smu.endTicket.futureMe.ui.controller.ImaginationController
 import ac.kr.smu.endTicket.futureMe.ui.request.ImaginationRequest
 import ac.kr.smu.endTicket.futureMe.ui.response.ImaginationResponse
+import ac.kr.smu.endTicket.test.mockAny
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import org.mockito.Mock
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -31,6 +34,8 @@ import java.util.*
 class ImaginationControllerTest @Autowired constructor(
     @MockBean
     private val service: ImaginationService,
+    @MockBean
+    private val eventService: FutureMeEventService,
     controller: ImaginationController
 ) {
     private val mvc: MockMvc = MockMvcBuilders.standaloneSetup(controller).setControllerAdvice(BindExceptionAdvice()).build()
@@ -172,6 +177,43 @@ class ImaginationControllerTest @Autowired constructor(
             .thenAnswer { throw NotOwnerOfImaginationException(1L, USER_ID) }
 
         mvc.deleteImagination(1L)
+            .andExpect(MockMvcResultMatchers.status().isForbidden)
+            .expectExceptionResponse()
+    }
+
+    @Test
+    @DisplayName("상상해보기 완료 테스트")
+    fun given_id_when_completeImagination_then_expectStatusCode204_and_publishImaginationCompletionEvent(){
+        Mockito.`when`(service.completeImagination(1L, USER_ID)).then { eventService.eventPublish(mockAny()) }
+
+        mvc.completeImagination(1L)
+            .andExpect(MockMvcResultMatchers.status().isNoContent)
+
+        Mockito.verify(service, Mockito.times(1)).completeImagination(1L, USER_ID)
+        Mockito.verify(eventService, Mockito.times(1)).eventPublish(mockAny())
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 상상해보기 완료 테스트")
+    fun given_notExistImagination_when_completeImagination_then_throwNotFoundImaginationException(){
+        val id = 1L
+        Mockito.`when`(service.completeImagination(id, USER_ID))
+            .thenAnswer { throw  NotFoundImaginationException(id) }
+
+        mvc.completeImagination(id)
+            .andExpect(MockMvcResultMatchers.status().isNotFound)
+            .expectExceptionResponse()
+    }
+
+    @Test
+    @DisplayName("소유자가 아닌 사용자의 상상해보기 완료 테스트")
+    fun given_userWhoNotOwner_when_completeImagination_then_throwNotOwnerOfImagination(){
+        val id = 1L
+        Mockito.`when`(service.completeImagination(id, USER_ID)).thenAnswer {
+            throw NotOwnerOfImaginationException(id, USER_ID)
+        }
+
+        mvc.completeImagination(id)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
             .expectExceptionResponse()
     }
