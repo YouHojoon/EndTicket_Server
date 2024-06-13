@@ -3,6 +3,7 @@ package ac.kr.smu.endTicket.futureMe.futureMe
 import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endTicket.common.web.test.expectBindingException
 import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
+import ac.kr.smu.endTicket.futureMe.domain.converter.CharacterTypeConverter
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.NotFoundFutureMeException
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
@@ -10,14 +11,19 @@ import ac.kr.smu.endTicket.futureMe.service.FutureMeService
 import ac.kr.smu.endTicket.futureMe.ui.controller.FutureMeController
 import ac.kr.smu.endTicket.futureMe.ui.request.FutureMeCharacterRequest
 import ac.kr.smu.endTicket.futureMe.ui.request.UpdateFutureMeTitleRequest
+import ac.kr.smu.endTicket.futureMe.ui.response.FutureMeResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.Mock
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing
+import org.springframework.format.support.FormattingConversionService
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
@@ -25,6 +31,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 
 @WebMvcTest(controllers = [FutureMeController::class])
+@MockBean(JpaMetamodelMappingContext::class)
 class FutureMeControllerTest @Autowired constructor(
     @MockBean
     private val service: FutureMeService,
@@ -33,6 +40,7 @@ class FutureMeControllerTest @Autowired constructor(
     private val mvc = MockMvcBuilders
         .standaloneSetup(controller)
         .setControllerAdvice(BindExceptionAdvice())
+        .setConversionService(FormattingConversionService().also { it.addConverter(CharacterTypeConverter()) })
         .build()
 
     @Test
@@ -41,7 +49,7 @@ class FutureMeControllerTest @Autowired constructor(
         val futureMe = FutureMe.from(FutureMeCharacterRequest(Character.Type.CHEESE), USER_ID)
 
         Mockito.`when`(service.findFutureMe(USER_ID))
-            .thenReturn(futureMe)
+            .thenReturn(FutureMeResponse.from(futureMe))
 
         mvc.findFutureMe()
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -74,7 +82,7 @@ class FutureMeControllerTest @Autowired constructor(
     @DisplayName("존재하지 않는 캐릭터 이미지 조회 테스트")
     fun given_notExistType_when_findCharacterImage_then_expectStatusCode404_and_responseExceptionResponse(){
         mvc.perform(
-            MockMvcRequestBuilders.get("$BASE_URL/future-me/characters/xxx")
+            MockMvcRequestBuilders.get("$BASE_URL/characters/xxx")
         ).andExpect(MockMvcResultMatchers.status().isBadRequest)
             .expectExceptionResponse()
     }
@@ -85,7 +93,7 @@ class FutureMeControllerTest @Autowired constructor(
         val request = FutureMeCharacterRequest(Character.Type.CHEESE)
 
         Mockito.`when`(service.createFutureMe(request, USER_ID))
-            .thenReturn(FutureMe.from(request, USER_ID))
+            .thenReturn(FutureMeResponse.from(FutureMe.from(request, USER_ID)))
 
         mvc
             .createFutureMe(request)
@@ -101,7 +109,7 @@ class FutureMeControllerTest @Autowired constructor(
         futureMe.updateTitle(request)
 
         Mockito.`when`(service.updateTitle(request, USER_ID))
-            .thenReturn(futureMe)
+            .thenReturn(FutureMeResponse.from(futureMe))
 
         mvc
             .updateTitle(request)
@@ -140,7 +148,7 @@ class FutureMeControllerTest @Autowired constructor(
         futureMe.updateCharacter(request, USER_ID)
 
         Mockito.`when`(service.updateCharacter(request, USER_ID))
-            .thenReturn(futureMe)
+            .thenReturn(FutureMeResponse.from(FutureMe.from(request, USER_ID)))
 
         mvc.updateCharacter(request)
             .andExpect(MockMvcResultMatchers.status().isOk)
