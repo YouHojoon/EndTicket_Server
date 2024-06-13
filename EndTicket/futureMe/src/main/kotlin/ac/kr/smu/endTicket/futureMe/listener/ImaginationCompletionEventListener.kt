@@ -46,11 +46,11 @@ class ImaginationCompletionEventListener(
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun sendEvent(event: ImaginationCompletionEvent){
         val message = event.toMessage()
-        messageService.sendMessage(message){record, e ->
+        messageService.sendMessage(message).whenCompleteAsync { result, e ->
             if (e == null)
                 repo.save(event.also { it.successSend() })
             else
-                log.error("{key: ${record.producerRecord.key()}, payload: ${record.producerRecord.value()}}", e)
+                log.error("key: ${message.key}, payload: ${message.payload}",e)
         }
     }
 }

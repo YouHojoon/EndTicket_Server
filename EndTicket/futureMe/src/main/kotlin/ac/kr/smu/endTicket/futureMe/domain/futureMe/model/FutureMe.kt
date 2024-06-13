@@ -1,10 +1,12 @@
 package ac.kr.smu.endTicket.futureMe.domain.futureMe.model
 
+import ac.kr.smu.endTicket.common.jpa.Audit
 import ac.kr.smu.endTicket.futureMe.ui.request.FutureMeCharacterRequest
 import ac.kr.smu.endTicket.futureMe.ui.request.UpdateFutureMeTitleRequest
 import com.fasterxml.jackson.annotation.JsonIgnore
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 
 /**
  * 미래의 나를 추상화한 객체
@@ -13,6 +15,7 @@ import jakarta.persistence.*
 @Entity
 @Table
 @Schema(description = "미래의 나")
+@EntityListeners(AuditingEntityListener::class)
 class FutureMe private constructor(
     type: Character.Type,
 
@@ -29,6 +32,8 @@ class FutureMe private constructor(
     var character: Character
         private set
 
+    @Embedded
+    val audit: Audit = Audit()
     companion object{
         /**
          * 생성 요청으로 부터 미래의 나를 생성하는 메소드

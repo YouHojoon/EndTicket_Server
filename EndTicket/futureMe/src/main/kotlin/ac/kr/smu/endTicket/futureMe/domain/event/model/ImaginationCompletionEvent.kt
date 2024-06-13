@@ -7,6 +7,8 @@ import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.MapsId
 import jakarta.persistence.OneToOne
 import java.time.LocalDateTime
 
@@ -17,6 +19,8 @@ import java.time.LocalDateTime
 @Entity
 class ImaginationCompletionEvent(
     @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
+    @JoinColumn(name = "event_id")
+    @MapsId("eventID")
     private val imagination: Imagination,
 ) : Event(imagination.id, imagination.userID) {
 
