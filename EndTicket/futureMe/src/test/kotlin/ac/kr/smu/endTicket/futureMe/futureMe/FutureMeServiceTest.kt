@@ -1,5 +1,8 @@
 package ac.kr.smu.endTicket.futureMe.futureMe
 
+import ac.kr.smu.endTicket.futureMe.domain.event.model.Event
+import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.NotFoundFutureMeException
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
@@ -7,6 +10,7 @@ import ac.kr.smu.endTicket.futureMe.domain.futureMe.repository.FutureMeRepositor
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
 import ac.kr.smu.endTicket.futureMe.ui.request.FutureMeCharacterRequest
 import ac.kr.smu.endTicket.futureMe.ui.request.UpdateFutureMeTitleRequest
+import ac.kr.smu.endTicket.test.mockAny
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -99,5 +103,39 @@ class FutureMeServiceTest(
             .thenReturn(Optional.empty())
 
         assertThrows<NotFoundFutureMeException> {  service.findFutureMe(USER_ID)}
+    }
+
+    @Test
+    @DisplayName("경험치 상승 테스트")
+    fun given_event_when_gainExperiencePoints_then_increaseExperiencePointsForEachEvent(){
+        val futureMe = FutureMe.from(FutureMeCharacterRequest(Character.Type.CHEESE), USER_ID)
+        var beforeExperiencePoints = futureMe.character.experiencePoints
+        val ticketCompletionEvent = Mockito.mock(TicketCompletionEvent::class.java)
+        val imaginationCompletionEvent = Mockito.mock(ImaginationCompletionEvent::class.java)
+
+        Mockito.`when`(repo.findById(USER_ID))
+            .thenReturn(Optional.of(futureMe))
+        Mockito.`when`(ticketCompletionEvent.userID).thenReturn(USER_ID)
+        Mockito.`when`(imaginationCompletionEvent.userID).thenReturn(USER_ID)
+
+        service.gainExperiencePoints(ticketCompletionEvent)
+        assertEquals(beforeExperiencePoints + 20,futureMe.character.experiencePoints)
+
+        beforeExperiencePoints = futureMe.character.experiencePoints
+        service.gainExperiencePoints(imaginationCompletionEvent)
+        assertEquals(beforeExperiencePoints + 10,futureMe.character.experiencePoints)
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 미래의 나 경험치 상승 테스트")
+    fun given_notExistFutureMe_when_gainExperiencePoints_then_throwNotFoundFutureMeException(){
+        assertThrows<NotFoundFutureMeException> { service.gainExperiencePoints(Mockito.mock(ImaginationCompletionEvent::class.java)) }
+    }
+
+    @Test
+    @DisplayName("이미 미래의 나가 존재할 때 미래의 나 생성 테스트")
+    fun given_requestWithAlreadyExistFutureMe_when_createFutureMe_then_throwIllegalStateException(){
+        Mockito.`when`(repo.existsById(USER_ID)).thenReturn(true)
+        assertThrows<IllegalStateException> { service.createFutureMe(FutureMeCharacterRequest(Character.Type.CHEESE), USER_ID) }
     }
 }

@@ -18,12 +18,12 @@ class FutureMeService(
 
     /**
      * 미래의 나를 생성하는 메소드
-     * @param request 생성 요
+     * @param request 생성 요청
      * @param userID 생성을 요청하는 사용자
      * @return 생성된 미래의 나
      */
     @Transactional
-    fun createFutureMe(request: FutureMeCharacterRequest, userID: Long) = repo.save(FutureMe.from(request,userID))
+    fun createFutureMe(request: FutureMeCharacterRequest, userID: Long) = if (repo.existsById(userID)) throw IllegalStateException("미래의 나가 이미 존재합니다.") else repo.save(FutureMe.from(request,userID))
 
     /**
      * 미래의 나의 제목을 수정하는 메소드

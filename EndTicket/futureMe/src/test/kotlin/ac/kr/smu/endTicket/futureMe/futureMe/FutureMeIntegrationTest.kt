@@ -15,6 +15,7 @@ import ac.kr.smu.endTicket.futureMe.ui.request.UpdateFutureMeTitleRequest
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
@@ -166,6 +167,16 @@ class FutureMeIntegrationTest @Autowired constructor(
 
         mvc.updateCharacter(request)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
+            .expectExceptionResponse()
+    }
+
+    @Test
+    @DisplayName("이미 미래의 나가 존재할 때 미래의 나 생성 테스트")
+    fun given_requestWithAlreadyExistFutureMe_when_createFutureMe_then_expectStatusCode409_and_responseExceptionResponse(){
+        val request = FutureMeCharacterRequest(Character.Type.CHEESE)
+        mvc.createFutureMe(request)
+        mvc.createFutureMe(request)
+            .andExpect(MockMvcResultMatchers.status().isConflict)
             .expectExceptionResponse()
     }
 }
