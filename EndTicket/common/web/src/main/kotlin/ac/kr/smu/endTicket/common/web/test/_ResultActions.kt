@@ -8,7 +8,7 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import java.lang.reflect.Type
-import ac.kr.smu.endTicket.response.BindExceptionResponse
+import ac.kr.smu.endTicket.common.web.response.BindExceptionResponse
 
 //참고 : https://techblog.woowahan.com/14874/
 inline fun <reified T> typeReference() = object: ParameterizedTypeReference<T>(){}

@@ -6,7 +6,7 @@ import org.springframework.validation.BindException
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
-import ac.kr.smu.endTicket.response.BindExceptionResponse
+import ac.kr.smu.endTicket.common.web.response.BindExceptionResponse
 
 /**
  * [BindException]을 공통적으로 처리하는 클래스
