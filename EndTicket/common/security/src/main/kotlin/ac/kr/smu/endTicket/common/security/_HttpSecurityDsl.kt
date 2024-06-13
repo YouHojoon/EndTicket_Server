@@ -1,5 +1,4 @@
 package ac.kr.smu.endTicket.common.security
-import ac.kr.smu.endTicket.response.ExceptionResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -42,10 +41,10 @@ fun HttpSecurityDsl.baseExceptionHandling(){
             response.characterEncoding = "UTF-8"
             response.writer.write(
                 ObjectMapper().writeValueAsString(
-                ExceptionResponse(
-                    code = HttpStatus.UNAUTHORIZED.value(),
-                    message = "인증에 실패했습니다.",
-                    detail = e.message
+                mapOf(
+                    "code" to HttpStatus.UNAUTHORIZED.value(),
+                    "message" to "인증에 실패했습니다.",
+                    "detail" to e.message
                 )
             ))
         }
