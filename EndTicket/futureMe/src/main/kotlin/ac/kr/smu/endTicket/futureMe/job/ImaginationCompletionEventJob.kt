@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
+import java.util.concurrent.CompletableFuture
 import kotlin.system.measureTimeMillis
 
 /**
@@ -33,23 +34,24 @@ class ImaginationCompletionEventJob(
 
         val elapsed = measureTimeMillis {
             val events = repo.findNotSentEventBefore(LocalDateTime.now().minusMinutes(10))
-            val ids = mutableSetOf<Long>()
             val messages = events.map { it.toMessage() }
+            val futures = messageService.sendMessages(messages).toTypedArray()
 
-            messageService.sendMessages(messages){record, e ->
-                val id = record.producerRecord.value().id
-                println(e)
-                if (e == null)
-                    ids.add(id)
-                else
-                    log.error("{key: ${record.producerRecord.key()}, payload: ${record.producerRecord.value()}}",e)
-            }
-            println(ids)
-            println(events.joinToString(" "){it.eventID.toString()})
-            println(events.filter { it.eventID in ids }.map { it.also {
-                it.successSend()
-                println("event ${it.eventID}, ${it.isSent}")
-            } })
+            val ids = CompletableFuture.allOf(*futures).thenApply {
+                futures.mapIndexedNotNull { i, future ->
+                    future.handle{result, e ->
+                        val message = messages[i]
+
+                        if (e == null)
+                            result.producerRecord.value().id
+                        else{
+                            log.error("key: ${message.key}, payload: ${message.payload}", e)
+                            null
+                        }
+                    }.get()
+                }
+            }.join()
+
             repo.saveAll(events.filter { it.eventID in ids }.map { it.also { it.successSend() } })
         }
 

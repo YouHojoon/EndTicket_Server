@@ -20,36 +20,15 @@ class ImaginationCompletionEventMessageService(
     /**
      * 상상해보기 이벤트 완료 메시지를 전송하는 메소드
      * @param message 메시지를 발행할 이벤트
-     * @param callback 메시지 발행 후 실행할 함수
+     * @return 메시지에 대한 CompletableFuture
      */
-    fun sendMessage(message: ImaginationCompletionEventMessage, callback: (SendResult<String, ImaginationCompletionEventResponse>?, Throwable?) -> Unit){
-        kafkaTemplate.send(KafkaTopic.IMAGINATION_COMPLETION, message, callback)
-    }
+    fun sendMessage(message: ImaginationCompletionEventMessage) = kafkaTemplate.send(KafkaTopic.IMAGINATION_COMPLETION, message)
 
 
     /**
      * 상상해보기 이벤트 완료 메시지들을 전송하는 메소드
      * @param messages 메시지를 전송할 이벤트들
-     * @param callback 메시지 발행 후 실행할 함수
+     * @return 메시지들에 대한 CompletableFuture
      */
-    fun sendMessages(messages: Collection<ImaginationCompletionEventMessage>,
-                     callback: (Collection<Pair<SendResult<String, ImaginationCompletionEventResponse>?, Throwable?>>) -> Unit){
-        val futures = messages.map { kafkaTemplate.send(KafkaTopic.IMAGINATION_COMPLETION, it, callback) }.toTypedArray()
-
-        CompletableFuture
-            .allOf(*futures)
-            .thenRun {
-                val results = futures.map {
-                    try {
-                        it.get() to null
-                    }
-                    catch (e: Exception){
-                        null to e
-                    }
-                }
-                callback(results)
-            }.join()
-    }
-
-
+    fun sendMessages(messages: Collection<ImaginationCompletionEventMessage>): Collection<CompletableFuture<SendResult<String, ImaginationCompletionEventResponse>>> = messages.map { kafkaTemplate.send(KafkaTopic.IMAGINATION_COMPLETION, it) }
 }
