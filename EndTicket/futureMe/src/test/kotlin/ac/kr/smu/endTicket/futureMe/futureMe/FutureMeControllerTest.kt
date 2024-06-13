@@ -53,7 +53,7 @@ class FutureMeControllerTest @Autowired constructor(
 
         mvc.findFutureMe()
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(futureMe)))
+            .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(FutureMeResponse.from(futureMe))))
     }
 
     @Test
