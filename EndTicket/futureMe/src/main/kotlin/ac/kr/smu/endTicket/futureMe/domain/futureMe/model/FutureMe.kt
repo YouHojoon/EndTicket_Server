@@ -14,7 +14,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
  */
 @Entity
 @Table
-@Schema(description = "미래의 나")
 @EntityListeners(AuditingEntityListener::class)
 class FutureMe private constructor(
     type: Character.Type,
@@ -23,7 +22,6 @@ class FutureMe private constructor(
     val userID: Long
 ) {
     @Column(length = 13)
-    @Schema(description = "미래의 나 제목", example = "당당하고 멋있는 사람")
     var title: String = ""
         private set
 
@@ -33,6 +31,7 @@ class FutureMe private constructor(
 
     @Embedded
     val audit: Audit = Audit()
+
     companion object{
         /**
          * 생성 요청으로 부터 미래의 나를 생성하는 메소드
