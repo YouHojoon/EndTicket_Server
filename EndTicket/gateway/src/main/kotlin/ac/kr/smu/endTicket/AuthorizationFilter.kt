@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket
 
+import ac.kr.smu.endTicket.common.reactive.response.ExceptionResponse
 import ac.kr.smu.endTicket.constant.HttpHeaderName
-import brave.Tracer
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.cloud.gateway.filter.GatewayFilter
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory
@@ -9,9 +9,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.stereotype.Component
-
 import reactor.core.publisher.Mono
-import ac.kr.smu.endTicket.response.ExceptionResponse
 
 @Component
 class AuthorizationFilter(

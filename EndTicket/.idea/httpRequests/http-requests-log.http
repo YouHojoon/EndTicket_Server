@@ -1,0 +1,9 @@
+GET http://127.0.0.1:8083/swagger-ui.html
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.8)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-06-13T232934.200.html
+
+###
+

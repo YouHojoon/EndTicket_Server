@@ -17,6 +17,7 @@
             <option value="$PROJECT_DIR$/common/redis" />
             <option value="$PROJECT_DIR$/common/security" />
             <option value="$PROJECT_DIR$/common/web" />
+            <option value="$PROJECT_DIR$/common/webflux" />
             <option value="$PROJECT_DIR$/common/zipkin" />
             <option value="$PROJECT_DIR$/eureka" />
             <option value="$PROJECT_DIR$/futureMe" />
