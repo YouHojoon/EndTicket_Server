@@ -12,5 +12,5 @@ import org.springframework.boot.runApplication
 class AuthApplication
 
 fun main(args: Array<String>) {
-    runApplication<AuthApplication>(*args)
+    runApplication<ac.kr.smu.endTicket.AuthApplication>(*args)
 }

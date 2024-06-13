@@ -1,14 +1,14 @@
 package ac.kr.smu.endTicket.futureMe
 
-import ac.kr.smu.endTicket.constant.KafkaTopic
-import ac.kr.smu.endTicket.futureMe.domain.event.EventRepository
-import ac.kr.smu.endTicket.futureMe.domain.event.TicketCompletionEvent
+import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
+import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
+import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent
+import ac.kr.smu.endTicket.futureMe.futureMe.USER_ID
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
-import ac.kr.smu.endTicket.futureMe.service.TicketCompletionEventConsumeService
-import ac.kr.smu.endTicket.futureMe.ui.response.TicketResponse
+import ac.kr.smu.endTicket.futureMe.infra.messaging.TicketCompletionEventResponse
+import ac.kr.smu.endTicket.test.mockAny
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
-import org.apache.kafka.common.serialization.LongSerializer
 import org.apache.kafka.common.serialization.StringSerializer
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -22,11 +22,10 @@ import org.springframework.kafka.support.serializer.JsonSerializer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.kafka.test.utils.KafkaTestUtils
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 
 
 @SpringBootTest(classes = [
-    TicketCompletionEventConsumeService::class,
+    TicketCompletionEvent::class,
     KafkaAutoConfiguration::class
 ])
 @EmbeddedKafka(
@@ -49,26 +48,20 @@ class TicketCompletionEventConsumeServiceTest @Autowired constructor(
     @DisplayName("티켓 완료 이벤트 처리 테스트")
     fun given_ticketCompletionEvent_when_consume_then_gainExperiencePoints_and_saveEvent(){
         val producer = createProducer()
-        val ticketResponse = TicketResponse(1L)
-        val record = ProducerRecord(KafkaTopic.TICKET_COMPLETION, USER_ID, ticketResponse)
+        val eventResponse = TicketCompletionEventResponse(1L)
+        val record = ProducerRecord(KafkaTopic.TICKET_COMPLETION, USER_ID.toString(), eventResponse)
 
-        Mockito.`when`(repo.findByEventIDAndType(ticketResponse.id, "TicketCompletionEvent"))
+        Mockito.`when`(repo.findByEventIDAndType(eventResponse.id, "TicketCompletionEvent"))
             .thenReturn(null)
         producer.send(record)
         Thread.sleep(1000)
-
-        Mockito.verify(repo).save(any())
-        Mockito.verify(futureMeService).gainExperiencePoints(any())
+        
+        Mockito.verify(repo).save(mockAny<ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent>())
+        Mockito.verify(futureMeService).gainExperiencePoints(mockAny<ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent>())
     }
 
-    private fun createProducer(): Producer<Long, TicketResponse>{
+    private fun createProducer(): Producer<String, TicketCompletionEventResponse>{
         val properties = KafkaTestUtils.producerProps(broker)
-        return DefaultKafkaProducerFactory(properties, LongSerializer(), JsonSerializer<TicketResponse>()).createProducer()
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun <T> any(): T {
-        Mockito.any<T>()
-        return null as T
+        return DefaultKafkaProducerFactory(properties, StringSerializer(), JsonSerializer<TicketCompletionEventResponse>()).createProducer()
     }
 }

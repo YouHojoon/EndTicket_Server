@@ -7,5 +7,5 @@ import java.time.LocalDateTime
 
 @Repository
 interface TicketCompletionEventRepository: JpaRepository<TicketCompletionEvent, Long>{
-    fun findByPublishedIsFalseAndCreateAtBefore(date: LocalDateTime): Set<TicketCompletionEvent>
+    fun findByIsSentFalseAndAuditCreatedAtBefore(date: LocalDateTime): Set<TicketCompletionEvent>
 }

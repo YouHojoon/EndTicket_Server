@@ -1,3 +1,8 @@
+schedules:
+  resend-imagination-completion-event:
+    fixedDelay: 200 # 10분
+    initialDelay: 0 # 1분
+
 spring:
   datasource:
     url: "jdbc:h2:mem:test"
@@ -6,19 +11,21 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-
   kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     consumer:
       group-id: futureMe
       enable-auto-commit: false
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.LongDeserializer
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring:
           json:
             trusted:
-              packages: "ac.kr.smu.endTicket.futureMe.ui.response"
+              packages: "ac.kr.smu.endTicket.futureMe.infra.messaging"
     listener:
       concurrency: 3
       ack-mode: manual_immediate
@@ -26,3 +33,8 @@ spring:
 logging:
   level:
     org.hibernate.type.descriptor.sql : trace
+server:
+  port: 8084
+eureka:
+  client:
+    enabled: false

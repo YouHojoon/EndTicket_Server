@@ -2,9 +2,11 @@ package ac.kr.smu.endTicket.futureMe.domain.imagination.model
 
 import ac.kr.smu.endTicket.common.jpa.Audit
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
+import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotOwnerOfImaginationException
 import ac.kr.smu.endTicket.futureMe.ui.request.ImaginationRequest
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
+import jakarta.validation.Constraint
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import kotlin.jvm.Transient
 
@@ -16,14 +18,18 @@ import kotlin.jvm.Transient
  * @property futureMe 연관되어 있는 미래의 나
  */
 @Entity
-@Table
+@Table(
+    indexes = [
+        Index(name = "idx_user_id", columnList = "user_id")
+    ]
+)
 @EntityListeners(AuditingEntityListener::class)
 class Imagination private constructor(
     behavior: String,
     target: String,
     color: Color,
-    @Column(updatable = false, nullable = false)
-    private val userID: Long
+    @Column(name = "user_id", updatable = false, nullable = false)
+    val userID: Long
 ) {
     companion object{
         fun from(request: ImaginationRequest, userID: Long) =
@@ -96,12 +102,12 @@ class Imagination private constructor(
     /**
      * 소유권을 확인하는 메소드
      * @param userID 사용자 ID
-     * @throws IllegalStateException 사용자가 소유자가 아닐 시
+     * @throws NotOwnerOfImaginationException 사용자가 소유자가 아닐 시
      */
-    @Throws(IllegalStateException::class)
+    @Throws(NotOwnerOfImaginationException::class)
     fun checkOwnership(userID: Long){
         if (this.userID != userID)
-            throw IllegalStateException("소유자가 아닙니다.")
+            throw NotOwnerOfImaginationException(id, userID)
 
     }
 }

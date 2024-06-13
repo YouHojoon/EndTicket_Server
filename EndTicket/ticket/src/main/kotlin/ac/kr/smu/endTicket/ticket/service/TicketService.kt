@@ -5,11 +5,12 @@ import ac.kr.smu.endTicket.ticket.domain.exception.CacheEvictionFailureException
 import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
-import ac.kr.smu.endTicket.ticket.domain.service.TicketCompletionEventService
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
+import jakarta.persistence.EntityManager
+import jakarta.persistence.PersistenceContext
 import org.slf4j.LoggerFactory
-import org.springframework.cache.annotation.CachePut
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -28,6 +29,9 @@ class TicketService(
     private val completionEventService: TicketCompletionEventService
 ) {
     private val log = LoggerFactory.getLogger(TicketService::class.java)
+    @PersistenceContext
+    private lateinit var entityManager: EntityManager
+
     private companion object{
         private const val REDIS_KEY_PREFIX = "ticket::"
         private const val TICKET_LIMIT = 5
@@ -120,21 +124,33 @@ class TicketService(
     }
 
     /**
+     * 티켓 삭제 메소드, Redis에서도 삭제된다.
+     * @param id 티켓 id
+     * @param userID 사용자 id
+     * @throws NotFoundTicketException 티켓이 존재하지 않을 시
+     */
+    @Transactional
+    fun deleteTicket(id: Long, userID: Long){
+        val ticket = repo.findById(id).getOrNull() ?: throw NotFoundTicketException(id)
+
+        ticket.checkOwnership(userID)
+        redisTemplate.deleteTicket(ticket)
+        repo.delete(ticket)
+    }
+    /**
      * 티켓 완료 메소드, kafka를 통해 이벤트를 전송하고 캐시에서 티켓을 지운다.
      * @param ticket 완료된 티켓
-     * @throws CacheEvictionFailureException 캐시 삭제에 실패했을 시
      */
     private fun completeTicket(ticket: Ticket){
-        if (redisTemplate.delete("${REDIS_KEY_PREFIX}${ticket.id}")) {
-            repo.save(ticket)
-            completionEventService.eventPublish(TicketCompletionEvent.from(ticket))
-        }
-
-        else {
-            log.error("캐시 삭제 실패 : id: ${ticket.id}")
-            throw CacheEvictionFailureException()
-        }
+        redisTemplate.deleteTicket(ticket)
+        completionEventService.eventPublish(TicketCompletionEvent(entityManager.merge(ticket)))
     }
 
     private fun RedisTemplate<String, Any>.saveTicket(ticket: Ticket) = this.opsForValue().set("$REDIS_KEY_PREFIX${ticket.id}", ticket)
+    private fun RedisTemplate<String, Any>.deleteTicket(ticket: Ticket){
+        if (!delete("$REDIS_KEY_PREFIX${ticket.id}")) {
+            log.error("Redis 삭제 실패 : id: ${ticket.id}")
+            throw CacheEvictionFailureException()
+        }
+    }
 }
