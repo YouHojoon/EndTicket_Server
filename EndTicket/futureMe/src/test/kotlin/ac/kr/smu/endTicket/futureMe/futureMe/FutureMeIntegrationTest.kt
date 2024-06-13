@@ -12,6 +12,7 @@ import ac.kr.smu.endTicket.futureMe.service.FutureMeService
 import ac.kr.smu.endTicket.futureMe.ui.controller.FutureMeController
 import ac.kr.smu.endTicket.futureMe.ui.request.FutureMeCharacterRequest
 import ac.kr.smu.endTicket.futureMe.ui.request.UpdateFutureMeTitleRequest
+import ac.kr.smu.endTicket.futureMe.ui.response.FutureMeResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -74,7 +75,7 @@ class FutureMeIntegrationTest @Autowired constructor(
 
         mvc.findFutureMe()
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(futureMe)))
+            .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(FutureMeResponse.from(futureMe))))
     }
 
     @Test
