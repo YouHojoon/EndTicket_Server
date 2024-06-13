@@ -21,7 +21,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 sealed class Event(
     @Column(name = "event_id",nullable = false, updatable = false)
     val eventID: Long,
-    @Column(nullable = false, updatable = false)
+    @Column(name = "user_id", nullable = false, updatable = false)
     val userID: Long
 ){
     /**

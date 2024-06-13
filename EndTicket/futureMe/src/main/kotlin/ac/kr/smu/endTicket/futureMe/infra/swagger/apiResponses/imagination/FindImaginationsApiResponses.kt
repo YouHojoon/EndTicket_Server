@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
                     requiredProperties = ["imaginations"]
                 ),
                 schemaProperties = [
-                    SchemaProperty(name = "imaginations", array = ArraySchema(items = Schema(implementation = ImaginationResponse::class)))
+                    SchemaProperty(name = "imaginations", array = ArraySchema(schema = Schema(implementation = ImaginationResponse::class), maxItems = 6))
                 ]
             )
         ]

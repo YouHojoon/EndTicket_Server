@@ -38,12 +38,18 @@ class ImaginationCompletionEventJob(
 
             messageService.sendMessages(messages){record, e ->
                 val id = record.producerRecord.value().id
-
+                println(e)
                 if (e == null)
                     ids.add(id)
                 else
                     log.error("{key: ${record.producerRecord.key()}, payload: ${record.producerRecord.value()}}",e)
             }
+            println(ids)
+            println(events.joinToString(" "){it.eventID.toString()})
+            println(events.filter { it.eventID in ids }.map { it.also {
+                it.successSend()
+                println("event ${it.eventID}, ${it.isSent}")
+            } })
             repo.saveAll(events.filter { it.eventID in ids }.map { it.also { it.successSend() } })
         }
 

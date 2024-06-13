@@ -22,7 +22,7 @@ class ImaginationCompletionEventMessageService(
      * @param message 메시지를 발행할 이벤트
      * @param callback 메시지 발행 후 실행할 함수
      */
-    fun sendMessage(message: ImaginationCompletionEventMessage, callback: (SendResult<String, ImaginationCompletionEventResponse>, Throwable?) -> Unit){
+    fun sendMessage(message: ImaginationCompletionEventMessage, callback: (SendResult<String, ImaginationCompletionEventResponse>?, Throwable?) -> Unit){
         kafkaTemplate.send(KafkaTopic.IMAGINATION_COMPLETION, message, callback)
     }
 
@@ -33,8 +33,22 @@ class ImaginationCompletionEventMessageService(
      * @param callback 메시지 발행 후 실행할 함수
      */
     fun sendMessages(messages: Collection<ImaginationCompletionEventMessage>,
-                     callback: (SendResult<String, ImaginationCompletionEventResponse>, Throwable?) -> Unit){
-        messages.forEach { kafkaTemplate.send(KafkaTopic.IMAGINATION_COMPLETION, it, callback) }
+                     callback: (Collection<Pair<SendResult<String, ImaginationCompletionEventResponse>?, Throwable?>>) -> Unit){
+        val futures = messages.map { kafkaTemplate.send(KafkaTopic.IMAGINATION_COMPLETION, it, callback) }.toTypedArray()
+
+        CompletableFuture
+            .allOf(*futures)
+            .thenRun {
+                val results = futures.map {
+                    try {
+                        it.get() to null
+                    }
+                    catch (e: Exception){
+                        null to e
+                    }
+                }
+                callback(results)
+            }.join()
     }
 
 
