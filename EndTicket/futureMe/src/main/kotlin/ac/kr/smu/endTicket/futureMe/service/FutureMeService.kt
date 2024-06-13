@@ -7,6 +7,7 @@ import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.repository.FutureMeRepository
 import ac.kr.smu.endTicket.futureMe.ui.request.FutureMeCharacterRequest
 import ac.kr.smu.endTicket.futureMe.ui.request.UpdateFutureMeTitleRequest
+import ac.kr.smu.endTicket.futureMe.ui.response.FutureMeResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import kotlin.jvm.optionals.getOrNull
@@ -23,7 +24,7 @@ class FutureMeService(
      * @return 생성된 미래의 나
      */
     @Transactional
-    fun createFutureMe(request: FutureMeCharacterRequest, userID: Long) = if (repo.existsById(userID)) throw IllegalStateException("미래의 나가 이미 존재합니다.") else repo.save(FutureMe.from(request,userID))
+    fun createFutureMe(request: FutureMeCharacterRequest, userID: Long) = if (repo.existsById(userID)) throw IllegalStateException("미래의 나가 이미 존재합니다.") else FutureMeResponse.from(repo.save(FutureMe.from(request,userID)))
 
     /**
      * 미래의 나의 제목을 수정하는 메소드
@@ -34,11 +35,11 @@ class FutureMeService(
      */
     @Transactional
     @Throws(NotFoundFutureMeException::class)
-    fun updateTitle(request: UpdateFutureMeTitleRequest, userID: Long): FutureMe{
+    fun updateTitle(request: UpdateFutureMeTitleRequest, userID: Long): FutureMeResponse{
         val futureMe = repo.findById(userID).getOrNull() ?: throw NotFoundFutureMeException(userID)
 
         futureMe.updateTitle(request)
-        return futureMe
+        return FutureMeResponse.from(futureMe)
     }
 
     /**
@@ -50,11 +51,11 @@ class FutureMeService(
      */
     @Transactional
     @Throws(NotFoundFutureMeException::class)
-    fun updateCharacter(request: FutureMeCharacterRequest, userID: Long): FutureMe{
+    fun updateCharacter(request: FutureMeCharacterRequest, userID: Long): FutureMeResponse{
         val futureMe = repo.findById(userID).getOrNull() ?: throw NotFoundFutureMeException(userID)
 
         futureMe.updateCharacter(request,userID)
-        return futureMe
+        return FutureMeResponse.from(futureMe)
     }
 
     /**
@@ -75,5 +76,9 @@ class FutureMeService(
      * @throws NotFoundFutureMeException 미래의 나가 존재하지 않을 시
      */
     @Transactional(readOnly = true)
-    fun findFutureMe(userID: Long): FutureMe = repo.findById(userID).getOrNull() ?: throw NotFoundFutureMeException(userID)
+    fun findFutureMe(userID: Long): FutureMeResponse{
+        val futureMe = repo.findById(userID).getOrNull() ?: throw NotFoundFutureMeException(userID)
+
+        return FutureMeResponse.from(futureMe)
+    }
 }
