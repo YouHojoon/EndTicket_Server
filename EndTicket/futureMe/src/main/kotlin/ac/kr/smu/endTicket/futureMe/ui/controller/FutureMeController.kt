@@ -55,13 +55,7 @@ class FutureMeController(
         )
         @PathVariable("type")
         type: Character.Type
-    ) =
-        if (type == null)
-            ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(ExceptionResponse(code = 404, message = "캐릭터 이미지 조회 중 에러가 발생했습니다.", detail = "존재하지 않는 캐릭터 입니다."))
-        else
-            ResponseEntity
+    ) =  ResponseEntity
                 .ok()
                 .contentType(MediaType.valueOf("image/svg+xml"))
                 .body(type.imageResource)
@@ -80,7 +74,18 @@ class FutureMeController(
         @Parameter(hidden = true)
         @RequestHeader(HttpHeaderName.USER_ID)
         userID: Long
-    ) = ResponseEntity.status(HttpStatus.CREATED).body(service.createFutureMe(request,userID)).also { println("?") }
+    ) = try{
+        ResponseEntity.status(HttpStatus.CREATED).body(service.createFutureMe(request,userID))
+    }catch (e: IllegalStateException){
+        log.info("uesrID: $userID", e)
+
+        val status = HttpStatus.CONFLICT
+        ResponseEntity.status(status).body(ExceptionResponse(
+            code = status.value(),
+            message = "미래의 나 생성 중 에러가 발생했습니다.",
+            detail = e.message
+        ))
+    }
 
     @PatchMapping("/title")
     @UpdateTitleApiResponses
