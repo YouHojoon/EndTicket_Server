@@ -10,6 +10,7 @@ import ac.kr.smu.endTicket.futureMe.domain.futureMe.repository.FutureMeRepositor
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
 import ac.kr.smu.endTicket.futureMe.ui.request.FutureMeCharacterRequest
 import ac.kr.smu.endTicket.futureMe.ui.request.UpdateFutureMeTitleRequest
+import ac.kr.smu.endTicket.futureMe.ui.response.FutureMeResponse
 import ac.kr.smu.endTicket.test.mockAny
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -56,6 +57,7 @@ class FutureMeServiceTest(
     @DisplayName("존재하지 않는 미래의 나 수정 테스트")
     fun given_notExistFutureMe_when_updateTitle_then_throwNotFoundFutureMeException(){
         val title = "테스트"
+
         Mockito.`when`(repo.findById(USER_ID))
             .thenReturn(Optional.empty())
 
@@ -93,7 +95,7 @@ class FutureMeServiceTest(
         Mockito.`when`(repo.findById(USER_ID))
             .thenReturn(Optional.of(futureMe))
 
-        assertEquals(futureMe, service.findFutureMe(USER_ID))
+        assertEquals(FutureMeResponse.from(futureMe), service.findFutureMe(USER_ID))
     }
 
     @Test

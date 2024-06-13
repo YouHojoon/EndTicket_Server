@@ -20,7 +20,6 @@ class FutureMe private constructor(
     type: Character.Type,
 
     @Id
-    @JsonIgnore
     val userID: Long
 ) {
     @Column(length = 13)
