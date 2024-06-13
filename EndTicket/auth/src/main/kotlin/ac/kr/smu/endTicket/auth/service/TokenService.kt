@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit
 class TokenService(
     private val redisTemplate: RedisTemplate<String, String>,
     private val jwtProperties: JWTProperties
-): TokenServiceGrpc.TokenServiceImplBase(){
+): ac.kr.smu.endTicket.protobuf.TokenServiceGrpc.TokenServiceImplBase(){
     /**
      * JWT를 서명하기 위한 key
      */
@@ -42,7 +42,7 @@ class TokenService(
      * @param request 검증할 AccessToken
      * @param responseObserver 결과를 전달받을 옵저버
      */
-    override fun validateAccessToken(request: AccessToken, responseObserver: StreamObserver<ValidateAccessTokenResponse>) {
+    override fun validateAccessToken(request: ac.kr.smu.endTicket.protobuf.AccessToken, responseObserver: StreamObserver<ac.kr.smu.endTicket.protobuf.ValidateAccessTokenResponse>) {
         try {
             val userID = parseUserID(request.token.split(" ").last())
             responseObserver.onNext(
@@ -188,8 +188,8 @@ class TokenService(
      * @param status 상태, HttpStatusCode와 대응된다.
      * @param message 에러 발생 시 메시지
      */
-    private fun createValidateAccessTokenResponse(userID: Long? = null, status: Int, message: String? = null): ValidateAccessTokenResponse{
-        var response = ValidateAccessTokenResponse
+    private fun createValidateAccessTokenResponse(userID: Long? = null, status: Int, message: String? = null): ac.kr.smu.endTicket.protobuf.ValidateAccessTokenResponse {
+        var response = ac.kr.smu.endTicket.protobuf.ValidateAccessTokenResponse
             .newBuilder()
             .setStatus(status)
 

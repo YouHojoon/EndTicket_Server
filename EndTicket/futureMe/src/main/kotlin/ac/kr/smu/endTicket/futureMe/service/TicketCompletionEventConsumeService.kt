@@ -1,9 +1,9 @@
 package ac.kr.smu.endTicket.futureMe.service
 
-import ac.kr.smu.endTicket.constant.KafkaTopic
-import ac.kr.smu.endTicket.futureMe.domain.event.EventRepository
-import ac.kr.smu.endTicket.futureMe.domain.event.TicketCompletionEvent
-import ac.kr.smu.endTicket.futureMe.ui.response.TicketResponse
+import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
+import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
+import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent
+import ac.kr.smu.endTicket.futureMe.infra.messaging.TicketCompletionEventResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
@@ -12,18 +12,30 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
 
+/**
+ * 이벤트를 처리하는 클래스
+ * @property repo 이벤트를 저장하기 위한 저장소
+ * @property futureMeService 경험치 증가를 위한 미래의 나 서비스
+ */
 @Service
 class TicketCompletionEventConsumeService(
     private val repo: EventRepository,
     private val futureMeService: FutureMeService
 ) {
-    private val log = LoggerFactory.getLogger(TicketCompletionEventConsumeService::class.java)
+    private val log = LoggerFactory.getLogger(TicketCompletionEvent::class.java)
+
+    /**
+     * 티켓 완료 이벤트를 받는 메소드,
+     * 이벤트를 저장하고 경험치를 올리는데 성공했다면 ack, 실패한다면 nack을 kafka에 기록한다.
+     * @param record 이벤트의 내용
+     * @param ack 이벤트의 처리결과를 kafka에 알리기 위한 객체
+     */
     @KafkaListener(topics = [KafkaTopic.TICKET_COMPLETION])
     @Transactional
-    fun consume(record: ConsumerRecord<Long, TicketResponse>, ack: Acknowledgment){
+    fun consume(record: ConsumerRecord<String, TicketCompletionEventResponse>, ack: Acknowledgment){
         try {
             if (repo.findByEventIDAndType(record.value().id, "TicketCompletionEvent") == null){
-                val event = TicketCompletionEvent(record.value().id, record.key())
+                val event = TicketCompletionEvent(record.value().id, record.key().toLong())
 
                 futureMeService.gainExperiencePoints(event)
                 repo.save(event)
@@ -36,8 +48,5 @@ class TicketCompletionEventConsumeService(
                 Duration.ofSeconds(5)
             )
         }
-
-
-
     }
 }
