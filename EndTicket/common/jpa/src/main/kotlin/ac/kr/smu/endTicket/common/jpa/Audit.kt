@@ -1,5 +1,9 @@
 package ac.kr.smu.endTicket.common.jpa
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import jakarta.persistence.Embeddable
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
@@ -11,9 +15,13 @@ import java.time.LocalDateTime
 @Embeddable
 class Audit{
     @CreatedDate
+    @JsonSerialize(using = LocalDateTimeSerializer::class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer::class)
     var createdAt: LocalDateTime = LocalDateTime.MIN
         private set
     @LastModifiedDate
+    @JsonSerialize(using = LocalDateTimeSerializer::class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer::class)
     var updatedAt: LocalDateTime? = null
         private set
 }
