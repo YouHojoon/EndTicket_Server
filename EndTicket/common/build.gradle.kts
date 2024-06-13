@@ -11,6 +11,7 @@ subprojects{
 
     dependencies{
         api(project(":common"))
+        implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.1")
     }
 }
 
