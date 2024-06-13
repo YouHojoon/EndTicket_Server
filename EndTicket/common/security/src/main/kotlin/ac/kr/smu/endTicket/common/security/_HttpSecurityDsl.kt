@@ -1,5 +1,4 @@
 package ac.kr.smu.endTicket.common.security
-import ac.kr.smu.endTicket.response.ExceptionResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
