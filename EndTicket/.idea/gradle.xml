@@ -19,6 +19,7 @@
             <option value="$PROJECT_DIR$/common/web" />
             <option value="$PROJECT_DIR$/common/zipkin" />
             <option value="$PROJECT_DIR$/eureka" />
+            <option value="$PROJECT_DIR$/futureMe" />
             <option value="$PROJECT_DIR$/gateway" />
             <option value="$PROJECT_DIR$/ticket" />
             <option value="$PROJECT_DIR$/user" />

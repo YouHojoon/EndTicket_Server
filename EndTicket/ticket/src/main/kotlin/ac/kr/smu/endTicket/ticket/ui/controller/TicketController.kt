@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.ticket.ui.controller
 
 import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
-import ac.kr.smu.endTicket.response.BindExceptionResponse
+import ac.kr.smu.endTicket.common.web.response.BindExceptionResponse
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.service.TicketService
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
