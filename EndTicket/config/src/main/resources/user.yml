@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: user
+  config:
+    import:
+      - classpath:/common/jpa.yml
+      - classpath:/common/swagger.yml
+      - classpath:/common/logging.yml
+      - classpath:/common/zipkin.yml
+springdoc:
+  paths-to-match:
+    - "/users/**"
+eureka:
+    metadata-map:
+      gRPC_port: 9090
+grpc:
+  server:
+    port: 9090
+

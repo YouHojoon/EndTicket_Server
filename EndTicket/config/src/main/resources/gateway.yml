@@ -1,0 +1,59 @@
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-type: count_based
+        sliding-window-size: 10
+        slow-call-duration-threshold: 3s
+        slow-call-rate-threshold: 80
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        register-health-indicator: true
+server:
+  port: 8083
+spring:
+  config:
+    import:
+      - classpath:/common/swagger.yml
+      - classpath:/common/logging.yml
+      - classpath:/common/zipkin.yml
+      - classpath:/common/grpc.yml
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      routes:
+        - id: auth
+          uri: lb://auth
+          predicates:
+            - Path=/auth/**
+        - id: user
+          uri: lb://user
+          predicates:
+            - Path=/users/**
+          filters:
+            - AuthorizationFilter
+        - id: ticket
+          uri: lb://ticket
+          predicates:
+            - Path=/tickets/**
+          filters:
+            - AuthorizationFilter
+        - id: future-me
+          uri: lb://future-me
+          predicates:
+            - Path=/future-me/**, /imaginations/**
+          filters:
+            - AuthorizationFilter
+springdoc:
+  swagger-ui:
+    urls:
+      - url: "/user/api-docs"
+        name : User
+      - url: "/auth/api-docs"
+        name: Auth
+      - url: "/ticket/api-docs"
+        name: Ticket
+      - url: "/future-me/api-docs"
+        name: FutureMe
+

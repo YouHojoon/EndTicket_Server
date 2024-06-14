@@ -1,0 +1,21 @@
+server:
+  port: 8084
+spring:
+  application:
+    name: future-me
+  config:
+    import:
+      - classpath:/common/jpa.yml
+      - classpath:/common/swagger.yml
+      - classpath:/common/logging.yml
+      - classpath:/common/kafka.yml
+      - classpath:/common/zipkin.yml
+schedules:
+  resend-imagination-completion-event:
+    fixedDelay: 600000 # 10분
+    initialDelay: 60000 # 1분
+
+springdoc:
+  paths-to-match:
+    - "/future-me/**"
+    - "/imaginations/**"
