@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.springframework.boot") version "3.1.3"
     id("io.spring.dependency-management") version "1.1.4"
-
+    id("jacoco")
     kotlin("plugin.jpa") version "1.9.22"
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.spring") version "1.9.22"
@@ -14,6 +14,7 @@ tasks.withType<JavaCompile> {
 }
 
 allprojects{
+    apply(plugin = "jacoco")
     apply(plugin = "org.jetbrains.kotlin.plugin.jpa")
     apply(plugin = "org.jetbrains.kotlin.plugin.spring")
     apply(plugin = "org.jetbrains.kotlin.jvm")
