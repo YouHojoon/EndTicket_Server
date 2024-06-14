@@ -1,11 +1,14 @@
 package ac.kr.smu.endTicket.ticket.job
 
+import KafkaMessageService
+import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
-import ac.kr.smu.endTicket.ticket.infra.messaging.TicketCompletionEventMessageService
+import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
+import java.util.concurrent.CompletableFuture
 import kotlin.system.measureTimeMillis
 
 /**
@@ -16,7 +19,7 @@ import kotlin.system.measureTimeMillis
 @Component
 class TicketCompletionEventJob(
     private val repo: TicketCompletionEventRepository,
-    private val messageService: TicketCompletionEventMessageService
+    private val messageService: KafkaMessageService<String, TicketResponse>
 ) {
     private val log = LoggerFactory.getLogger(TicketCompletionEventJob::class.java)
 
@@ -30,16 +33,20 @@ class TicketCompletionEventJob(
         val elapsed = measureTimeMillis {
             val events = repo.findByIsSentFalseAndAuditCreatedAtBefore(LocalDateTime.now().minusMinutes(10))
             val messages = events.map { it.toMessage() }
-            val ids = mutableSetOf<Long>()
-
-            messageService.sendMessages(messages){record,e ->
-                val id = record.producerRecord.value().id
-
-                if (e == null)
-                    ids.add(id)
-                else
-                    log.error("{key: ${record.producerRecord.key()}}, payload: ${record.producerRecord.value()}", e)
-            }
+            val futures = messageService.send(KafkaTopic.TICKET_COMPLETION,messages).toTypedArray()
+            val ids = CompletableFuture.allOf(*futures).thenApply {
+                futures.mapIndexedNotNull {i, future ->
+                    future.handle{record, e ->
+                        if (e == null)
+                            record.producerRecord.value().id
+                        else{
+                            val message = messages[i]
+                            log.error("key: ${message.key}, payload: ${message.payload}",e)
+                            null
+                        }
+                    }.get()
+                }
+            }.join()
 
             repo.saveAll(events.filter { it.id in ids }.map { it.also { it.successSend() } })
         }

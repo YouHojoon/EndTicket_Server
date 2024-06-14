@@ -9,5 +9,6 @@ import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
  * @property payload kafka 메시지의 payload
  */
 class TicketCompletionEventMessage(
-    key: String, payload: TicketResponse
+    key: String,
+    payload: TicketResponse
 ): KafkaMessage<String, TicketResponse>(key,payload)

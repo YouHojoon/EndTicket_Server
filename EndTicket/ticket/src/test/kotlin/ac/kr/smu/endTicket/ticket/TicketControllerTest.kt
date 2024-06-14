@@ -40,7 +40,7 @@ import java.util.*
 class TicketControllerTest @Autowired constructor(
     @MockBean
     private val service: TicketService,
-    private val controller: TicketController
+    controller: TicketController
 ) {
 
     private val mvc: MockMvc =
@@ -249,19 +249,13 @@ class TicketControllerTest @Autowired constructor(
         val tickets = listOf(
             TicketResponse.from((Ticket.from(TICKET_REQUEST, USER_ID))
         ))
-        Mockito.`when`(service.findIncompleteTicket(USER_ID))
+        Mockito.`when`(service.findIncompleteTickets(USER_ID))
             .thenReturn(tickets)
 
-        mvc.perform(
-            MockMvcRequestBuilders
-                .get(BASE_URI)
-                .header(HttpHeaderName.USER_ID, USER_ID)
-        )
+        mvc.findTickets()
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("tickets").isArray)
-            .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(mapOf("tickets" to service.findIncompleteTicket(
-                USER_ID
-            )))))
+            .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(mapOf("tickets" to service.findIncompleteTickets(USER_ID)))))
     }
 
     @Test

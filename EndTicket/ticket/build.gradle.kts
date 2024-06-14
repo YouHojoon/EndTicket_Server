@@ -1,6 +1,6 @@
 dependencies{
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation("org.springframework.cloud:spring-cloud-starter-config")
     implementation(project(":common:security"))
     implementation(project(":common:web"))
     implementation(project(":common:jpa"))
