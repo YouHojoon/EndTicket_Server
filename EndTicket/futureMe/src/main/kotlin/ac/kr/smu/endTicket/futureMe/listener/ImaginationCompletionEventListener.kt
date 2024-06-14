@@ -1,8 +1,11 @@
 package ac.kr.smu.endTicket.futureMe.listener
 
+import KafkaMessageService
+import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
 import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventMessageService
+import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventResponse
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
@@ -21,7 +24,7 @@ import org.springframework.transaction.event.TransactionalEventListener
 @Component
 class ImaginationCompletionEventListener(
     private val repo: EventRepository,
-    private val messageService: ImaginationCompletionEventMessageService,
+    private val messageService: KafkaMessageService<String,ImaginationCompletionEventResponse>,
     private val futureMeService: FutureMeService
 ) {
     private val log = LoggerFactory.getLogger(ImaginationCompletionEventListener::class.java)
@@ -46,7 +49,7 @@ class ImaginationCompletionEventListener(
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun sendEvent(event: ImaginationCompletionEvent){
         val message = event.toMessage()
-        messageService.sendMessage(message).whenCompleteAsync { result, e ->
+        messageService.send(KafkaTopic.IMAGINATION_COMPLETION,message).whenCompleteAsync { result, e ->
             if (e == null)
                 repo.save(event.also { it.successSend() })
             else

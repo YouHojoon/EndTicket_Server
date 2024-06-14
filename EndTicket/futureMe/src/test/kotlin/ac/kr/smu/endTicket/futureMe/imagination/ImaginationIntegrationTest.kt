@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.futureMe.imagination
 
+import ac.kr.smu.endTicket.common.kafka.annotation.EnableAutoKafkaConfig
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endTicket.common.kafka.test.messageListener
@@ -13,6 +14,7 @@ import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotFoundImagina
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotOwnerOfImaginationException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.domain.imagination.repository.ImaginationRepository
+import ac.kr.smu.endTicket.futureMe.infra.config.KafkaConfig
 import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventMessageService
 import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventResponse
 import ac.kr.smu.endTicket.futureMe.listener.ImaginationCompletionEventListener
@@ -60,15 +62,10 @@ import kotlin.test.assertNotNull
         HibernateJpaAutoConfiguration::class,
         TransactionAutoConfiguration::class,
         KafkaAutoConfiguration::class,
+        KafkaConfig::class
     ]
 )
-@EmbeddedKafka(
-    ports = [9292],
-    brokerProperties = [
-        "listeners=PLAINTEXT://localhost:9292"
-    ],
-    partitions = 3
-)
+@EmbeddedKafka(partitions = 3)
 @EnableJpaRepositories("ac.kr.smu.endTicket.futureMe.domain")
 @EntityScan("ac.kr.smu.endTicket.futureMe.domain")
 class ImaginationIntegrationTest @Autowired constructor(
