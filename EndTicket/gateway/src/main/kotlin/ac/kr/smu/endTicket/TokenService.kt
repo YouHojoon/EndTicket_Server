@@ -30,10 +30,9 @@ class TokenService {
     }
 
     private fun fallbackValidateAccessToken(token: String, e: Exception): ValidateAccessTokenResponse{
-        val message = "auth 서버에 access 토큰 검증 요청 실패"
-        MDC.put("accessToken", token)
+        val message = "auth 서버에 access 토큰 검증 요청 실패 : {token: $token}"
         log.error(message, e)
-        MDC.clear()
+
         return ValidateAccessTokenResponse
             .newBuilder()
             .setUserID(-1)
