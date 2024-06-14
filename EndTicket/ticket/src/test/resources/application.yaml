@@ -1,4 +1,7 @@
 spring:
+  cloud:
+    config:
+      enabled: false
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:test
@@ -7,6 +10,7 @@ spring:
   kafka:
     producer:
       key-serializer:  org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
   jpa:
     hibernate:
       ddl-auto: create
@@ -23,3 +27,6 @@ spring:
 logging:
   level:
     org.hibernate.type.descriptor.sql: trace
+eureka:
+  client:
+    enabled: false

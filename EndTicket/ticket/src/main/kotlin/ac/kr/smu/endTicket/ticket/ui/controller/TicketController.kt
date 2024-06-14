@@ -1,10 +1,8 @@
 package ac.kr.smu.endTicket.ticket.ui.controller
 
-import ac.kr.smu.endTicket.response.ExceptionResponse
+import ac.kr.smu.endTicket.common.web.response.ExceptionResponse
 import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
 import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
-import ac.kr.smu.endTicket.common.web.response.BindExceptionResponse
-import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.infra.swagger.*
 import ac.kr.smu.endTicket.ticket.service.TicketService
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
@@ -101,7 +99,7 @@ class TicketController(
         @Parameter(hidden = true)
         @RequestHeader("X-User-ID")
         userID: Long
-    ): ResponseEntity<*> = ResponseEntity.ok(mapOf("tickets" to service.findIncompleteTicket(userID)))
+    ): ResponseEntity<*> = ResponseEntity.ok(mapOf("tickets" to service.findIncompleteTickets(userID)))
 
     @DeleteTicketResponses
     @DeleteMapping("{id}")

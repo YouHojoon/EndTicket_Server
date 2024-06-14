@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
 const val BASE_URI = "http://localhost:8082/tickets"
 
@@ -42,3 +43,9 @@ fun MockMvc.deleteTicket(id:Long) =
         MockMvcRequestBuilders.delete("$BASE_URI/$id")
             .header(HttpHeaderName.USER_ID, USER_ID)
     )
+
+fun MockMvc.findTickets() = perform(
+    MockMvcRequestBuilders
+        .get(BASE_URI)
+        .header(HttpHeaderName.USER_ID, USER_ID)
+)

@@ -8,7 +8,7 @@ import ac.kr.smu.endTicket.ticket.job.TicketCompletionEventJob
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
-import ac.kr.smu.endTicket.ticket.infra.messaging.TicketCompletionEventMessageService
+import ac.kr.smu.endTicket.ticket.infra.config.KafkaConfig
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.DisplayName
@@ -31,7 +31,7 @@ import kotlin.test.assertTrue
     classes = [
         TicketCompletionEventJob::class,
         KafkaAutoConfiguration::class,
-        TicketCompletionEventMessageService::class,
+        KafkaConfig::class,
         SchedulingConfiguration::class
               ],
     properties = [
@@ -39,13 +39,7 @@ import kotlin.test.assertTrue
         "schedules.resend-ticket-completion-event.initialDelay=0"
     ],
 )
-@EmbeddedKafka(
-    partitions = 3,
-    brokerProperties = [
-        "listeners=PLAINTEXT://localhost:9292"
-    ],
-    ports = [9292]
-)
+@EmbeddedKafka
 class TicketCompletionEventJobTest @Autowired constructor(
     @MockBean
     private val repo: TicketCompletionEventRepository,

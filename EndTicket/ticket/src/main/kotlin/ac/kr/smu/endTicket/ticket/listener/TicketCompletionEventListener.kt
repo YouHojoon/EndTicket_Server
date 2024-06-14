@@ -1,8 +1,10 @@
 package ac.kr.smu.endTicket.ticket.listener
 
+import KafkaMessageService
+import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
-import ac.kr.smu.endTicket.ticket.infra.messaging.TicketCompletionEventMessageService
+import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
@@ -19,7 +21,7 @@ import org.springframework.transaction.event.TransactionalEventListener
 @Component
 class TicketCompletionEventListener(
     private val repo: TicketCompletionEventRepository,
-    private val messageService: TicketCompletionEventMessageService
+    private val messageService: KafkaMessageService<String, TicketResponse>
 ) {
     private val log = LoggerFactory.getLogger(TicketCompletionEventListener::class.java)
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
@@ -33,7 +35,7 @@ class TicketCompletionEventListener(
     fun sendMessage(event: TicketCompletionEvent){
         val message = event.toMessage()
 
-        messageService.sendMessage(message){_,e ->
+        messageService.send(KafkaTopic.TICKET_COMPLETION,message).whenCompleteAsync {_,e ->
             if (e == null)
                 repo.save(event.also { it.successSend() })
             else {
