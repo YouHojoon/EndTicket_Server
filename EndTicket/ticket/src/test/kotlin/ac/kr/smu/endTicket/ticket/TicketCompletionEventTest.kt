@@ -7,8 +7,8 @@ import ac.kr.smu.endTicket.test.mockAny
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
+import ac.kr.smu.endTicket.ticket.infra.config.KafkaConfig
 import ac.kr.smu.endTicket.ticket.listener.TicketCompletionEventListener
-import ac.kr.smu.endTicket.ticket.infra.messaging.TicketCompletionEventMessageService
 import ac.kr.smu.endTicket.ticket.service.TicketCompletionEventService
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.listener.KafkaMessageListenerContainer
+import org.springframework.kafka.support.serializer.JsonSerializer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
 import java.util.concurrent.LinkedBlockingQueue
@@ -31,23 +32,16 @@ import kotlin.test.assertNotNull
     classes = [
         TicketCompletionEventService::class,
         TicketCompletionEventListener::class,
-        TicketCompletionEventMessageService::class,
+        KafkaConfig::class,
         KafkaAutoConfiguration::class
     ]
 )
-@EmbeddedKafka(
-    partitions = 3,
-    ports = [9292],
-    brokerProperties = [
-        "listeners=PLAINTEXT://localhost:9292"
-    ]
-)
+@EmbeddedKafka
 class TicketCompletionEventTest @Autowired constructor(
     @MockBean
     private val repo: TicketCompletionEventRepository,
     private val eventService: TicketCompletionEventService,
     private val broker: EmbeddedKafkaBroker,
-    private val listener: TicketCompletionEventListener
 ) {
 
     private lateinit var container: KafkaMessageListenerContainer<String, TicketResponse>

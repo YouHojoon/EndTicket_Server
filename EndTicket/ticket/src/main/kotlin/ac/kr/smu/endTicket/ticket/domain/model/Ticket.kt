@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.ticket.domain.model
 
+import ac.kr.smu.endTicket.ticket.domain.converter.MaxSwipeCountConverter
 import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import io.swagger.v3.oas.annotations.media.Schema
@@ -43,6 +44,7 @@ class Ticket private constructor(
     var type: Type private set
 
     @Column(nullable = false)
+    @Convert(converter = MaxSwipeCountConverter::class)
     var maxSwipeCount: MaxSwipeCount private set
 
     @Transient

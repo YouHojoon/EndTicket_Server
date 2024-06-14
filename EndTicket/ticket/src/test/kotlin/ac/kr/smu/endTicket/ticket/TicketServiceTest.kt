@@ -1,6 +1,5 @@
 package ac.kr.smu.endTicket.ticket
 
-import ac.kr.smu.endTicket.common.redis.annotation.EnableAutoRedisConfig
 import ac.kr.smu.endTicket.test.mockAny
 import ac.kr.smu.endTicket.ticket.domain.exception.CacheEvictionFailureException
 import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
@@ -16,53 +15,39 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
+import org.mockito.Mock
 import org.mockito.Mockito
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-import org.springframework.boot.autoconfigure.domain.EntityScan
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
-import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.mockito.MockitoAnnotations
+import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import java.util.*
 import kotlin.test.assertEquals
 
-
-@SpringBootTest(
-    properties = [
-        "eureka.client.enabled=false"
-    ],
-    classes = [
-        TicketService::class,
-        DataSourceAutoConfiguration::class,
-        HibernateJpaAutoConfiguration::class,
-        TransactionAutoConfiguration::class,
-        RedisAutoConfiguration::class
-    ]
-)
-@EntityScan("ac.kr.smu.endTicket.ticket.domain.model")
-@EnableAutoRedisConfig
-class TicketServiceTest @Autowired constructor(
-    @MockBean
+@ExtendWith(MockitoExtension::class)
+class TicketServiceTest (
+    @Mock
     private val ops: ValueOperations<String,Any>,
-    @MockBean
+    @Mock
     private val redisTemplate: RedisTemplate<String, Any>,
-    @MockBean
+    @Mock
     private val repo: TicketRepository,
-    @MockBean
+    @Mock
     private val eventService: TicketCompletionEventService,
-    @MockBean
+    @Mock
     private val em: EntityManager,
-    private val service: TicketService,
+
 ) {
+    @InjectMocks
+    private lateinit var service: TicketService
     private companion object{
         private const val REDIS_KEY_PREFIX = "ticket::"
     }
     @BeforeEach
     fun init(){
+        MockitoAnnotations.openMocks(this)
         Mockito.`when`(redisTemplate.opsForValue()).thenReturn(ops)
     }
 
@@ -123,6 +108,8 @@ class TicketServiceTest @Autowired constructor(
         Mockito.`when`(redisTemplate.delete("$REDIS_KEY_PREFIX${ticket.id}")).thenReturn(true)
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
+        Mockito.`when`(em.merge(ticket))
+            .thenReturn(ticket)
 
         val updatedTicket = service.updateTicket(TICKET_REQUEST, ticket.id , USER_ID)
         assertEquals(TicketResponse.from(ticket), updatedTicket)
@@ -212,7 +199,7 @@ class TicketServiceTest @Autowired constructor(
         Mockito.`when`(repo.findById(ticket.id)).thenReturn(Optional.of(ticket))
         Mockito.`when`(redisTemplate.delete("$REDIS_KEY_PREFIX${ticket.id}"))
             .thenReturn(true)
-        Mockito.`when`(em.merge(ticket)).thenReturn(ticket)
+        Mockito.`when`(em.merge(mockAny<Ticket>())).thenReturn(ticket)
 
         repeat(ticket.maxSwipeCount.value){
             service.swipeTicket(ticket.id, ticket.userID)
@@ -245,7 +232,7 @@ class TicketServiceTest @Autowired constructor(
         Mockito.`when`(repo.findIncompleteTicketsOfUser(USER_ID))
             .thenReturn(tickets)
 
-        assertEquals(tickets.map { TicketResponse.from(it) }, service.findIncompleteTicket(USER_ID))
+        assertEquals(tickets.map { TicketResponse.from(it) }, service.findIncompleteTickets(USER_ID))
     }
 
     @Test
@@ -267,10 +254,10 @@ class TicketServiceTest @Autowired constructor(
     @Test
     @DisplayName("존재하지 않는 티켓 삭제 테스트")
     fun given_notExistTicket_when_deleteTicket_then_throwNotFoundTicketException(){
-        Mockito.`when`(repo.findById(mockAny()))
+        Mockito.`when`(repo.findById(Mockito.anyLong()))
             .thenReturn(Optional.empty())
 
-        assertThrows<NotFoundTicketException> {  service.deleteTicket(1L, USER_ID)}
+        assertThrows<NotFoundTicketException> { service.deleteTicket(1L, USER_ID)}
     }
 
     @Test

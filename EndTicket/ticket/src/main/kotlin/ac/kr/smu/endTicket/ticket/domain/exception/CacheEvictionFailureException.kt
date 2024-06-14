@@ -8,4 +8,4 @@ import org.springframework.web.bind.annotation.ResponseStatus
  */
 
 @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-class CacheEvictionFailureException: RuntimeException()
+class CacheEvictionFailureException: RuntimeException("캐시 삭제에 실패했습니다.")
