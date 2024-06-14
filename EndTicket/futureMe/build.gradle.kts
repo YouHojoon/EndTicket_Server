@@ -1,5 +1,6 @@
 dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+    implementation("org.springframework.cloud:spring-cloud-starter-config")
     implementation(project(":common:kafka"))
     implementation(project(":common:web"))
     implementation(project(":common:security"))

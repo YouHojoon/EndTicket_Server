@@ -22,3 +22,4 @@ findProject(":common:zipkin")?.name = "zipkin"
 include("futureMe")
 include("common:webflux")
 findProject(":common:webflux")?.name = "webflux"
+include("config")

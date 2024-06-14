@@ -4,11 +4,11 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-application.yaml
 dump.rdb
 logs/
 nodes-**
 application.yml
+EndTicket/config/src/main/resources/common/**
 EndTicket/config/src/main/resources/auth.yml
 # Created by https://www.toptal.com/developers/gitignore/api/intellij,kotlin,macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij,kotlin,macos
@@ -187,3 +187,10 @@ Temporary Items
 .gitsecret/keys/random_seed
 !*.secret
 EndTicket/futureMe/src/main/resources/application.yml
+EndTicket/config/src/main/resources/common/grpc.yml
+EndTicket/config/src/main/resources/common/jpa.yml
+EndTicket/config/src/main/resources/common/kafka.yml
+EndTicket/config/src/main/resources/common/logging.yml
+EndTicket/config/src/main/resources/common/redis.yml
+EndTicket/config/src/main/resources/common/swagger.yml
+EndTicket/config/src/main/resources/common/zipkin.yml

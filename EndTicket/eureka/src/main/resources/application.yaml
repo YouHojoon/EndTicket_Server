@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: eureka
+server:
+  port: 8761
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+whitelist:
+  addresses:
+    - 127.0.0.1
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+    propagation:
+      consume: b3_multi
+      produce: b3_multi
