@@ -1,11 +1,13 @@
 package ac.kr.smu.endTicket.futureMe.imagination
 
+import ac.kr.smu.endTicket.common.kafka.annotation.EnableAutoKafkaConfig
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endTicket.common.kafka.test.messageListener
 import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
+import ac.kr.smu.endTicket.futureMe.infra.config.KafkaConfig
 import ac.kr.smu.endTicket.futureMe.listener.ImaginationCompletionEventListener
 import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService
 import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventMessageService
@@ -31,16 +33,11 @@ import kotlin.test.assertEquals
         ImaginationCompletionEventMessageService::class,
         ImaginationCompletionEventListener::class,
         FutureMeEventService::class,
-        KafkaAutoConfiguration::class
+        KafkaAutoConfiguration::class,
+        KafkaConfig::class
     ]
 )
-@EmbeddedKafka(
-    partitions = 3,
-    ports = [9292],
-    brokerProperties = [
-        "listeners=PLAINTEXT://localhost:9292"
-    ]
-)
+@EmbeddedKafka(partitions = 3)
 class ImaginationCompletionEventListenerTest @Autowired constructor(
     @MockBean
     private val repo: EventRepository,
