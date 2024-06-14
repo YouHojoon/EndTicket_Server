@@ -1,11 +1,13 @@
 package ac.kr.smu.endTicket.futureMe.imagination
 
+import ac.kr.smu.endTicket.common.kafka.annotation.EnableAutoKafkaConfig
 import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endTicket.common.web.test.expectBindingException
 import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotFoundImaginationException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotOwnerOfImaginationException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
+import ac.kr.smu.endTicket.futureMe.infra.config.KafkaConfig
 import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService
 import ac.kr.smu.endTicket.futureMe.service.ImaginationService
 import ac.kr.smu.endTicket.futureMe.ui.controller.ImaginationController
@@ -20,8 +22,11 @@ import org.junit.jupiter.api.assertThrows
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.context.annotation.Import
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -31,6 +36,7 @@ import java.util.*
 @WebMvcTest(
     controllers = [ImaginationController::class]
 )
+@MockBean(JpaMetamodelMappingContext::class)
 class ImaginationControllerTest @Autowired constructor(
     @MockBean
     private val service: ImaginationService,
