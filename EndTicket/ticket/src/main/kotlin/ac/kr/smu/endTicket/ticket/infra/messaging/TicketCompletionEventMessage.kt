@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.ticket.infra.messaging
 
-import ac.kr.smu.endTicket.common.kafka.KafkaMessage
+import ac.kr.smu.endTicket.common.kafka.messaging.KafkaMessage
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 
 /**
@@ -10,4 +10,4 @@ import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
  */
 class TicketCompletionEventMessage(
     key: String, payload: TicketResponse
-):KafkaMessage<String, TicketResponse>(key,payload)
+): KafkaMessage<String, TicketResponse>(key,payload)
