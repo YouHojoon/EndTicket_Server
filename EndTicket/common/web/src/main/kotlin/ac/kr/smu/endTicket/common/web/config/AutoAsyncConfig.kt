@@ -1,22 +1,23 @@
 package ac.kr.smu.endTicket.common.web.config
 
-import ac.kr.smu.endTicket.common.web.annotation.EnableAutoAsyncConfig
-import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
-import org.springframework.core.annotation.AnnotationUtils
-import kotlin.reflect.full.findAnnotation
+import org.springframework.scheduling.annotation.EnableAsync
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 
-
+/**
+ * 비동기 자동 설정
+ * @property [ThreadPoolTaskExecutor]의 corePoolSize
+ */
+@EnableAsync
 class AutoAsyncConfig(
-    private val applicationContext: ApplicationContext
-) {
+    private val corePoolSize: Int
+){
     @Bean
-    fun asyncConfig(): AsyncConfig {
-        val beans = applicationContext.getBeansWithAnnotation(EnableAutoAsyncConfig::class.java)
-        val corePoolSize = beans
-            .mapNotNull { AnnotationUtils.findAnnotation(it.value.javaClass, EnableAutoAsyncConfig::class.java) }
-            .maxOf { it.corePoolSize}
-        
-        return AsyncConfig(corePoolSize)
+    fun threadPoolTaskExecutor(): ThreadPoolTaskExecutor = ThreadPoolTaskExecutor().apply {
+        // 참고 : https://medium.com/@greg.shiny82/트랜잭셔널-아웃박스-패턴의-실제-구현-사례-29cm-0f822fc23edb
+        this.corePoolSize = this@AutoAsyncConfig.corePoolSize //파티션의 개수만큼 할당
+        setAllowCoreThreadTimeOut(true)
+        setWaitForTasksToCompleteOnShutdown(true)
+        setAwaitTerminationSeconds(10)
     }
 }
