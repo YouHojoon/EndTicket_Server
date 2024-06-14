@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.futureMe.infra.messaging
 
-import ac.kr.smu.endTicket.common.kafka.KafkaMessage
+import ac.kr.smu.endTicket.common.kafka.messaging.KafkaMessage
 
 /**
  * 상상해보기 완료 이벤트 메시지를 나타내는 클래스
