@@ -1,3 +1,4 @@
+
 schedules:
   resend-imagination-completion-event:
     fixedDelay: 200 # 10분
@@ -29,6 +30,9 @@ spring:
     listener:
       concurrency: 3
       ack-mode: manual_immediate
+  cloud:
+    config:
+      enabled: false
 
 logging:
   level:

@@ -1,13 +1,11 @@
 package ac.kr.smu.endTicket.futureMe.imagination
 
-import ac.kr.smu.endTicket.common.kafka.annotation.EnableAutoKafkaConfig
 import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endTicket.common.web.test.expectBindingException
 import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotFoundImaginationException
-import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotOwnerOfImaginationException
+import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.ImaginationOwnershipException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
-import ac.kr.smu.endTicket.futureMe.infra.config.KafkaConfig
 import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService
 import ac.kr.smu.endTicket.futureMe.service.ImaginationService
 import ac.kr.smu.endTicket.futureMe.ui.controller.ImaginationController
@@ -17,21 +15,14 @@ import ac.kr.smu.endTicket.test.mockAny
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.jupiter.api.assertThrows
-import org.mockito.Mock
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.context.annotation.Import
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.springframework.web.context.WebApplicationContext
-import java.util.*
 
 @WebMvcTest(
     controllers = [ImaginationController::class]
@@ -150,7 +141,7 @@ class ImaginationControllerTest @Autowired constructor(
         Mockito.`when`(
             service.updateImagination(request, id, USER_ID)
         )
-            .thenAnswer { throw  NotOwnerOfImaginationException(id, USER_ID)}
+            .thenAnswer { throw  ImaginationOwnershipException(id, USER_ID)}
 
         mvc.updateImagination(request,id, USER_ID)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
@@ -180,7 +171,7 @@ class ImaginationControllerTest @Autowired constructor(
     @DisplayName("소유자가 아닌 사용자의 상상해보기 삭제 테스트")
     fun given_userWhoNotOwner_when_deleteImagination_then_expectStatusCode403_and_responseExceptionResponse(){
         Mockito.`when`(service.deleteImagination(Mockito.anyLong(), Mockito.anyLong()))
-            .thenAnswer { throw NotOwnerOfImaginationException(1L, USER_ID) }
+            .thenAnswer { throw ImaginationOwnershipException(1L, USER_ID) }
 
         mvc.deleteImagination(1L)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
@@ -216,7 +207,7 @@ class ImaginationControllerTest @Autowired constructor(
     fun given_userWhoNotOwner_when_completeImagination_then_throwNotOwnerOfImagination(){
         val id = 1L
         Mockito.`when`(service.completeImagination(id, USER_ID)).thenAnswer {
-            throw NotOwnerOfImaginationException(id, USER_ID)
+            throw ImaginationOwnershipException(id, USER_ID)
         }
 
         mvc.completeImagination(id)
