@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.futureMe.imagination
 
-import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotOwnerOfImaginationException
+import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.ImaginationOwnershipException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.ui.request.ImaginationRequest
 import org.junit.jupiter.api.DisplayName
@@ -36,11 +36,11 @@ class ImaginationTest {
 
     @Test
     @DisplayName("소유자가 아닌 사용자 상상해보기 수정 테스트")
-    fun given_userWhoNotOwner_when_update_then_throwNotOwnerOfImaginationException(){
+    fun given_userWhoNotOwner_when_update_then_throwImaginationOwnershipException(){
         val imagination = Imagination.from(request, USER_ID)
         val updateRequest = ImaginationRequest("aa","www",Imagination.Color.GRAY2)
 
-        assertThrows<NotOwnerOfImaginationException> {  imagination.update(updateRequest, 2L)}
+        assertThrows<ImaginationOwnershipException> {  imagination.update(updateRequest, 2L)}
     }
 
     @Test
@@ -52,10 +52,10 @@ class ImaginationTest {
 
     @Test
     @DisplayName("소유자가 아닌 사용자 완료 테스트")
-    fun given_userWhoNotOwner_when_complete_then_throwNotOwnerOfImaginationException(){
+    fun given_userWhoNotOwner_when_complete_then_throwImaginationOwnershipException(){
         val imagination = Imagination.from(request, USER_ID)
 
-        assertThrows<NotOwnerOfImaginationException> {  imagination.complete(2L)}
+        assertThrows<ImaginationOwnershipException> {  imagination.complete(2L)}
     }
 
 }

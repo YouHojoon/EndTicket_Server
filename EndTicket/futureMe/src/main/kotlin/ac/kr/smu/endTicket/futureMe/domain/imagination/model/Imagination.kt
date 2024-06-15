@@ -1,14 +1,11 @@
 package ac.kr.smu.endTicket.futureMe.domain.imagination.model
 
 import ac.kr.smu.endTicket.common.jpa.Audit
-import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
-import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotOwnerOfImaginationException
+import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.ImaginationOwnershipException
 import ac.kr.smu.endTicket.futureMe.ui.request.ImaginationRequest
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
-import jakarta.validation.Constraint
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import kotlin.jvm.Transient
 
 /**
  * 상상해보기를 추상화한 객체
@@ -102,12 +99,12 @@ class Imagination private constructor(
     /**
      * 소유권을 확인하는 메소드
      * @param userID 사용자 ID
-     * @throws NotOwnerOfImaginationException 사용자가 소유자가 아닐 시
+     * @throws ImaginationOwnershipException 사용자가 소유자가 아닐 시
      */
-    @Throws(NotOwnerOfImaginationException::class)
+    @Throws(ImaginationOwnershipException::class)
     fun checkOwnership(userID: Long){
         if (this.userID != userID)
-            throw NotOwnerOfImaginationException(id, userID)
+            throw ImaginationOwnershipException(id, userID)
 
     }
 }

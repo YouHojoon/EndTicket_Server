@@ -50,6 +50,8 @@ tasks.jacocoTestCoverageVerification {
                 "*Application*",
                 "**.domain.*",
                 "**.job.*",
+                "**.response.*",
+                "**.request.*",
                 "**.TicketCompletionEventConsumeService*",
                 "**.listener.*",
             )
