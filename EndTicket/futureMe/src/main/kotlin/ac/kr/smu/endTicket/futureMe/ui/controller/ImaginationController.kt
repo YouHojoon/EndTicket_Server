@@ -3,7 +3,7 @@ package ac.kr.smu.endTicket.futureMe.ui.controller
 import ac.kr.smu.endTicket.common.web.response.ExceptionResponse
 import ac.kr.smu.endTicket.constant.HttpHeaderName
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotFoundImaginationException
-import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotOwnerOfImaginationException
+import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.ImaginationOwnershipException
 import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponses.imagination.*
 import ac.kr.smu.endTicket.futureMe.service.ImaginationService
 import ac.kr.smu.endTicket.futureMe.ui.request.ImaginationRequest
@@ -142,8 +142,8 @@ class ImaginationController(
         )
     }
 
-    @ExceptionHandler(NotOwnerOfImaginationException::class)
-    fun handleNotOwnerOfImaginationException(e: NotOwnerOfImaginationException): ResponseEntity<ExceptionResponse>{
+    @ExceptionHandler(ImaginationOwnershipException::class)
+    fun handleNotOwnerOfImaginationException(e: ImaginationOwnershipException): ResponseEntity<ExceptionResponse>{
         log.info("{id: ${e.id}, userID: ${e.userID}}",e)
         val status = HttpStatus.FORBIDDEN
 

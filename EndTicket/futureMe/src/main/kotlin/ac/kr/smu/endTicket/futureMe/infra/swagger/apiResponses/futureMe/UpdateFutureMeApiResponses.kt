@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponses.futureMe
 
+import ac.kr.smu.endTicket.common.web.response.BindExceptionResponse
 import ac.kr.smu.endTicket.common.web.response.ExceptionResponse
-import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
 import ac.kr.smu.endTicket.futureMe.ui.response.FutureMeResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -20,6 +20,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
             ]
         ),
         ApiResponse(
+            responseCode = "400",
+            description = "잘못된 요청",
+            content = [
+                Content(schema = Schema(implementation = BindExceptionResponse::class))
+            ]
+        ),
+        ApiResponse(
             responseCode = "404",
             description = "미래의 나가 존재하지 않음",
             content = [
@@ -30,4 +37,4 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 )
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class UpdateTitleApiResponses
+annotation class UpdateFutureMeApiResponses

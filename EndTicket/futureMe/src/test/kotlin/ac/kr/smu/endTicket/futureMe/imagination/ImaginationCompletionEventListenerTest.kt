@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.futureMe.imagination
 
+import KafkaMessageService
 import ac.kr.smu.endTicket.common.kafka.annotation.EnableAutoKafkaConfig
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
@@ -13,7 +14,10 @@ import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService
 import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventMessageService
 import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventResponse
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
+import ac.kr.smu.endTicket.test.mockAny
 import org.apache.kafka.clients.consumer.ConsumerRecord
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -21,11 +25,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.boot.test.mock.mockito.SpyBean
+import org.springframework.context.annotation.Import
+import org.springframework.context.annotation.Primary
 import org.springframework.kafka.listener.KafkaMessageListenerContainer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 
 @SpringBootTest(
@@ -34,7 +43,6 @@ import kotlin.test.assertEquals
         ImaginationCompletionEventListener::class,
         FutureMeEventService::class,
         KafkaAutoConfiguration::class,
-        KafkaConfig::class
     ]
 )
 @EmbeddedKafka(partitions = 3)
@@ -43,24 +51,33 @@ class ImaginationCompletionEventListenerTest @Autowired constructor(
     private val repo: EventRepository,
     @MockBean
     private val futureMeService: FutureMeService,
-
     private val broker: EmbeddedKafkaBroker,
     private val eventService: FutureMeEventService
 ) {
+
+    @SpyBean
+    private lateinit var messageService: KafkaMessageService<String, ImaginationCompletionEventResponse>
+
     private lateinit var container: KafkaMessageListenerContainer<String, ImaginationCompletionEventResponse>
+    private val queue = LinkedBlockingQueue<ConsumerRecord<String, ImaginationCompletionEventResponse>>()
+
+    @BeforeEach
+    fun init(){
+        container = createKafkaContainer(broker, KafkaTopic.IMAGINATION_COMPLETION)
+        container.messageListener(broker){
+            queue.add(it)
+        }
+    }
+    @AfterEach
+    fun reset(){
+        container.stop()
+    }
 
     @Test
     @DisplayName("상상해보기 완료 이벤트 테스트")
     fun given_imaginationCompletionEvent_then_saveEvent_and_sendMessage(){
         val imagination = Imagination.from(request, USER_ID)
         val event = ImaginationCompletionEvent(imagination)
-
-        container = createKafkaContainer(broker, KafkaTopic.IMAGINATION_COMPLETION)
-
-        val queue = LinkedBlockingQueue<ConsumerRecord<String, ImaginationCompletionEventResponse>>()
-        container.messageListener(broker){
-            queue.add(it)
-        }
 
         eventService.eventPublish(event)
 

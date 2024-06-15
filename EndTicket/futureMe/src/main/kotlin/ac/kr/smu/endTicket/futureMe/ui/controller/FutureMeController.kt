@@ -7,8 +7,8 @@ import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.UnsupportedCharact
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponses.futureMe.*
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
-import ac.kr.smu.endTicket.futureMe.ui.request.FutureMeCharacterRequest
-import ac.kr.smu.endTicket.futureMe.ui.request.UpdateFutureMeTitleRequest
+import ac.kr.smu.endTicket.futureMe.ui.request.CreateFutureMeRequest
+import ac.kr.smu.endTicket.futureMe.ui.request.UpdateFutureMeRequest
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -57,11 +57,11 @@ class FutureMeController(
     fun createFutureMe(
         @Parameter(
             name = "캐릭터의 타입",
-            schema = Schema(implementation = FutureMeCharacterRequest::class),
+            schema = Schema(implementation = CreateFutureMeRequest::class),
             required = true
         )
         @RequestBody
-        request: FutureMeCharacterRequest,
+        request: CreateFutureMeRequest,
 
         @Parameter(hidden = true)
         @RequestHeader(HttpHeaderName.USER_ID)
@@ -79,38 +79,22 @@ class FutureMeController(
         ))
     }
 
-    @PatchMapping("/title")
-    @UpdateTitleApiResponses
+    @PatchMapping
+    @UpdateFutureMeApiResponses
     fun updateTitle(
         @Parameter(
-            description = "미래의 나 제목 등록/변경 요청",
-            schema = Schema(implementation = UpdateFutureMeTitleRequest::class),
+            description = "미래의 나 수정 요청",
+            schema = Schema(implementation = UpdateFutureMeRequest::class),
             required = true
         )
         @RequestBody
         @Valid
-        request: UpdateFutureMeTitleRequest,
+        request: UpdateFutureMeRequest,
 
         @RequestHeader(HttpHeaderName.USER_ID)
         @Parameter(hidden = true)
         userID: Long
-    ) = ResponseEntity.ok(service.updateTitle(request,userID))
-
-    @PatchMapping("/character")
-    @UpdateCharacterApiResponses
-    fun updateCharacter(
-        @Parameter(
-            description = "미래의 나 캐릭터 변경 요청",
-            required = true,
-            schema = Schema(implementation = FutureMeCharacterRequest::class)
-        )
-        @RequestBody
-        request: FutureMeCharacterRequest,
-
-        @RequestHeader(HttpHeaderName.USER_ID)
-        @Parameter(hidden = true)
-        userID: Long
-    ) = ResponseEntity.ok(service.updateCharacter(request, userID))
+    ) = ResponseEntity.ok(service.update(request,userID))
 
     @ExceptionHandler(NotFoundFutureMeException::class)
     fun handleNotFoundFutureMeException(e: NotFoundFutureMeException): ResponseEntity<ExceptionResponse>{
