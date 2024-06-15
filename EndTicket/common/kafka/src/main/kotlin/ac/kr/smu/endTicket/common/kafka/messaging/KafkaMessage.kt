@@ -5,7 +5,7 @@ package ac.kr.smu.endTicket.common.kafka.messaging
  * @property key 카프카 메시지의 키
  * @property payload 카프카 메시지의 페이로드
  */
-open class KafkaMessage<out K:Any, out V>(
+data class KafkaMessage<out K:Any, out V>(
     val key: K,
     val payload: V
 )
