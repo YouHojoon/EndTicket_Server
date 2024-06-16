@@ -3,11 +3,8 @@ package ac.kr.smu.endTicket.ticket
 import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endTicket.common.web.test.expectBindingException
 import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
-import ac.kr.smu.endTicket.constant.HttpHeaderName
-import ac.kr.smu.endTicket.test.mockAny
-import ac.kr.smu.endTicket.ticket.domain.exception.CacheEvictionFailureException
 import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
-import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
+import ac.kr.smu.endTicket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.service.TicketService
 import ac.kr.smu.endTicket.ticket.ui.controller.TicketController
@@ -16,17 +13,14 @@ import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.util.*
 
 @SpringBootTest(
     properties = [
@@ -87,7 +81,7 @@ class TicketControllerTest @Autowired constructor(
     fun given_userHasReachedTicketLimit_when_createTicket_then_expectStatusCode409_and_responseExceptionResponse(){
         Mockito
             .`when`(service.createTicket(TICKET_REQUEST, USER_ID))
-            .thenAnswer { throw IllegalStateException("티켓 개수 제한 이상으로 생성할 수 없습니다.") }
+            .thenThrow(IllegalStateException("티켓 개수 제한 이상으로 생성할 수 없습니다."))
 
         mvc.createTicket(TICKET_REQUEST)
             .andExpect(MockMvcResultMatchers.status().isConflict)
@@ -131,9 +125,7 @@ class TicketControllerTest @Autowired constructor(
     @DisplayName("존재하지 않는 티켓 수정 요청 테스트")
     fun given_notExistTicket_when_updateTicket_then_expectStatusCode404(){
         Mockito.`when`(service.updateTicket(UPDATE_REQUEST, 1L, USER_ID))
-            .thenAnswer {
-                throw NotFoundTicketException(1L)
-            }
+            .thenThrow(NotFoundTicketException(1L))
 
         mvc.updateTicket(UPDATE_REQUEST, 1L)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -146,9 +138,7 @@ class TicketControllerTest @Autowired constructor(
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
 
         Mockito.`when`(service.updateTicket(TICKET_REQUEST, ticket.id, USER_ID))
-            .thenAnswer {
-                throw NotOwnerOfTicketException(ticket.id, USER_ID)
-            }
+            .thenThrow(TicketOwnershipException(ticket.id, USER_ID))
 
         mvc.updateTicket(TICKET_REQUEST, ticket.id)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
@@ -176,9 +166,7 @@ class TicketControllerTest @Autowired constructor(
         val ticketID = 1L
 
         Mockito.`when`(service.swipeTicket(ticketID, USER_ID))
-            .thenAnswer {
-                throw NotFoundTicketException(ticketID)
-            }
+            .thenThrow( NotFoundTicketException(ticketID))
 
         mvc.swipeTicket(ticketID)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -191,9 +179,7 @@ class TicketControllerTest @Autowired constructor(
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
 
         Mockito.`when`(service.swipeTicket(ticket.id, USER_ID))
-            .thenAnswer {
-                throw NotOwnerOfTicketException(ticket.id, USER_ID)
-            }
+            .thenThrow(TicketOwnershipException(ticket.id, USER_ID))
 
         mvc.swipeTicket(ticket.id)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
@@ -207,11 +193,13 @@ class TicketControllerTest @Autowired constructor(
         val beforeSwipeCount = ticket.swipeCount
 
         Mockito.`when`(service.cancelSwipeTicket(ticket.id, USER_ID))
-            .thenAnswer {
-                ticket.cancelSwipeTicket(USER_ID)
-
-                TicketResponse.from(ticket)
-            }
+            .thenReturn(
+                ticket
+                    .let {
+                        it.cancelSwipeTicket(USER_ID)
+                        TicketResponse.from(it)
+                    }
+            )
 
         mvc.cancelSwipeTicket(ticket.id)
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -222,9 +210,7 @@ class TicketControllerTest @Autowired constructor(
     @DisplayName("존재하지 않는 티켓 스와이프 취소 테스트")
     fun given_notExistTicket_when_cancelSwipeTicket_then_expectStatusCode404_and_responseExceptionResponse(){
         Mockito.`when`(service.cancelSwipeTicket(Mockito.anyLong(), Mockito.anyLong()))
-            .thenAnswer {
-                throw NotFoundTicketException(1L)
-            }
+            .thenThrow(NotFoundTicketException(1L))
 
         mvc.cancelSwipeTicket(1L)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -237,7 +223,7 @@ class TicketControllerTest @Autowired constructor(
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID).also { it.swipeAndCheckCompletion(USER_ID) }
 
         Mockito.`when`(service.cancelSwipeTicket(ticket.id, USER_ID))
-            .thenAnswer { throw NotOwnerOfTicketException(ticket.id, USER_ID) }
+            .thenThrow(TicketOwnershipException(ticket.id, USER_ID))
 
         mvc.cancelSwipeTicket(ticket.id)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
@@ -272,9 +258,8 @@ class TicketControllerTest @Autowired constructor(
     fun given_notExistTicket_when_deleteTicket_then_expectStatusCode404_and_responseExceptionResponse(){
         Mockito.`when`(
             service.deleteTicket(Mockito.anyLong(), Mockito.anyLong())
-        ).thenAnswer {
-            throw NotFoundTicketException(1L)
-        }
+        ).thenThrow(NotFoundTicketException(1L))
+
 
         mvc.deleteTicket(1L)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -286,9 +271,7 @@ class TicketControllerTest @Autowired constructor(
     fun given_userWhoNotOwner_when_deleteTicket_then_throwNotOwnerOfTicketException(){
         Mockito.`when`(
             service.deleteTicket(Mockito.anyLong(), Mockito.anyLong())
-        ).thenAnswer {
-            throw NotOwnerOfTicketException(1L,  USER_ID)
-        }
+        ).thenThrow(TicketOwnershipException(1L,  USER_ID))
 
         mvc.deleteTicket(1L)
             .andExpect(MockMvcResultMatchers.status().isForbidden)

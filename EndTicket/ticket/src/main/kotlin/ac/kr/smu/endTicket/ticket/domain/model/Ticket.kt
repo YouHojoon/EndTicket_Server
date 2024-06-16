@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.ticket.domain.model
 
 import ac.kr.smu.endTicket.ticket.domain.converter.MaxSwipeCountConverter
-import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
+import ac.kr.smu.endTicket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
@@ -127,9 +127,9 @@ class Ticket private constructor(
      * 티켓의 수정 메소드
      * @param request 수정에 사용할 요청
      * @param userID 수정 요청을 한 사용자
-     * @throws NotOwnerOfTicketException 티켓의 소유자가 아닌 사용자가 요청했을 시
+     * @throws TicketOwnershipException 티켓의 소유자가 아닌 사용자가 요청했을 시
      */
-    @Throws(NotOwnerOfTicketException::class)
+    @Throws(TicketOwnershipException::class)
     fun updateAndCheckCompletion(request: TicketRequest, userID: Long): Boolean{
         checkOwnership(userID)
 
@@ -147,9 +147,9 @@ class Ticket private constructor(
     /**
      * 티켓을 스와이프하고 완료를 확인하는 메소드
      * @return 완료 여부
-     * @throws NotOwnerOfTicketException 티켓의 소유자가 아닌 사용자가 요청했을 시
+     * @throws TicketOwnershipException 티켓의 소유자가 아닌 사용자가 요청했을 시
      */
-    @Throws(NotOwnerOfTicketException::class)
+    @Throws(TicketOwnershipException::class)
     fun swipeAndCheckCompletion(userID: Long): Boolean{
         checkOwnership(userID)
 
@@ -161,7 +161,7 @@ class Ticket private constructor(
         return swipeCount == maxSwipeCount.value
     }
 
-    @Throws(NotOwnerOfTicketException::class)
+    @Throws(TicketOwnershipException::class)
     fun cancelSwipeTicket(userID: Long){
         checkOwnership(userID)
 
@@ -186,11 +186,11 @@ class Ticket private constructor(
 
     /**
      * 티켓의 소유권을 확인하는 메소드
-     * @throws NotOwnerOfTicketException 소유자가 아닐 시
+     * @throws TicketOwnershipException 소유자가 아닐 시
      */
-    @Throws(NotOwnerOfTicketException::class)
+    @Throws(TicketOwnershipException::class)
     fun checkOwnership(userID: Long){
         if (userID != this.userID)
-            throw NotOwnerOfTicketException(id,userID)
+            throw TicketOwnershipException(id,userID)
     }
 }

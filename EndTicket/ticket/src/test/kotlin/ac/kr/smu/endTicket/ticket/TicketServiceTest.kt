@@ -3,7 +3,7 @@ package ac.kr.smu.endTicket.ticket
 import ac.kr.smu.endTicket.test.mockAny
 import ac.kr.smu.endTicket.ticket.domain.exception.CacheEvictionFailureException
 import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
-import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
+import ac.kr.smu.endTicket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endTicket.ticket.service.TicketCompletionEventService
@@ -118,11 +118,11 @@ class TicketServiceTest (
 
     @Test
     @DisplayName("티켓의 소유자가 아닌 사용자의 수정 테스트")
-    fun given_userWhoNotOwnerOfTicket_then_throwNotOwnerOfTicketException(){
+    fun given_userWhoNotOwnerOfTicket_then_throwTicketOwnershipException(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
-        assertThrows<NotOwnerOfTicketException> {  service.updateTicket(UPDATE_REQUEST, ticket.id, 2L)}
+        assertThrows<TicketOwnershipException> {  service.updateTicket(UPDATE_REQUEST, ticket.id, 2L)}
     }
 
     @Test
@@ -140,12 +140,12 @@ class TicketServiceTest (
     }
     @Test
     @DisplayName("티켓 소유자가 아닌 사용자의 스와이프 테스트")
-    fun given_userWhoNotOwnerOfTicket_whenSwipeTicket_then_throwNotOwnerOfTicketException(){
+    fun given_userWhoNotOwnerOfTicket_whenSwipeTicket_then_throwTicketOwnershipException(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
 
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
-        assertThrows<NotOwnerOfTicketException> {  service.swipeTicket(ticket.id, 2L)}
+        assertThrows<TicketOwnershipException> {  service.swipeTicket(ticket.id, 2L)}
     }
     @Test
     @DisplayName("존재하지 않는 티켓 스와이프 테스트")
@@ -181,14 +181,14 @@ class TicketServiceTest (
 
     @Test
     @DisplayName("소유자가 아닌 사용자 티켓 스와이프 취소 테스트")
-    fun given_userWhoNotOwnerOfTicket_whenCancelSwipeTicket_then_throwNotOwnerOfTicket(){
+    fun given_userWhoNotOwnerOfTicket_whenCancelSwipeTicket_then_throwTicketOwnershipException(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
         ticket.swipeAndCheckCompletion(ticket.userID)
 
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
 
-        assertThrows<NotOwnerOfTicketException> {  service.cancelSwipeTicket(ticket.id, 2L)}
+        assertThrows<TicketOwnershipException> {  service.cancelSwipeTicket(ticket.id, 2L)}
     }
 
     @Test
@@ -262,13 +262,13 @@ class TicketServiceTest (
 
     @Test
     @DisplayName("소유자가 아닌 사용자의 티켓 삭제 테스트")
-    fun given_userWhoNotOwner_when_deleteTicket_then_throwNotOwnerOfTicketException(){
+    fun given_userWhoNotOwner_when_deleteTicket_then_throwTicketOwnershipException(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
 
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
 
-        assertThrows<NotOwnerOfTicketException> {  service.deleteTicket(ticket.id, 2)}
+        assertThrows<TicketOwnershipException> {  service.deleteTicket(ticket.id, 2)}
     }
 
     @Test

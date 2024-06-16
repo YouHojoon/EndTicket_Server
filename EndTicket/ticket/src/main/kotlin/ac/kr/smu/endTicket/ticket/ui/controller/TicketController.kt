@@ -2,7 +2,7 @@ package ac.kr.smu.endTicket.ticket.ui.controller
 
 import ac.kr.smu.endTicket.common.web.response.ExceptionResponse
 import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
-import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
+import ac.kr.smu.endTicket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endTicket.ticket.infra.swagger.*
 import ac.kr.smu.endTicket.ticket.service.TicketService
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
@@ -126,8 +126,8 @@ class TicketController(
             )
         )
     }
-    @ExceptionHandler(NotOwnerOfTicketException::class)
-    fun handleNotOwnerOfTicketException(e: NotOwnerOfTicketException): ResponseEntity<ExceptionResponse>{
+    @ExceptionHandler(TicketOwnershipException::class)
+    fun handleNotOwnerOfTicketException(e: TicketOwnershipException): ResponseEntity<ExceptionResponse>{
         log.info("id: ${e.id}, userID: ${e.userID}", e)
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
             ExceptionResponse(
