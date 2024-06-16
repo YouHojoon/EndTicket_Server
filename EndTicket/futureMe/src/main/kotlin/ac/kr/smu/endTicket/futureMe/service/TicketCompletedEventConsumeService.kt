@@ -2,8 +2,8 @@ package ac.kr.smu.endTicket.futureMe.service
 
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
-import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent
-import ac.kr.smu.endTicket.futureMe.infra.messaging.TicketCompletionEventResponse
+import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletedEvent
+import ac.kr.smu.endTicket.futureMe.infra.messaging.TicketCompletedEventResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
@@ -18,11 +18,11 @@ import java.time.Duration
  * @property futureMeService 경험치 증가를 위한 미래의 나 서비스
  */
 @Service
-class TicketCompletionEventConsumeService(
+class TicketCompletedEventConsumeService(
     private val repo: EventRepository,
     private val futureMeService: FutureMeService
 ) {
-    private val log = LoggerFactory.getLogger(TicketCompletionEvent::class.java)
+    private val log = LoggerFactory.getLogger(TicketCompletedEvent::class.java)
 
     /**
      * 티켓 완료 이벤트를 받는 메소드,
@@ -32,10 +32,10 @@ class TicketCompletionEventConsumeService(
      */
     @KafkaListener(topics = [KafkaTopic.TICKET_COMPLETION])
     @Transactional
-    fun consume(record: ConsumerRecord<String, TicketCompletionEventResponse>, ack: Acknowledgment){
+    fun consume(record: ConsumerRecord<String, TicketCompletedEventResponse>, ack: Acknowledgment){
         try {
             if (!repo.existsByEventIDAndType(record.value().id, "TicketCompletionEvent")){
-                val event = TicketCompletionEvent(record.value().id, record.key().toLong())
+                val event = TicketCompletedEvent(record.value().id, record.key().toLong())
 
                 futureMeService.gainExperiencePoints(event)
                 repo.save(event)

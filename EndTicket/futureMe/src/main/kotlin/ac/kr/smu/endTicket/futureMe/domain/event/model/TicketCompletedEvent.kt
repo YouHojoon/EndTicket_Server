@@ -9,7 +9,7 @@ import jakarta.persistence.Entity
  * @property userID ticket의 소유자 id
  */
 @Entity
-class TicketCompletionEvent(
+class TicketCompletedEvent(
     id: Long,
     userID: Long
 ): Event(id, userID)

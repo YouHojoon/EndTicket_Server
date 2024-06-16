@@ -2,15 +2,14 @@ package ac.kr.smu.endTicket.futureMe.imagination
 
 import KafkaMessageService
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
-import ac.kr.smu.endTicket.common.kafka.messaging.KafkaMessage
 import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endTicket.common.kafka.test.messageListener
 import ac.kr.smu.endTicket.futureMe.domain.event.model.Event
-import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
-import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventResponse
-import ac.kr.smu.endTicket.futureMe.job.ImaginationCompletionEventJob
+import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletedEventResponse
+import ac.kr.smu.endTicket.futureMe.job.ImaginationCompletedEventJob
 import ac.kr.smu.endTicket.test.mockAny
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.AfterEach
@@ -26,8 +25,6 @@ import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.kafka.listener.KafkaMessageListenerContainer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
-import org.springframework.scheduling.annotation.EnableScheduling
-import org.springframework.scheduling.annotation.SchedulingConfiguration
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.test.assertEquals
@@ -36,20 +33,20 @@ import kotlin.test.assertTrue
 @SpringBootTest(
     classes = [
         KafkaAutoConfiguration::class,
-        ImaginationCompletionEventJob::class,
+        ImaginationCompletedEventJob::class,
     ]
 )
 @EmbeddedKafka(partitions = 3)
-class ImaginationCompletionEventJobTest @Autowired constructor(
+class ImaginationCompletedEventJobTest @Autowired constructor(
     @MockBean
     private val repo: EventRepository,
     private val broker: EmbeddedKafkaBroker,
-    private val job: ImaginationCompletionEventJob
+    private val job: ImaginationCompletedEventJob
 ) {
     @SpyBean
-    private lateinit var messageService: KafkaMessageService<String, ImaginationCompletionEventResponse>
-    private lateinit var container: KafkaMessageListenerContainer<String, ImaginationCompletionEventResponse>
-    private val queue = LinkedBlockingQueue<ConsumerRecord<String, ImaginationCompletionEventResponse>>()
+    private lateinit var messageService: KafkaMessageService<String, ImaginationCompletedEventResponse>
+    private lateinit var container: KafkaMessageListenerContainer<String, ImaginationCompletedEventResponse>
+    private val queue = LinkedBlockingQueue<ConsumerRecord<String, ImaginationCompletedEventResponse>>()
 
     @BeforeEach
     fun init(){
@@ -65,7 +62,7 @@ class ImaginationCompletionEventJobTest @Autowired constructor(
     @Test
     @DisplayName("전송되지 않은 상상해보기 완료 이벤트 재전송 테스트")
     fun given_notSentImaginationCompletionEvent_when_resendImaginationCompletionEvent_then_resendMessage_and_save(){
-        val events = setOf(ImaginationCompletionEvent(
+        val events = setOf(ImaginationCompletedEvent(
             Imagination.from(request, USER_ID)
         ))
 
@@ -85,13 +82,13 @@ class ImaginationCompletionEventJobTest @Autowired constructor(
             assertEquals(message.payload.color, record.value().color)
         }
 
-        Mockito.verify(repo, Mockito.atLeast(1)).saveAll(mockAny<Collection<ImaginationCompletionEvent>>())
+        Mockito.verify(repo, Mockito.atLeast(1)).saveAll(mockAny<Collection<ImaginationCompletedEvent>>())
     }
 
     @Test
     @DisplayName("이벤트 재전송 실패 테스트")
     fun given_notSentImaginationCompletionEvent_when_resendImaginationCompletionEventFail_then_doNothing() {
-        val event = ImaginationCompletionEvent(Imagination.from(request, USER_ID))
+        val event = ImaginationCompletedEvent(Imagination.from(request, USER_ID))
         val events = setOf(event)
 
         Mockito.doReturn(events)

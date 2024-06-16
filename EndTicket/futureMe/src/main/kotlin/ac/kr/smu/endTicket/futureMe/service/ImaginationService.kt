@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.futureMe.service
 
-import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.ImaginationNotFoundException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.domain.imagination.repository.ImaginationRepository
@@ -51,7 +51,7 @@ class ImaginationService(
     }
 
     /**
-     * 상상해보기 완료 메소드, 완료를 성공하면 [ImaginationCompletionEvent]를 발행한다.
+     * 상상해보기 완료 메소드, 완료를 성공하면 [ImaginationCompletedEvent]를 발행한다.
      * @param id 상상해보기 id
      * @param userID 사용자 id
      * @throws ImaginationNotFoundException 상상해보기가 존재하지 않을 시
@@ -61,7 +61,7 @@ class ImaginationService(
         val imagination = repo.findById(id).getOrNull() ?: throw ImaginationNotFoundException(id)
 
         imagination.complete(userID)
-        futureMeEventService.eventPublish(ImaginationCompletionEvent(imagination))
+        futureMeEventService.publishEvent(ImaginationCompletedEvent(imagination))
     }
 
     /**

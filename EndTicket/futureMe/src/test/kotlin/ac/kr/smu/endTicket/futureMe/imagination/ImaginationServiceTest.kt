@@ -91,7 +91,7 @@ class ImaginationServiceTest(
 
         service.completeImagination(imagination.id, USER_ID)
 
-        Mockito.verify(eventService, Mockito.times(1)).eventPublish(mockAny())
+        Mockito.verify(eventService, Mockito.times(1)).publishEvent(mockAny())
     }
 
     @Test
