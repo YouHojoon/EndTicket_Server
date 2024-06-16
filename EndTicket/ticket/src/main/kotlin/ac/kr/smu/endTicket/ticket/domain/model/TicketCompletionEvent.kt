@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.ticket.domain.model
 
 import ac.kr.smu.endTicket.common.jpa.Audit
-import ac.kr.smu.endTicket.ticket.infra.messaging.TicketCompletionEventMessage
+import ac.kr.smu.endTicket.common.kafka.messaging.KafkaMessage
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
@@ -32,7 +32,7 @@ class TicketCompletionEvent(
     /**
      * 메시지를 전송하기 위한 응답으로 변환하는 메소드
      */
-    fun toMessage(): TicketCompletionEventMessage = TicketCompletionEventMessage(ticket.userID.toString(), TicketResponse.from(ticket))
+    fun toMessage() = KafkaMessage(ticket.userID.toString(), TicketResponse.from(ticket))
 
     fun successSend(){
         isSent = true
