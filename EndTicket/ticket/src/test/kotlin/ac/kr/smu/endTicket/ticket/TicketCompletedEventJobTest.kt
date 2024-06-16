@@ -1,14 +1,14 @@
 package ac.kr.smu.endTicket.ticket
 
+import KafkaMessageService
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endTicket.common.kafka.test.messageListener
 import ac.kr.smu.endTicket.test.mockAny
-import ac.kr.smu.endTicket.ticket.job.TicketCompletionEventJob
+import ac.kr.smu.endTicket.ticket.job.TicketCompletedEventJob
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
-import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
-import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
-import ac.kr.smu.endTicket.ticket.infra.config.KafkaConfig
+import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletedEvent
+import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletedEventRepository
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.AfterEach
@@ -18,10 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.kafka.listener.KafkaMessageListenerContainer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
-import org.springframework.scheduling.annotation.SchedulingConfiguration
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -31,19 +32,21 @@ import kotlin.test.assertTrue
 
 @SpringBootTest(
     classes = [
-        TicketCompletionEventJob::class,
-        KafkaAutoConfiguration::class,
-        KafkaConfig::class,
-              ],
+        TicketCompletedEventJob::class,
+        KafkaAutoConfiguration::class],
 )
 @EmbeddedKafka
-class TicketCompletionEventJobTest @Autowired constructor(
+class TicketCompletedEventJobTest @Autowired constructor(
+    @SpyBean
+    private val messageService: KafkaMessageService<String, TicketResponse>,
     @MockBean
-    private val repo: TicketCompletionEventRepository,
+    private val repo: TicketCompletedEventRepository,
     private val broker: EmbeddedKafkaBroker,
-    private val job: TicketCompletionEventJob
+    private val job: TicketCompletedEventJob
 ) {
+
     private lateinit var container: KafkaMessageListenerContainer<String, TicketResponse>
+
     @BeforeTest
     fun init(){
         container = createKafkaContainer(broker, KafkaTopic.TICKET_COMPLETION)
@@ -54,8 +57,8 @@ class TicketCompletionEventJobTest @Autowired constructor(
     }
     @Test
     @DisplayName("전송 실패한 티켓 완료 이벤트 재전송 테스트")
-    fun after_fixedDelay_then_runResendTicketCompletionEvent(){
-        val events = setOf(TicketCompletionEvent(Ticket.from(TICKET_REQUEST, USER_ID)))
+    fun given_notSentTicketCompletedEvent_when_resendTicketCompletionEvent_then_resendMessage_and_saveIsSent(){
+        val events = setOf(TicketCompletedEvent(Ticket.from(TICKET_REQUEST, USER_ID)))
         val queue = LinkedBlockingQueue<ConsumerRecord<String, TicketResponse>>()
 
         Mockito.`when`(repo.findByIsSentFalseAndAuditCreatedAtBefore(mockAny()))
@@ -64,7 +67,7 @@ class TicketCompletionEventJobTest @Autowired constructor(
             queue.add(it)
         }
 
-        job.resendTicketCompletionEvent()
+        job.resendTicketCompletedEvent()
 
         Thread.sleep(500)
         assertTrue(queue.isNotEmpty())
@@ -75,9 +78,22 @@ class TicketCompletionEventJobTest @Autowired constructor(
             assertEquals(message.payload, record.value())
         }
 
-        Mockito.verify(repo, Mockito.atLeast(1))
-            .saveAll(Mockito.argThat<Collection<TicketCompletionEvent>> { it.isNotEmpty() })
+        Mockito.verify(repo).saveAll(Mockito.argThat<Collection<TicketCompletedEvent>> { it.isNotEmpty() })
     }
 
+    @Test
+    @DisplayName("티켓 완료 이벤트 메시지 재전송 실패 테스트")
+    fun given_notSentTicketCompletedEvent_when_resendTicketCompletionEventFail_then_doNothing(){
+        val events = setOf(TicketCompletedEvent(Ticket.from(TICKET_REQUEST, USER_ID)))
+
+        Mockito.`when`(repo.findByIsSentFalseAndAuditCreatedAtBefore(mockAny()))
+            .thenReturn(events)
+        Mockito.`when`(messageService.send(Mockito.anyString(), Mockito.anyCollection()))
+            .thenReturn(listOf(CompletableFuture.failedFuture(RuntimeException())))
+
+        job.resendTicketCompletedEvent()
+
+        Mockito.verify(repo).saveAll(Mockito.argThat<Collection<TicketCompletedEvent>> { it.isEmpty() })
+    }
 
 }

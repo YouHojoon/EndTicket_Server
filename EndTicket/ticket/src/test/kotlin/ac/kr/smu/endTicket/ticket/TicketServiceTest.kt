@@ -5,7 +5,7 @@ import ac.kr.smu.endTicket.ticket.domain.exception.TicketNotFoundException
 import ac.kr.smu.endTicket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
-import ac.kr.smu.endTicket.ticket.service.TicketCompletionEventService
+import ac.kr.smu.endTicket.ticket.service.TicketCompletedEventService
 import ac.kr.smu.endTicket.ticket.service.TicketService
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
@@ -27,10 +27,10 @@ class TicketServiceTest (
     @Mock
     private val repo: TicketRepository,
     @Mock
-    private val eventService: TicketCompletionEventService,
+    private val eventService: TicketCompletedEventService,
 
 
-) {
+    ) {
     @InjectMocks
     private lateinit var service: TicketService
     @BeforeEach
@@ -97,7 +97,7 @@ class TicketServiceTest (
         val updatedTicket = service.updateTicket(TICKET_REQUEST, ticket.id , USER_ID)
 
         assertEquals(TicketResponse.from(ticket), updatedTicket)
-        Mockito.verify(eventService, Mockito.times(1)).eventPublish(mockAny())
+        Mockito.verify(eventService, Mockito.times(1)).publishEvent(mockAny())
     }
 
     @Test
@@ -186,7 +186,7 @@ class TicketServiceTest (
             service.swipeTicket(ticket.id, ticket.userID)
         }
 
-        Mockito.verify(eventService).eventPublish(mockAny())
+        Mockito.verify(eventService).publishEvent(mockAny())
     }
 
     @Test
