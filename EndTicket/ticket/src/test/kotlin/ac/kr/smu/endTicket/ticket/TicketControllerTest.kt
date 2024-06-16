@@ -3,7 +3,7 @@ package ac.kr.smu.endTicket.ticket
 import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endTicket.common.web.test.expectBindingException
 import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
-import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
+import ac.kr.smu.endTicket.ticket.domain.exception.TicketNotFoundException
 import ac.kr.smu.endTicket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.service.TicketService
@@ -125,7 +125,7 @@ class TicketControllerTest @Autowired constructor(
     @DisplayName("존재하지 않는 티켓 수정 요청 테스트")
     fun given_notExistTicket_when_updateTicket_then_expectStatusCode404(){
         Mockito.`when`(service.updateTicket(UPDATE_REQUEST, 1L, USER_ID))
-            .thenThrow(NotFoundTicketException(1L))
+            .thenThrow(TicketNotFoundException(1L))
 
         mvc.updateTicket(UPDATE_REQUEST, 1L)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -166,7 +166,7 @@ class TicketControllerTest @Autowired constructor(
         val ticketID = 1L
 
         Mockito.`when`(service.swipeTicket(ticketID, USER_ID))
-            .thenThrow( NotFoundTicketException(ticketID))
+            .thenThrow( TicketNotFoundException(ticketID))
 
         mvc.swipeTicket(ticketID)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -210,7 +210,7 @@ class TicketControllerTest @Autowired constructor(
     @DisplayName("존재하지 않는 티켓 스와이프 취소 테스트")
     fun given_notExistTicket_when_cancelSwipeTicket_then_expectStatusCode404_and_responseExceptionResponse(){
         Mockito.`when`(service.cancelSwipeTicket(Mockito.anyLong(), Mockito.anyLong()))
-            .thenThrow(NotFoundTicketException(1L))
+            .thenThrow(TicketNotFoundException(1L))
 
         mvc.cancelSwipeTicket(1L)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -258,7 +258,7 @@ class TicketControllerTest @Autowired constructor(
     fun given_notExistTicket_when_deleteTicket_then_expectStatusCode404_and_responseExceptionResponse(){
         Mockito.`when`(
             service.deleteTicket(Mockito.anyLong(), Mockito.anyLong())
-        ).thenThrow(NotFoundTicketException(1L))
+        ).thenThrow(TicketNotFoundException(1L))
 
 
         mvc.deleteTicket(1L)

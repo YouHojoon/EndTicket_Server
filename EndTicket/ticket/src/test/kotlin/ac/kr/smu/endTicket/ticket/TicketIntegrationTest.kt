@@ -3,13 +3,10 @@ package ac.kr.smu.endTicket.ticket
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endTicket.common.kafka.test.messageListener
-import ac.kr.smu.endTicket.common.redis.config.AutoRedisConfig
-import ac.kr.smu.endTicket.common.redis.test.RedisTestConfig
 import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endTicket.common.web.test.andReturn
 import ac.kr.smu.endTicket.common.web.test.expectBindingException
 import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
-import ac.kr.smu.endTicket.constant.HttpHeaderName
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
@@ -28,25 +25,18 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
-import org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.kafka.listener.KafkaMessageListenerContainer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
-import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.EnableTransactionManagement
-import org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
@@ -54,7 +44,6 @@ import kotlin.test.assertNotNull
 
 @SpringBootTest(
     classes = [
-        RedisAutoConfiguration::class,
         DataSourceAutoConfiguration::class,
         TransactionAutoConfiguration::class,
         HibernateJpaAutoConfiguration::class,
@@ -70,10 +59,8 @@ import kotlin.test.assertNotNull
 @EmbeddedKafka
 @EnableJpaRepositories("ac.kr.smu.endTicket.ticket.domain.repository")
 @EntityScan("ac.kr.smu.endTicket.ticket.domain.model")
-@Import(RedisTestConfig::class, AutoRedisConfig::class)
 class TicketIntegrationTest @Autowired constructor(
     controller: TicketController,
-    private val redisTemplate: RedisTemplate<String, Any>,
     private val ticketRepository: TicketRepository,
     private val eventRepository: TicketCompletionEventRepository,
     private val broker: EmbeddedKafkaBroker
@@ -87,9 +74,6 @@ class TicketIntegrationTest @Autowired constructor(
 
     @AfterEach
     fun reset(){
-        val connection = redisTemplate.connectionFactory?.connection ?: return
-        connection.serverCommands().flushAll()
-
         eventRepository.deleteAll()
         ticketRepository.deleteAll()
     }

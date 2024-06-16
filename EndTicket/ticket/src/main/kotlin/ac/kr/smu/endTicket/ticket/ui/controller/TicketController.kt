@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.ticket.ui.controller
 
 import ac.kr.smu.endTicket.common.web.response.ExceptionResponse
-import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
+import ac.kr.smu.endTicket.ticket.domain.exception.TicketNotFoundException
 import ac.kr.smu.endTicket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endTicket.ticket.infra.swagger.*
 import ac.kr.smu.endTicket.ticket.service.TicketService
@@ -115,8 +115,8 @@ class TicketController(
         service.deleteTicket(id,userID)
         return ResponseEntity.noContent().build()
     }
-    @ExceptionHandler(NotFoundTicketException::class)
-    fun handleNotFoundTicketException(e: NotFoundTicketException): ResponseEntity<ExceptionResponse>{
+    @ExceptionHandler(TicketNotFoundException::class)
+    fun handleNotFoundTicketException(e: TicketNotFoundException): ResponseEntity<ExceptionResponse>{
         log.info("id: ${e.id}", e)
         return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(
             ExceptionResponse(
