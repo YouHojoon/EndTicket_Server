@@ -2,7 +2,7 @@ package ac.kr.smu.endTicket.futureMe.ui.controller
 
 import ac.kr.smu.endTicket.common.web.response.ExceptionResponse
 import ac.kr.smu.endTicket.constant.HttpHeaderName
-import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.NotFoundFutureMeException
+import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.FutureMeNotFoundException
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.UnsupportedCharacterException
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponses.futureMe.*
@@ -96,8 +96,8 @@ class FutureMeController(
         userID: Long
     ) = ResponseEntity.ok(service.update(request,userID))
 
-    @ExceptionHandler(NotFoundFutureMeException::class)
-    fun handleNotFoundFutureMeException(e: NotFoundFutureMeException): ResponseEntity<ExceptionResponse>{
+    @ExceptionHandler(FutureMeNotFoundException::class)
+    fun handleNotFoundFutureMeException(e: FutureMeNotFoundException): ResponseEntity<ExceptionResponse>{
         val status = HttpStatus.NOT_FOUND
         log.info("{userID: ${e.userID}}", e)
 

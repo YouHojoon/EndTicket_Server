@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.futureMe.service
 
 import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
-import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotFoundImaginationException
+import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.ImaginationNotFoundException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.domain.imagination.repository.ImaginationRepository
 import ac.kr.smu.endTicket.futureMe.ui.request.ImaginationRequest
@@ -39,12 +39,12 @@ class ImaginationService(
      * @param id 상상해보기의 id
      * @param userID 수정을 요청한 사용자의 id
      * @return 수정된 상상해보기
-     * @throws NotFoundImaginationException 상상해보기가 존재하지 않을 시
+     * @throws ImaginationNotFoundException 상상해보기가 존재하지 않을 시
      */
-    @Throws(NotFoundImaginationException::class)
+    @Throws(ImaginationNotFoundException::class)
     @Transactional
     fun updateImagination(request: ImaginationRequest, id: Long, userID: Long): ImaginationResponse{
-        val imagination = repo.findById(id).getOrNull() ?: throw NotFoundImaginationException(id)
+        val imagination = repo.findById(id).getOrNull() ?: throw ImaginationNotFoundException(id)
 
         imagination.update(request,userID)
         return ImaginationResponse.from(imagination)
@@ -54,11 +54,11 @@ class ImaginationService(
      * 상상해보기 완료 메소드, 완료를 성공하면 [ImaginationCompletionEvent]를 발행한다.
      * @param id 상상해보기 id
      * @param userID 사용자 id
-     * @throws NotFoundImaginationException 상상해보기가 존재하지 않을 시
+     * @throws ImaginationNotFoundException 상상해보기가 존재하지 않을 시
      */
     @Transactional
     fun completeImagination(id: Long, userID: Long){
-        val imagination = repo.findById(id).getOrNull() ?: throw NotFoundImaginationException(id)
+        val imagination = repo.findById(id).getOrNull() ?: throw ImaginationNotFoundException(id)
 
         imagination.complete(userID)
         futureMeEventService.eventPublish(ImaginationCompletionEvent(imagination))
@@ -80,11 +80,11 @@ class ImaginationService(
      * 상상해보기 삭제
      * @param id 상상해보기 id
      * @param userID 사용자 id
-     * @throws NotFoundImaginationException 상상해보기가 존재하지 않을 시
+     * @throws ImaginationNotFoundException 상상해보기가 존재하지 않을 시
      */
     @Transactional
     fun deleteImagination(id: Long, userID: Long){
-        val imagination = repo.findById(id).getOrNull() ?: throw NotFoundImaginationException(id)
+        val imagination = repo.findById(id).getOrNull() ?: throw ImaginationNotFoundException(id)
 
         imagination.checkOwnership(userID)
         repo.delete(imagination)
