@@ -1,17 +1,14 @@
 package ac.kr.smu.endTicket.futureMe.imagination
 
 import KafkaMessageService
-import ac.kr.smu.endTicket.common.kafka.annotation.EnableAutoKafkaConfig
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endTicket.common.kafka.test.messageListener
 import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
-import ac.kr.smu.endTicket.futureMe.infra.config.KafkaConfig
 import ac.kr.smu.endTicket.futureMe.listener.ImaginationCompletionEventListener
 import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService
-import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventMessageService
 import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventResponse
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
 import ac.kr.smu.endTicket.test.mockAny
@@ -26,20 +23,16 @@ import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.mock.mockito.SpyBean
-import org.springframework.context.annotation.Import
-import org.springframework.context.annotation.Primary
 import org.springframework.kafka.listener.KafkaMessageListenerContainer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 
 @SpringBootTest(
     classes = [
-        ImaginationCompletionEventMessageService::class,
         ImaginationCompletionEventListener::class,
         FutureMeEventService::class,
         KafkaAutoConfiguration::class,
@@ -54,10 +47,8 @@ class ImaginationCompletionEventListenerTest @Autowired constructor(
     private val broker: EmbeddedKafkaBroker,
     private val eventService: FutureMeEventService
 ) {
-
     @SpyBean
     private lateinit var messageService: KafkaMessageService<String, ImaginationCompletionEventResponse>
-
     private lateinit var container: KafkaMessageListenerContainer<String, ImaginationCompletionEventResponse>
     private val queue = LinkedBlockingQueue<ConsumerRecord<String, ImaginationCompletionEventResponse>>()
 
@@ -93,5 +84,22 @@ class ImaginationCompletionEventListenerTest @Autowired constructor(
         assertEquals(event.userID.toString(), record.key())
 
         container.stop()
+    }
+    @Test
+    @DisplayName("상상해보기 완료 이벤트 메시지 전송 실패 테스트")
+    fun given_imaginationCompletionEvent_when_sendMessageFail_then_doNothing(){
+        val event = ImaginationCompletionEvent(Imagination.from(request, USER_ID))
+        val mockEvent = Mockito.spy(event)
+        val message = event.toMessage()
+
+        Mockito.`when`(mockEvent.toMessage())
+            .thenReturn(message)
+        Mockito.`when`(messageService.send(KafkaTopic.IMAGINATION_COMPLETION, message))
+            .thenReturn(CompletableFuture.failedFuture(RuntimeException()))
+
+        eventService.eventPublish(mockEvent)
+
+        Mockito.verify(repo, Mockito.only()).save(mockEvent)
+        Mockito.verify(futureMeService, Mockito.times(1)).gainExperiencePoints(mockEvent)
     }
 }

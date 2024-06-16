@@ -11,13 +11,12 @@ import java.time.LocalDateTime
 interface EventRepository: JpaRepository<Event, Long>{
     /**
      *
-     * eventID와 type을 이용해 이벤트를 조회하는 메소드
+     * eventID와 type을 이용해 이벤트의 존재 여부를 반환하는 메소드
      * @param eventID 이벤트 ID
      * @param type 이벤트 타입, [TicketCompletionEvent],[ImaginationCompletionEvent]
-     * @return 조회된 이벤트, 존재하지 않는다면 null이 반환된다.
+     * @return 존재 여부
      */
-    fun findByEventIDAndType(eventID: Long, type: String): Event?
-
+    fun existsByEventIDAndType(eventID: Long, type: String): Boolean
     @Query(
         "select e from ImaginationCompletionEvent e where e.isSent = false and e.audit.createdAt <= :date"
     )

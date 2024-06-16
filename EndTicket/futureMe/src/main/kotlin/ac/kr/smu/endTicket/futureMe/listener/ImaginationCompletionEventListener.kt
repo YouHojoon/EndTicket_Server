@@ -4,7 +4,6 @@ import KafkaMessageService
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
-import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventMessageService
 import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventResponse
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
 import org.slf4j.LoggerFactory
@@ -49,7 +48,8 @@ class ImaginationCompletionEventListener(
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun sendEvent(event: ImaginationCompletionEvent){
         val message = event.toMessage()
-        messageService.send(KafkaTopic.IMAGINATION_COMPLETION,message).whenCompleteAsync { result, e ->
+
+        messageService.send(KafkaTopic.IMAGINATION_COMPLETION,message).whenCompleteAsync { record, e ->
             if (e == null)
                 repo.save(event.also { it.successSend() })
             else

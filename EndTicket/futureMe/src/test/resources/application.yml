@@ -1,9 +1,7 @@
-
 schedules:
   resend-imagination-completion-event:
-    fixedDelay: 200 # 10분
-    initialDelay: 0 # 1분
-
+    fixedDelay: 600000 # 10분
+    initialDelay: 60000 # 1분
 spring:
   datasource:
     url: "jdbc:h2:mem:test"

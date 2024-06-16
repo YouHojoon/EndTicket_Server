@@ -11,7 +11,6 @@ import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.domain.imagination.repository.ImaginationRepository
 import ac.kr.smu.endTicket.futureMe.infra.config.KafkaConfig
-import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventMessageService
 import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventResponse
 import ac.kr.smu.endTicket.futureMe.listener.ImaginationCompletionEventListener
 import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService
@@ -50,7 +49,6 @@ import kotlin.test.assertNotNull
     classes = [
         FutureMeService::class,
         ImaginationCompletionEventListener::class,
-        ImaginationCompletionEventMessageService::class,
         ImaginationController::class,
         ImaginationService::class,
         FutureMeEventService::class,
