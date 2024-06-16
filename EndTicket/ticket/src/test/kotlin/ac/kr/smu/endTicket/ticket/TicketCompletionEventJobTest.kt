@@ -11,6 +11,7 @@ import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventReposit
 import ac.kr.smu.endTicket.ticket.infra.config.KafkaConfig
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,6 +23,7 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.scheduling.annotation.SchedulingConfiguration
 import java.util.concurrent.LinkedBlockingQueue
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -32,43 +34,39 @@ import kotlin.test.assertTrue
         TicketCompletionEventJob::class,
         KafkaAutoConfiguration::class,
         KafkaConfig::class,
-        SchedulingConfiguration::class
               ],
-    properties = [
-        "schedules.resend-ticket-completion-event.fixedDelay=200",
-        "schedules.resend-ticket-completion-event.initialDelay=0"
-    ],
 )
 @EmbeddedKafka
 class TicketCompletionEventJobTest @Autowired constructor(
     @MockBean
     private val repo: TicketCompletionEventRepository,
     private val broker: EmbeddedKafkaBroker,
-
+    private val job: TicketCompletionEventJob
 ) {
     private lateinit var container: KafkaMessageListenerContainer<String, TicketResponse>
-
+    @BeforeTest
+    fun init(){
+        container = createKafkaContainer(broker, KafkaTopic.TICKET_COMPLETION)
+    }
+    @AfterEach
+    fun reset(){
+        container.stop()
+    }
     @Test
     @DisplayName("전송 실패한 티켓 완료 이벤트 재전송 테스트")
     fun after_fixedDelay_then_runResendTicketCompletionEvent(){
         val events = setOf(TicketCompletionEvent(Ticket.from(TICKET_REQUEST, USER_ID)))
-
-        Mockito.`when`(
-                repo.findByIsSentFalseAndAuditCreatedAtBefore(mockAny())
-            ).thenReturn(
-                events
-            )
-
         val queue = LinkedBlockingQueue<ConsumerRecord<String, TicketResponse>>()
 
-        container = createKafkaContainer(broker, KafkaTopic.TICKET_COMPLETION)
+        Mockito.`when`(repo.findByIsSentFalseAndAuditCreatedAtBefore(mockAny()))
+            .thenReturn(events)
         container.messageListener(broker){
             queue.add(it)
         }
 
+        job.resendTicketCompletionEvent()
+
         Thread.sleep(500)
-
-
         assertTrue(queue.isNotEmpty())
         for ((event, record) in events.zip(queue)){
             val message = event.toMessage()
@@ -77,8 +75,8 @@ class TicketCompletionEventJobTest @Autowired constructor(
             assertEquals(message.payload, record.value())
         }
 
-        Mockito.verify(repo, Mockito.atLeast(1)).saveAll(mockAny<Collection<TicketCompletionEvent>>())
-        container.stop()
+        Mockito.verify(repo, Mockito.atLeast(1))
+            .saveAll(Mockito.argThat<Collection<TicketCompletionEvent>> { it.isNotEmpty() })
     }
 
 
