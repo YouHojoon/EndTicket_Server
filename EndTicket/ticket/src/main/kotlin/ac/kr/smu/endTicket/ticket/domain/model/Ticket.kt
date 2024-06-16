@@ -1,10 +1,12 @@
 package ac.kr.smu.endTicket.ticket.domain.model
 
+import ac.kr.smu.endTicket.common.jpa.Audit
 import ac.kr.smu.endTicket.ticket.domain.converter.MaxSwipeCountConverter
 import ac.kr.smu.endTicket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
 
 /**
@@ -20,6 +22,7 @@ import java.time.LocalDateTime
 @Table(name = "ticket", indexes = [
     Index(name = "idx_user_id", columnList = "user_id")
 ])
+@EntityListeners(AuditingEntityListener::class)
 class Ticket private constructor(
     behavior: String,
     target: String,
@@ -30,9 +33,9 @@ class Ticket private constructor(
     @Column(name = "user_id", updatable = false, nullable = false)
     val userID: Long,
 ){
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     var behavior: String private set
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     var target: String private set
 
     @Column(nullable = false)
@@ -46,10 +49,6 @@ class Ticket private constructor(
     @Column(nullable = false)
     @Convert(converter = MaxSwipeCountConverter::class)
     var maxSwipeCount: MaxSwipeCount private set
-
-    @Transient
-    var shouldUpdate = false
-        private set
 
     init {
         this.behavior = behavior
@@ -83,12 +82,8 @@ class Ticket private constructor(
     var swipeCount: Int = 0
         private set
 
-    @Column(updatable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now()
-
-    @Column(nullable = true)
-    var updatedAt: LocalDateTime? = null
-        private set
+    @Embedded
+    val audit = Audit()
 
     enum class MaxSwipeCount(val value: Int){
         FIVE(5), TEN(10), FIFTEEN(15);
@@ -139,8 +134,6 @@ class Ticket private constructor(
         this.maxSwipeCount = request.maxSwipeCount
         this.type = request.type
 
-        setShouldUpdateTrue()
-
         return maxSwipeCount.value <= swipeCount
     }
 
@@ -153,10 +146,8 @@ class Ticket private constructor(
     fun swipeAndCheckCompletion(userID: Long): Boolean{
         checkOwnership(userID)
 
-        if (swipeCount < maxSwipeCount.value) {
-            setShouldUpdateTrue()
+        if (swipeCount < maxSwipeCount.value)
             swipeCount++
-        }
 
         return swipeCount == maxSwipeCount.value
     }
@@ -165,23 +156,9 @@ class Ticket private constructor(
     fun cancelSwipeTicket(userID: Long){
         checkOwnership(userID)
 
-        if (swipeCount != 0){
-            setShouldUpdateTrue()
+        if (swipeCount != 0)
             swipeCount--
-        }
-    }
 
-    fun updateComplete(){
-        shouldUpdate = false
-    }
-
-    /**
-     * shouldUpdate가 false면 true로 변경하는 메소드
-     */
-    private fun setShouldUpdateTrue(){
-        updatedAt = LocalDateTime.now()
-        if (!shouldUpdate)
-            shouldUpdate = true
     }
 
     /**
