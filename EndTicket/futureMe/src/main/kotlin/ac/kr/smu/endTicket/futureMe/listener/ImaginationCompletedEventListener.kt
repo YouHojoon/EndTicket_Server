@@ -21,12 +21,12 @@ import org.springframework.transaction.event.TransactionalEventListener
  * @property futureMeService 상상해보기 완료의 경험치 상승을 위한 서비스
  */
 @Component
-class ImaginationCompletionEventListener(
+class ImaginationCompletedEventListener(
     private val repo: EventRepository,
     private val messageService: KafkaMessageService<String,ImaginationCompletedEventResponse>,
     private val futureMeService: FutureMeService
 ) {
-    private val log = LoggerFactory.getLogger(ImaginationCompletionEventListener::class.java)
+    private val log = LoggerFactory.getLogger(ImaginationCompletedEventListener::class.java)
     /**
      * 상상해보기 완료 이벤트가 발행되면 저장소에 저장하는 메소드
      * @param event 발행된 이벤트
@@ -34,8 +34,8 @@ class ImaginationCompletionEventListener(
     @Transactional
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     fun saveEvent(event: ImaginationCompletedEvent){
-        futureMeService.gainExperiencePoints(event)
         repo.save(event)
+        futureMeService.gainExperiencePoints(event)
     }
 
     /**
