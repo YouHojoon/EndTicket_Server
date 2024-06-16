@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.futureMe.futureMe
 
-import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
-import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletedEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletedEvent
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.FutureMeNotFoundException
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
@@ -110,26 +110,26 @@ class FutureMeServiceTest(
     fun given_event_when_gainExperiencePoints_then_increaseExperiencePointsForEachEvent(){
         val futureMe = FutureMe.from(CreateFutureMeRequest(Character.Type.CHEESE), USER_ID)
         var beforeExperiencePoints = futureMe.character.experiencePoints
-        val ticketCompletionEvent = Mockito.mock(TicketCompletionEvent::class.java)
-        val imaginationCompletionEvent = Mockito.mock(ImaginationCompletionEvent::class.java)
+        val ticketCompletedEvent = Mockito.mock(TicketCompletedEvent::class.java)
+        val imaginationCompletedEvent = Mockito.mock(ImaginationCompletedEvent::class.java)
 
         Mockito.`when`(repo.findById(USER_ID))
             .thenReturn(Optional.of(futureMe))
-        Mockito.`when`(ticketCompletionEvent.userID).thenReturn(USER_ID)
-        Mockito.`when`(imaginationCompletionEvent.userID).thenReturn(USER_ID)
+        Mockito.`when`(ticketCompletedEvent.userID).thenReturn(USER_ID)
+        Mockito.`when`(imaginationCompletedEvent.userID).thenReturn(USER_ID)
 
-        service.gainExperiencePoints(ticketCompletionEvent)
+        service.gainExperiencePoints(ticketCompletedEvent)
         assertEquals(beforeExperiencePoints + 20,futureMe.character.experiencePoints)
 
         beforeExperiencePoints = futureMe.character.experiencePoints
-        service.gainExperiencePoints(imaginationCompletionEvent)
+        service.gainExperiencePoints(imaginationCompletedEvent)
         assertEquals(beforeExperiencePoints + 10,futureMe.character.experiencePoints)
     }
 
     @Test
     @DisplayName("존재하지 않는 미래의 나 경험치 상승 테스트")
     fun given_notExistFutureMe_when_gainExperiencePoints_then_throwFutureMeNotFoundException(){
-        assertThrows<FutureMeNotFoundException> { service.gainExperiencePoints(Mockito.mock(ImaginationCompletionEvent::class.java)) }
+        assertThrows<FutureMeNotFoundException> { service.gainExperiencePoints(Mockito.mock(ImaginationCompletedEvent::class.java)) }
     }
 
     @Test

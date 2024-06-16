@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.futureMe.futureMe
 
-import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
-import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletedEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletedEvent
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -21,8 +21,8 @@ class CharacterTest {
     fun given_event_when_gainExperiencePoints_then_increasedExperiencePoints(){
         val character = Character(Character.Type.CHEESE)
 
-        character.gainExperiencePoints(Mockito.mock<TicketCompletionEvent>())
-        character.gainExperiencePoints(Mockito.mock<ImaginationCompletionEvent>())
+        character.gainExperiencePoints(Mockito.mock<TicketCompletedEvent>())
+        character.gainExperiencePoints(Mockito.mock<ImaginationCompletedEvent>())
 
         assertEquals(30, character.experiencePoints)
     }
@@ -34,7 +34,7 @@ class CharacterTest {
         val beforeLevel = character.level
 
         repeat(5){
-            character.gainExperiencePoints(Mockito.mock<TicketCompletionEvent>())
+            character.gainExperiencePoints(Mockito.mock<TicketCompletedEvent>())
         }
 
         assertEquals(beforeLevel + 1, character.level)
@@ -46,7 +46,7 @@ class CharacterTest {
     fun given_characterWithReachedMaxLevel_when_gainExperiencePoints_then_nothingChange(){
         val character = Character(Character.Type.CHEESE)
         repeat(40 * 1000 / 20){
-            character.gainExperiencePoints(Mockito.mock<TicketCompletionEvent>())
+            character.gainExperiencePoints(Mockito.mock<TicketCompletedEvent>())
         }
         assertEquals(40, character.level)
         assertEquals(100, character.experiencePoints)

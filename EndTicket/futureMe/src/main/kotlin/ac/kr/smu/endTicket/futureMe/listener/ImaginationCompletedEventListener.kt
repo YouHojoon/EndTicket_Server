@@ -3,8 +3,8 @@ package ac.kr.smu.endTicket.futureMe.listener
 import KafkaMessageService
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
-import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
-import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventResponse
+import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletedEvent
+import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletedEventResponse
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
@@ -23,7 +23,7 @@ import org.springframework.transaction.event.TransactionalEventListener
 @Component
 class ImaginationCompletionEventListener(
     private val repo: EventRepository,
-    private val messageService: KafkaMessageService<String,ImaginationCompletionEventResponse>,
+    private val messageService: KafkaMessageService<String,ImaginationCompletedEventResponse>,
     private val futureMeService: FutureMeService
 ) {
     private val log = LoggerFactory.getLogger(ImaginationCompletionEventListener::class.java)
@@ -33,7 +33,7 @@ class ImaginationCompletionEventListener(
      */
     @Transactional
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    fun saveEvent(event: ImaginationCompletionEvent){
+    fun saveEvent(event: ImaginationCompletedEvent){
         futureMeService.gainExperiencePoints(event)
         repo.save(event)
     }
@@ -46,7 +46,7 @@ class ImaginationCompletionEventListener(
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    fun sendEvent(event: ImaginationCompletionEvent){
+    fun sendEvent(event: ImaginationCompletedEvent){
         val message = event.toMessage()
 
         messageService.send(KafkaTopic.IMAGINATION_COMPLETION,message).whenCompleteAsync { record, e ->

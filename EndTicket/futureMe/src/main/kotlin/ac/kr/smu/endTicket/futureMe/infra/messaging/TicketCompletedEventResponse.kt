@@ -1,9 +1,9 @@
 package ac.kr.smu.endTicket.futureMe.infra.messaging
 
 /**
- * 티켓을 반환해줄 때 사용하는 객체
+ * 티켓 완료 이벤트 응답 클래스
  * @property id 티켓의 ID
  */
-data class TicketCompletionEventResponse(
+data class TicketCompletedEventResponse(
     val id: Long = 0L,
 )

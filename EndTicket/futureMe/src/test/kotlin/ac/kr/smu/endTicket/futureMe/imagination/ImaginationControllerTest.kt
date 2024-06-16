@@ -180,13 +180,13 @@ class ImaginationControllerTest @Autowired constructor(
     @Test
     @DisplayName("상상해보기 완료 테스트")
     fun given_id_when_completeImagination_then_expectStatusCode204_and_publishImaginationCompletionEvent(){
-        Mockito.`when`(service.completeImagination(1L, USER_ID)).then { eventService.eventPublish(mockAny()) }
+        Mockito.`when`(service.completeImagination(1L, USER_ID)).then { eventService.publishEvent(mockAny()) }
 
         mvc.completeImagination(1L)
             .andExpect(MockMvcResultMatchers.status().isNoContent)
 
         Mockito.verify(service, Mockito.times(1)).completeImagination(1L, USER_ID)
-        Mockito.verify(eventService, Mockito.times(1)).eventPublish(mockAny())
+        Mockito.verify(eventService, Mockito.times(1)).publishEvent(mockAny())
     }
 
     @Test
