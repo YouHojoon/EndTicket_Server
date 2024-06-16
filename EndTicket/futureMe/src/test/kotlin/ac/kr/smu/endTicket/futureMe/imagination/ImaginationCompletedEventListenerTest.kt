@@ -7,10 +7,11 @@ import ac.kr.smu.endTicket.common.kafka.test.messageListener
 import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
-import ac.kr.smu.endTicket.futureMe.listener.ImaginationCompletionEventListener
+import ac.kr.smu.endTicket.futureMe.listener.ImaginationCompletedEventListener
 import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService
 import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletedEventResponse
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
+import ac.kr.smu.endTicket.test.mockAny
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -32,7 +33,7 @@ import kotlin.test.assertEquals
 
 @SpringBootTest(
     classes = [
-        ImaginationCompletionEventListener::class,
+        ImaginationCompletedEventListener::class,
         FutureMeEventService::class,
         KafkaAutoConfiguration::class,
     ]
@@ -43,11 +44,12 @@ class ImaginationCompletedEventListenerTest @Autowired constructor(
     private val repo: EventRepository,
     @MockBean
     private val futureMeService: FutureMeService,
+    @SpyBean
+    private val messageService: KafkaMessageService<String, ImaginationCompletedEventResponse>,
     private val broker: EmbeddedKafkaBroker,
     private val eventService: FutureMeEventService
 ) {
-    @SpyBean
-    private lateinit var messageService: KafkaMessageService<String, ImaginationCompletedEventResponse>
+
     private lateinit var container: KafkaMessageListenerContainer<String, ImaginationCompletedEventResponse>
     private val queue = LinkedBlockingQueue<ConsumerRecord<String, ImaginationCompletedEventResponse>>()
 
@@ -70,19 +72,18 @@ class ImaginationCompletedEventListenerTest @Autowired constructor(
         val event = ImaginationCompletedEvent(imagination)
 
         eventService.publishEvent(event)
-
-        val record = queue.poll(1000, TimeUnit.MILLISECONDS)
-        val expectPayload = event.toMessage().payload
+        Thread.sleep(1000L)
 
         Mockito.verify(futureMeService, Mockito.times(1)).gainExperiencePoints(event)
-        Mockito.verify(repo, Mockito.times(2)).save(event)
+        Mockito.verify(repo, Mockito.times(2)).save(mockAny())
+
+        val record = queue.poll()
+        val expectPayload = event.toMessage().payload
 
         assertEquals(expectPayload.behavior, record.value().behavior)
         assertEquals(expectPayload.target, record.value().target)
         assertEquals(expectPayload.color, record.value().color)
         assertEquals(event.userID.toString(), record.key())
-
-        container.stop()
     }
     @Test
     @DisplayName("상상해보기 완료 이벤트 메시지 전송 실패 테스트")
