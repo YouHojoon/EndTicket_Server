@@ -14,7 +14,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 @Entity
 @Table(name = "ticket_completion_event")
 @EntityListeners(AuditingEntityListener::class)
-class TicketCompletionEvent(
+class TicketCompletedEvent(
     @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE, CascadeType.PERSIST])
     @JoinColumn(name = "id")
     @MapsId

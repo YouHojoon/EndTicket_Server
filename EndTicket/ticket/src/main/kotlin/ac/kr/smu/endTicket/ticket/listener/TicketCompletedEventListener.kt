@@ -2,8 +2,8 @@ package ac.kr.smu.endTicket.ticket.listener
 
 import KafkaMessageService
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
-import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
-import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
+import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletedEvent
+import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletedEventRepository
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
@@ -19,20 +19,20 @@ import org.springframework.transaction.event.TransactionalEventListener
  * @property messageService 메시지를 전송하기 위한 서비스
  */
 @Component
-class TicketCompletionEventListener(
-    private val repo: TicketCompletionEventRepository,
+class TicketCompletedEventListener(
+    private val repo: TicketCompletedEventRepository,
     private val messageService: KafkaMessageService<String, TicketResponse>
 ) {
-    private val log = LoggerFactory.getLogger(TicketCompletionEventListener::class.java)
+    private val log = LoggerFactory.getLogger(TicketCompletedEventListener::class.java)
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    fun saveEvent(event: TicketCompletionEvent){
+    fun saveEvent(event: TicketCompletedEvent){
         repo.save(event)
     }
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    fun sendMessage(event: TicketCompletionEvent){
+    fun sendMessage(event: TicketCompletedEvent){
         val message = event.toMessage()
 
         messageService.send(KafkaTopic.TICKET_COMPLETION,message).whenCompleteAsync {_,e ->
