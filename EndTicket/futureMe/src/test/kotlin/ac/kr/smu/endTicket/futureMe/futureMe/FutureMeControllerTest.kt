@@ -4,7 +4,7 @@ import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endTicket.common.web.test.expectBindingException
 import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endTicket.futureMe.domain.converter.CharacterTypeConverter
-import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.NotFoundFutureMeException
+import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.FutureMeNotFoundException
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
@@ -56,7 +56,7 @@ class FutureMeControllerTest @Autowired constructor(
     @DisplayName("존재하지 않는 미래의 나 조회 테스트")
     fun given_userHasNotFutureMe_when_findFutureMe_then_expectStatusCode404_and_responseExceptionResponse(){
         Mockito.`when`(service.findFutureMe(USER_ID))
-            .thenAnswer { throw NotFoundFutureMeException(USER_ID) }
+            .thenAnswer { throw FutureMeNotFoundException(USER_ID) }
 
         mvc.findFutureMe()
             .andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -120,7 +120,7 @@ class FutureMeControllerTest @Autowired constructor(
 
         Mockito
             .`when`(service.update(request, USER_ID))
-            .thenAnswer { throw NotFoundFutureMeException(USER_ID) }
+            .thenAnswer { throw FutureMeNotFoundException(USER_ID) }
 
         mvc
             .updateFutureMe(request)
@@ -158,7 +158,7 @@ class FutureMeControllerTest @Autowired constructor(
         val request = UpdateFutureMeRequest(type = Character.Type.CHEESE)
 
         Mockito.`when`(service.update(request, USER_ID))
-            .thenAnswer { throw NotFoundFutureMeException(USER_ID) }
+            .thenAnswer { throw FutureMeNotFoundException(USER_ID) }
 
         mvc.updateFutureMe(request)
             .andExpect(MockMvcResultMatchers.status().isNotFound)

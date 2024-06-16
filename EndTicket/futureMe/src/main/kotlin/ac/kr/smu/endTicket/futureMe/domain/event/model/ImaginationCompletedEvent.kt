@@ -2,7 +2,7 @@ package ac.kr.smu.endTicket.futureMe.domain.event.model
 
 import ac.kr.smu.endTicket.common.kafka.messaging.KafkaMessage
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
-import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventResponse
+import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletedEventResponse
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -17,7 +17,7 @@ import java.time.LocalDateTime
  * @property imagination 완료된 상상해보기
  */
 @Entity
-class ImaginationCompletionEvent(
+class ImaginationCompletedEvent(
     @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
     @JoinColumn(name = "event_id")
     @MapsId("eventID")
@@ -31,7 +31,7 @@ class ImaginationCompletionEvent(
     fun toMessage() = KafkaMessage(
         key = imagination.userID.toString(),
         payload =
-        ImaginationCompletionEventResponse(
+        ImaginationCompletedEventResponse(
             id = imagination.id,
             behavior = imagination.behavior,
             target = imagination.target,

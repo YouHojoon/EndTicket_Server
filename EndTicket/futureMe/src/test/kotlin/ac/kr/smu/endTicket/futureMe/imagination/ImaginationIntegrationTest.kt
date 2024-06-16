@@ -11,7 +11,7 @@ import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.domain.imagination.repository.ImaginationRepository
 import ac.kr.smu.endTicket.futureMe.infra.config.KafkaConfig
-import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventResponse
+import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletedEventResponse
 import ac.kr.smu.endTicket.futureMe.listener.ImaginationCompletionEventListener
 import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
@@ -198,8 +198,8 @@ class ImaginationIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("상상해보기 완료 테스트")
     fun given_id_when_completeImagination_then_expectStatusCode204_and_sendImaginationCompletionEvent_and_gainExperiencePoints(){
-        val container: KafkaMessageListenerContainer<String, ImaginationCompletionEventResponse> = createKafkaContainer(broker, KafkaTopic.IMAGINATION_COMPLETION)
-        val queue = LinkedBlockingQueue<ConsumerRecord<String, ImaginationCompletionEventResponse>>()
+        val container: KafkaMessageListenerContainer<String, ImaginationCompletedEventResponse> = createKafkaContainer(broker, KafkaTopic.IMAGINATION_COMPLETION)
+        val queue = LinkedBlockingQueue<ConsumerRecord<String, ImaginationCompletedEventResponse>>()
 
         container.messageListener(broker){
             queue.add(it)

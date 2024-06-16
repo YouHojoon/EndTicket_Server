@@ -3,7 +3,7 @@ package ac.kr.smu.endTicket.futureMe.imagination
 import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endTicket.common.web.test.expectBindingException
 import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
-import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotFoundImaginationException
+import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.ImaginationNotFoundException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.ImaginationOwnershipException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService
@@ -126,7 +126,7 @@ class ImaginationControllerTest @Autowired constructor(
 
         Mockito.`when`(
             service.updateImagination(request, id, USER_ID)
-        ).thenThrow(NotFoundImaginationException(id))
+        ).thenThrow(ImaginationNotFoundException(id))
 
         mvc.updateImagination(request,id, USER_ID)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -160,7 +160,7 @@ class ImaginationControllerTest @Autowired constructor(
     @DisplayName("존재하지 않는 상상해보기 삭제 테스트")
     fun given_notExistImagination_when_deleteImagination_then_expectStatusCode404_and_responseExceptionResponse(){
         Mockito.`when`(service.deleteImagination(Mockito.anyLong(), Mockito.anyLong()))
-            .thenThrow(NotFoundImaginationException(1L))
+            .thenThrow(ImaginationNotFoundException(1L))
 
         mvc.deleteImagination(1L)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -180,13 +180,13 @@ class ImaginationControllerTest @Autowired constructor(
     @Test
     @DisplayName("상상해보기 완료 테스트")
     fun given_id_when_completeImagination_then_expectStatusCode204_and_publishImaginationCompletionEvent(){
-        Mockito.`when`(service.completeImagination(1L, USER_ID)).then { eventService.eventPublish(mockAny()) }
+        Mockito.`when`(service.completeImagination(1L, USER_ID)).then { eventService.publishEvent(mockAny()) }
 
         mvc.completeImagination(1L)
             .andExpect(MockMvcResultMatchers.status().isNoContent)
 
         Mockito.verify(service, Mockito.times(1)).completeImagination(1L, USER_ID)
-        Mockito.verify(eventService, Mockito.times(1)).eventPublish(mockAny())
+        Mockito.verify(eventService, Mockito.times(1)).publishEvent(mockAny())
     }
 
     @Test
@@ -194,7 +194,7 @@ class ImaginationControllerTest @Autowired constructor(
     fun given_notExistImagination_when_completeImagination_then_throwNotFoundImaginationException(){
         val id = 1L
         Mockito.`when`(service.completeImagination(id, USER_ID))
-            .thenThrow(NotFoundImaginationException(id))
+            .thenThrow(ImaginationNotFoundException(id))
 
         mvc.completeImagination(id)
             .andExpect(MockMvcResultMatchers.status().isNotFound)

@@ -3,7 +3,7 @@ package ac.kr.smu.endTicket.futureMe.job
 import KafkaMessageService
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
-import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventResponse
+import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletedEventResponse
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
@@ -19,11 +19,11 @@ import kotlin.system.measureTimeMillis
  */
 @EnableScheduling
 @Component
-class ImaginationCompletionEventJob(
+class ImaginationCompletedEventJob(
     private val repo: EventRepository,
-    private val messageService: KafkaMessageService<String, ImaginationCompletionEventResponse>
+    private val messageService: KafkaMessageService<String, ImaginationCompletedEventResponse>
 ) {
-    private val log = LoggerFactory.getLogger(ImaginationCompletionEventJob::class.java)
+    private val log = LoggerFactory.getLogger(ImaginationCompletedEventJob::class.java)
     /**
      * 미전송된 이벤트를 재전송하는 메소드, 전송이 완료된 이벤트는 전송 완료를 저장한다.
      */

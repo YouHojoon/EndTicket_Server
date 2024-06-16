@@ -4,14 +4,13 @@ import KafkaMessageService
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endTicket.common.kafka.test.messageListener
-import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.listener.ImaginationCompletionEventListener
 import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService
-import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventResponse
+import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletedEventResponse
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
-import ac.kr.smu.endTicket.test.mockAny
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -39,7 +38,7 @@ import kotlin.test.assertEquals
     ]
 )
 @EmbeddedKafka(partitions = 3)
-class ImaginationCompletionEventListenerTest @Autowired constructor(
+class ImaginationCompletedEventListenerTest @Autowired constructor(
     @MockBean
     private val repo: EventRepository,
     @MockBean
@@ -48,9 +47,9 @@ class ImaginationCompletionEventListenerTest @Autowired constructor(
     private val eventService: FutureMeEventService
 ) {
     @SpyBean
-    private lateinit var messageService: KafkaMessageService<String, ImaginationCompletionEventResponse>
-    private lateinit var container: KafkaMessageListenerContainer<String, ImaginationCompletionEventResponse>
-    private val queue = LinkedBlockingQueue<ConsumerRecord<String, ImaginationCompletionEventResponse>>()
+    private lateinit var messageService: KafkaMessageService<String, ImaginationCompletedEventResponse>
+    private lateinit var container: KafkaMessageListenerContainer<String, ImaginationCompletedEventResponse>
+    private val queue = LinkedBlockingQueue<ConsumerRecord<String, ImaginationCompletedEventResponse>>()
 
     @BeforeEach
     fun init(){
@@ -66,11 +65,11 @@ class ImaginationCompletionEventListenerTest @Autowired constructor(
 
     @Test
     @DisplayName("상상해보기 완료 이벤트 테스트")
-    fun given_imaginationCompletionEvent_then_saveEvent_and_sendMessage(){
+    fun given_imaginationCompletedEvent_then_saveEvent_and_sendMessage(){
         val imagination = Imagination.from(request, USER_ID)
-        val event = ImaginationCompletionEvent(imagination)
+        val event = ImaginationCompletedEvent(imagination)
 
-        eventService.eventPublish(event)
+        eventService.publishEvent(event)
 
         val record = queue.poll(1000, TimeUnit.MILLISECONDS)
         val expectPayload = event.toMessage().payload
@@ -87,8 +86,8 @@ class ImaginationCompletionEventListenerTest @Autowired constructor(
     }
     @Test
     @DisplayName("상상해보기 완료 이벤트 메시지 전송 실패 테스트")
-    fun given_imaginationCompletionEvent_when_sendMessageFail_then_doNothing(){
-        val event = ImaginationCompletionEvent(Imagination.from(request, USER_ID))
+    fun given_imaginationCompletedEvent_when_sendMessageFail_then_doNothing(){
+        val event = ImaginationCompletedEvent(Imagination.from(request, USER_ID))
         val mockEvent = Mockito.spy(event)
         val message = event.toMessage()
 
@@ -97,7 +96,7 @@ class ImaginationCompletionEventListenerTest @Autowired constructor(
         Mockito.`when`(messageService.send(KafkaTopic.IMAGINATION_COMPLETION, message))
             .thenReturn(CompletableFuture.failedFuture(RuntimeException()))
 
-        eventService.eventPublish(mockEvent)
+        eventService.publishEvent(mockEvent)
 
         Mockito.verify(repo, Mockito.only()).save(mockEvent)
         Mockito.verify(futureMeService, Mockito.times(1)).gainExperiencePoints(mockEvent)
