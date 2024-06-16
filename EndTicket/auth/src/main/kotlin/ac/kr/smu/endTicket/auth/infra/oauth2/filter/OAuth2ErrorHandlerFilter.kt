@@ -1,8 +1,9 @@
 package ac.kr.smu.endTicket.auth.infra.oauth2.filter
 
-import ac.kr.smu.endTicket.auth.infra.oauth2.idToken.exception.UnverifiedIDTokenException
-import ac.kr.smu.endTicket.auth.infra.oauth2.idToken.exception.JWKParseException
 import ac.kr.smu.endTicket.auth.infra.oauth2.exception.OAuth2RequestException
+import ac.kr.smu.endTicket.auth.infra.oauth2.idToken.exception.JWKParseException
+import ac.kr.smu.endTicket.auth.infra.oauth2.idToken.exception.UnverifiedIDTokenException
+import ac.kr.smu.endTicket.common.web.response.ExceptionResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -11,7 +12,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.filter.OncePerRequestFilter
-import ac.kr.smu.endTicket.response.ExceptionResponse
 
 /**
  * OAuth2 인증 과정에서 발생한 에러를 처리하는 Filter

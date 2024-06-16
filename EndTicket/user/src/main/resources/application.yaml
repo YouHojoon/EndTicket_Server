@@ -8,9 +8,17 @@ spring:
       discovery:
         enabled: true
         service-id: config
+  jpa:
+    properties:
+      hibernate:
+        cache:
+          use_second_level_cache: true
+
 eureka:
   client:
     fetch-registry: true
     register-with-eureka: true
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+

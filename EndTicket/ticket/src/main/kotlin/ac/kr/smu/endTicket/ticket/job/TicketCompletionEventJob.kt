@@ -33,20 +33,21 @@ class TicketCompletionEventJob(
         val elapsed = measureTimeMillis {
             val events = repo.findByIsSentFalseAndAuditCreatedAtBefore(LocalDateTime.now().minusMinutes(10))
             val messages = events.map { it.toMessage() }
-            val futures = messageService.send(KafkaTopic.TICKET_COMPLETION,messages).toTypedArray()
-            val ids = CompletableFuture.allOf(*futures).thenApply {
-                futures.mapIndexedNotNull {i, future ->
-                    future.handle{record, e ->
-                        if (e == null)
-                            record.producerRecord.value().id
-                        else{
+            val futures = messageService
+                .send(KafkaTopic.TICKET_COMPLETION,messages)
+                .mapIndexed { i, future ->
+                    future.handle { record, e ->
+                        if (e == null) record.producerRecord.value().id
+                        else {
                             val message = messages[i]
-                            log.error("key: ${message.key}, payload: ${message.payload}",e)
+                            log.error("key: ${message.key}, payload: ${message.payload}", e)
                             null
                         }
-                    }.get()
+                    }
                 }
-            }.join()
+
+            CompletableFuture.allOf(*futures.toTypedArray()).join()
+            val ids = futures.mapNotNull { it.join() }
 
             repo.saveAll(events.filter { it.id in ids }.map { it.also { it.successSend() } })
         }
