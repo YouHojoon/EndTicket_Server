@@ -2,12 +2,10 @@ package ac.kr.smu.endTicket.ticket.service
 
 import ac.kr.smu.endTicket.ticket.domain.exception.TicketNotFoundException
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
-import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletionEvent
+import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletedEvent
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
-import jakarta.persistence.EntityManager
-import jakarta.persistence.PersistenceContext
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -21,7 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 @Service
 class TicketService(
     private val repo: TicketRepository,
-    private val completionEventService: TicketCompletionEventService
+    private val completionEventService: TicketCompletedEventService
 ) {
     private val log = LoggerFactory.getLogger(TicketService::class.java)
 
@@ -126,6 +124,6 @@ class TicketService(
      * 티켓 완료 메소드, kafka를 통해 이벤트를 전송한다.
      * @param ticket 완료된 티켓
      */
-    private fun completeTicket(ticket: Ticket) = completionEventService.eventPublish(TicketCompletionEvent(ticket))
+    private fun completeTicket(ticket: Ticket) = completionEventService.publishEvent(TicketCompletedEvent(ticket))
 
 }

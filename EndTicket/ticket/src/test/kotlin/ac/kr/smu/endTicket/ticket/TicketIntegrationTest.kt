@@ -8,11 +8,11 @@ import ac.kr.smu.endTicket.common.web.test.andReturn
 import ac.kr.smu.endTicket.common.web.test.expectBindingException
 import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
-import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
+import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletedEventRepository
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endTicket.ticket.infra.config.KafkaConfig
-import ac.kr.smu.endTicket.ticket.listener.TicketCompletionEventListener
-import ac.kr.smu.endTicket.ticket.service.TicketCompletionEventService
+import ac.kr.smu.endTicket.ticket.listener.TicketCompletedEventListener
+import ac.kr.smu.endTicket.ticket.service.TicketCompletedEventService
 import ac.kr.smu.endTicket.ticket.service.TicketService
 import ac.kr.smu.endTicket.ticket.ui.controller.TicketController
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
@@ -22,7 +22,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
@@ -49,10 +48,10 @@ import kotlin.test.assertNotNull
         HibernateJpaAutoConfiguration::class,
         KafkaAutoConfiguration::class,
         KafkaConfig::class,
-        TicketCompletionEventService::class,
+        TicketCompletedEventService::class,
         TicketController::class,
         TicketService::class,
-        TicketCompletionEventListener::class
+        TicketCompletedEventListener::class
     ]
 )
 @EnableTransactionManagement
@@ -62,7 +61,7 @@ import kotlin.test.assertNotNull
 class TicketIntegrationTest @Autowired constructor(
     controller: TicketController,
     private val ticketRepository: TicketRepository,
-    private val eventRepository: TicketCompletionEventRepository,
+    private val eventRepository: TicketCompletedEventRepository,
     private val broker: EmbeddedKafkaBroker
 ) {
     private val mvc: MockMvc =
