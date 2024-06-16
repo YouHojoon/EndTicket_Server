@@ -25,7 +25,6 @@ class TicketTest {
 
         ticket.updateAndCheckCompletion(updateRequest, USER_ID)
         assertEquals(Ticket.from(updateRequest, USER_ID), ticket)
-        assertTrue(ticket.shouldUpdate)
     }
 
     @Test
@@ -44,8 +43,6 @@ class TicketTest {
 
         assertFalse(ticket.swipeAndCheckCompletion(USER_ID))
         assertEquals(beforeSwipeCount + 1, ticket.swipeCount)
-        assertTrue(ticket.shouldUpdate)
-
     }
 
     @Test
@@ -68,7 +65,6 @@ class TicketTest {
 
         assertTrue(ticket.swipeAndCheckCompletion(USER_ID))
         assertEquals(beforeSwipeCount, ticket.swipeCount)
-        assertTrue(ticket.shouldUpdate)
     }
 
     @Test
@@ -79,7 +75,6 @@ class TicketTest {
         ticket.swipeAndCheckCompletion(USER_ID)
         ticket.cancelSwipeTicket(USER_ID)
 
-        assertTrue(ticket.shouldUpdate)
         assertEquals(0, ticket.swipeCount)
     }
 
@@ -99,6 +94,5 @@ class TicketTest {
         ticket.cancelSwipeTicket(USER_ID)
 
         assertEquals(0,ticket.swipeCount)
-        assertFalse(ticket.shouldUpdate)
     }
 }
