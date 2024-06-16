@@ -34,7 +34,7 @@ class TicketCompletionEventConsumeService(
     @Transactional
     fun consume(record: ConsumerRecord<String, TicketCompletionEventResponse>, ack: Acknowledgment){
         try {
-            if (repo.findByEventIDAndType(record.value().id, "TicketCompletionEvent") == null){
+            if (!repo.existsByEventIDAndType(record.value().id, "TicketCompletionEvent")){
                 val event = TicketCompletionEvent(record.value().id, record.key().toLong())
 
                 futureMeService.gainExperiencePoints(event)

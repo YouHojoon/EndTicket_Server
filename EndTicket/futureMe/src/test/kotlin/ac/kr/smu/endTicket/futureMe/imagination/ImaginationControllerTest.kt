@@ -78,7 +78,8 @@ class ImaginationControllerTest @Autowired constructor(
     @DisplayName("최대 개수 이상으로 상상해보기 생성 테스트")
     fun given_requestExceedImaginationLimit_when_createImagination_then_expectStatusCode409_and_responseExceptionResponse(){
         Mockito.`when`(service.createImagination(request, USER_ID))
-            .thenAnswer { throw IllegalStateException("") }
+            .thenThrow(IllegalStateException("") )
+
 
         mvc.createImagination(request)
             .andExpect(MockMvcResultMatchers.status().isConflict)
@@ -125,8 +126,7 @@ class ImaginationControllerTest @Autowired constructor(
 
         Mockito.`when`(
             service.updateImagination(request, id, USER_ID)
-        )
-            .thenAnswer { throw  NotFoundImaginationException(id)}
+        ).thenThrow(NotFoundImaginationException(id))
 
         mvc.updateImagination(request,id, USER_ID)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -140,8 +140,7 @@ class ImaginationControllerTest @Autowired constructor(
 
         Mockito.`when`(
             service.updateImagination(request, id, USER_ID)
-        )
-            .thenAnswer { throw  ImaginationOwnershipException(id, USER_ID)}
+        ).thenThrow(ImaginationOwnershipException(id, USER_ID))
 
         mvc.updateImagination(request,id, USER_ID)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
@@ -161,7 +160,7 @@ class ImaginationControllerTest @Autowired constructor(
     @DisplayName("존재하지 않는 상상해보기 삭제 테스트")
     fun given_notExistImagination_when_deleteImagination_then_expectStatusCode404_and_responseExceptionResponse(){
         Mockito.`when`(service.deleteImagination(Mockito.anyLong(), Mockito.anyLong()))
-            .thenAnswer { throw NotFoundImaginationException(1L) }
+            .thenThrow(NotFoundImaginationException(1L))
 
         mvc.deleteImagination(1L)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -171,7 +170,7 @@ class ImaginationControllerTest @Autowired constructor(
     @DisplayName("소유자가 아닌 사용자의 상상해보기 삭제 테스트")
     fun given_userWhoNotOwner_when_deleteImagination_then_expectStatusCode403_and_responseExceptionResponse(){
         Mockito.`when`(service.deleteImagination(Mockito.anyLong(), Mockito.anyLong()))
-            .thenAnswer { throw ImaginationOwnershipException(1L, USER_ID) }
+            .thenThrow(ImaginationOwnershipException(1L, USER_ID))
 
         mvc.deleteImagination(1L)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
@@ -195,7 +194,7 @@ class ImaginationControllerTest @Autowired constructor(
     fun given_notExistImagination_when_completeImagination_then_throwNotFoundImaginationException(){
         val id = 1L
         Mockito.`when`(service.completeImagination(id, USER_ID))
-            .thenAnswer { throw  NotFoundImaginationException(id) }
+            .thenThrow(NotFoundImaginationException(id))
 
         mvc.completeImagination(id)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -206,9 +205,8 @@ class ImaginationControllerTest @Autowired constructor(
     @DisplayName("소유자가 아닌 사용자의 상상해보기 완료 테스트")
     fun given_userWhoNotOwner_when_completeImagination_then_throwNotOwnerOfImagination(){
         val id = 1L
-        Mockito.`when`(service.completeImagination(id, USER_ID)).thenAnswer {
-            throw ImaginationOwnershipException(id, USER_ID)
-        }
+        Mockito.`when`(service.completeImagination(id, USER_ID))
+            .thenThrow( ImaginationOwnershipException(id, USER_ID))
 
         mvc.completeImagination(id)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
