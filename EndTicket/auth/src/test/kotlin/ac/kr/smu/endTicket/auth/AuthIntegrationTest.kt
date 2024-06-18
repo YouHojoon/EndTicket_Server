@@ -1,11 +1,8 @@
-package ac.kr.smu.endTicket
+package ac.kr.smu.endTicket.auth
 
-import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
-import ac.kr.smu.endTicket.auth.domain.service.UserService
+import ac.kr.smu.endTicket.auth.service.UserService
 import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2TokenResponse
-import ac.kr.smu.endTicket.auth.infra.oauth2.filter.OAuth2AuthorizationFilter
-import ac.kr.smu.endTicket.auth.infra.oauth2.filter.OAuth2ErrorHandlerFilter
 import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
 import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.auth.ui.controller.AuthController
@@ -23,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Import
@@ -32,45 +30,30 @@ import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfig
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
 import org.springframework.web.context.WebApplicationContext
+import kotlin.test.assertNotNull
 
 @SpringBootTest(
     classes = [
         AuthController::class,
         TokenService::class,
-        WebMvcAutoConfiguration::class,
         RedisAutoConfiguration::class,
+        WebMvcAutoConfiguration::class
     ]
 )
-@Import(RedisTestConfig::class,SecurityTestConfig::class, AutoRedisConfig::class)
+@Import(RedisTestConfig::class, SecurityTestConfig::class, AutoRedisConfig::class)
 @EnableConfigurationProperties(JWTProperties::class)
+@AutoConfigureMockMvc
 class AuthIntegrationTest @Autowired constructor(
     @MockBean
     private val oAuthService: OAuthService,
     @MockBean
     private val userService: UserService,
-    private val ctx: WebApplicationContext,
-    private val redisTemplate: RedisTemplate<String, Any>
+    private val redisTemplate: RedisTemplate<String, Any>,
+    private val mvc: MockMvc
 ) {
-    private val mvc: MockMvc = MockMvcBuilders
-        .webAppContextSetup(ctx)
-        .apply<DefaultMockMvcBuilder>(SecurityMockMvcConfigurers.springSecurity())
-        .addFilters<DefaultMockMvcBuilder>(OAuth2ErrorHandlerFilter(), OAuth2AuthorizationFilter(oAuthService))
-        .build()
-
-    companion object{
-        private const val AUTHORIZATION_CODE = "1"
-        private const val SOCIAL_USER_NUMBER = "1"
-        private const val USER_ID = 1L
-        private const val BASE_URL = "http://localhost:8081/auth"
-        private const val ACCESS_TOKEN = "a"
-        private const val REFRESH_TOKEN = "r"
-        private const val ID_TOKEN = "i"
-    }
-    private val SOCIAL_TYPE = SocialType.KAKAO
-
 
     @BeforeEach
     fun init(){
@@ -90,10 +73,7 @@ class AuthIntegrationTest @Autowired constructor(
         Mockito.`when`(userService.findUserID(SOCIAL_TYPE, SOCIAL_USER_NUMBER))
             .thenReturn(USER_ID)
 
-        mvc.perform(
-            MockMvcRequestBuilders
-                .post("$BASE_URL/sns?socialType=$SOCIAL_TYPE&code=$AUTHORIZATION_CODE")
-        )
+        mvc.createToken()
             .andExpect(MockMvcResultMatchers.jsonPath("accessToken").isString)
             .andExpect(MockMvcResultMatchers.jsonPath("refreshToken").isString)
     }
@@ -104,24 +84,17 @@ class AuthIntegrationTest @Autowired constructor(
         Mockito.`when`(userService.findUserID(SOCIAL_TYPE, SOCIAL_USER_NUMBER))
             .thenReturn(USER_ID)
 
-        val token = mvc.perform(
-            MockMvcRequestBuilders
-                .post("$BASE_URL/sns?socialType=$SOCIAL_TYPE&code=$AUTHORIZATION_CODE")
-        ).andReturn<TokenResponse>()
+        val refreshToken = mvc.createToken().andReturn<TokenResponse>().refreshToken
 
-        mvc.perform(
-            MockMvcRequestBuilders
-                .post("$BASE_URL/reissue-token")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(ObjectMapper().writeValueAsString(mapOf("refreshToken" to token.refreshToken)))
-        )
+        assertNotNull(refreshToken)
+
+        mvc.reissueToken(refreshToken)
             .andExpect(MockMvcResultMatchers.status().isCreated)
             .andExpect(MockMvcResultMatchers.jsonPath("accessToken").isString)
-            .andExpect(MockMvcResultMatchers.jsonPath("refreshToken").isString)
     }
 
     private fun mockOAuthService(){
-        Mockito.`when`(oAuthService.oAuth(SOCIAL_TYPE,AUTHORIZATION_CODE))
+        Mockito.`when`(oAuthService.oAuth(SOCIAL_TYPE, AUTHORIZATION_CODE))
             .thenReturn(
                 OAuth2TokenResponse(
                     accessToken = ACCESS_TOKEN,

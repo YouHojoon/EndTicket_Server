@@ -18,7 +18,6 @@ import org.springframework.context.annotation.Configuration
 class SwaggerConfig(
     private val discoveryClient: DiscoveryClient
 ) {
-
     @Bean
     fun openAPI(): OpenAPI{
         return OpenAPI().servers(
