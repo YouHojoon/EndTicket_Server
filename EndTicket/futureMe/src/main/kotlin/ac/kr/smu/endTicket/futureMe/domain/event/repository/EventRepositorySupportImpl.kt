@@ -23,6 +23,6 @@ class EventRepositorySupportImpl: EventRepositorySupport {
 
 
         val query = "SELECT EXISTS (SELECT id FROM $table WHERE $spec = :specificID)"
-        return em.createNativeQuery(query).setParameter("specificID", specificID).singleResult as Boolean
+        return (em.createNativeQuery(query).setParameter("specificID", specificID).singleResult as Number).toInt() == 1
     }
 }
