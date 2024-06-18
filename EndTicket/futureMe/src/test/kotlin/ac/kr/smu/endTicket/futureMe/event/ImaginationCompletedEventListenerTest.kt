@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.futureMe.imagination
+package ac.kr.smu.endTicket.futureMe.event
 
 import KafkaMessageService
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
@@ -7,6 +7,8 @@ import ac.kr.smu.endTicket.common.kafka.test.messageListener
 import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
+import ac.kr.smu.endTicket.futureMe.imagination.USER_ID
+import ac.kr.smu.endTicket.futureMe.imagination.request
 import ac.kr.smu.endTicket.futureMe.listener.ImaginationCompletedEventListener
 import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService
 import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletedEventResponse
@@ -28,7 +30,6 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
 
 @SpringBootTest(
