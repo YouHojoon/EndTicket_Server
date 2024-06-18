@@ -11,6 +11,7 @@ import ac.kr.smu.endTicket.futureMe.imagination.request
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
@@ -18,6 +19,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class EventRepositoryTest @Autowired constructor(
     private val repo: EventRepository,
     private val imaginationRepository: ImaginationRepository
