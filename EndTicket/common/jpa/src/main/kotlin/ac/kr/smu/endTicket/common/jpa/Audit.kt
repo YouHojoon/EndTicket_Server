@@ -18,10 +18,10 @@ class Audit{
     @JsonSerialize(using = LocalDateTimeSerializer::class)
     @JsonDeserialize(using = LocalDateTimeDeserializer::class)
     var createdAt: LocalDateTime = LocalDateTime.MIN
-        private set
+        protected set
     @LastModifiedDate
     @JsonSerialize(using = LocalDateTimeSerializer::class)
     @JsonDeserialize(using = LocalDateTimeDeserializer::class)
     var updatedAt: LocalDateTime? = null
-        private set
+        protected set
 }
