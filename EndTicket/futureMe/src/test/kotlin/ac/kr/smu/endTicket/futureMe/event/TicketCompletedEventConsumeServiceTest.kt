@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.futureMe
+package ac.kr.smu.endTicket.futureMe.event
 
 import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.common.kafka.test.createProducer
@@ -47,7 +47,7 @@ class TicketCompletedEventConsumeServiceTest @Autowired constructor(
         val record = ProducerRecord(KafkaTopic.TICKET_COMPLETION, USER_ID.toString(), eventResponse)
 
         Mockito
-            .`when`(repo.existsByEventIDAndType(eventResponse.id, "TicketCompletionEvent"))
+            .`when`(repo.existsBySpecificIDAndType(eventResponse.id, TicketCompletedEvent::class))
             .thenReturn(false)
         producer.send(record)
         Thread.sleep(1000)
@@ -66,12 +66,12 @@ class TicketCompletedEventConsumeServiceTest @Autowired constructor(
             TicketCompletedEventResponse(1L)
         )
         Mockito
-            .`when`(repo.existsByEventIDAndType(1L, "TicketCompletionEvent"))
+            .`when`(repo.existsBySpecificIDAndType(1L, TicketCompletedEvent::class))
             .thenReturn(true)
 
         service.consume(record,ack)
 
-        Mockito.verify(repo, Mockito.only()).existsByEventIDAndType(1L, "TicketCompletionEvent")
+        Mockito.verify(repo, Mockito.only()).existsBySpecificIDAndType(1L, TicketCompletedEvent::class)
         Mockito.verify(ack).acknowledge()
     }
 
@@ -84,7 +84,7 @@ class TicketCompletedEventConsumeServiceTest @Autowired constructor(
         Mockito.`when`(record.value()).thenReturn(
             TicketCompletedEventResponse(1L)
         )
-        Mockito.`when`(repo.existsByEventIDAndType(Mockito.anyLong(), Mockito.anyString()))
+        Mockito.`when`(repo.existsBySpecificIDAndType(1L, TicketCompletedEvent::class))
             .thenThrow(RuntimeException())
 
         service.consume(record, ack)

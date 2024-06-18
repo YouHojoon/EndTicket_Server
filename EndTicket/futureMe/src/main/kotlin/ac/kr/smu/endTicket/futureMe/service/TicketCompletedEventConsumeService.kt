@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
 
 /**
- * 이벤트를 처리하는 클래스
+ * 티켓 완료를 처리하는 클래스
  * @property repo 이벤트를 저장하기 위한 저장소
  * @property futureMeService 경험치 증가를 위한 미래의 나 서비스
  */
@@ -34,7 +34,7 @@ class TicketCompletedEventConsumeService(
     @Transactional
     fun consume(record: ConsumerRecord<String, TicketCompletedEventResponse>, ack: Acknowledgment){
         try {
-            if (!repo.existsByEventIDAndType(record.value().id, "TicketCompletionEvent")){
+            if (!repo.existsBySpecificIDAndType(record.value().id, TicketCompletedEvent::class)){
                 val event = TicketCompletedEvent(record.value().id, record.key().toLong())
 
                 futureMeService.gainExperiencePoints(event)
