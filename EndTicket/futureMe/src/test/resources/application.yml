@@ -34,7 +34,7 @@ spring:
 
 logging:
   level:
-    org.hibernate.type.descriptor.sql : trace
+    org.hibernate.orm.jdbc.bind: trace
 server:
   port: 8084
 eureka:
