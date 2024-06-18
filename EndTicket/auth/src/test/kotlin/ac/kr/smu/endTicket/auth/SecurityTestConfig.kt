@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket
+package ac.kr.smu.endTicket.auth
 
 
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
