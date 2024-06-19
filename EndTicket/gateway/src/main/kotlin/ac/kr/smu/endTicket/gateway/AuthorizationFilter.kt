@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.gateway
 
 import ac.kr.smu.endticket.common.web.response.ExceptionResponse
-import ac.kr.smu.endTicket.constant.HttpHeaderName
+import ac.kr.smu.endticket.common.constant.HttpHeaderName
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.cloud.gateway.filter.GatewayFilter
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory

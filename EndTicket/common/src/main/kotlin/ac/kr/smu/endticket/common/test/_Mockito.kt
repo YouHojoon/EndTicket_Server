@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.test
+package ac.kr.smu.endticket.common.test
 
 import org.jetbrains.annotations.TestOnly
 import org.mockito.Mockito

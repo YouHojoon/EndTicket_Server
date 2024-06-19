@@ -9,7 +9,7 @@ import ac.kr.smu.endTicket.futureMe.infra.config.KafkaConfig
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
 import ac.kr.smu.endTicket.futureMe.infra.messaging.TicketCompletedEventResponse
 import ac.kr.smu.endTicket.futureMe.service.TicketCompletedEventConsumeService
-import ac.kr.smu.endTicket.test.mockAny
+import ac.kr.smu.endticket.common.test.mockAny
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.junit.jupiter.api.DisplayName

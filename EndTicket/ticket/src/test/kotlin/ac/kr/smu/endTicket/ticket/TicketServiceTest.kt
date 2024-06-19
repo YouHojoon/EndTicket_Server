@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.ticket
 
-import ac.kr.smu.endTicket.test.mockAny
+import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endTicket.ticket.domain.exception.TicketNotFoundException
 import ac.kr.smu.endTicket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
