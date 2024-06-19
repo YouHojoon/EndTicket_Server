@@ -1,6 +1,7 @@
 package ac.kr.smu.endticket.user
 
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
+import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endticket.user.domain.exception.NotFoundUserException
 import ac.kr.smu.endticket.user.service.UserService
 import ac.kr.smu.endticket.user.ui.controller.UserController
@@ -18,7 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
 @WebMvcTest(controllers = [UserController::class])
 class UserControllerTest @Autowired constructor(
-    private val controller: UserController,
+    controller: UserController,
 
     @MockBean
     private val service: UserService
@@ -49,7 +50,7 @@ class UserControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("부적절한 닉네임 등록 테스트")
-    fun given_invalidNickname_when_updateNickname_then_expect400Error(){
+    fun given_invalidNickname_when_updateNickname_then_expectStatusCode400_and_responseBindingException(){
         val lowLengthNickname = RegisterNicknameRequest("ac/kr/smu/endticket/common/web")
         val patternMismatchedNickname = RegisterNicknameRequest("$^&@(a")
 
@@ -59,7 +60,7 @@ class UserControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("존재하지 않는 사용자의 닉네임 등록 테스트")
-    fun given_notExistUser_when_registerNickname_then_expectStatusCode404(){
+    fun given_notExistUser_when_registerNickname_then_expectStatusCode404_and_responseExceptionResponse(){
         val request = RegisterNicknameRequest(NICKNAME)
 
         Mockito.`when`(service.registerNickname(request, USER_ID))
@@ -68,18 +69,20 @@ class UserControllerTest @Autowired constructor(
         mockMvc
             .registerNickname(request)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
+            .expectExceptionResponse()
     }
 
     @Test
     @DisplayName("닉네임이 등록되어 있는 사용자의 닉네임 등록 테스트")
-    fun given_userWithNicknameAlreadyRegistered_when_registerNickname_then_expectStatus409(){
+    fun given_userWithNicknameAlreadyRegistered_when_registerNickname_then_expectStatus409_and_responseExceptionResponse(){
         val request = RegisterNicknameRequest(NICKNAME)
 
         Mockito.`when`(service.registerNickname(request, USER_ID))
-            .thenAnswer { throw IllegalStateException() }
+            .thenAnswer { throw IllegalStateException("") }
 
         mockMvc
             .registerNickname(request)
             .andExpect(MockMvcResultMatchers.status().isConflict)
+            .expectExceptionResponse()
     }
 }
