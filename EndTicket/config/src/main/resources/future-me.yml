@@ -15,9 +15,9 @@ spring:
       spring:
         json:
           trusted:
-            packages: "ac.kr.smu.endTicket.futureMe.infra.messaging"
+            packages: "ac.kr.smu.endticket.futureme.infra.messaging"
           type:
-            mapping: "ac.kr.smu.endTicket.ticket.ui.response.TicketResponse:ac.kr.smu.endTicket.futureMe.infra.messaging.TicketCompletedEventResponse"
+            mapping: "ac.kr.smu.endticket.ticket.ui.response.TicketResponse:ac.kr.smu.endticket.futureme.infra.messaging.TicketCompletedEventResponse"
 
 schedules:
   resend-imagination-completion-event:
