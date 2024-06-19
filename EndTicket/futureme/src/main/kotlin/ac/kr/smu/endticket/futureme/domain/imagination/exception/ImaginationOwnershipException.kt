@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.futureMe.domain.imagination.exception
+package ac.kr.smu.endticket.futureme.domain.imagination.exception
 
 /**
  * 상상해보기의 소유자가 아닌 사용자가 요청했을 때 발생하는 에러

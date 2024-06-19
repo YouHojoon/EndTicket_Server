@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.futureme.futureMe
+package ac.kr.smu.endticket.futureme.futureme
 
 import ac.kr.smu.endticket.common.constant.HttpHeaderName
 import ac.kr.smu.endticket.futureme.domain.futureme.model.Character

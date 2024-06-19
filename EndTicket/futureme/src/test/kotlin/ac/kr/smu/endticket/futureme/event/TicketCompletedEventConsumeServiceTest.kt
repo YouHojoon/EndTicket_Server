@@ -1,8 +1,8 @@
 package ac.kr.smu.endticket.futureme.event
 
-import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.common.kafka.test.createProducer
+import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.futureme.domain.event.model.TicketCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.repository.EventRepository
 import ac.kr.smu.endticket.futureme.imagination.USER_ID
@@ -52,7 +52,7 @@ class TicketCompletedEventConsumeServiceTest @Autowired constructor(
         producer.send(record)
         Thread.sleep(1000)
         
-        Mockito.verify(repo).save(mockAny()<TicketCompletedEvent>())
+        Mockito.verify(repo).save(mockAny<TicketCompletedEvent>())
         Mockito.verify(futureMeService).gainExperiencePoints(mockAny<TicketCompletedEvent>())
     }
 

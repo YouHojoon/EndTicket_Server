@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.futureme.futureMe
+package ac.kr.smu.endticket.futureme.futureme
 
 import ac.kr.smu.endticket.futureme.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.model.TicketCompletedEvent
@@ -6,6 +6,7 @@ import ac.kr.smu.endticket.futureme.domain.futureme.exception.FutureMeNotFoundEx
 import ac.kr.smu.endticket.futureme.domain.futureme.model.Character
 import ac.kr.smu.endticket.futureme.domain.futureme.model.FutureMe
 import ac.kr.smu.endticket.futureme.domain.futureme.repository.FutureMeRepository
+import ac.kr.smu.endticket.futureme.futureme.USER_ID
 import ac.kr.smu.endticket.futureme.service.FutureMeService
 import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
 import ac.kr.smu.endticket.futureme.ui.request.UpdateFutureMeRequest
