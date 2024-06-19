@@ -17,4 +17,10 @@ spring:
   cloud:
     config:
       enabled: false
-
+grpc:
+  server:
+    port: -1
+    in-process-name: test
+  client:
+    user:
+      address: in-process:test

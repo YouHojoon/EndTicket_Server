@@ -1,6 +1,7 @@
 package ac.kr.smu.endticket.user
 
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
+import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endticket.user.domain.model.User
 import ac.kr.smu.endticket.user.domain.repository.UserRepository
 import ac.kr.smu.endticket.user.service.UserService
@@ -35,7 +36,7 @@ import kotlin.properties.Delegates
 @EnableJpaRepositories("ac.kr.smu.endTicket.user.domain.repository")
 @EntityScan("ac.kr.smu.endTicket.user.domain.model")
 class UserIntegrationTest @Autowired constructor(
-    private val controller: UserController,
+    controller: UserController,
     private val repo: UserRepository
 ) {
     private val mvc: MockMvc =
@@ -69,8 +70,8 @@ class UserIntegrationTest @Autowired constructor(
 
     @Test
     @DisplayName("부적절한 닉네임 등록 테스트")
-    fun given_invalidNickname_when_updateNickname_then_expect400Error(){
-        val lowLengthNickname = RegisterNicknameRequest("ac/kr/smu/endticket/common/web")
+    fun given_invalidNickname_when_updateNickname_then_expectStatusCode400_and_responseBindingExceptionResponse(){
+        val lowLengthNickname = RegisterNicknameRequest("veryverylonglongnickname")
         val patternMismatchedNickname = RegisterNicknameRequest("$^&@(a")
 
         mvc.registerNickname(lowLengthNickname, id).expectBindingException()
@@ -79,17 +80,18 @@ class UserIntegrationTest @Autowired constructor(
 //
     @Test
     @DisplayName("존재하지 않는 사용자의 닉네임 등록 테스트")
-    fun given_notExistUser_when_registerNickname_then_expectStatusCode404(){
+    fun given_notExistUser_when_registerNickname_then_expectStatusCode404_and_responseExceptionResponse(){
         val request = RegisterNicknameRequest(NICKNAME)
 
         mvc
-            .registerNickname(request, 2L)
+            .registerNickname(request, 999L)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
+            .expectExceptionResponse()
     }
 
     @Test
     @DisplayName("닉네임이 등록되어 있는 사용자의 닉네임 등록 테스트")
-    fun given_userWithNicknameAlreadyRegistered_when_registerNickname_then_expectStatus409(){
+    fun given_userWithNicknameAlreadyRegistered_when_registerNickname_then_expectStatus409_and_responseExceptionResponse(){
         val request = RegisterNicknameRequest(NICKNAME)
 
         mvc
@@ -99,5 +101,6 @@ class UserIntegrationTest @Autowired constructor(
         mvc
             .registerNickname(request,id)
             .andExpect(MockMvcResultMatchers.status().isConflict)
+            .expectExceptionResponse()
     }
 }

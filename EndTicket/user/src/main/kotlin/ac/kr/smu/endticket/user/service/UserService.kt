@@ -20,7 +20,7 @@ import kotlin.jvm.optionals.getOrNull
 @Service
 @GrpcService
 class UserService(
-    private val userRepo: UserRepository
+    private val repo: UserRepository
 ): UserServiceGrpc.UserServiceImplBase() {
 
     /**
@@ -31,7 +31,8 @@ class UserService(
     @Transactional
     override fun findUserId(request: FindUserIdRequest, responseObserver: StreamObserver<UserIdResponse>) {
         val socialType = User.SocialType.valueOf(request.socialType.name)
-        val id = userRepo.findBySocialTypeAndSocialUserNumber(socialType, request.socialUserNumber)?.id ?: userRepo.save(
+        val id = repo.findBySocialTypeAndSocialUserNumber(socialType, request.socialUserNumber)?.id ?:
+        repo.save(
             User(socialType, request.socialUserNumber)
         ).id
 
@@ -51,7 +52,8 @@ class UserService(
     @Throws(NotFoundUserException::class)
     @Transactional
     fun registerNickname(request: RegisterNicknameRequest, id: Long){
-        val user = userRepo.findById(id).getOrNull() ?: throw NotFoundUserException(id)
+        val user = repo.findById(id).getOrNull() ?: throw NotFoundUserException(id)
+        
         user.registerNickname(request)
     }
 }
