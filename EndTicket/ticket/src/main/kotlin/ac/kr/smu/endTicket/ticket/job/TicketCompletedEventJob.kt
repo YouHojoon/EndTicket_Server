@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.ticket.job
 
 import KafkaMessageService
-import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
+import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletedEventRepository
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import org.slf4j.LoggerFactory

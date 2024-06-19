@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket
 
-import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
+import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endTicket.user.domain.exception.NotFoundUserException
 import ac.kr.smu.endTicket.user.domain.service.UserService
 import ac.kr.smu.endTicket.user.ui.controller.UserController
@@ -50,7 +50,7 @@ class UserControllerTest @Autowired constructor(
     @Test
     @DisplayName("부적절한 닉네임 등록 테스트")
     fun given_invalidNickname_when_updateNickname_then_expect400Error(){
-        val lowLengthNickname = RegisterNicknameRequest("a")
+        val lowLengthNickname = RegisterNicknameRequest("ac/kr/smu/endticket/common/web")
         val patternMismatchedNickname = RegisterNicknameRequest("$^&@(a")
 
         mockMvc.registerNickname(lowLengthNickname).expectBindingException()

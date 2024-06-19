@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.ticket.listener
 
 import KafkaMessageService
-import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
+import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endTicket.ticket.domain.model.TicketCompletedEvent
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletedEventRepository
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
@@ -35,7 +35,7 @@ class TicketCompletedEventListener(
     fun sendMessage(event: TicketCompletedEvent){
         val message = event.toMessage()
 
-        messageService.send(KafkaTopic.TICKET_COMPLETION,message).whenCompleteAsync {_,e ->
+        messageService.send(KafkaTopic.TICKET_COMPLETION,message).whenCompleteAsync { _, e ->
             if (e == null)
                 repo.save(event.also { it.successSend() })
             else {

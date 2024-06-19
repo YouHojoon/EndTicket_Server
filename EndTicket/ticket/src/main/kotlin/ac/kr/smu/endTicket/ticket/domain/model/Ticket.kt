@@ -1,13 +1,12 @@
 package ac.kr.smu.endTicket.ticket.domain.model
 
-import ac.kr.smu.endTicket.common.jpa.Audit
+import ac.kr.smu.endticket.common.jpa.Audit
 import ac.kr.smu.endTicket.ticket.domain.converter.MaxSwipeCountConverter
 import ac.kr.smu.endTicket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import java.time.LocalDateTime
 
 /**
  * 티켓을 추상화한 클래스

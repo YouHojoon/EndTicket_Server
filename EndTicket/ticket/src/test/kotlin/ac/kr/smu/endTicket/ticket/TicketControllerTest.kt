@@ -1,8 +1,8 @@
 package ac.kr.smu.endTicket.ticket
 
-import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
-import ac.kr.smu.endTicket.common.web.test.expectBindingException
-import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
+import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
+import ac.kr.smu.endticket.common.web.test.expectBindingException
+import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endTicket.ticket.domain.exception.TicketNotFoundException
 import ac.kr.smu.endTicket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket

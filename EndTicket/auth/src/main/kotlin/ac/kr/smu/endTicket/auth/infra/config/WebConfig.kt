@@ -12,7 +12,7 @@ import java.util.*
 @Configuration
 class WebConfig : WebMvcConfigurer{
     override fun addFormatters(registry: FormatterRegistry) {
-        registry.addConverter(ac.kr.smu.endTicket.auth.domain.converter.SocialTypeConverter())
+        registry.addConverter(SocialTypeConverter())
         super.addFormatters(registry)
     }
 }

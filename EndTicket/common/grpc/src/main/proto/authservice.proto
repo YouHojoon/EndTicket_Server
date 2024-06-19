@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "ac.kr.smu.endTicket.protobuf";
+option java_package = "ac.kr.smu.endticket.protobuf";
 option java_outer_classname = "TokenServiceProto";
 
 service TokenService{
@@ -13,7 +13,7 @@ message AccessToken{
 }
 
 message ValidateAccessTokenResponse{
-  int64 user_iD = 1;
+  int64 user_id = 1;
   uint32 status = 2;
   string message = 3;
 }
