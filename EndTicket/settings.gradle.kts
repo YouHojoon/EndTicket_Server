@@ -5,6 +5,7 @@ include("eureka")
 include("gateway")
 include("common")
 include("ticket")
+include("futureme")
 include("common:jpa")
 findProject(":common:jpa")?.name = "jpa"
 include("common:redis")
