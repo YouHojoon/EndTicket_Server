@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.futureMe.domain.futureMe.model
 
-import ac.kr.smu.endTicket.common.jpa.Audit
+import ac.kr.smu.endticket.common.jpa.Audit
 import ac.kr.smu.endTicket.futureMe.ui.request.CreateFutureMeRequest
 import ac.kr.smu.endTicket.futureMe.ui.request.UpdateFutureMeRequest
 import jakarta.persistence.*

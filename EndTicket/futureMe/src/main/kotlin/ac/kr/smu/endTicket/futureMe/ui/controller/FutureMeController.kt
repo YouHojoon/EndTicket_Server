@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.futureMe.ui.controller
 
-import ac.kr.smu.endTicket.common.web.response.ExceptionResponse
+import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 import ac.kr.smu.endTicket.constant.HttpHeaderName
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.FutureMeNotFoundException
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.exception.UnsupportedCharacterException
@@ -72,11 +72,13 @@ class FutureMeController(
         log.info("uesrID: $userID", e)
 
         val status = HttpStatus.CONFLICT
-        ResponseEntity.status(status).body(ExceptionResponse(
+        ResponseEntity.status(status).body(
+            ExceptionResponse(
             code = status.value(),
             message = "미래의 나 생성 중 에러가 발생했습니다.",
             detail = e.message
-        ))
+        )
+        )
     }
 
     @PatchMapping
@@ -106,7 +108,8 @@ class FutureMeController(
                 code = status.value(),
                 message = "미래의 나 조회에 에러가 발생했습니다.",
                 detail = e.message
-            ))
+            )
+        )
     }
 
     @ExceptionHandler(UnsupportedCharacterException::class)
@@ -116,11 +119,13 @@ class FutureMeController(
 
         return ResponseEntity
             .status(status)
-            .body(ExceptionResponse(
+            .body(
+                ExceptionResponse(
                 code = status.value(),
                 message = "캐릭터 조회 중 에러가 발생했습니다.",
                 detail = e.message
-            ))
+            )
+            )
     }
 
 }

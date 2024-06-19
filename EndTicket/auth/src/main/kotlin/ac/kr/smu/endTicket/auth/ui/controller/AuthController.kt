@@ -6,7 +6,7 @@ import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2User
 import ac.kr.smu.endTicket.auth.infra.swagger.apiResponses.CreateTokenResponses
 import ac.kr.smu.endTicket.auth.infra.swagger.apiResponses.ReissueTokenApiResponses
 import ac.kr.smu.endTicket.auth.service.TokenService
-import ac.kr.smu.endTicket.common.web.response.ExceptionResponse
+import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.StringToClassMapItem
 import io.swagger.v3.oas.annotations.media.Schema

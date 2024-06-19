@@ -33,6 +33,25 @@ class AuthControllerTest @Autowired constructor(
     private val userService: UserService,
     private val mvc: MockMvc
 ) {
+<<<<<<< HEAD:EndTicket/auth/src/test/kotlin/ac/kr/smu/endTicket/AuthControllerTest.kt
+    private val mvc: MockMvc = MockMvcBuilders
+        .webAppContextSetup(ctx)
+        .addFilters<DefaultMockMvcBuilder>(OAuth2ErrorHandlerFilter(), OAuth2AuthorizationFilter(oAuthService))
+        .build()
+
+    companion object{
+        private const val AUTHORIZATION_CODE = "1"
+        private const val SOCIAL_USER_NUMBER = "1"
+        private const val USER_ID = 1L
+        private const val BASE_URL = "http://localhost:8081/auth"
+        private const val ACCESS_TOKEN = "ac/kr/smu/endticket/common/redis"
+        private const val REFRESH_TOKEN = "r"
+        private const val ID_TOKEN = "i"
+    }
+    private val SOCIAL_TYPE = SocialType.KAKAO
+
+=======
+>>>>>>> develop:EndTicket/auth/src/test/kotlin/ac/kr/smu/endTicket/auth/AuthControllerTest.kt
 
     @BeforeEach
     fun init(){

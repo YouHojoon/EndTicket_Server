@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket
 
-import ac.kr.smu.endTicket.common.kafka.annotation.EnableAutoKafkaConfig
+import ac.kr.smu.endticket.common.kafka.annotation.EnableAutoKafkaConfig
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication

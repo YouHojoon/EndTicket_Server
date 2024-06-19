@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.futureMe.domain.event.model
 
-import ac.kr.smu.endTicket.common.kafka.messaging.KafkaMessage
+import ac.kr.smu.endticket.common.kafka.messaging.KafkaMessage
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletedEventResponse
 import jakarta.persistence.CascadeType

@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponses.futureMe
 
-import ac.kr.smu.endTicket.common.web.response.BindExceptionResponse
-import ac.kr.smu.endTicket.common.web.response.ExceptionResponse
+import ac.kr.smu.endticket.common.web.response.BindExceptionResponse
+import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 import ac.kr.smu.endTicket.futureMe.ui.response.FutureMeResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content

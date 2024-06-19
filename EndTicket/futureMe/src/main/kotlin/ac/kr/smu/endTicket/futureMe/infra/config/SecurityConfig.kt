@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.futureMe.infra.config
 
-import ac.kr.smu.endTicket.common.security.baseConfig
-import ac.kr.smu.endTicket.common.security.permitOnlyWhitelistRequest
+import ac.kr.smu.endticket.common.security.baseConfig
+import ac.kr.smu.endticket.common.security.permitOnlyWhitelistRequest
 import org.springframework.cloud.client.discovery.DiscoveryClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

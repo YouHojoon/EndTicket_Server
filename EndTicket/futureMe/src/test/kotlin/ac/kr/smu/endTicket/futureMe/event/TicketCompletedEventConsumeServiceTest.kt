@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.futureMe.event
 
-import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
-import ac.kr.smu.endTicket.common.kafka.test.createProducer
+import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
+import ac.kr.smu.endticket.common.kafka.test.createProducer
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletedEvent
 import ac.kr.smu.endTicket.futureMe.futureMe.USER_ID

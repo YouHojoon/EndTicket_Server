@@ -1,9 +1,9 @@
 package ac.kr.smu.endTicket.futureMe.futureMe
 
-import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
-import ac.kr.smu.endTicket.common.web.test.andReturn
-import ac.kr.smu.endTicket.common.web.test.expectBindingException
-import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
+import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
+import ac.kr.smu.endticket.common.web.test.andReturn
+import ac.kr.smu.endticket.common.web.test.expectBindingException
+import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endTicket.futureMe.domain.converter.CharacterTypeConverter
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.Character
 import ac.kr.smu.endTicket.futureMe.domain.futureMe.model.FutureMe

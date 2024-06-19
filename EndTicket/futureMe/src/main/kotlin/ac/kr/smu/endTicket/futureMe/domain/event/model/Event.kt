@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.futureMe.domain.event.model
 
-import ac.kr.smu.endTicket.common.jpa.Audit
+import ac.kr.smu.endticket.common.jpa.Audit
 import jakarta.persistence.*
 import org.hibernate.annotations.DiscriminatorOptions
 import org.springframework.data.jpa.domain.support.AuditingEntityListener

@@ -1,9 +1,9 @@
 package ac.kr.smu.endTicket.futureMe.event
 
 import KafkaMessageService
-import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
-import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
-import ac.kr.smu.endTicket.common.kafka.test.messageListener
+import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
+import ac.kr.smu.endticket.common.kafka.test.createKafkaContainer
+import ac.kr.smu.endticket.common.kafka.test.messageListener
 import ac.kr.smu.endTicket.futureMe.domain.event.model.Event
 import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository

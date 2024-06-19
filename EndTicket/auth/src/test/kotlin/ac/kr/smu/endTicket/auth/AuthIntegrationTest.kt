@@ -7,9 +7,9 @@ import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
 import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.auth.ui.controller.AuthController
 import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
-import ac.kr.smu.endTicket.common.redis.config.AutoRedisConfig
-import ac.kr.smu.endTicket.common.redis.test.RedisTestConfig
-import ac.kr.smu.endTicket.common.web.test.andReturn
+import ac.kr.smu.endticket.common.redis.config.AutoRedisConfig
+import ac.kr.smu.endticket.common.redis.test.RedisTestConfig
+import ac.kr.smu.endticket.common.web.test.andReturn
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -55,6 +55,23 @@ class AuthIntegrationTest @Autowired constructor(
     private val mvc: MockMvc
 ) {
 
+    private val mvc: MockMvc = MockMvcBuilders
+        .webAppContextSetup(ctx)
+        .apply<DefaultMockMvcBuilder>(SecurityMockMvcConfigurers.springSecurity())
+        .addFilters<DefaultMockMvcBuilder>(OAuth2ErrorHandlerFilter(), OAuth2AuthorizationFilter(oAuthService))
+        .build()
+
+    companion object{
+        private const val AUTHORIZATION_CODE = "1"
+        private const val SOCIAL_USER_NUMBER = "1"
+        private const val USER_ID = 1L
+        private const val BASE_URL = "http://localhost:8081/auth"
+        private const val ACCESS_TOKEN = "ac/kr/smu/endticket/common/redis"
+        private const val REFRESH_TOKEN = "r"
+        private const val ID_TOKEN = "i"
+    }
+    private val SOCIAL_TYPE = SocialType.KAKAO
+    
     @BeforeEach
     fun init(){
         mockOAuthService()

@@ -11,7 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter
-import ac.kr.smu.endTicket.common.security.baseConfig
+import ac.kr.smu.endticket.common.security.baseConfig
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.cloud.client.discovery.DiscoveryClient
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
