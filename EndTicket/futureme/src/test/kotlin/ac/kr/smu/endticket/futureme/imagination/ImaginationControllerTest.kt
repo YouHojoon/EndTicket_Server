@@ -1,6 +1,6 @@
 package ac.kr.smu.endticket.futureme.imagination
 
-import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.ImaginationOwnershipException
+import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationOwnershipException
 import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endticket.common.web.test.expectBindingException
