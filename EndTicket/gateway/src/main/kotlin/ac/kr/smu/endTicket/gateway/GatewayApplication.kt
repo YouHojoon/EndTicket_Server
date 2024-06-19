@@ -1,9 +1,8 @@
-package ac.kr.smu.endTicket
+package ac.kr.smu.endTicket.gateway
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient
-import org.springframework.cloud.gateway.route.Route
 import org.springframework.cloud.gateway.route.RouteLocator
 import org.springframework.cloud.gateway.route.builder.*
 import org.springframework.context.annotation.Bean
@@ -28,7 +27,7 @@ class GatewayApplication{
                 headers.accessControlAllowOrigin = "http://localhost:8083"
                 headers.accessControlAllowMethods = listOf(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH, HttpMethod.OPTIONS, HttpMethod.HEAD, HttpMethod.DELETE)
                 headers.accessControlAllowCredentials = true
-                headers.accessControlAllowHeaders = listOf("Content-Type", "X-User-ID", "Authorization")
+                headers.accessControlAllowHeaders = listOf("Content-Type", "X-User-Id", "Authorization")
 
                 if (request.method == HttpMethod.OPTIONS){
                     exchange.response.setStatusCode(HttpStatus.OK)
@@ -43,14 +42,14 @@ class GatewayApplication{
     @Bean
     fun routeLocator(builder: RouteLocatorBuilder): RouteLocator{
         return builder.routes {
-            serviceAPIDocsRoute("auth")
-            serviceAPIDocsRoute("user")
-            serviceAPIDocsRoute("ticket")
-            serviceAPIDocsRoute("future-me")
+            serviceApiDocsRoute("auth")
+            serviceApiDocsRoute("user")
+            serviceApiDocsRoute("ticket")
+            serviceApiDocsRoute("future-me")
         }
     }
 
-    private fun RouteLocatorDsl.serviceAPIDocsRoute(service:String){
+    private fun RouteLocatorDsl.serviceApiDocsRoute(service:String){
         route {
             path("/$service/api-docs")
                 .filters {

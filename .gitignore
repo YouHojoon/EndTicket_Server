@@ -7,6 +7,7 @@ build/
 dump.rdb
 logs/
 nodes-**
+EndTicket/config/src/main/resources/common/**
 EndTicket/config/src/main/resources/common/**.yml
 EndTicket/config/src/main/resources/auth.yml
 EndTicket/futureMe/src/test/resources/application.yml
