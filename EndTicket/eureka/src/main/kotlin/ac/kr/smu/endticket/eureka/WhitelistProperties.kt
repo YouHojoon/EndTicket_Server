@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket
+package ac.kr.smu.endticket.eureka
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
