@@ -9,6 +9,7 @@ dump.rdb
 logs/
 nodes-**
 application.yml
+EndTicket/config/src/main/resources/auth.yml
 # Created by https://www.toptal.com/developers/gitignore/api/intellij,kotlin,macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij,kotlin,macos
 

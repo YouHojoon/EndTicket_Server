@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket
+package ac.kr.smu.endTicket.gateway
 
 import ac.kr.smu.endTicket.protobuf.AccessToken
 import ac.kr.smu.endTicket.protobuf.TokenServiceGrpc.TokenServiceBlockingStub
@@ -6,7 +6,6 @@ import ac.kr.smu.endTicket.protobuf.ValidateAccessTokenResponse
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import net.devh.boot.grpc.client.inject.GrpcClient
 import org.slf4j.LoggerFactory
-import org.slf4j.MDC
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
@@ -35,7 +34,7 @@ class TokenService {
 
         return ValidateAccessTokenResponse
             .newBuilder()
-            .setUserID(-1)
+            .setUserId(-1)
             .setStatus(HttpStatus.SERVICE_UNAVAILABLE.value())
             .setMessage(message).build()
     }

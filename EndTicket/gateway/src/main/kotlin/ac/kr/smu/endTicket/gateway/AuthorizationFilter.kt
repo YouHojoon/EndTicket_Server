@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket
+package ac.kr.smu.endTicket.gateway
 
 import ac.kr.smu.endTicket.common.web.response.ExceptionResponse
 import ac.kr.smu.endTicket.constant.HttpHeaderName
@@ -23,10 +23,10 @@ class AuthorizationFilter(
                 )
 
             val response = tokenService.validateAccessToken(token)
-            val userID = response.userID
+            val userId = response.userId
 
-            if(response.userID != -1L) {
-                val request = exchange.request.mutate().header(HttpHeaderName.USER_ID, userID.toString()).build()
+            if(response.userId != -1L) {
+                val request = exchange.request.mutate().header(HttpHeaderName.USER_ID, userId.toString()).build()
                 chain
                     .filter(exchange.mutate().request(request).build())
             }
