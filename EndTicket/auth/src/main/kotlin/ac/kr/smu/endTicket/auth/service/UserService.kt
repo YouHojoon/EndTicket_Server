@@ -1,8 +1,8 @@
 package ac.kr.smu.endTicket.auth.service
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
-import ac.kr.smu.endTicket.protobuf.FindUserIDRequest
-import ac.kr.smu.endTicket.protobuf.UserServiceGrpc
+import ac.kr.smu.endticket.protobuf.FindUserIdRequest
+import ac.kr.smu.endticket.protobuf.UserServiceGrpc
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import net.devh.boot.grpc.client.inject.GrpcClient
 import org.slf4j.LoggerFactory
@@ -24,23 +24,23 @@ class UserService{
      * @return 사용자 번호
      */
 
-    @CircuitBreaker(name = "find-user-id", fallbackMethod = "fallbackFindUserID")
-    fun findUserID(socialType: SocialType, socialUserNumber: String): Long = userStub.findUserID(
-        FindUserIDRequest.newBuilder()
-            .setSocialType(ac.kr.smu.endTicket.protobuf.SocialType.valueOf(socialType.name))
+    @CircuitBreaker(name = "find-user-id", fallbackMethod = "fallbackFindUserId")
+    fun findUserId(socialType: SocialType, socialUserNumber: String): Long = userStub.findUserId(
+        FindUserIdRequest.newBuilder()
+            .setSocialType(ac.kr.smu.endticket.protobuf.SocialType.valueOf(socialType.name))
             .setSocialUserNumber(socialUserNumber)
             .build()
-    ).userID
+    ).userId
 
 
     /**
-     * findUserID의 fallback 메소드
+     * findUserId의 fallback 메소드
      * @param socialType 실패한 사용의 SNS 종류
      * @param socialUserNumber 실패한 사용자의 SNS 사용자 번호
      * @param e 발생한 에러
      * @return -1 반환
      */
-    private fun fallbackFindUserID(socialType: SocialType, socialUserNumber: String, e: Exception): Long{
+    private fun fallbackFindUserId(socialType: SocialType, socialUserNumber: String, e: Exception): Long{
         log.error("{socialType: $socialType, socialUserNumber: $socialUserNumber}",e)
 
         return -1

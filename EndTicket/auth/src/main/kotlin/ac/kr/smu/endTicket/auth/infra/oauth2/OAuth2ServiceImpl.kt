@@ -3,7 +3,7 @@ package ac.kr.smu.endTicket.auth.infra.oauth2
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
 import ac.kr.smu.endTicket.auth.infra.oauth2.exception.OAuth2RequestException
-import ac.kr.smu.endTicket.auth.infra.oauth2.idToken.IDTokenService
+import ac.kr.smu.endTicket.auth.infra.oauth2.idtoken.IdTokenService
 import kotlinx.coroutines.*
 import org.springframework.http.MediaType
 import org.springframework.security.oauth2.client.registration.ClientRegistration
@@ -22,7 +22,7 @@ import org.springframework.web.reactive.function.client.awaitBody
 @Service
 class OAuth2ServiceImpl(
     private val clientRegistrationRepository: ClientRegistrationRepository,
-    private val idTokenService: IDTokenService
+    private val idTokenService: IdTokenService
 ): OAuthService {
     /**
      * 외부 SNS 서비스 인증을 하여 access 토큰 응답을 반환하는 메소드

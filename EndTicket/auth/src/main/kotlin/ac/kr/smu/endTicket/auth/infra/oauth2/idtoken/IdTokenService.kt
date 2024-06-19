@@ -1,8 +1,8 @@
-package ac.kr.smu.endTicket.auth.infra.oauth2.idToken
+package ac.kr.smu.endTicket.auth.infra.oauth2.idtoken
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
-import ac.kr.smu.endTicket.auth.infra.oauth2.idToken.exception.UnverifiedIDTokenException
-import ac.kr.smu.endTicket.auth.infra.oauth2.idToken.exception.JWKParseException
+import ac.kr.smu.endTicket.auth.infra.oauth2.idtoken.exception.JWKParseException
+import ac.kr.smu.endTicket.auth.infra.oauth2.idtoken.exception.UnverifiedIdTokenException
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Jwk
@@ -27,7 +27,7 @@ import java.util.*
  * @property redisTemplate 발급받은 공개키들을 저장하기 위한 캐시
  */
 @Service
-class IDTokenService(
+class IdTokenService(
     private val clientRegistrationRepository: ClientRegistrationRepository,
     private val redisTemplate: RedisTemplate<String, Any>
 ) {
@@ -38,7 +38,7 @@ class IDTokenService(
      * @param idToken ID 토큰
      * @throws UnverifiedIDTokenException ID 토큰 검증 실패 의
      */
-    @Throws(UnverifiedIDTokenException::class)
+    @Throws(UnverifiedIdTokenException::class)
     fun parseSocialUserNumber(socialType: SocialType, idToken: String): String{
         val (header, payload, _) = parseIDToken(idToken)
         val key = findPublicKey(socialType, header.kid)
@@ -46,7 +46,7 @@ class IDTokenService(
         try {
             verifyIDToken(socialType,idToken, payload, key)
         }catch (e: IllegalArgumentException){
-            throw UnverifiedIDTokenException(socialType,idToken ,e.message)
+            throw UnverifiedIdTokenException(socialType,idToken ,e.message)
         }
 
         return payload.sub
@@ -61,7 +61,7 @@ class IDTokenService(
      * @throws IllegalArgumentException ID 토큰 검증 실패 시
      */
     @Throws(IllegalArgumentException::class)
-    private fun verifyIDToken(socialType: SocialType, idToken: String, payload: IDTokenPayload, key:PublicKey){
+    private fun verifyIDToken(socialType: SocialType, idToken: String, payload: IdTokenPayload, key:PublicKey){
         val provider = clientRegistrationRepository.findByRegistrationId(socialType.name.lowercase())
 
         require(payload.iss == provider.providerDetails.issuerUri){
@@ -147,13 +147,13 @@ class IDTokenService(
         val decodedHeader= String(decoder.decode(header))
 
         return IDToken(
-            objectMapper.readValue(decodedHeader, IDTokenHeader::class.java),
-            objectMapper.readValue(decodedPayload, IDTokenPayload::class.java),
+            objectMapper.readValue(decodedHeader, IdTokenHeader::class.java),
+            objectMapper.readValue(decodedPayload, IdTokenPayload::class.java),
             signature
         )
     }
 
 }
 
-private typealias IDToken = Triple<IDTokenHeader, IDTokenPayload,String>
+private typealias IDToken = Triple<IdTokenHeader, IdTokenPayload,String>
 

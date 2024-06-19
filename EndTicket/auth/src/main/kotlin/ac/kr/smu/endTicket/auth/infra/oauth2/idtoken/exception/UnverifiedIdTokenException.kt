@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.auth.infra.oauth2.idToken.exception
+package ac.kr.smu.endTicket.auth.infra.oauth2.idtoken.exception
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 
@@ -9,7 +9,7 @@ import ac.kr.smu.endTicket.auth.domain.model.SocialType
  * @property idToken 검증에 실패한 ID 토큰
  * @property message 에러 메시지
  */
-class UnverifiedIDTokenException(
+class UnverifiedIdTokenException(
     val socialType: SocialType,
     val idToken: String,
     message: String? = null

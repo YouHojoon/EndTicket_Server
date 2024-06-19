@@ -1,11 +1,10 @@
 package ac.kr.smu.endTicket.auth.infra.swagger.apiResponses
 
 import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
-import ac.kr.smu.endTicket.common.web.response.ExceptionResponse
+import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.media.SchemaProperty
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 

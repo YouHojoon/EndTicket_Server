@@ -3,10 +3,10 @@ package ac.kr.smu.endTicket.auth
 import ac.kr.smu.endTicket.auth.domain.exception.RefreshTokenExpiredException
 import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
 import ac.kr.smu.endTicket.auth.service.TokenService
-import ac.kr.smu.endTicket.common.redis.test.RedisTestConfig
-import ac.kr.smu.endTicket.protobuf.AccessToken
-import ac.kr.smu.endTicket.protobuf.TokenServiceGrpc
-import ac.kr.smu.endTicket.protobuf.TokenServiceGrpc.TokenServiceBlockingStub
+import ac.kr.smu.endticket.common.redis.test.RedisTestConfig
+import ac.kr.smu.endticket.protobuf.AccessToken
+import ac.kr.smu.endticket.protobuf.TokenServiceGrpc
+import ac.kr.smu.endticket.protobuf.TokenServiceGrpc.TokenServiceBlockingStub
 import io.grpc.ManagedChannel
 import io.grpc.StatusRuntimeException
 import io.grpc.inprocess.InProcessChannelBuilder
@@ -27,7 +27,6 @@ import org.springframework.context.annotation.Import
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import org.springframework.test.annotation.DirtiesContext
-import java.util.*
 import kotlin.test.*
 
 @SpringBootTest(classes = [
@@ -74,7 +73,7 @@ class TokenServiceTest @Autowired constructor(
         )
 
 
-        assertEquals(USER_ID, response.userID)
+        assertEquals(USER_ID, response.userId)
         assertEquals(200, response.status)
     }
 
@@ -93,7 +92,7 @@ class TokenServiceTest @Autowired constructor(
         )
 
         assertEquals(401, response.status)
-        assertEquals(-1,response.userID)
+        assertEquals(-1,response.userId)
     }
 
     @Test
@@ -111,7 +110,7 @@ class TokenServiceTest @Autowired constructor(
         val response = stub.validateAccessToken(accessToken)
 
         assertEquals(400, response.status)
-        assertEquals(-1,response.userID)
+        assertEquals(-1,response.userId)
     }
 
     @Test
@@ -128,7 +127,7 @@ class TokenServiceTest @Autowired constructor(
         )
 
         assertEquals(500, response.status)
-        assertEquals(-1,response.userID)
+        assertEquals(-1,response.userId)
     }
 
     @Test
@@ -142,14 +141,14 @@ class TokenServiceTest @Autowired constructor(
                 .build()
         )
 
-        assertEquals(response.userID, -1)
+        assertEquals(response.userId, -1)
         assertEquals(response.status, 400)
     }
     @Test
     @DisplayName("정상 유저 토큰 발급 테스트")
     fun given_userID_when_createAccessAndRefreshToken_then_success(){
         assertDoesNotThrow {
-            service.createAccessAndRefreshToken(userID = USER_ID)
+            service.createAccessAndRefreshToken(userId = USER_ID)
         }
     }
 
@@ -159,7 +158,7 @@ class TokenServiceTest @Autowired constructor(
         val token = service
             .createAccessAndRefreshToken(USER_ID)
 
-        assertEquals(service.parseUserID(token.accessToken), USER_ID)
+        assertEquals(service.parseUserId(token.accessToken), USER_ID)
     }
 
     @Test
@@ -169,7 +168,7 @@ class TokenServiceTest @Autowired constructor(
         val refreshToken = token.refreshToken
 
         assertNotNull(refreshToken)
-        assertThrows<UnsupportedJwtException> { service.parseUserID(refreshToken)}
+        assertThrows<UnsupportedJwtException> { service.parseUserId(refreshToken)}
     }
 
     @Test

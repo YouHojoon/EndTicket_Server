@@ -38,7 +38,7 @@ class UserServiceTest @Autowired constructor(
         val socialType = SocialType.KAKAO
         val socialUserNumber = "1"
 
-        assertEquals(USER_ID,  service.findUserID(socialType,socialUserNumber))
+        assertEquals(USER_ID,  service.findUserId(socialType,socialUserNumber))
     }
 
     @Test
@@ -49,7 +49,7 @@ class UserServiceTest @Autowired constructor(
         val socialUserNumber = "2"
         val breaker = registry.circuitBreaker("find-user-id")
 
-        assertEquals(-1, service.findUserID(socialType,socialUserNumber))
+        assertEquals(-1, service.findUserId(socialType,socialUserNumber))
         assertEquals(CircuitBreaker.State.OPEN,breaker.state)
     }
 }
