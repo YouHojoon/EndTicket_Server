@@ -10,6 +10,15 @@ spring:
       - classpath:/common/logging.yml
       - classpath:/common/kafka.yml
       - classpath:/common/zipkin.yml
+  kafka:
+    properties:
+      spring:
+        json:
+          trusted:
+            packages: "ac.kr.smu.endTicket.futureMe.infra.messaging"
+          type:
+            mapping: "ac.kr.smu.endTicket.ticket.ui.response.TicketResponse:ac.kr.smu.endTicket.futureMe.infra.messaging.TicketCompletedEventResponse"
+
 schedules:
   resend-imagination-completion-event:
     fixedDelay: 600000 # 10분
