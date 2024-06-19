@@ -76,7 +76,7 @@ class TokenServiceTest @Autowired constructor(
         )
 
 
-        assertEquals(USER_ID, response.userID)
+        assertEquals(USER_ID, response.userId)
         assertEquals(200, response.status)
     }
 
@@ -95,7 +95,7 @@ class TokenServiceTest @Autowired constructor(
         )
 
         assertEquals(401, response.status)
-        assertEquals(-1,response.userID)
+        assertEquals(-1,response.userId)
     }
 
     @Test
@@ -113,7 +113,7 @@ class TokenServiceTest @Autowired constructor(
         val response = stub.validateAccessToken(accessToken)
 
         assertEquals(400, response.status)
-        assertEquals(-1,response.userID)
+        assertEquals(-1,response.userId)
     }
 
     @Test
@@ -130,7 +130,7 @@ class TokenServiceTest @Autowired constructor(
         )
 
         assertEquals(500, response.status)
-        assertEquals(-1,response.userID)
+        assertEquals(-1,response.userId)
     }
 
     @Test
@@ -144,14 +144,14 @@ class TokenServiceTest @Autowired constructor(
                 .build()
         )
 
-        assertEquals(response.userID, -1)
+        assertEquals(response.userId, -1)
         assertEquals(response.status, 400)
     }
     @Test
     @DisplayName("정상 유저 토큰 발급 테스트")
     fun given_userID_when_createAccessAndRefreshToken_then_success(){
         assertDoesNotThrow {
-            service.createAccessAndRefreshToken(userID = USER_ID)
+            service.createAccessAndRefreshToken(userId = USER_ID)
         }
     }
 
@@ -161,7 +161,7 @@ class TokenServiceTest @Autowired constructor(
         val token = service
             .createAccessAndRefreshToken(USER_ID)
 
-        assertEquals(service.parseUserID(token.accessToken), USER_ID)
+        assertEquals(service.parseUserId(token.accessToken), USER_ID)
     }
 
     @Test
@@ -171,7 +171,7 @@ class TokenServiceTest @Autowired constructor(
         val refreshToken = token.refreshToken
 
         assertNotNull(refreshToken)
-        assertThrows<UnsupportedJwtException> { service.parseUserID(refreshToken)}
+        assertThrows<UnsupportedJwtException> { service.parseUserId(refreshToken)}
     }
 
     @Test

@@ -41,16 +41,16 @@ class AuthController(
         @AuthenticationPrincipal
         oAuth2User: OAuth2User
     ): ResponseEntity<*>{
-        val userID = userService.findUserID(socialType, oAuth2User.name)
+        val userId = userService.findUserId(socialType, oAuth2User.name)
 
-        if (userID == -1L)
+        if (userId == -1L)
             return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(ExceptionResponse(503, "토큰을 발급하는 과정에서 에러가 발생했습니다.", "시용자 서버와 통신에 실패했습니다"))
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(tokenService.createAccessAndRefreshToken(userID))
+            .body(tokenService.createAccessAndRefreshToken(userId))
     }
 
     @ReissueTokenApiResponses

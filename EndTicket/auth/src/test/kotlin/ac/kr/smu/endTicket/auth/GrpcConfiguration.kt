@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.auth
 
-import ac.kr.smu.endTicket.protobuf.FindUserIDRequest
+import ac.kr.smu.endTicket.protobuf.FindUserIdRequest
 import ac.kr.smu.endTicket.protobuf.UserIDResponse
 import ac.kr.smu.endTicket.protobuf.UserServiceGrpc
 import io.grpc.stub.StreamObserver
@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration
 class GrpcConfiguration {
     @GrpcService
     class UserServiceImpl : UserServiceGrpc.UserServiceImplBase(){
-        override fun findUserID(request: FindUserIDRequest, responseObserver: StreamObserver<UserIDResponse>) {
+        override fun findUserID(request: FindUserIdRequest, responseObserver: StreamObserver<UserIdResponse>) {
             if (request.socialUserNumber == "1") {
                 responseObserver.onNext(
                     UserIDResponse.newBuilder().setUserID(UserServiceTest.USER_ID).build()

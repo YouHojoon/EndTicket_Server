@@ -70,7 +70,7 @@ class AuthIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("사용자 토큰 생성 테스트")
     fun given_user_when_createToken_then_return_accessToken_and_refreshToken(){
-        Mockito.`when`(userService.findUserID(SOCIAL_TYPE, SOCIAL_USER_NUMBER))
+        Mockito.`when`(userService.findUserId(SOCIAL_TYPE, SOCIAL_USER_NUMBER))
             .thenReturn(USER_ID)
 
         mvc.createToken()
@@ -81,7 +81,7 @@ class AuthIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("리프레시 토큰으로 토큰 재발급 테스트")
     fun given_refreshToken_then_reissueToken_then_reissueAccessToken_and_refreshToken(){
-        Mockito.`when`(userService.findUserID(SOCIAL_TYPE, SOCIAL_USER_NUMBER))
+        Mockito.`when`(userService.findUserId(SOCIAL_TYPE, SOCIAL_USER_NUMBER))
             .thenReturn(USER_ID)
 
         val refreshToken = mvc.createToken().andReturn<TokenResponse>().refreshToken

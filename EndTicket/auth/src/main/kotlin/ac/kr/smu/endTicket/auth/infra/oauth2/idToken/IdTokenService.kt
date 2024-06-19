@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.auth.infra.oauth2.idToken
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
-import ac.kr.smu.endTicket.auth.infra.oauth2.idToken.exception.UnverifiedIDTokenException
+import ac.kr.smu.endTicket.auth.infra.oauth2.idToken.exception.UnverifiedIdTokenException
 import ac.kr.smu.endTicket.auth.infra.oauth2.idToken.exception.JWKParseException
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.Jwts
@@ -22,46 +22,49 @@ import java.time.Instant
 import java.util.*
 
 /**
- * ID 토큰의 기능을 담당하는 클래스
+ * Id 토큰의 기능을 담당하는 클래스
  * @property clientRegistrationRepository OAuth Client를 저장하고 있는 객체
  * @property redisTemplate 발급받은 공개키들을 저장하기 위한 캐시
  */
 @Service
-class IDTokenService(
+class IdTokenService(
     private val clientRegistrationRepository: ClientRegistrationRepository,
     private val redisTemplate: RedisTemplate<String, Any>
 ) {
-    private val JWK_REDIS_KEY_PREFIX = "JWK:"
+    private companion object{
+        private const val JWK_REDIS_KEY_PREFIX = "JWK:"
+    }
+
     /**
-     * ID 토큰을 이용해 SNS 사용자 번호를 반환하는 메소드
-     * @param socialType ID 토큰을 발급받은 SNS
-     * @param idToken ID 토큰
-     * @throws UnverifiedIDTokenException ID 토큰 검증 실패 의
+     * Id 토큰을 이용해 SNS 사용자 번호를 반환하는 메소드
+     * @param socialType Id 토큰을 발급받은 SNS
+     * @param idToken Id 토큰
+     * @throws UnverifiedIdTokenException Id 토큰 검증 실패 의
      */
-    @Throws(UnverifiedIDTokenException::class)
+    @Throws(UnverifiedIdTokenException::class)
     fun parseSocialUserNumber(socialType: SocialType, idToken: String): String{
-        val (header, payload, _) = parseIDToken(idToken)
+        val (header, payload, _) = parseIdToken(idToken)
         val key = findPublicKey(socialType, header.kid)
 
         try {
-            verifyIDToken(socialType,idToken, payload, key)
+            verifyIdToken(socialType,idToken, payload, key)
         }catch (e: IllegalArgumentException){
-            throw UnverifiedIDTokenException(socialType,idToken ,e.message)
+            throw UnverifiedIdTokenException(socialType,idToken ,e.message)
         }
 
         return payload.sub
     }
 
     /**
-     * ID Token을 검증하는 메소드
-     * @param socialType ID 토큰을 발급받은 SNS
-     * @param idToken ID 토큰
-     * @param payload ID 토큰의 페이로드
-     * @param key ID 토큰의 공개키
-     * @throws IllegalArgumentException ID 토큰 검증 실패 시
+     * Id Token을 검증하는 메소드
+     * @param socialType Id 토큰을 발급받은 SNS
+     * @param idToken Id 토큰
+     * @param payload Id 토큰의 페이로드
+     * @param key Id 토큰의 공개키
+     * @throws IllegalArgumentException Id 토큰 검증 실패 시
      */
     @Throws(IllegalArgumentException::class)
-    private fun verifyIDToken(socialType: SocialType, idToken: String, payload: IDTokenPayload, key:PublicKey){
+    private fun verifyIdToken(socialType: SocialType, idToken: String, payload: IdTokenPayload, key:PublicKey){
         val provider = clientRegistrationRepository.findByRegistrationId(socialType.name.lowercase())
 
         require(payload.iss == provider.providerDetails.issuerUri){
@@ -134,11 +137,11 @@ class IDTokenService(
     }
 
     /**
-     * ID 토큰을 파싱하는 메소드
-     * @param token ID 토큰
-     * @return 복호화된 ID 토큰의 헤더, 페이로드 그리고 서명
+     * Id 토큰을 파싱하는 메소드
+     * @param token Id 토큰
+     * @return 복호화된 Id 토큰의 헤더, 페이로드 그리고 서명
      */
-    private fun parseIDToken(token: String): IDToken {
+    private fun parseIdToken(token: String): IdToken {
         val objectMapper = ObjectMapper()
         val (header, payload, signature) = token.split(".")
         val decoder = Base64.getDecoder()
@@ -146,14 +149,14 @@ class IDTokenService(
         val decodedPayload = String(decoder.decode(payload))
         val decodedHeader= String(decoder.decode(header))
 
-        return IDToken(
-            objectMapper.readValue(decodedHeader, IDTokenHeader::class.java),
-            objectMapper.readValue(decodedPayload, IDTokenPayload::class.java),
+        return IdToken(
+            objectMapper.readValue(decodedHeader, IdTokenHeader::class.java),
+            objectMapper.readValue(decodedPayload, IdTokenPayload::class.java),
             signature
         )
     }
 
 }
 
-private typealias IDToken = Triple<IDTokenHeader, IDTokenPayload,String>
+private typealias IdToken = Triple<IdTokenHeader, IdTokenPayload,String>
 

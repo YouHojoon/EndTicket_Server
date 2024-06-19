@@ -2,7 +2,7 @@ package ac.kr.smu.endTicket.auth.infra.oauth2.filter
 
 import ac.kr.smu.endTicket.auth.infra.oauth2.exception.OAuth2RequestException
 import ac.kr.smu.endTicket.auth.infra.oauth2.idToken.exception.JWKParseException
-import ac.kr.smu.endTicket.auth.infra.oauth2.idToken.exception.UnverifiedIDTokenException
+import ac.kr.smu.endTicket.auth.infra.oauth2.idToken.exception.UnverifiedIdTokenException
 import ac.kr.smu.endTicket.common.web.response.ExceptionResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.FilterChain
@@ -34,7 +34,7 @@ class OAuth2ErrorHandlerFilter: OncePerRequestFilter() {
             }",
                 e)
             sendResponse(response, HttpStatus.INTERNAL_SERVER_ERROR)
-        }catch (e: UnverifiedIDTokenException){
+        }catch (e: UnverifiedIdTokenException){
             log.info("{idToken: ${e.idToken}, message: ${e.message}}", e)
             sendResponse(response, HttpStatus.BAD_REQUEST)
         }catch (e: JWKParseException){
