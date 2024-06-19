@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.ticket.infra.swagger
 
-import ac.kr.smu.endTicket.response.ExceptionResponse
+import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema

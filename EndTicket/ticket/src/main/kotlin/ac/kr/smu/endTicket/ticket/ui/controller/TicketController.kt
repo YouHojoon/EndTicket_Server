@@ -1,10 +1,8 @@
 package ac.kr.smu.endTicket.ticket.ui.controller
 
-import ac.kr.smu.endTicket.response.ExceptionResponse
-import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
-import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
-import ac.kr.smu.endTicket.common.web.response.BindExceptionResponse
-import ac.kr.smu.endTicket.ticket.domain.model.Ticket
+import ac.kr.smu.endticket.common.web.response.ExceptionResponse
+import ac.kr.smu.endTicket.ticket.domain.exception.TicketNotFoundException
+import ac.kr.smu.endTicket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endTicket.ticket.infra.swagger.*
 import ac.kr.smu.endTicket.ticket.service.TicketService
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
@@ -101,7 +99,7 @@ class TicketController(
         @Parameter(hidden = true)
         @RequestHeader("X-User-ID")
         userID: Long
-    ): ResponseEntity<*> = ResponseEntity.ok(mapOf("tickets" to service.findIncompleteTicket(userID)))
+    ): ResponseEntity<*> = ResponseEntity.ok(mapOf("tickets" to service.findIncompleteTickets(userID)))
 
     @DeleteTicketResponses
     @DeleteMapping("{id}")
@@ -117,8 +115,8 @@ class TicketController(
         service.deleteTicket(id,userID)
         return ResponseEntity.noContent().build()
     }
-    @ExceptionHandler(NotFoundTicketException::class)
-    fun handleNotFoundTicketException(e: NotFoundTicketException): ResponseEntity<ExceptionResponse>{
+    @ExceptionHandler(TicketNotFoundException::class)
+    fun handleNotFoundTicketException(e: TicketNotFoundException): ResponseEntity<ExceptionResponse>{
         log.info("id: ${e.id}", e)
         return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(
             ExceptionResponse(
@@ -128,8 +126,8 @@ class TicketController(
             )
         )
     }
-    @ExceptionHandler(NotOwnerOfTicketException::class)
-    fun handleNotOwnerOfTicketException(e: NotOwnerOfTicketException): ResponseEntity<ExceptionResponse>{
+    @ExceptionHandler(TicketOwnershipException::class)
+    fun handleNotOwnerOfTicketException(e: TicketOwnershipException): ResponseEntity<ExceptionResponse>{
         log.info("id: ${e.id}, userID: ${e.userID}", e)
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
             ExceptionResponse(

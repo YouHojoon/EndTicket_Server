@@ -30,9 +30,6 @@ tasks.jacocoTestReport{
                     "**/domain/*",
                     "**/response/*",
                     "**/request/*",
-                    "**/TicketCompletionEventConsumeService*",
-                    "**/listener/*",
-                    "**/job/*"
                 )
             }
         })
@@ -49,9 +46,8 @@ tasks.jacocoTestCoverageVerification {
                 "**.infra.**",
                 "*Application*",
                 "**.domain.*",
-                "**.job.*",
-                "**.TicketCompletionEventConsumeService*",
-                "**.listener.*",
+                "**.response.*",
+                "**.request.*",
             )
 
             element = "CLASS"

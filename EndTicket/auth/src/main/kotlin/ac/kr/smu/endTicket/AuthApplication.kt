@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket
 
-import ac.kr.smu.endTicket.common.redis.annotation.EnableAutoRedisConfig
+import ac.kr.smu.endticket.common.redis.annotation.EnableAutoRedisConfig
 import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -12,5 +12,5 @@ import org.springframework.boot.runApplication
 class AuthApplication
 
 fun main(args: Array<String>) {
-    runApplication<ac.kr.smu.endTicket.AuthApplication>(*args)
+    runApplication<AuthApplication>(*args)
 }

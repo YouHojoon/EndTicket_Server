@@ -1,0 +1,7 @@
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+    propagation:
+      consume: b3_multi
+      produce: b3_multi

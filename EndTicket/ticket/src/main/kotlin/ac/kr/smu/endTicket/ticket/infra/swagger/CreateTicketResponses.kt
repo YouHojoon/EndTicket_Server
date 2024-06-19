@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.ticket.infra.swagger
 
-import ac.kr.smu.endTicket.response.BindExceptionResponse
+import ac.kr.smu.endticket.common.web.response.BindExceptionResponse
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content

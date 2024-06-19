@@ -1,69 +1,41 @@
 package ac.kr.smu.endTicket.ticket
 
-import ac.kr.smu.endTicket.common.redis.annotation.EnableAutoRedisConfig
 import ac.kr.smu.endTicket.test.mockAny
-import ac.kr.smu.endTicket.ticket.domain.exception.CacheEvictionFailureException
-import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
-import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
+import ac.kr.smu.endTicket.ticket.domain.exception.TicketNotFoundException
+import ac.kr.smu.endTicket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
-import ac.kr.smu.endTicket.ticket.service.TicketCompletionEventService
+import ac.kr.smu.endTicket.ticket.service.TicketCompletedEventService
 import ac.kr.smu.endTicket.ticket.service.TicketService
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
-import jakarta.persistence.EntityManager
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
+import org.mockito.Mock
 import org.mockito.Mockito
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-import org.springframework.boot.autoconfigure.domain.EntityScan
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
-import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.data.redis.core.ValueOperations
+import org.mockito.MockitoAnnotations
+import org.mockito.junit.jupiter.MockitoExtension
 import java.util.*
 import kotlin.test.assertEquals
 
-
-@SpringBootTest(
-    properties = [
-        "eureka.client.enabled=false"
-    ],
-    classes = [
-        TicketService::class,
-        DataSourceAutoConfiguration::class,
-        HibernateJpaAutoConfiguration::class,
-        TransactionAutoConfiguration::class,
-        RedisAutoConfiguration::class
-    ]
-)
-@EntityScan("ac.kr.smu.endTicket.ticket.domain.model")
-@EnableAutoRedisConfig
-class TicketServiceTest @Autowired constructor(
-    @MockBean
-    private val ops: ValueOperations<String,Any>,
-    @MockBean
-    private val redisTemplate: RedisTemplate<String, Any>,
-    @MockBean
+@ExtendWith(MockitoExtension::class)
+class TicketServiceTest (
+    @Mock
     private val repo: TicketRepository,
-    @MockBean
-    private val eventService: TicketCompletionEventService,
-    @MockBean
-    private val em: EntityManager,
-    private val service: TicketService,
-) {
-    private companion object{
-        private const val REDIS_KEY_PREFIX = "ticket::"
-    }
+    @Mock
+    private val eventService: TicketCompletedEventService,
+
+
+    ) {
+    @InjectMocks
+    private lateinit var service: TicketService
     @BeforeEach
     fun init(){
-        Mockito.`when`(redisTemplate.opsForValue()).thenReturn(ops)
+        MockitoAnnotations.openMocks(this)
     }
 
     @Test
@@ -74,12 +46,12 @@ class TicketServiceTest @Autowired constructor(
             .thenReturn(ticket)
 
         assertEquals(TicketResponse.from(ticket), service.createTicket(TICKET_REQUEST, USER_ID))
-        Mockito.verify(repo, Mockito.times(1)).countByUserID(USER_ID)
+        Mockito.verify(repo, Mockito.times(1)).countIncompleteTicketsOfUser(USER_ID)
     }
     @Test
     @DisplayName("티켓 개수 제한 이상으로 생성 테스트")
     fun given_userHasReachedTicketLimit_when_createTicket_then_throwIllegalStateException(){
-        Mockito.`when`(repo.countByUserID(USER_ID))
+        Mockito.`when`(repo.countIncompleteTicketsOfUser(USER_ID))
             .thenReturn(5)
 
         assertThrows<IllegalStateException> { service.createTicket(TICKET_REQUEST, USER_ID) }
@@ -92,15 +64,14 @@ class TicketServiceTest @Autowired constructor(
             Mockito.`when`(repo.findById(Mockito.anyLong()))
             .thenReturn(Optional.of(ticket))
 
-
         assertEquals(service.updateTicket(UPDATE_REQUEST, ticket.id, USER_ID) , TicketResponse.from(ticket))
     }
     @Test
     @DisplayName("존재하지 않는 티켓 수정 테스트")
-    fun given_notExistTicket_when_updateTicket_then_throwNotFoundTicketException(){
+    fun given_notExistTicket_when_updateTicket_then_throwTicketNotFoundException(){
         Mockito.`when`(repo.findById(Mockito.anyLong()))
             .thenReturn(Optional.empty())
-        assertThrows<NotFoundTicketException> {  service.updateTicket(UPDATE_REQUEST, 1L, USER_ID)}
+        assertThrows<TicketNotFoundException> {  service.updateTicket(UPDATE_REQUEST, 1L, USER_ID)}
     }
     @Test
     @DisplayName("티켓 수정 후 티켓 완료 테스트")
@@ -120,22 +91,22 @@ class TicketServiceTest @Autowired constructor(
             ticket.swipeAndCheckCompletion(USER_ID)
         }
 
-        Mockito.`when`(redisTemplate.delete("$REDIS_KEY_PREFIX${ticket.id}")).thenReturn(true)
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
 
         val updatedTicket = service.updateTicket(TICKET_REQUEST, ticket.id , USER_ID)
+
         assertEquals(TicketResponse.from(ticket), updatedTicket)
-        verifyCompleteTicket(ticket)
+        Mockito.verify(eventService, Mockito.times(1)).publishEvent(mockAny())
     }
 
     @Test
     @DisplayName("티켓의 소유자가 아닌 사용자의 수정 테스트")
-    fun given_userWhoNotOwnerOfTicket_then_throwNotOwnerOfTicketException(){
+    fun given_userWhoNotOwnerOfTicket_then_throwTicketOwnershipException(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
-        assertThrows<NotOwnerOfTicketException> {  service.updateTicket(UPDATE_REQUEST, ticket.id, 2L)}
+        assertThrows<TicketOwnershipException> {  service.updateTicket(UPDATE_REQUEST, ticket.id, 2L)}
     }
 
     @Test
@@ -153,20 +124,20 @@ class TicketServiceTest @Autowired constructor(
     }
     @Test
     @DisplayName("티켓 소유자가 아닌 사용자의 스와이프 테스트")
-    fun given_userWhoNotOwnerOfTicket_whenSwipeTicket_then_throwNotOwnerOfTicketException(){
+    fun given_userWhoNotOwnerOfTicket_whenSwipeTicket_then_throwTicketOwnershipException(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
 
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
-        assertThrows<NotOwnerOfTicketException> {  service.swipeTicket(ticket.id, 2L)}
+        assertThrows<TicketOwnershipException> {  service.swipeTicket(ticket.id, 2L)}
     }
     @Test
     @DisplayName("존재하지 않는 티켓 스와이프 테스트")
-    fun given_notExistTicket_when_swipeTicket_then_throwNotFoundTicketException() {
+    fun given_notExistTicket_when_swipeTicket_then_throwTicketNotFoundException() {
         Mockito.`when`(repo.findById(Mockito.anyLong()))
             .thenReturn(Optional.empty())
 
-        assertThrows<NotFoundTicketException> { service.swipeTicket(1L,1L) }
+        assertThrows<TicketNotFoundException> { service.swipeTicket(1L,1L) }
     }
 
     @Test
@@ -185,23 +156,23 @@ class TicketServiceTest @Autowired constructor(
 
     @Test
     @DisplayName("존재하지 않는 티켓 스와이프 취소 테스트")
-    fun given_nonExistTicket_when_swipeTicket_then_throwNotFoundTicketException(){
+    fun given_nonExistTicket_when_swipeTicket_then_throwTicketNotFoundException(){
         Mockito.`when`(repo.findById(Mockito.anyLong()))
             .thenReturn(Optional.empty())
 
-        assertThrows<NotFoundTicketException> { service.cancelSwipeTicket(1L, 1L)}
+        assertThrows<TicketNotFoundException> { service.cancelSwipeTicket(1L, 1L)}
     }
 
     @Test
     @DisplayName("소유자가 아닌 사용자 티켓 스와이프 취소 테스트")
-    fun given_userWhoNotOwnerOfTicket_whenCancelSwipeTicket_then_throwNotOwnerOfTicket(){
+    fun given_userWhoNotOwnerOfTicket_whenCancelSwipeTicket_then_throwTicketOwnershipException(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
         ticket.swipeAndCheckCompletion(ticket.userID)
 
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
 
-        assertThrows<NotOwnerOfTicketException> {  service.cancelSwipeTicket(ticket.id, 2L)}
+        assertThrows<TicketOwnershipException> {  service.cancelSwipeTicket(ticket.id, 2L)}
     }
 
     @Test
@@ -210,32 +181,12 @@ class TicketServiceTest @Autowired constructor(
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
 
         Mockito.`when`(repo.findById(ticket.id)).thenReturn(Optional.of(ticket))
-        Mockito.`when`(redisTemplate.delete("$REDIS_KEY_PREFIX${ticket.id}"))
-            .thenReturn(true)
-        Mockito.`when`(em.merge(ticket)).thenReturn(ticket)
 
         repeat(ticket.maxSwipeCount.value){
             service.swipeTicket(ticket.id, ticket.userID)
         }
 
-        verifyCompleteTicket(ticket)
-    }
-
-    @Test
-    @DisplayName("티켓 완료 시 캐시 삭제 실패 테스트")
-    fun given_cacheEvictionFail_when_completeTicket_then_throwCacheEvictionFailureException(){
-        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
-
-        Mockito.`when`(repo.findById(ticket.id)).thenReturn(Optional.of(ticket))
-        Mockito.`when`(redisTemplate.delete("$REDIS_KEY_PREFIX${ticket.id}"))
-            .thenReturn(false)
-        Mockito.`when`(em.merge(ticket)).thenReturn(ticket)
-
-        repeat(ticket.maxSwipeCount.value - 1){
-            service.swipeTicket(ticket.id, ticket.userID)
-        }
-
-        assertThrows<CacheEvictionFailureException> {  service.swipeTicket(ticket.id, ticket.userID)}
+        Mockito.verify(eventService).publishEvent(mockAny())
     }
 
     @Test
@@ -245,59 +196,25 @@ class TicketServiceTest @Autowired constructor(
         Mockito.`when`(repo.findIncompleteTicketsOfUser(USER_ID))
             .thenReturn(tickets)
 
-        assertEquals(tickets.map { TicketResponse.from(it) }, service.findIncompleteTicket(USER_ID))
+        assertEquals(tickets.map { TicketResponse.from(it) }, service.findIncompleteTickets(USER_ID))
     }
-
-    @Test
-    @DisplayName("티켓 삭제 테스트")
-    fun given_id_when_deleteTicket_then_success(){
-        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
-
-        Mockito.`when`(repo.findById(ticket.id))
-            .thenReturn(Optional.of(ticket))
-        Mockito.`when`(redisTemplate.delete("$REDIS_KEY_PREFIX${ticket.id}"))
-            .thenReturn(true)
-
-        service.deleteTicket(ticket.id, USER_ID)
-
-        Mockito.verify(repo, Mockito.times(1)).delete(ticket)
-        Mockito.verify(redisTemplate, Mockito.times(1)).delete("$REDIS_KEY_PREFIX${ticket.id}")
-    }
-
     @Test
     @DisplayName("존재하지 않는 티켓 삭제 테스트")
-    fun given_notExistTicket_when_deleteTicket_then_throwNotFoundTicketException(){
-        Mockito.`when`(repo.findById(mockAny()))
+    fun given_notExistTicket_when_deleteTicket_then_throwTicketNotFoundException(){
+        Mockito.`when`(repo.findById(Mockito.anyLong()))
             .thenReturn(Optional.empty())
 
-        assertThrows<NotFoundTicketException> {  service.deleteTicket(1L, USER_ID)}
+        assertThrows<TicketNotFoundException> { service.deleteTicket(1L, USER_ID)}
     }
 
     @Test
     @DisplayName("소유자가 아닌 사용자의 티켓 삭제 테스트")
-    fun given_userWhoNotOwner_when_deleteTicket_then_throwNotOwnerOfTicketException(){
+    fun given_userWhoNotOwner_when_deleteTicket_then_throwTicketOwnershipException(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
 
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
 
-        assertThrows<NotOwnerOfTicketException> {  service.deleteTicket(ticket.id, 2)}
-    }
-
-    @Test
-    @DisplayName("티켓 삭제시 캐시 삭제 실패 테스트")
-    fun given_cacheEvictionFail_when_deleteTicket_then_throwCacheEvictionFailureException(){
-        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
-        Mockito.`when`(repo.findById(ticket.id))
-            .thenReturn(Optional.of(ticket))
-        Mockito.`when`(redisTemplate.delete("$REDIS_KEY_PREFIX${ticket.id}"))
-            .thenReturn(false)
-
-        assertThrows<CacheEvictionFailureException> { service.deleteTicket(ticket.id, USER_ID) }
-    }
-
-    private fun verifyCompleteTicket(ticket: Ticket){
-        Mockito.verify(redisTemplate, Mockito.times(1)).delete("$REDIS_KEY_PREFIX${ticket.id}")
-        Mockito.verify(eventService, Mockito.times(1)).eventPublish(mockAny())
+        assertThrows<TicketOwnershipException> {  service.deleteTicket(ticket.id, 2)}
     }
 }

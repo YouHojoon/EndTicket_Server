@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.user.infra.config
 
-import ac.kr.smu.endTicket.common.web.swagger.AccessTokenSecurityScheme
+import ac.kr.smu.endticket.common.web.swagger.AccessTokenSecurityScheme
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType
 import io.swagger.v3.oas.annotations.info.Contact

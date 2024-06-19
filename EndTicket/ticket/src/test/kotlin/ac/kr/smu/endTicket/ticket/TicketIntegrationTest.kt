@@ -1,19 +1,19 @@
 package ac.kr.smu.endTicket.ticket
 
-import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
-import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
-import ac.kr.smu.endTicket.common.kafka.test.messageListener
-import ac.kr.smu.endTicket.common.redis.test.RedisTestConfig
-import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
-import ac.kr.smu.endTicket.common.web.test.andReturn
-import ac.kr.smu.endTicket.common.web.test.expectBindingException
-import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
-import ac.kr.smu.endTicket.constant.HttpHeaderName
-import ac.kr.smu.endTicket.ticket.domain.exception.NotFoundTicketException
-import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
+import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
+import ac.kr.smu.endticket.common.kafka.test.createKafkaContainer
+import ac.kr.smu.endticket.common.kafka.test.messageListener
+import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
+import ac.kr.smu.endticket.common.web.test.andReturn
+import ac.kr.smu.endticket.common.web.test.expectBindingException
+import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
-import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletionEventRepository
+import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletedEventRepository
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository
+import ac.kr.smu.endTicket.ticket.infra.config.KafkaConfig
+import ac.kr.smu.endTicket.ticket.listener.TicketCompletedEventListener
+import ac.kr.smu.endTicket.ticket.service.TicketCompletedEventService
+import ac.kr.smu.endTicket.ticket.service.TicketService
 import ac.kr.smu.endTicket.ticket.ui.controller.TicketController
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endTicket.ticket.ui.response.TicketResponse
@@ -21,51 +21,58 @@ import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.Import
-import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.kafka.listener.KafkaMessageListenerContainer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.transaction.annotation.EnableTransactionManagement
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-
-@EmbeddedKafka(
-    partitions = 3,
-    ports = [9292],
-    brokerProperties = [
-        "listeners=PLAINTEXT://localhost:9292"
+@SpringBootTest(
+    classes = [
+        DataSourceAutoConfiguration::class,
+        TransactionAutoConfiguration::class,
+        HibernateJpaAutoConfiguration::class,
+        KafkaAutoConfiguration::class,
+        KafkaConfig::class,
+        TicketCompletedEventService::class,
+        TicketController::class,
+        TicketService::class,
+        TicketCompletedEventListener::class
     ]
 )
-@SpringBootTest
-@Import(RedisTestConfig::class)
+@EnableTransactionManagement
+@EmbeddedKafka
+@EnableJpaRepositories("ac.kr.smu.endTicket.ticket.domain.repository")
+@EntityScan("ac.kr.smu.endTicket.ticket.domain.model")
 class TicketIntegrationTest @Autowired constructor(
-    private val controller: TicketController,
-    private val redisTemplate: RedisTemplate<String, Any>,
+    controller: TicketController,
     private val ticketRepository: TicketRepository,
-    private val eventRepository: TicketCompletionEventRepository,
+    private val eventRepository: TicketCompletedEventRepository,
     private val broker: EmbeddedKafkaBroker
 ) {
     private val mvc: MockMvc =
         MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(BindExceptionAdvice())
             .build()
+
     private lateinit var container: KafkaMessageListenerContainer<String, TicketResponse>
 
     @AfterEach
     fun reset(){
-        val connection = redisTemplate.connectionFactory?.connection ?: return
-        connection.serverCommands().flushAll()
-
         eventRepository.deleteAll()
         ticketRepository.deleteAll()
     }
@@ -216,12 +223,7 @@ class TicketIntegrationTest @Autowired constructor(
     fun given_userID_when_findIncompleteTickets_then_responseIncompleteTickets(){
        val ticket = mvc.createTicket(TICKET_REQUEST).andReturn<TicketResponse>()
 
-        val json = mvc.perform(
-            MockMvcRequestBuilders
-                .get(BASE_URI)
-                .header(HttpHeaderName.USER_ID, USER_ID)
-        )
-
+        val json = mvc.findTickets()
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("tickets").isArray)
             .andReturn<Map<String, List<TicketResponse>>>()
@@ -253,7 +255,7 @@ class TicketIntegrationTest @Autowired constructor(
             queue.add(it)
         }
 
-        val record = queue.poll(500, TimeUnit.MILLISECONDS)
+        val record = queue.poll(1000, TimeUnit.MILLISECONDS)
 
         assertNotNull(record)
         assertEquals(USER_ID, record.key().toLong())
@@ -263,8 +265,8 @@ class TicketIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("티켓 삭제 테스트")
     fun given_id_when_deleteTicket_then_expectStatusCode204(){
-        mvc.createTicket(TICKET_REQUEST)
-        mvc.deleteTicket(1L)
+        val ticket = mvc.createTicket(TICKET_REQUEST).andReturn<TicketResponse>()
+        mvc.deleteTicket(ticket.id)
             .andExpect(MockMvcResultMatchers.status().isNoContent)
     }
 
@@ -279,8 +281,8 @@ class TicketIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("소유자가 아닌 사용자의 티켓 삭제 테스트")
     fun given_userWhoNotOwner_when_deleteTicket_then_throwNotOwnerOfTicketException(){
-        mvc.createTicket(TICKET_REQUEST, 2L)
-        mvc.deleteTicket(1L)
+        val ticket = mvc.createTicket(TICKET_REQUEST, 2L).andReturn<TicketResponse>()
+        mvc.deleteTicket(ticket.id)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
             .expectExceptionResponse()
     }

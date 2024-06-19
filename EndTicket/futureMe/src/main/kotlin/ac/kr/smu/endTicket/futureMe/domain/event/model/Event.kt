@@ -1,7 +1,8 @@
 package ac.kr.smu.endTicket.futureMe.domain.event.model
 
-import ac.kr.smu.endTicket.common.jpa.Audit
+import ac.kr.smu.endticket.common.jpa.Audit
 import jakarta.persistence.*
+import org.hibernate.annotations.DiscriminatorOptions
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 
 /**
@@ -10,17 +11,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
  * @property userID 사용자의 ID
  */
 @Entity
-@Table(
-    indexes = [
-        Index(name = "idx_event_id", columnList = "event_id")
-    ]
-)
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "type")
+@Table
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorOptions(force = false)
 @EntityListeners(AuditingEntityListener::class)
 sealed class Event(
-    @Column(name = "event_id",nullable = false, updatable = false)
-    val eventID: Long,
     @Column(name = "user_id", nullable = false, updatable = false)
     val userID: Long
 ){

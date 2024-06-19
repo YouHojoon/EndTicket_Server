@@ -1,0 +1,13 @@
+spring:
+  data:
+    redis:
+      repositories:
+        enabled: false
+      cluster:
+        nodes:
+          - localhost:6379
+          - localhost:6380
+          - localhost:6381
+          - localhost:6479
+          - localhost:6480
+          - localhost:6481

@@ -1,8 +1,8 @@
 package ac.kr.smu.endTicket.futureMe.domain.futureMe.model
 
 import ac.kr.smu.endTicket.futureMe.domain.event.model.Event
-import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
-import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletionEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletedEvent
+import ac.kr.smu.endTicket.futureMe.domain.event.model.TicketCompletedEvent
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
@@ -56,8 +56,8 @@ class Character(
      */
     fun gainExperiencePoints(event: Event){
         when(event){
-            is ImaginationCompletionEvent -> experiencePoints += 10
-            is TicketCompletionEvent -> experiencePoints += 20
+            is ImaginationCompletedEvent -> experiencePoints += 10
+            is TicketCompletedEvent -> experiencePoints += 20
         }
 
         if (experiencePoints >= MAX_EXPERIENCE_POINTS)

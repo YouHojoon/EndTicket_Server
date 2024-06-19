@@ -1,10 +1,12 @@
 package ac.kr.smu.endTicket.ticket.domain.model
 
-import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
+import ac.kr.smu.endticket.common.jpa.Audit
+import ac.kr.smu.endTicket.ticket.domain.converter.MaxSwipeCountConverter
+import ac.kr.smu.endTicket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
-import java.time.LocalDateTime
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 
 /**
  * 티켓을 추상화한 클래스
@@ -19,6 +21,7 @@ import java.time.LocalDateTime
 @Table(name = "ticket", indexes = [
     Index(name = "idx_user_id", columnList = "user_id")
 ])
+@EntityListeners(AuditingEntityListener::class)
 class Ticket private constructor(
     behavior: String,
     target: String,
@@ -29,9 +32,9 @@ class Ticket private constructor(
     @Column(name = "user_id", updatable = false, nullable = false)
     val userID: Long,
 ){
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     var behavior: String private set
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     var target: String private set
 
     @Column(nullable = false)
@@ -43,11 +46,8 @@ class Ticket private constructor(
     var type: Type private set
 
     @Column(nullable = false)
+    @Convert(converter = MaxSwipeCountConverter::class)
     var maxSwipeCount: MaxSwipeCount private set
-
-    @Transient
-    var shouldUpdate = false
-        private set
 
     init {
         this.behavior = behavior
@@ -81,12 +81,8 @@ class Ticket private constructor(
     var swipeCount: Int = 0
         private set
 
-    @Column(updatable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now()
-
-    @Column(nullable = true)
-    var updatedAt: LocalDateTime? = null
-        private set
+    @Embedded
+    val audit = Audit()
 
     enum class MaxSwipeCount(val value: Int){
         FIVE(5), TEN(10), FIFTEEN(15);
@@ -125,9 +121,9 @@ class Ticket private constructor(
      * 티켓의 수정 메소드
      * @param request 수정에 사용할 요청
      * @param userID 수정 요청을 한 사용자
-     * @throws NotOwnerOfTicketException 티켓의 소유자가 아닌 사용자가 요청했을 시
+     * @throws TicketOwnershipException 티켓의 소유자가 아닌 사용자가 요청했을 시
      */
-    @Throws(NotOwnerOfTicketException::class)
+    @Throws(TicketOwnershipException::class)
     fun updateAndCheckCompletion(request: TicketRequest, userID: Long): Boolean{
         checkOwnership(userID)
 
@@ -137,58 +133,40 @@ class Ticket private constructor(
         this.maxSwipeCount = request.maxSwipeCount
         this.type = request.type
 
-        setShouldUpdateTrue()
-
         return maxSwipeCount.value <= swipeCount
     }
 
     /**
      * 티켓을 스와이프하고 완료를 확인하는 메소드
      * @return 완료 여부
-     * @throws NotOwnerOfTicketException 티켓의 소유자가 아닌 사용자가 요청했을 시
+     * @throws TicketOwnershipException 티켓의 소유자가 아닌 사용자가 요청했을 시
      */
-    @Throws(NotOwnerOfTicketException::class)
+    @Throws(TicketOwnershipException::class)
     fun swipeAndCheckCompletion(userID: Long): Boolean{
         checkOwnership(userID)
 
-        if (swipeCount < maxSwipeCount.value) {
-            setShouldUpdateTrue()
+        if (swipeCount < maxSwipeCount.value)
             swipeCount++
-        }
 
         return swipeCount == maxSwipeCount.value
     }
 
-    @Throws(NotOwnerOfTicketException::class)
+    @Throws(TicketOwnershipException::class)
     fun cancelSwipeTicket(userID: Long){
         checkOwnership(userID)
 
-        if (swipeCount != 0){
-            setShouldUpdateTrue()
+        if (swipeCount != 0)
             swipeCount--
-        }
-    }
 
-    fun updateComplete(){
-        shouldUpdate = false
-    }
-
-    /**
-     * shouldUpdate가 false면 true로 변경하는 메소드
-     */
-    private fun setShouldUpdateTrue(){
-        updatedAt = LocalDateTime.now()
-        if (!shouldUpdate)
-            shouldUpdate = true
     }
 
     /**
      * 티켓의 소유권을 확인하는 메소드
-     * @throws NotOwnerOfTicketException 소유자가 아닐 시
+     * @throws TicketOwnershipException 소유자가 아닐 시
      */
-    @Throws(NotOwnerOfTicketException::class)
+    @Throws(TicketOwnershipException::class)
     fun checkOwnership(userID: Long){
         if (userID != this.userID)
-            throw NotOwnerOfTicketException(id,userID)
+            throw TicketOwnershipException(id,userID)
     }
 }

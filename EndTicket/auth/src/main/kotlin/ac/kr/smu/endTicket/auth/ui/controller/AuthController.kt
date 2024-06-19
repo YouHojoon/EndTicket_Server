@@ -1,30 +1,21 @@
 package ac.kr.smu.endTicket.auth.ui.controller
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
-import ac.kr.smu.endTicket.auth.domain.service.UserService
+import ac.kr.smu.endTicket.auth.service.UserService
 import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2User
+import ac.kr.smu.endTicket.auth.infra.swagger.apiResponses.CreateTokenResponses
+import ac.kr.smu.endTicket.auth.infra.swagger.apiResponses.ReissueTokenApiResponses
 import ac.kr.smu.endTicket.auth.service.TokenService
-import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
-import io.swagger.v3.oas.annotations.Operation
+import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.StringToClassMapItem
-import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.media.SchemaProperty
-import io.swagger.v3.oas.annotations.responses.ApiResponse
-import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
-
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
-import ac.kr.smu.endTicket.response.ExceptionResponse
-import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.web.bind.annotation.*
 
 
 @RequestMapping("/auth")
@@ -36,19 +27,8 @@ class AuthController(
 ) {
     private val log = LoggerFactory.getLogger(AuthController::class.java)
 
+    @CreateTokenResponses
     @PostMapping("/sns")
-    @Operation(summary = "SNS를 사용해 토큰 생성", description = "SNS 로그인으로 발급받은 authorization code를 이용해 Access 토큰과 Refresh 토큰 생성<br>회원 정보가 없을 시 가입 요청한다.")
-    @ApiResponses(
-        value = [
-            ApiResponse(description = "인증 성공", responseCode = "200",
-                content = [
-                    Content(
-                        schema = Schema(implementation = TokenResponse::class)
-                    )
-                ]),
-            ApiResponse(description = "파라미터 에러", responseCode = "400")
-        ]
-    )
     fun createToken(
         @Parameter(description = "인증에 사용한 SNS", schema = Schema(implementation = SocialType::class))
         @RequestParam("socialType")
@@ -66,40 +46,14 @@ class AuthController(
         if (userID == -1L)
             return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(ExceptionResponse(503, "토큰을 발급하는 과정에서 에러가 발생했습니다.", "user서버와 통신에 실패했습니다"))
-
+                .body(ExceptionResponse(503, "토큰을 발급하는 과정에서 에러가 발생했습니다.", "시용자 서버와 통신에 실패했습니다"))
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(tokenService.createAccessAndRefreshToken(userID))
-
     }
 
-    @Operation(summary = "refresh 토큰을 사용해 토큰 재발급", description = "refresh 토큰을 사용해 access 토큰을 재발급 받는다.<br>만약 refresh 토큰도 일정 기준 시간 아래라면 재발급받는다.")
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                description = "재발급 성공",
-                responseCode = "200",
-                content = [
-                    Content(
-                        schema = Schema(implementation = TokenResponse::class)
-                    )
-                ]),
-            ApiResponse(
-                description = "파라미터 에러",
-                responseCode = "400",
-                content = [
-                    Content(
-                        schema = Schema(type = "object", requiredProperties = ["message", "code"]),
-                        schemaProperties = [
-                            SchemaProperty(name = "message", schema = Schema(type = "string", example = "refresh 토큰이 없습니다.")),
-                            SchemaProperty(name = "code", schema = Schema(type = "integer", example = "400"))
-                        ]
-                    )
-                ])
-        ]
-    )
+    @ReissueTokenApiResponses
     @PostMapping("/reissue-token")
     fun reissueToken(
         @Parameter(

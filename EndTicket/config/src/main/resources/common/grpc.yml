@@ -1,0 +1,10 @@
+grpc:
+  client:
+    auth:
+      address: 'discovery:///auth'
+      negotiation-type: plaintext
+    user:
+      address: 'discovery:///user'
+      negotiation-type: plaintext
+
+

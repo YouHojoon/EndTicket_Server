@@ -11,9 +11,6 @@ import java.util.Optional
 
 @Repository
 interface TicketRepository: JpaRepository<Ticket, Long> {
-    @Cacheable(cacheNames = ["ticket"], key = "#id")
-    override fun findById(id: Long): Optional<Ticket>
-
     /**
      * 사용자의 미완료된 티켓을 조회하는 메소드
      * @param userID 사용자의 ID
@@ -26,5 +23,6 @@ interface TicketRepository: JpaRepository<Ticket, Long> {
      * 사용자의 티캣 개수를 조회하는 메소드
      * @param userID 사용자의 ID
      */
-    fun countByUserID(userID: Long): Int
+    @Query("select count(t) from Ticket as t where t.swipeCount < t.maxSwipeCount and t.userID = :userID")
+    fun countIncompleteTicketsOfUser(userID: Long): Int
 }

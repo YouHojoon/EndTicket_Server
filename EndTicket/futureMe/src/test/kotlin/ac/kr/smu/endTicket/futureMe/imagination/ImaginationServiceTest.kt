@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.futureMe.imagination
 
-import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotFoundImaginationException
-import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotOwnerOfImaginationException
+import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.ImaginationNotFoundException
+import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.ImaginationOwnershipException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.domain.imagination.repository.ImaginationRepository
 import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService
@@ -61,24 +61,24 @@ class ImaginationServiceTest(
 
     @Test
     @DisplayName("소유자가 아닌 사용자의 상상해보기 테스트")
-    fun given_userWhoNotOwner_when_updateImagination_then_throwNotOwnerOfImaginationException(){
+    fun given_userWhoNotOwner_when_updateImagination_then_throwImaginationOwnershipException(){
         val imagination = Imagination.from(request, USER_ID)
 
         Mockito.`when`(repo.findById(imagination.id))
             .thenReturn(Optional.of(imagination))
 
         val request = ImaginationRequest("xx", "zzz", Imagination.Color.GRAY2)
-        assertThrows<NotOwnerOfImaginationException> {  service.updateImagination(request, imagination.id, 2L)}
+        assertThrows<ImaginationOwnershipException> {  service.updateImagination(request, imagination.id, 2L)}
     }
 
     @Test
     @DisplayName("존재하지 않는 상상해보기 수정 테스트")
-    fun given_notExistImagination_when_updateImagination_then_throwNotFoundImaginationException(){
+    fun given_notExistImagination_when_updateImagination_then_throwImaginationNotFoundIException(){
         Mockito.`when`(repo.findById(Mockito.anyLong()))
             .thenReturn(Optional.empty())
 
         val request = ImaginationRequest("xx", "zzz", Imagination.Color.GRAY2)
-        assertThrows<NotFoundImaginationException> {  service.updateImagination(request,1L, USER_ID)}
+        assertThrows<ImaginationNotFoundException> {  service.updateImagination(request,1L, USER_ID)}
     }
 
     @Test
@@ -91,7 +91,7 @@ class ImaginationServiceTest(
 
         service.completeImagination(imagination.id, USER_ID)
 
-        Mockito.verify(eventService, Mockito.times(1)).eventPublish(mockAny())
+        Mockito.verify(eventService, Mockito.times(1)).publishEvent(mockAny())
     }
 
     @Test
@@ -100,20 +100,20 @@ class ImaginationServiceTest(
         Mockito.`when`(repo.findById(mockAny()))
             .thenReturn(Optional.empty())
 
-        assertThrows<NotFoundImaginationException> {
+        assertThrows<ImaginationNotFoundException> {
             service.completeImagination(1L, USER_ID)
         }
     }
 
     @Test
     @DisplayName("소유자가 아닌 사용자의 상상해보기 완료 테스트")
-    fun given_userWhoNotOwner__when_completeImagination_then_throwNotOwnerOfImaginationException(){
+    fun given_userWhoNotOwner__when_completeImagination_then_throwImaginationOwnershipException(){
         val imagination = Imagination.from(request, USER_ID)
 
         Mockito.`when`(repo.findById(imagination.id))
             .thenReturn(Optional.of(imagination))
 
-        assertThrows<NotOwnerOfImaginationException> {
+        assertThrows<ImaginationOwnershipException> {
             service.completeImagination(imagination.id, 2L)
         }
     }
@@ -148,20 +148,20 @@ class ImaginationServiceTest(
 
     @Test
     @DisplayName("존재하지 않는 상상해보기 삭제 테스트")
-    fun given_notExistImagination_when_deleteImagination_then_throwNotFoundImaginationException(){
+    fun given_notExistImagination_when_deleteImagination_then_throwImaginationNotFoundIException(){
         Mockito.`when`(repo.findById(Mockito.anyLong()))
             .thenReturn(Optional.empty())
 
-        assertThrows<NotFoundImaginationException> { service.deleteImagination(1L, USER_ID) }
+        assertThrows<ImaginationNotFoundException> { service.deleteImagination(1L, USER_ID) }
     }
     @Test
     @DisplayName("소유자가 아닌 사용자의 상상해보기 삭제 테스트")
-    fun given_userWhoNotOwner_when_deleteImagination_then_throwNotOwnerOfImaginationException(){
+    fun given_userWhoNotOwner_when_deleteImagination_then_throwImaginationOwnershipException(){
         val imagination = Imagination.from(request, USER_ID)
 
         Mockito.`when`(repo.findById(imagination.id))
             .thenReturn(Optional.of(imagination))
 
-        assertThrows<NotOwnerOfImaginationException> { service.deleteImagination(imagination.id, 2L) }
+        assertThrows<ImaginationOwnershipException> { service.deleteImagination(imagination.id, 2L) }
     }
 }

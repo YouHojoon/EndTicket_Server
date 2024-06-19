@@ -1,23 +1,18 @@
 package ac.kr.smu.endTicket.futureMe.imagination
 
-import ac.kr.smu.endTicket.common.kafka.annotation.EnableAutoKafkaConfig
-import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
-import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
-import ac.kr.smu.endTicket.common.kafka.test.messageListener
-import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
-import ac.kr.smu.endTicket.common.web.test.andReturn
-import ac.kr.smu.endTicket.common.web.test.expectBindingException
-import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
-import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletionEvent
+import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
+import ac.kr.smu.endticket.common.kafka.test.createKafkaContainer
+import ac.kr.smu.endticket.common.kafka.test.messageListener
+import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
+import ac.kr.smu.endticket.common.web.test.andReturn
+import ac.kr.smu.endticket.common.web.test.expectBindingException
+import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
-import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotFoundImaginationException
-import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.NotOwnerOfImaginationException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
 import ac.kr.smu.endTicket.futureMe.domain.imagination.repository.ImaginationRepository
 import ac.kr.smu.endTicket.futureMe.infra.config.KafkaConfig
-import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventMessageService
-import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletionEventResponse
-import ac.kr.smu.endTicket.futureMe.listener.ImaginationCompletionEventListener
+import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletedEventResponse
+import ac.kr.smu.endTicket.futureMe.listener.ImaginationCompletedEventListener
 import ac.kr.smu.endTicket.futureMe.service.FutureMeEventService
 import ac.kr.smu.endTicket.futureMe.service.FutureMeService
 import ac.kr.smu.endTicket.futureMe.service.ImaginationService
@@ -53,8 +48,7 @@ import kotlin.test.assertNotNull
 @SpringBootTest(
     classes = [
         FutureMeService::class,
-        ImaginationCompletionEventListener::class,
-        ImaginationCompletionEventMessageService::class,
+        ImaginationCompletedEventListener::class,
         ImaginationController::class,
         ImaginationService::class,
         FutureMeEventService::class,
@@ -204,8 +198,8 @@ class ImaginationIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("상상해보기 완료 테스트")
     fun given_id_when_completeImagination_then_expectStatusCode204_and_sendImaginationCompletionEvent_and_gainExperiencePoints(){
-        val container: KafkaMessageListenerContainer<String, ImaginationCompletionEventResponse> = createKafkaContainer(broker, KafkaTopic.IMAGINATION_COMPLETION)
-        val queue = LinkedBlockingQueue<ConsumerRecord<String, ImaginationCompletionEventResponse>>()
+        val container: KafkaMessageListenerContainer<String, ImaginationCompletedEventResponse> = createKafkaContainer(broker, KafkaTopic.IMAGINATION_COMPLETION)
+        val queue = LinkedBlockingQueue<ConsumerRecord<String, ImaginationCompletedEventResponse>>()
 
         container.messageListener(broker){
             queue.add(it)

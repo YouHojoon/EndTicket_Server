@@ -8,7 +8,9 @@ dump.rdb
 logs/
 nodes-**
 EndTicket/config/src/main/resources/common/**
+EndTicket/config/src/main/resources/common/**.yml
 EndTicket/config/src/main/resources/auth.yml
+EndTicket/futureMe/src/test/resources/application.yml
 # Created by https://www.toptal.com/developers/gitignore/api/intellij,kotlin,macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij,kotlin,macos
 
@@ -192,3 +194,4 @@ EndTicket/config/src/main/resources/common/logging.yml
 EndTicket/config/src/main/resources/common/redis.yml
 EndTicket/config/src/main/resources/common/swagger.yml
 EndTicket/config/src/main/resources/common/zipkin.yml
+EndTicket/futureMe/src/test/resources/application.yml

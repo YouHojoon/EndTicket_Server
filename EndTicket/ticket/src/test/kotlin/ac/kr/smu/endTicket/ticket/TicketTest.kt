@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.ticket
 
-import ac.kr.smu.endTicket.ticket.domain.exception.NotOwnerOfTicketException
+import ac.kr.smu.endTicket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.ui.request.TicketRequest
 import org.junit.jupiter.api.DisplayName
@@ -25,15 +25,14 @@ class TicketTest {
 
         ticket.updateAndCheckCompletion(updateRequest, USER_ID)
         assertEquals(Ticket.from(updateRequest, USER_ID), ticket)
-        assertTrue(ticket.shouldUpdate)
     }
 
     @Test
     @DisplayName("소유자가 아닌 사용자의 수정 요청 테스트")
-    fun given_userWhoNotOwnerOfTicket_when_updateAndCheckCompletion_then_throwNotOwnerOfTicket(){
+    fun given_userWhoNotOwnerOfTicket_when_updateAndCheckCompletion_then_throwTicketOwnershipException(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
 
-        assertThrows<NotOwnerOfTicketException> {  ticket.updateAndCheckCompletion(UPDATE_REQUEST, 2L)}
+        assertThrows<TicketOwnershipException> {  ticket.updateAndCheckCompletion(UPDATE_REQUEST, 2L)}
     }
 
     @Test
@@ -44,15 +43,13 @@ class TicketTest {
 
         assertFalse(ticket.swipeAndCheckCompletion(USER_ID))
         assertEquals(beforeSwipeCount + 1, ticket.swipeCount)
-        assertTrue(ticket.shouldUpdate)
-
     }
 
     @Test
     @DisplayName("소유자가 아닌 사용자의 티켓 스와이프 테스트")
-    fun given_userWhoNotOwnerOfTicket_when_swipeTicket_then_throwNotOwnerOfTicketException(){
+    fun given_userWhoNotOwnerOfTicket_when_swipeTicket_then_throwTicketOwnershipException(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
-        assertThrows<NotOwnerOfTicketException> {  ticket.swipeAndCheckCompletion(2L)}
+        assertThrows<TicketOwnershipException> {  ticket.swipeAndCheckCompletion(2L)}
     }
 
     @Test
@@ -68,7 +65,6 @@ class TicketTest {
 
         assertTrue(ticket.swipeAndCheckCompletion(USER_ID))
         assertEquals(beforeSwipeCount, ticket.swipeCount)
-        assertTrue(ticket.shouldUpdate)
     }
 
     @Test
@@ -79,17 +75,16 @@ class TicketTest {
         ticket.swipeAndCheckCompletion(USER_ID)
         ticket.cancelSwipeTicket(USER_ID)
 
-        assertTrue(ticket.shouldUpdate)
         assertEquals(0, ticket.swipeCount)
     }
 
     @Test
     @DisplayName("소유자가 아닌 사용자의 티켓 스와이프 취소 테스트")
-    fun given_userWhoNotOwnerOfTicket_when_cancelSwipeTicket_then_throwNotOwnerOfTicketException(){
+    fun given_userWhoNotOwnerOfTicket_when_cancelSwipeTicket_then_throwTicketOwnershipException(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
 
         ticket.swipeAndCheckCompletion(USER_ID)
-        assertThrows<NotOwnerOfTicketException> {  ticket.cancelSwipeTicket(2L)}
+        assertThrows<TicketOwnershipException> {  ticket.cancelSwipeTicket(2L)}
     }
 
     @Test
@@ -99,6 +94,5 @@ class TicketTest {
         ticket.cancelSwipeTicket(USER_ID)
 
         assertEquals(0,ticket.swipeCount)
-        assertFalse(ticket.shouldUpdate)
     }
 }
