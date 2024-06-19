@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.user.ui.controller
 
-import ac.kr.smu.endTicket.constant.HttpHeaderName
+import ac.kr.smu.endticket.common.constant.HttpHeaderName
 import ac.kr.smu.endTicket.user.domain.service.UserService
 import ac.kr.smu.endTicket.user.ui.request.RegisterNicknameRequest
 

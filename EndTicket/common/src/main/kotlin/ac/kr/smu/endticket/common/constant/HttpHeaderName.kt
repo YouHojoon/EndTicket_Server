@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.constant
+package ac.kr.smu.endticket.common.constant
 
 
 /**

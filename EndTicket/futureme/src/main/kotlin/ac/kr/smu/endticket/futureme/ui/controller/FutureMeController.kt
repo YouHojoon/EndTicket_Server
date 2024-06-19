@@ -1,7 +1,7 @@
 package ac.kr.smu.endticket.futureme.ui.controller
 
 import ac.kr.smu.endticket.common.web.response.ExceptionResponse
-import ac.kr.smu.endTicket.constant.HttpHeaderName
+import ac.kr.smu.endticket.common.constant.HttpHeaderName
 import ac.kr.smu.endticket.futureme.service.FutureMeService
 import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
 import ac.kr.smu.endticket.futureme.domain.futureme.exception.FutureMeNotFoundException

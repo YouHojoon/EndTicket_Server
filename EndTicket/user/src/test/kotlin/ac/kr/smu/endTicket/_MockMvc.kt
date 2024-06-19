@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket
 
-import ac.kr.smu.endTicket.constant.HttpHeaderName
+import ac.kr.smu.endticket.common.constant.HttpHeaderName
 import ac.kr.smu.endTicket.user.ui.request.RegisterNicknameRequest
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.MediaType

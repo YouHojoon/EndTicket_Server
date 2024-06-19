@@ -1,6 +1,6 @@
 package ac.kr.smu.endticket.futureme.futureMe
 
-import ac.kr.smu.endTicket.constant.HttpHeaderName
+import ac.kr.smu.endticket.common.constant.HttpHeaderName
 import ac.kr.smu.endticket.futureme.domain.futureme.model.Character
 import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
 import ac.kr.smu.endticket.futureme.ui.request.UpdateFutureMeRequest

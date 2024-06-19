@@ -1,6 +1,6 @@
 package ac.kr.smu.endticket.futureme.event
 
-import ac.kr.smu.endticket.test.mockAny
+import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.common.kafka.test.createProducer
 import ac.kr.smu.endticket.futureme.domain.event.model.TicketCompletedEvent

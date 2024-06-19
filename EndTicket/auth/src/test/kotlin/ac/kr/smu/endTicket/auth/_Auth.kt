@@ -10,7 +10,7 @@ import java.util.Date
 const val AUTHORIZATION_CODE = "1"
 const val SOCIAL_USER_NUMBER = "1"
 const val USER_ID = 1L
-const val ACCESS_TOKEN = "a"
+const val ACCESS_TOKEN = "ac/kr/smu/endticket/common"
 const val REFRESH_TOKEN = "r"
 const val ID_TOKEN = "i"
 

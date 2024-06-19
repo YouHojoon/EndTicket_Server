@@ -1,6 +1,6 @@
 package ac.kr.smu.endticket.futureme.imagination
 
-import ac.kr.smu.endTicket.constant.HttpHeaderName
+import ac.kr.smu.endticket.common.constant.HttpHeaderName
 import ac.kr.smu.endticket.futureme.ui.request.ImaginationRequest
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.MediaType
