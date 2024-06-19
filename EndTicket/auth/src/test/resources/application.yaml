@@ -1,0 +1,33 @@
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-type: count_based
+        sliding-window-size: 1
+        failure-rate-threshold: 100
+
+jwt:
+  secret: testtesttesttesttesttesttesttesttesttesttesttest
+  access-token-expiration: 1000 # 1시간
+  refresh-token-expiration: 604800000 # 30일
+  refresh-token-reissue-expiration: 259200000
+
+spring:
+  data:
+    redis:
+      port: 6382
+      host: localhost
+  cloud:
+    config:
+      enabled: false
+eureka:
+  client:
+    enabled: false
+
+grpc:
+  server:
+    in-process-name: test
+    port: -1
+  client:
+    user:
+      address: in-process:test

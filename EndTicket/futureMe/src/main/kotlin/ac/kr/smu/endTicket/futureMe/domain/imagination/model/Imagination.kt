@@ -38,14 +38,17 @@ class Imagination private constructor(
             )
     }
     @Column(nullable = false, length = 10)
-    var behavior: String private set
+    var behavior: String  = ""
+        protected set
 
     @Column(nullable = false, length = 20)
-    var target: String private set
+    var target: String =""
+    protected set
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var color: Color private set
+    var color: Color =  Color.GRAY2
+    protected set
 
     init {
         this.behavior = behavior

@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.futureMe.imagination
+package ac.kr.smu.endTicket.futureMe.event
 
 import KafkaMessageService
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
@@ -8,6 +8,8 @@ import ac.kr.smu.endTicket.futureMe.domain.event.model.Event
 import ac.kr.smu.endTicket.futureMe.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endTicket.futureMe.domain.event.repository.EventRepository
 import ac.kr.smu.endTicket.futureMe.domain.imagination.model.Imagination
+import ac.kr.smu.endTicket.futureMe.imagination.USER_ID
+import ac.kr.smu.endTicket.futureMe.imagination.request
 import ac.kr.smu.endTicket.futureMe.infra.messaging.ImaginationCompletedEventResponse
 import ac.kr.smu.endTicket.futureMe.job.ImaginationCompletedEventJob
 import ac.kr.smu.endTicket.test.mockAny

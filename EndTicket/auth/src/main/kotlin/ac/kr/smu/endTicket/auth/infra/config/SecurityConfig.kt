@@ -33,15 +33,20 @@ class SecurityConfig(
                 authorize("/oauth/**",permitAll)
                 discoveryClient.getInstances("gateway").forEach {
                     val ipMatcher = IpAddressMatcher(it.host)
+                    /*
+                        게이트웨이에서 오는 요청 중 토큰 재발급 제외하고 인증 필요
+                     */
                     authorize(
                         matches = object: RequestMatcher {
                             val pathMatcher = AntPathRequestMatcher("/auth/reissue-token")
+
                             override fun matches(request: HttpServletRequest): Boolean {
                                 return ipMatcher.matches(request) && pathMatcher.matches(request)
                             }
                         },
                         permitAll
                     )
+
                     authorize(ipMatcher, authenticated)
                 }
                 authorize(anyRequest, denyAll)

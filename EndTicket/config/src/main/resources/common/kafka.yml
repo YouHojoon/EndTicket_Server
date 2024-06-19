@@ -1,21 +1,14 @@
-schedules:
-  resend-imagination-completion-event:
-    fixedDelay: 600000 # 10분
-    initialDelay: 60000 # 1분
 spring:
-  datasource:
-    url: "jdbc:h2:mem:test"
-    username: root
-    password: 1111
-  jpa:
-    hibernate:
-      ddl-auto: create
   kafka:
+    bootstrap-servers:
+      - http://localhost:9190
+      - http://localhost:9191
+      - http://localhost:9192
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     consumer:
-      group-id: futureMe
+      group-id: ${spring.application.name}
       enable-auto-commit: false
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -24,19 +17,7 @@ spring:
         spring:
           json:
             trusted:
-              packages: "ac.kr.smu.endTicket.futureMe.infra.messaging"
+              packages: "ac.kr.smu.endTicket.*"
     listener:
       concurrency: 3
       ack-mode: manual_immediate
-  cloud:
-    config:
-      enabled: false
-
-logging:
-  level:
-    org.hibernate.type.descriptor.sql : trace
-server:
-  port: 8084
-eureka:
-  client:
-    enabled: false

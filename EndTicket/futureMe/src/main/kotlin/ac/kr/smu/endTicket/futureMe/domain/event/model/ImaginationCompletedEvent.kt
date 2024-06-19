@@ -10,6 +10,8 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.MapsId
 import jakarta.persistence.OneToOne
+import jakarta.persistence.PrimaryKeyJoinColumn
+import jakarta.persistence.Table
 import java.time.LocalDateTime
 
 /**
@@ -17,13 +19,15 @@ import java.time.LocalDateTime
  * @property imagination 완료된 상상해보기
  */
 @Entity
+@PrimaryKeyJoinColumn(name="id")
+@Table
 class ImaginationCompletedEvent(
     @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
     @JoinColumn(name = "event_id")
-    @MapsId("eventID")
     private val imagination: Imagination,
-) : Event(imagination.id, imagination.userID) {
-
+) : Event(imagination.userID) {
+    val imaginationID: Long
+        get() = imagination.id
     /**
      * 이벤트 메시지로 변환하는 메소드
      * @return 변환된 메시지

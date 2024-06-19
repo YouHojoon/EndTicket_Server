@@ -1,8 +1,8 @@
 package ac.kr.smu.endTicket.auth.infra.oauth2.filter
 
+import ac.kr.smu.endTicket.auth.domain.converter.SocialTypeConverter
 import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2User
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
-import ac.kr.smu.endTicket.auth.domain.converter.SocialTypeConverter
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -20,7 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 class OAuth2AuthorizationFilter(
     private val oAuthService: OAuthService
 ): OncePerRequestFilter() {
-    private val converter = ac.kr.smu.endTicket.auth.domain.converter.SocialTypeConverter()
+    private val converter = SocialTypeConverter()
     private val matcher = AntPathRequestMatcher("/auth/sns")
     companion object{
         private const val SOCIAL_TYPE_URI_VARIABLE_NAME = "socialType"

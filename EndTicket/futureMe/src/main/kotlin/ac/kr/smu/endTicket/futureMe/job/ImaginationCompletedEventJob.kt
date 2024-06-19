@@ -53,7 +53,7 @@ class ImaginationCompletedEventJob(
             CompletableFuture.allOf(*futures.toTypedArray()).join()
             val ids = futures.mapNotNull { it.join() }
 
-            repo.saveAll(events.filter { it.eventID in ids }.map { it.also { it.successSend() } })
+            repo.saveAll(events.filter { it.imaginationID in ids }.map { it.also { it.successSend() } })
         }
 
         log.info("상상해보기 이벤트 재전송 $elapsed ms 시간으로 완료")
