@@ -1,8 +1,8 @@
 package ac.kr.smu.endTicket.auth.service
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
-import ac.kr.smu.endTicket.protobuf.FindUserIdRequest
-import ac.kr.smu.endTicket.protobuf.UserServiceGrpc
+import ac.kr.smu.endticket.protobuf.FindUserIdRequest
+import ac.kr.smu.endticket.protobuf.UserServiceGrpc
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import net.devh.boot.grpc.client.inject.GrpcClient
 import org.slf4j.LoggerFactory
@@ -27,7 +27,7 @@ class UserService{
     @CircuitBreaker(name = "find-user-id", fallbackMethod = "fallbackFindUserId")
     fun findUserId(socialType: SocialType, socialUserNumber: String): Long = userStub.findUserId(
         FindUserIdRequest.newBuilder()
-            .setSocialType(ac.kr.smu.endTicket.protobuf.SocialType.valueOf(socialType.name))
+            .setSocialType(ac.kr.smu.endticket.protobuf.SocialType.valueOf(socialType.name))
             .setSocialUserNumber(socialUserNumber)
             .build()
     ).userId

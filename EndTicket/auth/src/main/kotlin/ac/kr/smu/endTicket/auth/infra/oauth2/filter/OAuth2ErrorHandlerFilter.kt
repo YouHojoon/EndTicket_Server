@@ -1,9 +1,9 @@
 package ac.kr.smu.endTicket.auth.infra.oauth2.filter
 
 import ac.kr.smu.endTicket.auth.infra.oauth2.exception.OAuth2RequestException
-import ac.kr.smu.endTicket.auth.infra.oauth2.idToken.exception.JWKParseException
-import ac.kr.smu.endTicket.auth.infra.oauth2.idToken.exception.UnverifiedIdTokenException
-import ac.kr.smu.endTicket.common.web.response.ExceptionResponse
+import ac.kr.smu.endTicket.auth.infra.oauth2.idtoken.exception.JWKParseException
+import ac.kr.smu.endTicket.auth.infra.oauth2.idtoken.exception.UnverifiedIdTokenException
+import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest

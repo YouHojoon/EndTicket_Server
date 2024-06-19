@@ -2,24 +2,20 @@ package ac.kr.smu.endTicket.auth.service
 
 import ac.kr.smu.endTicket.auth.domain.exception.NotFoundUserException
 import ac.kr.smu.endTicket.auth.domain.exception.RefreshTokenExpiredException
-
-import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
 import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
-import ac.kr.smu.endTicket.protobuf.AccessToken
-import ac.kr.smu.endTicket.protobuf.TokenServiceGrpc
-import ac.kr.smu.endTicket.protobuf.ValidateAccessTokenResponse
-
+import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
+import ac.kr.smu.endticket.protobuf.AccessToken
+import ac.kr.smu.endticket.protobuf.TokenServiceGrpc
+import ac.kr.smu.endticket.protobuf.ValidateAccessTokenResponse
 import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
-
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
 import net.devh.boot.grpc.server.service.GrpcService
 import org.springframework.data.redis.core.RedisTemplate
-
 import org.springframework.stereotype.Service
-import java.util.Date
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**

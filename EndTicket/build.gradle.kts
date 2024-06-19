@@ -21,7 +21,6 @@ allprojects{
     apply(plugin = "org.springframework.boot")
     apply(plugin = "io.spring.dependency-management")
 
-
     group = "ac.kr.smu"
     version = "0.0.1-SNAPSHOT"
     extra["springCloudVersion"] = "2022.0.4"

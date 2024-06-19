@@ -14,7 +14,7 @@ fun MockMvc.createToken(socialType: SocialType = SOCIAL_TYPE, code: String = AUT
         .post("$BASE_URL/sns?socialType=$socialType&code=$code")
 )
 
-fun MockMvc.reissueToken(refreshToken: String) = perform(
+fun MockMvc.reissueToken(refreshToken: String? = null) = perform(
     MockMvcRequestBuilders
         .post("$BASE_URL/reissue-token")
         .contentType(MediaType.APPLICATION_JSON)

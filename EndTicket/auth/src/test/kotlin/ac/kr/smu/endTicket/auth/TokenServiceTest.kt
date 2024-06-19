@@ -3,10 +3,10 @@ package ac.kr.smu.endTicket.auth
 import ac.kr.smu.endTicket.auth.domain.exception.RefreshTokenExpiredException
 import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
 import ac.kr.smu.endTicket.auth.service.TokenService
-import ac.kr.smu.endTicket.common.redis.test.RedisTestConfig
-import ac.kr.smu.endTicket.protobuf.AccessToken
-import ac.kr.smu.endTicket.protobuf.TokenServiceGrpc
-import ac.kr.smu.endTicket.protobuf.TokenServiceGrpc.TokenServiceBlockingStub
+import ac.kr.smu.endticket.common.redis.test.RedisTestConfig
+import ac.kr.smu.endticket.protobuf.AccessToken
+import ac.kr.smu.endticket.protobuf.TokenServiceGrpc
+import ac.kr.smu.endticket.protobuf.TokenServiceGrpc.TokenServiceBlockingStub
 import io.grpc.ManagedChannel
 import io.grpc.StatusRuntimeException
 import io.grpc.inprocess.InProcessChannelBuilder
@@ -27,9 +27,6 @@ import org.springframework.context.annotation.Import
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import org.springframework.test.annotation.DirtiesContext
-import java.security.SignatureException
-import java.time.LocalDateTime
-import java.util.*
 import kotlin.test.*
 
 @SpringBootTest(classes = [

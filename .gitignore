@@ -7,6 +7,7 @@ build/
 dump.rdb
 logs/
 nodes-**
+EndTicket/config/src/main/resources/common/**
 EndTicket/config/src/main/resources/common/**.yml
 EndTicket/config/src/main/resources/auth.yml
 EndTicket/futureMe/src/test/resources/application.yml
@@ -186,7 +187,6 @@ Temporary Items
 *.icloud
 .gitsecret/keys/random_seed
 !*.secret
-EndTicket/futureMe/src/main/resources/application.yml
 EndTicket/config/src/main/resources/common/grpc.yml
 EndTicket/config/src/main/resources/common/jpa.yml
 EndTicket/config/src/main/resources/common/kafka.yml

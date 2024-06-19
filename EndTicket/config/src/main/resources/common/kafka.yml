@@ -1,0 +1,23 @@
+spring:
+  kafka:
+    bootstrap-servers:
+      - http://localhost:9190
+      - http://localhost:9191
+      - http://localhost:9192
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: ${spring.application.name}
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "ac.kr.smu.endTicket.*"
+    listener:
+      concurrency: 3
+      ack-mode: manual_immediate
