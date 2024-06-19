@@ -26,7 +26,6 @@ allprojects{
     extra["springCloudVersion"] = "2022.0.4"
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_17
     }
 
     repositories {
@@ -53,7 +52,7 @@ subprojects{
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             freeCompilerArgs += "-Xjsr305=strict"
-            jvmTarget = "17"
+            jvmTarget = "19"
         }
     }
 
@@ -61,4 +60,3 @@ subprojects{
         useJUnitPlatform()
     }
 }
-
