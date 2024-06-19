@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.futureMe.domain.imagination.model
 
-import ac.kr.smu.endTicket.common.jpa.Audit
+import ac.kr.smu.endticket.common.jpa.Audit
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.ImaginationOwnershipException
 import ac.kr.smu.endTicket.futureMe.ui.request.ImaginationRequest
 import io.swagger.v3.oas.annotations.media.Schema

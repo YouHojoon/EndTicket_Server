@@ -49,7 +49,7 @@ class AuthControllerTest @Autowired constructor(
         private const val SOCIAL_USER_NUMBER = "1"
         private const val USER_ID = 1L
         private const val BASE_URL = "http://localhost:8081/auth"
-        private const val ACCESS_TOKEN = "a"
+        private const val ACCESS_TOKEN = "ac/kr/smu/endticket/common/redis"
         private const val REFRESH_TOKEN = "r"
         private const val ID_TOKEN = "i"
     }

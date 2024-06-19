@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.futureMe.ui.controller
 
-import ac.kr.smu.endTicket.common.web.response.ExceptionResponse
+import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 import ac.kr.smu.endTicket.constant.HttpHeaderName
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.ImaginationNotFoundException
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.ImaginationOwnershipException

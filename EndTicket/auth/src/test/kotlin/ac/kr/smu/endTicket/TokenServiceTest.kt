@@ -2,9 +2,7 @@ package ac.kr.smu.endTicket
 
 import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
 import ac.kr.smu.endTicket.auth.service.TokenService
-import ac.kr.smu.endTicket.common.redis.test.RedisTestConfig
-import ac.kr.smu.endTicket.protobuf.AccessToken
-import ac.kr.smu.endTicket.protobuf.TokenServiceGrpc
+import ac.kr.smu.endticket.common.redis.test.RedisTestConfig
 import ac.kr.smu.endTicket.protobuf.TokenServiceGrpc.TokenServiceBlockingStub
 import io.grpc.ManagedChannel
 import io.grpc.Server

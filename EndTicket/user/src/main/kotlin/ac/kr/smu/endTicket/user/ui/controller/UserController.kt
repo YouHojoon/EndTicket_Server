@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import ac.kr.smu.endTicket.common.web.response.BindExceptionResponse
-import ac.kr.smu.endTicket.common.web.response.ExceptionResponse
+import ac.kr.smu.endticket.common.web.response.BindExceptionResponse
+import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 
 import ac.kr.smu.endTicket.user.domain.exception.NotFoundUserException
 

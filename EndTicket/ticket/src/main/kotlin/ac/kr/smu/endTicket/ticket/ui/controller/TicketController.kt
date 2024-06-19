@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.ticket.ui.controller
 
-import ac.kr.smu.endTicket.common.web.response.ExceptionResponse
+import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 import ac.kr.smu.endTicket.ticket.domain.exception.TicketNotFoundException
 import ac.kr.smu.endTicket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endTicket.ticket.infra.swagger.*

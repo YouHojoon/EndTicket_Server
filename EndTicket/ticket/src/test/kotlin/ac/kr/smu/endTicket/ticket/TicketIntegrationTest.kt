@@ -1,12 +1,12 @@
 package ac.kr.smu.endTicket.ticket
 
-import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
-import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
-import ac.kr.smu.endTicket.common.kafka.test.messageListener
-import ac.kr.smu.endTicket.common.web.aop.BindExceptionAdvice
-import ac.kr.smu.endTicket.common.web.test.andReturn
-import ac.kr.smu.endTicket.common.web.test.expectBindingException
-import ac.kr.smu.endTicket.common.web.test.expectExceptionResponse
+import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
+import ac.kr.smu.endticket.common.kafka.test.createKafkaContainer
+import ac.kr.smu.endticket.common.kafka.test.messageListener
+import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
+import ac.kr.smu.endticket.common.web.test.andReturn
+import ac.kr.smu.endticket.common.web.test.expectBindingException
+import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketCompletedEventRepository
 import ac.kr.smu.endTicket.ticket.domain.repository.TicketRepository

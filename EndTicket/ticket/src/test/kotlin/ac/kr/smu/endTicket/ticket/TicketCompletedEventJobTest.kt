@@ -1,9 +1,9 @@
 package ac.kr.smu.endTicket.ticket
 
 import KafkaMessageService
-import ac.kr.smu.endTicket.common.kafka.constant.KafkaTopic
-import ac.kr.smu.endTicket.common.kafka.test.createKafkaContainer
-import ac.kr.smu.endTicket.common.kafka.test.messageListener
+import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
+import ac.kr.smu.endticket.common.kafka.test.createKafkaContainer
+import ac.kr.smu.endticket.common.kafka.test.messageListener
 import ac.kr.smu.endTicket.test.mockAny
 import ac.kr.smu.endTicket.ticket.job.TicketCompletedEventJob
 import ac.kr.smu.endTicket.ticket.domain.model.Ticket
