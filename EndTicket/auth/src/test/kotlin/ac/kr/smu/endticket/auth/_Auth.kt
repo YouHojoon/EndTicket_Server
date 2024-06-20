@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.auth
+package ac.kr.smu.endticket.auth
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import io.jsonwebtoken.JwtBuilder
@@ -15,7 +15,6 @@ const val REFRESH_TOKEN = "r"
 const val ID_TOKEN = "i"
 
 val SOCIAL_TYPE = SocialType.KAKAO
-
 
 fun JwtBuilder.createMockRefreshToken(secret: String, expirationTime: Long): String{
     val issuedAt = Date()

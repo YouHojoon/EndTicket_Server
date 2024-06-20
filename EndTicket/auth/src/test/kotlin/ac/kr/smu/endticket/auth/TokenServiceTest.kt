@@ -1,23 +1,20 @@
-package ac.kr.smu.endTicket.auth
+package ac.kr.smu.endticket.auth
 
 import ac.kr.smu.endTicket.auth.domain.exception.RefreshTokenExpiredException
 import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
 import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endticket.common.redis.test.RedisTestConfig
 import ac.kr.smu.endticket.protobuf.AccessToken
-import ac.kr.smu.endticket.protobuf.TokenServiceGrpc
 import ac.kr.smu.endticket.protobuf.TokenServiceGrpc.TokenServiceBlockingStub
-import io.grpc.ManagedChannel
-import io.grpc.StatusRuntimeException
-import io.grpc.inprocess.InProcessChannelBuilder
-import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.UnsupportedJwtException
-import io.jsonwebtoken.security.Keys
+import net.devh.boot.grpc.client.inject.GrpcClient
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -27,11 +24,14 @@ import org.springframework.context.annotation.Import
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.ValueOperations
 import org.springframework.test.annotation.DirtiesContext
-import kotlin.test.*
+import kotlin.test.BeforeTest
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 @SpringBootTest(classes = [
     TokenService::class,
-    GrpcConfiguration::class
+    GrpcConfig::class
 ])
 @Import(RedisTestConfig::class)
 @EnableConfigurationProperties(JWTProperties::class)
@@ -42,91 +42,39 @@ class TokenServiceTest @Autowired constructor(
     @MockBean
     private val redisTemplate: RedisTemplate<String,String>,
     private val service: TokenService,
-    private val properties:JWTProperties
+    private val properties:JWTProperties,
+
 ){
+    @GrpcClient("token")
     private lateinit var stub: TokenServiceBlockingStub
-    private lateinit var channel: ManagedChannel
-    companion object{
-        private const val USER_ID = 1L
-    }
 
     @BeforeTest
     fun init(){
-        setUpGrpc()
         Mockito.`when`(redisTemplate.opsForValue()).thenReturn(ops)
-    }
-    @AfterTest
-    fun reset(){
-        shutdownGrpc()
     }
 
     @Test
-    @DisplayName("토큰 검증 테스트")
+    @DisplayName("Access 토큰 검증 테스트")
     @DirtiesContext
     fun given_accessToken_when_validationToken_then_returnResponse(){
-        val createToken = service.createAccessAndRefreshToken(USER_ID)
+        val token = service.createAccessAndRefreshToken(USER_ID).accessToken
         val response = stub.validateAccessToken(
-            AccessToken
-                .newBuilder()
-                .setToken(createToken.accessToken)
-                .build()
+            AccessToken.newBuilder().setToken(token).build()
         )
-
 
         assertEquals(USER_ID, response.userId)
         assertEquals(200, response.status)
     }
 
 
-    @Test
-    @DisplayName("민료된 토큰 검증 테스트")
+    @ParameterizedTest
+    @DisplayName("올바르지 않은 Access 토큰 검증 테스트")
+    @MethodSource("ac.kr.smu.endticket.auth.AuthTestParameters#provideInvalidAccessTokenAndExpectedStatus")
     @DirtiesContext
-    fun given_expiredAccessToken_when_validationToken_then_returnResponseStatus401(){
-        val accessToken = Mockito.mock(AccessToken::class.java)
-        Mockito
-            .`when`(accessToken.token)
-            .thenThrow(Mockito.mock(ExpiredJwtException::class.java))
-
-        val response = stub.validateAccessToken(
-           accessToken
-        )
-
-        assertEquals(401, response.status)
-        assertEquals(-1,response.userId)
-    }
-
-    @Test
-    @DisplayName("잘못된 서명 토큰 검증 테스트")
-    @DirtiesContext
-    fun given_invalidSignatureAccessToken_when_validationToken_then_returnResponseStatus400(){
-        val accessToken = AccessToken.newBuilder().setToken(
-            Jwts
-            .builder()
-            .signWith(Keys.hmacShaKeyFor("invalidKeyinvalidKeyinvalidKeyinvalidKeyinvalidKey".toByteArray()))
-            .subject(USER_ID.toString())
-            .compact()
-        ).build()
-
+    fun given_invalidAccessToken_when_validationToken_then_returnResponseWithExpepectedStatus(accessToken: AccessToken, expectedStatus: Int){
         val response = stub.validateAccessToken(accessToken)
 
-        assertEquals(400, response.status)
-        assertEquals(-1,response.userId)
-    }
-
-    @Test
-    @DisplayName("토큰 검증 gRPC 에러 테스트")
-    @DirtiesContext
-    fun when_validationTokenFailWithStatusRuntimeException_then_returnResponseStatus500(){
-        val accessToken = Mockito.mock(AccessToken::class.java)
-        Mockito
-            .`when`(accessToken.token)
-            .thenThrow(Mockito.mock(StatusRuntimeException::class.java))
-
-        val response = stub.validateAccessToken(
-            accessToken
-        )
-
-        assertEquals(500, response.status)
+        assertEquals(expectedStatus, response.status)
         assertEquals(-1,response.userId)
     }
 
@@ -155,8 +103,7 @@ class TokenServiceTest @Autowired constructor(
     @Test
     @DisplayName("access 토큰으로 사용자 ID 파싱")
     fun given_accessToken_when_parseUserID_then_returnUserID() {
-        val token = service
-            .createAccessAndRefreshToken(USER_ID)
+        val token = service.createAccessAndRefreshToken(USER_ID)
 
         assertEquals(service.parseUserId(token.accessToken), USER_ID)
     }
@@ -211,13 +158,12 @@ class TokenServiceTest @Autowired constructor(
         Mockito.`when`(ops.get(refreshToken))
             .thenReturn(USER_ID.toString())
 
-
         assertThrows<RefreshTokenExpiredException> { service.reissueToken(refreshToken) }
     }
 
     @Test
     @DisplayName("캐시에 저장되어 있지 않은 refresh 토큰으로 access 토큰 재발급 테스트")
-    fun given_notStored_refreshToken_when_reissusToken_then_throw_IllegalArgumentException(){
+    fun given_notStored_refreshToken_when_reissueToken_then_throw_IllegalArgumentException(){
         val token = service.createAccessAndRefreshToken(USER_ID)
         val refreshToken = token.refreshToken
 
@@ -227,14 +173,7 @@ class TokenServiceTest @Autowired constructor(
         }
     }
 
-    private fun setUpGrpc(){
-        channel = InProcessChannelBuilder.forName("test").directExecutor().build()
-        stub = TokenServiceGrpc.newBlockingStub(channel)
-    }
 
-    private fun shutdownGrpc(){
-        channel.shutdownNow()
-    }
 }
 
 

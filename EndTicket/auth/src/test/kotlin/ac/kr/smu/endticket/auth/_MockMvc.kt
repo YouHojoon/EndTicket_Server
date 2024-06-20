@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.auth
+package ac.kr.smu.endticket.auth
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import com.fasterxml.jackson.databind.ObjectMapper
