@@ -1,9 +1,12 @@
 package ac.kr.smu.endticket.history.domain.model
 
 import ac.kr.smu.endticket.common.jpa.Audit
+import ac.kr.smu.endticket.common.web.enum.Color
+import ac.kr.smu.endticket.common.web.enum.TicketType
 import ac.kr.smu.endticket.history.infra.messaging.TicketCompletedEventResponse
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
+import java.time.LocalDateTime
 
 /**
  * 티켓 기록
@@ -14,16 +17,17 @@ import jakarta.persistence.*
  * @property type 분류
  * @property swipeCount 스와이프 횟수
  * @property userId 소유자 ID
+ * @property completedAt 완료 시간
  */
 @Entity
 @Table(indexes = [
-    Index(name = "idx_ticket_id", columnList = "ticket_id", unique = true),
-    Index(name = "idx_user_id", columnList = "user_id")
+    Index(name = "idx_ticket_id", columnList = "ticket_id", unique = true)
 ])
-@PrimaryKeyJoinColumn
+@PrimaryKeyJoinColumn(name = "id")
 class TicketHistory private constructor(
-    @Column(updatable = false, nullable = false)
+    @Column(name = "ticket_id",unique = true, updatable = false, nullable = false)
     private val ticketId: Long,
+
     @Column(updatable = false, nullable = false, length = 20)
     private val behavior: String,
 
@@ -34,14 +38,14 @@ class TicketHistory private constructor(
     private val color: Color,
 
     @Column(updatable = false, nullable = false)
-    private val type: Type,
+    private val type: TicketType,
 
     @Column(updatable = false, nullable = false)
     private val swipeCount: Int,
 
-    @Column(updatable = false, nullable = false)
-    private val userId: Long
-): History() {
+    completedAt: LocalDateTime,
+    userId: Long
+): History(completedAt, userId) {
 
     companion object{
         /**
@@ -57,15 +61,8 @@ class TicketHistory private constructor(
             color = response.color,
             type = response.type,
             swipeCount = response.swipeCount,
+            completedAt = response.completedAt,
             userId = userId
         )
-    }
-
-    @Embedded
-    val audit = Audit()
-
-    @Schema(description = "분류")
-    enum class Type{
-        HEALTH, PERSONALITY, VALUE, SELF_IMPROVEMENT, RELATIONSHIP
     }
 }
