@@ -3,6 +3,8 @@ package ac.kr.smu.endticket.history
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.common.kafka.test.createProducer
 import ac.kr.smu.endticket.common.test.mockAny
+import ac.kr.smu.endticket.history.domain.model.History
+import ac.kr.smu.endticket.history.domain.model.TicketHistory
 import ac.kr.smu.endticket.history.domain.repository.TicketHistoryRepository
 import ac.kr.smu.endticket.history.infra.messaging.TicketCompletedEventResponse
 import ac.kr.smu.endticket.history.service.TicketCompletedEventConsumeService
@@ -10,6 +12,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentCaptor
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
@@ -42,10 +45,10 @@ class TicketCompletedEventConsumeServiceTest @Autowired constructor(
 
         producer.send(ProducerRecord(KafkaTopic.TICKET_COMPLETION, USER_ID.toString(), TICKET_COMPLETED_EVENT_RESPONSE))
 
-        Thread.sleep(1000L)
+        Thread.sleep(500L)
 
         Mockito.verify(repo).save(mockAny())
-        Mockito.verify(repo).existsById(Mockito.anyLong())
+        Mockito.verify(repo).existsBySpecificIdAndType(Mockito.anyLong(), mockAny())
     }
 
     @Test
@@ -54,8 +57,9 @@ class TicketCompletedEventConsumeServiceTest @Autowired constructor(
         val record = Mockito.mock(ConsumerRecord::class.java) as ConsumerRecord<String, TicketCompletedEventResponse>
         val ack = Mockito.mock(Acknowledgment::class.java)
 
+        Mockito.`when`(record.topic()).thenReturn(KafkaTopic.TICKET_COMPLETION)
         Mockito.`when`(record.value()).thenReturn(TICKET_COMPLETED_EVENT_RESPONSE)
-        Mockito.`when`(repo.existsById(TICKET_COMPLETED_EVENT_RESPONSE.id)).thenThrow(RuntimeException())
+        Mockito.`when`(repo.existsBySpecificIdAndType(Mockito.anyLong(), mockAny())).thenThrow(RuntimeException())
 
         service.consume(record,ack)
 
@@ -68,16 +72,14 @@ class TicketCompletedEventConsumeServiceTest @Autowired constructor(
         val record = Mockito.mock(ConsumerRecord::class.java) as ConsumerRecord<String, TicketCompletedEventResponse>
         val ack = Mockito.mock(Acknowledgment::class.java)
 
+        Mockito.`when`(record.topic()).thenReturn(KafkaTopic.TICKET_COMPLETION)
         Mockito.`when`(record.value()).thenReturn(
             TICKET_COMPLETED_EVENT_RESPONSE
         )
-        Mockito
-            .`when`(repo.existsById(TICKET_COMPLETED_EVENT_RESPONSE.id))
-            .thenReturn(true)
-
+        Mockito.`when`(repo.existsBySpecificIdAndType(Mockito.anyLong(), mockAny())).thenReturn(true)
         service.consume(record,ack)
 
-        Mockito.verify(repo, Mockito.only()).existsById(TICKET_COMPLETED_EVENT_RESPONSE.id)
+        Mockito.verify(repo, Mockito.only()).existsBySpecificIdAndType(TICKET_COMPLETED_EVENT_RESPONSE.id, TicketHistory::class)
         Mockito.verify(ack).acknowledge()
     }
 }

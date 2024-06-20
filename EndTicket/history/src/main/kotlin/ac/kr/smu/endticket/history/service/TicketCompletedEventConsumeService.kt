@@ -25,8 +25,13 @@ class TicketCompletedEventConsumeService(
     @KafkaListener(topics = [KafkaTopic.TICKET_COMPLETION])
     fun consume(record: ConsumerRecord<String,TicketCompletedEventResponse>, ack: Acknowledgment){
         val response = record.value()
+        val type = when(record.topic()){
+            KafkaTopic.TICKET_COMPLETION -> TicketHistory::class
+            else -> throw IllegalStateException("${record.topic()}은 알 수 없는 토픽입니다.")
+        }
+
         try {
-            if (!repo.existsById(response.id))
+            if (!repo.existsBySpecificIdAndType(response.id, type))
                  repo.save(TicketHistory.from(response, record.key().toLong()))
 
             ack.acknowledge()

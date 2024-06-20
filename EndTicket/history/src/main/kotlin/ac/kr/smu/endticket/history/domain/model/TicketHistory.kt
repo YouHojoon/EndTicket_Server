@@ -16,11 +16,12 @@ import jakarta.persistence.*
  */
 @Entity
 @Table(indexes = [
+    Index(name = "idx_ticket_id", columnList = "ticket_id"),
     Index(name = "idx_user_id", columnList = "user_id")
 ])
 class TicketHistory private constructor(
-    @Id
-    private val id: Long,
+    @Column(updatable = false, nullable = false)
+    private val ticketId: Long,
     @Column(updatable = false, nullable = false)
     private val behavior: String,
 
@@ -38,11 +39,11 @@ class TicketHistory private constructor(
 
     @Column(updatable = false, nullable = false)
     private val userId: Long
-) {
+): History() {
 
     companion object{
         fun from(response: TicketCompletedEventResponse, userId: Long) = TicketHistory(
-            id = response.id,
+            ticketId = response.id,
             behavior = response.behavior,
             target = response.target,
             color = response.color,

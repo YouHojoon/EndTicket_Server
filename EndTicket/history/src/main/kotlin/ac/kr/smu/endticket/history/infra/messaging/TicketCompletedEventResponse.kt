@@ -11,11 +11,11 @@ import ac.kr.smu.endticket.history.domain.model.TicketHistory
  * @property type 분류
  * @property swipeCount 스와이프 횟수
  */
-data class TicketCompletedEventResponse(
-    val id: Long,
+class TicketCompletedEventResponse(
+    id: Long,
     val behavior: String,
     val target: String,
     val color: TicketHistory.Color,
     val type: TicketHistory.Type,
     val swipeCount: Int,
-)
+): EventResponse(id)
