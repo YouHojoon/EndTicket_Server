@@ -47,7 +47,8 @@ class ImaginationCompletedEventListener(
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun sendEvent(event: ImaginationCompletedEvent){
-        val message = event.toMessage()
+        println(futureMeService.findFutureMe(event.userId))
+        val message = event.toMessage(futureMeService.findFutureMe(event.userId).character.type)
 
         messageService.send(KafkaTopic.IMAGINATION_COMPLETION,message).whenCompleteAsync { record, e ->
             if (e == null)

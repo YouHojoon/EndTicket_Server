@@ -42,7 +42,7 @@ class ImaginationControllerTest @Autowired constructor(
     @DisplayName("상상해보기 조회 테스트")
     fun given_user_when_findImaginations_then_responseImaginations(){
         val imaginations = setOf(
-            Imagination.from(request, USER_ID).toResponse()
+            Imagination.from(REQUEST, USER_ID).toResponse()
         )
 
         Mockito.`when`(service.findImaginations(USER_ID))
@@ -56,33 +56,33 @@ class ImaginationControllerTest @Autowired constructor(
     @Test
     @DisplayName("상상해보기 생성 테스트")
     fun given_request_when_createImagination_then_responseCreatedImagination(){
-        val imagination = Imagination.from(request, USER_ID).toResponse()
+        val imagination = Imagination.from(REQUEST, USER_ID).toResponse()
 
-        Mockito.`when`(service.createImagination(request, USER_ID))
+        Mockito.`when`(service.createImagination(REQUEST, USER_ID))
             .thenReturn(imagination)
 
         mvc
-            .createImagination(request)
+            .createImagination(REQUEST)
             .andExpect(MockMvcResultMatchers.status().isCreated)
             .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(imagination)))
     }
     @Test
     @DisplayName("비정상적인 상상해보기 생성 테스트")
     fun given_invalidRequest_when_createImagination_then_expectStatusCode400_and_responseBindExceptionResponse(){
-        mvc.createImagination(invalidBehaviorRequest)
+        mvc.createImagination(INVALID_BEHAVIOR_REQUEST)
             .expectBindingException()
-        mvc.createImagination(invalidTargetRequest)
+        mvc.createImagination(INVALID_TARGET_REQUEST)
             .expectBindingException()
     }
 
     @Test
     @DisplayName("최대 개수 이상으로 상상해보기 생성 테스트")
     fun given_requestExceedImaginationLimit_when_createImagination_then_expectStatusCode409_and_responseExceptionResponse(){
-        Mockito.`when`(service.createImagination(request, USER_ID))
+        Mockito.`when`(service.createImagination(REQUEST, USER_ID))
             .thenThrow(IllegalStateException("") )
 
 
-        mvc.createImagination(request)
+        mvc.createImagination(REQUEST)
             .andExpect(MockMvcResultMatchers.status().isConflict)
             .expectExceptionResponse()
     }
@@ -114,9 +114,9 @@ class ImaginationControllerTest @Autowired constructor(
     fun given_invalidRequest_when_updateImagination_then_expectStatusCode400_and_responseBindExceptionResponse(){
         val id = 1L
 
-       mvc.updateImagination(invalidBehaviorRequest, id, USER_ID)
+       mvc.updateImagination(INVALID_BEHAVIOR_REQUEST, id, USER_ID)
            .expectBindingException()
-        mvc.updateImagination(invalidTargetRequest, id, USER_ID)
+        mvc.updateImagination(INVALID_TARGET_REQUEST, id, USER_ID)
             .expectBindingException()
     }
 
@@ -126,10 +126,10 @@ class ImaginationControllerTest @Autowired constructor(
         val id = 1L
 
         Mockito.`when`(
-            service.updateImagination(request, id, USER_ID)
+            service.updateImagination(REQUEST, id, USER_ID)
         ).thenThrow(ImaginationNotFoundException(id))
 
-        mvc.updateImagination(request,id, USER_ID)
+        mvc.updateImagination(REQUEST,id, USER_ID)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
             .expectExceptionResponse()
     }
@@ -140,10 +140,10 @@ class ImaginationControllerTest @Autowired constructor(
         val id = 1L
 
         Mockito.`when`(
-            service.updateImagination(request, id, USER_ID)
+            service.updateImagination(REQUEST, id, USER_ID)
         ).thenThrow(ImaginationOwnershipException(id, USER_ID))
 
-        mvc.updateImagination(request,id, USER_ID)
+        mvc.updateImagination(REQUEST,id, USER_ID)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
             .expectExceptionResponse()
     }

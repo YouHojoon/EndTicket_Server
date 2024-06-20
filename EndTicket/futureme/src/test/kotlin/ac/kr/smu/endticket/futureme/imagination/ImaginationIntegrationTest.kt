@@ -6,10 +6,12 @@ import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endticket.common.kafka.test.messageListener
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
+import ac.kr.smu.endticket.common.web.enum.CharacterType
 import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.common.web.test.andReturn
 import ac.kr.smu.endticket.common.web.test.expectBindingException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
+import ac.kr.smu.endticket.futureme.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.repository.EventRepository
 import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
 import ac.kr.smu.endticket.futureme.domain.imagination.repository.ImaginationRepository
@@ -20,6 +22,7 @@ import ac.kr.smu.endticket.futureme.service.FutureMeEventService
 import ac.kr.smu.endticket.futureme.service.FutureMeService
 import ac.kr.smu.endticket.futureme.service.ImaginationService
 import ac.kr.smu.endticket.futureme.ui.controller.ImaginationController
+import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
 import ac.kr.smu.endticket.futureme.ui.request.ImaginationRequest
 import ac.kr.smu.endticket.futureme.ui.response.ImaginationResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -43,9 +46,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
-import kotlin.test.AfterTest
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import kotlin.test.*
 
 @SpringBootTest(
     classes = [
@@ -62,22 +63,24 @@ import kotlin.test.assertNotNull
     ]
 )
 @EmbeddedKafka(partitions = 3)
-@EnableJpaRepositories("ac.kr.smu.endTicket.futureme.domain")
-@EntityScan("ac.kr.smu.endTicket.futureMe.domain")
+@EnableJpaRepositories("ac.kr.smu.endticket.futureme.domain")
+@EntityScan("ac.kr.smu.endticket.futureme.domain")
 class ImaginationIntegrationTest @Autowired constructor(
-    @MockBean
     private val eventRepo: EventRepository,
-    @MockBean
     private val futureMeService: FutureMeService,
-
     private val repo: ImaginationRepository,
     private val broker: EmbeddedKafkaBroker,
     controller: ImaginationController
 ) {
     private val mvc: MockMvc = MockMvcBuilders.standaloneSetup(controller).setControllerAdvice(BindExceptionAdvice()).build()
-
+    @BeforeTest
+    fun init(){
+        futureMeService.createFutureMe(CreateFutureMeRequest(CharacterType.CHEESE),USER_ID)
+    }
     @AfterTest
     fun reset(){
+        futureMeService.deleteFutureMe(USER_ID)
+        eventRepo.deleteAll()
         repo.deleteAll()
     }
 
@@ -85,17 +88,17 @@ class ImaginationIntegrationTest @Autowired constructor(
     @DisplayName("상상해보기 생성 테스트")
     fun given_request_when_createImagination_then_responseCreatedImagination() {
         mvc
-            .createImagination(request)
+            .createImagination(REQUEST)
             .andExpect(MockMvcResultMatchers.status().isCreated)
-            .andExpect(MockMvcResultMatchers.jsonPath("behavior").value(request.behavior))
-            .andExpect(MockMvcResultMatchers.jsonPath("target").value(request.target))
-            .andExpect(MockMvcResultMatchers.jsonPath("color").value(request.color.name))
+            .andExpect(MockMvcResultMatchers.jsonPath("behavior").value(REQUEST.behavior))
+            .andExpect(MockMvcResultMatchers.jsonPath("target").value(REQUEST.target))
+            .andExpect(MockMvcResultMatchers.jsonPath("color").value(REQUEST.color.name))
     }
 
     @Test
     @DisplayName("상상해보기 조회 테스트")
     fun given_user_when_findImaginations_then_responseImaginations(){
-        mvc.createImagination(request)
+        mvc.createImagination(REQUEST)
 
         mvc.findImaginations()
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -106,9 +109,9 @@ class ImaginationIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("비정상적인 상상해보기 생성 테스트")
     fun given_invalidRequest_when_createImagination_then_expectStatusCode400_and_responseBindExceptionResponse(){
-        mvc.createImagination(invalidBehaviorRequest)
+        mvc.createImagination(INVALID_BEHAVIOR_REQUEST)
             .expectBindingException()
-        mvc.createImagination(invalidTargetRequest)
+        mvc.createImagination(INVALID_TARGET_REQUEST)
             .expectBindingException()
     }
 
@@ -116,10 +119,10 @@ class ImaginationIntegrationTest @Autowired constructor(
     @DisplayName("최대 개수 이상으로 상상해보기 생성 테스트")
     fun given_requestExceedImaginationLimit_when_createImagination_then_expectStatusCode409_and_responseExceptionResponse(){
         repeat(6){
-            mvc.createImagination(request)
+            mvc.createImagination(REQUEST)
         }
 
-        mvc.createImagination(request)
+        mvc.createImagination(REQUEST)
             .andExpect(MockMvcResultMatchers.status().isConflict)
             .expectExceptionResponse()
     }
@@ -145,18 +148,18 @@ class ImaginationIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("비정상적인 상상해보기 수정 테스트")
     fun given_invalidRequest_when_updateImagination_then_expectStatusCode400_and_responseBindExceptionResponse(){
-        val imagination = mvc.createImagination(request).andReturn<ImaginationResponse>()
+        val imagination = mvc.createImagination(REQUEST).andReturn<ImaginationResponse>()
 
-        mvc.updateImagination(invalidBehaviorRequest, imagination.id, USER_ID)
+        mvc.updateImagination(INVALID_BEHAVIOR_REQUEST, imagination.id, USER_ID)
             .expectBindingException()
-        mvc.updateImagination(invalidTargetRequest, imagination.id, USER_ID)
+        mvc.updateImagination(INVALID_TARGET_REQUEST, imagination.id, USER_ID)
             .expectBindingException()
     }
 
     @Test
     @DisplayName("존재하지 않는 상상해보기 수정 테스트")
     fun given_notExistImagination_when_updateImagination_then_expectStatusCode404_and_responseExceptionResponse(){
-        mvc.updateImagination(request,1L, USER_ID)
+        mvc.updateImagination(REQUEST,1L, USER_ID)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
             .expectExceptionResponse()
     }
@@ -164,9 +167,9 @@ class ImaginationIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("소유자가 아닌 사용자 상상해보기 수정 테스트")
     fun given_userWhoNotOwner_when_updateImagination_then_expectStatusCode404_and_responseExceptionResponse(){
-        val imagination = mvc.createImagination(request).andReturn<ImaginationResponse>()
+        val imagination = mvc.createImagination(REQUEST).andReturn<ImaginationResponse>()
 
-        mvc.updateImagination(request,imagination.id, 2L)
+        mvc.updateImagination(REQUEST,imagination.id, 2L)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
             .expectExceptionResponse()
     }
@@ -174,7 +177,7 @@ class ImaginationIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("상상해보기 삭제 테스트")
     fun given_id_when_deleteImagination_then_expectStatusCode204(){
-        val imagination = mvc.createImagination(request).andReturn<ImaginationResponse>()
+        val imagination = mvc.createImagination(REQUEST).andReturn<ImaginationResponse>()
 
         mvc.deleteImagination(imagination.id)
             .andExpect(MockMvcResultMatchers.status().isNoContent)
@@ -191,7 +194,7 @@ class ImaginationIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("소유자가 아닌 사용자의 상상해보기 삭제 테스트")
     fun given_userWhoNotOwner_when_deleteImagination_then_expectStatusCode403_and_responseExceptionResponse(){
-        val imagination = mvc.createImagination(request).andReturn<ImaginationResponse>()
+        val imagination = mvc.createImagination(REQUEST).andReturn<ImaginationResponse>()
 
         mvc.deleteImagination(imagination.id, 2L)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
@@ -206,22 +209,23 @@ class ImaginationIntegrationTest @Autowired constructor(
         container.messageListener(broker){
             queue.add(it)
         }
-        val imagination = mvc.createImagination(request).andReturn<ImaginationResponse>()
+        val imagination = mvc.createImagination(REQUEST).andReturn<ImaginationResponse>()
 
         mvc.completeImagination(imagination.id)
             .andExpect(MockMvcResultMatchers.status().isNoContent)
 
-        Mockito.verify(eventRepo, Mockito.times(1)).save(mockAny())
-        Mockito.verify(futureMeService, Mockito.times(1)).gainExperiencePoints(mockAny())
-
         val record = queue.poll(500, TimeUnit.MILLISECONDS)
+        val futureMe = futureMeService.findFutureMe(USER_ID)
 
         assertNotNull(record)
         assertEquals(USER_ID, record.key().toLong())
-        assertEquals(record.value().id, imagination.id)
-        assertEquals(record.value().behavior, imagination.behavior)
-        assertEquals(record.value().color, imagination.color)
-        assertEquals(record.value().target, imagination.target)
+        assertEquals(imagination.id, record.value().id)
+        assertEquals(imagination.behavior, record.value().behavior)
+        assertEquals(imagination.color, record.value().color)
+        assertEquals(imagination.target, record.value().target)
+        assertEquals(futureMe.character.type, record.value().characterType)
+        assertTrue(eventRepo.existsBySpecificIdAndType(imagination.id, ImaginationCompletedEvent::class))
+        assertEquals(10,futureMe.character.experiencePoints)
     }
 
     @Test
@@ -235,7 +239,7 @@ class ImaginationIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("소유자가 아닌 사용자의 상상해보기 완료 테스트")
     fun given_userWhoNotOwner_when_completeImagination_then_throwNotOwnerOfImagination(){
-        val imagination = mvc.createImagination(request).andReturn<ImaginationResponse>()
+        val imagination = mvc.createImagination(REQUEST).andReturn<ImaginationResponse>()
 
         mvc.completeImagination(imagination.id, 2L)
             .andExpect(MockMvcResultMatchers.status().isForbidden)

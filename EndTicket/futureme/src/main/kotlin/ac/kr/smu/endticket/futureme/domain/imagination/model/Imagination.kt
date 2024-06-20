@@ -1,6 +1,7 @@
 package ac.kr.smu.endticket.futureme.domain.imagination.model
 
 import ac.kr.smu.endticket.common.jpa.Audit
+import ac.kr.smu.endticket.common.web.enum.CharacterType
 import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationOwnershipException
 import ac.kr.smu.endticket.futureme.infra.messaging.ImaginationCompletedEventResponse
@@ -74,11 +75,12 @@ class Imagination private constructor(
      * 상상해보기로부터 이벤트 완료 응답을 만들어내는 메소드
      * @return 상상해보기 완료 응답
      */
-    fun toEventResponse() = ImaginationCompletedEventResponse(
+    fun toEventResponse(characterType: CharacterType) = ImaginationCompletedEventResponse(
         id = id,
         behavior = behavior,
         target = target,
         color = color,
+        characterType = characterType,
         completedDate = audit.updatedAt ?: LocalDateTime.now()
     )
     /**

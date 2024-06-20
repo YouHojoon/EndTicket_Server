@@ -1,6 +1,7 @@
 package ac.kr.smu.endticket.futureme.domain.event.model
 
 import ac.kr.smu.endticket.common.kafka.messaging.KafkaMessage
+import ac.kr.smu.endticket.common.web.enum.CharacterType
 import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
 import ac.kr.smu.endticket.futureme.infra.messaging.ImaginationCompletedEventResponse
 import jakarta.persistence.CascadeType
@@ -22,7 +23,7 @@ import java.time.LocalDateTime
 @Table
 class ImaginationCompletedEvent(
     @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
-    @JoinColumn(name = "event_id")
+    @JoinColumn(name = "imagination_id")
     private val imagination: Imagination,
 ) : Event(imagination.userId) {
     val imaginationId: Long
@@ -31,9 +32,9 @@ class ImaginationCompletedEvent(
      * 이벤트 메시지로 변환하는 메소드
      * @return 변환된 메시지
      */
-    fun toMessage() = KafkaMessage(
+    fun toMessage(characterType: CharacterType) = KafkaMessage(
         key = imagination.userId.toString(),
-        payload = imagination.toEventResponse()
+        payload = imagination.toEventResponse(characterType)
     )
 
     /**

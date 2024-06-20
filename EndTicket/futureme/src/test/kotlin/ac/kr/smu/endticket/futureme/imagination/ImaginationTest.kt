@@ -15,18 +15,18 @@ class ImaginationTest {
     @Test
     @DisplayName("상상해보기 생성 테스트")
     fun given_imaginationRequest_when_from_then_returnCreatedImagination(){
-        val imagination = Imagination.from(request, USER_ID)
+        val imagination = Imagination.from(REQUEST, USER_ID)
         val response = imagination.toResponse()
 
-        assertEquals(response.behavior, request.behavior)
-        assertEquals(response.target, request.target)
-        assertEquals(response.color, request.color)
+        assertEquals(response.behavior, REQUEST.behavior)
+        assertEquals(response.target, REQUEST.target)
+        assertEquals(response.color, REQUEST.color)
     }
 
     @Test
     @DisplayName("상상해보기 수정 테스트")
     fun given_imaginationRequest_when_update_then_success(){
-        val imagination = Imagination.from(request, USER_ID)
+        val imagination = Imagination.from(REQUEST, USER_ID)
         val updateRequest = ImaginationRequest("aa","www", Color.GRAY2)
 
         imagination.update(updateRequest, USER_ID)
@@ -40,7 +40,7 @@ class ImaginationTest {
     @Test
     @DisplayName("소유자가 아닌 사용자 상상해보기 수정 테스트")
     fun given_userWhoNotOwner_when_update_then_throwImaginationOwnershipException(){
-        val imagination = Imagination.from(request, USER_ID)
+        val imagination = Imagination.from(REQUEST, USER_ID)
         val updateRequest = ImaginationRequest("aa","www",Color.GRAY2)
 
         assertThrows<ImaginationOwnershipException> {  imagination.update(updateRequest, 2L)}
@@ -49,14 +49,14 @@ class ImaginationTest {
     @Test
     @DisplayName("상상해보기 완료 테스트")
     fun given_user_when_complete_then_success(){
-        val imagination = Imagination.from(request, USER_ID)
+        val imagination = Imagination.from(REQUEST, USER_ID)
         assertDoesNotThrow { imagination.complete(USER_ID)}
     }
 
     @Test
     @DisplayName("소유자가 아닌 사용자 완료 테스트")
     fun given_userWhoNotOwner_when_complete_then_throwImaginationOwnershipException(){
-        val imagination = Imagination.from(request, USER_ID)
+        val imagination = Imagination.from(REQUEST, USER_ID)
 
         assertThrows<ImaginationOwnershipException> {  imagination.complete(2L)}
     }

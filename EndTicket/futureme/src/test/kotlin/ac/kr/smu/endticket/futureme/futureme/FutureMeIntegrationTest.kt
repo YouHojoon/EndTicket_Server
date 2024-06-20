@@ -1,6 +1,7 @@
 package ac.kr.smu.endticket.futureme.futureme
 
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
+import ac.kr.smu.endticket.common.web.enum.CharacterType
 import ac.kr.smu.endticket.common.web.test.andReturn
 import ac.kr.smu.endticket.common.web.test.expectBindingException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
@@ -40,8 +41,8 @@ import kotlin.test.AfterTest
         HibernateJpaAutoConfiguration::class,
     ]
 )
-@EnableJpaRepositories("ac.kr.smu.endTicket.futureme.domain.futureme.repository")
-@EntityScan("ac.kr.smu.endTicket.futureMe.domain.futureMe.model")
+@EnableJpaRepositories("ac.kr.smu.endticket.futureme.domain.futureme.repository")
+@EntityScan("ac.kr.smu.endticket.futureMe.domain.futureMe.model")
 class FutureMeIntegrationTest @Autowired constructor(
     private val repo: FutureMeRepository,
     controller: FutureMeController,
@@ -61,7 +62,7 @@ class FutureMeIntegrationTest @Autowired constructor(
     @DisplayName("미래의 나 조회 테스트")
     fun given_user_when_findFutureMe_then_responseFutureMe() {
         val futureMe = mvc
-            .createFutureMe(CreateFutureMeRequest(Character.Type.CHEESE))
+            .createFutureMe(CreateFutureMeRequest(CharacterType.CHEESE))
             .andReturn<FutureMe>()
 
         mvc.findFutureMe()
@@ -71,7 +72,7 @@ class FutureMeIntegrationTest @Autowired constructor(
 
     @Test
     @DisplayName("존재하지 않는 미래의 나 조회 테스트")
-    fun given_userHasNotFutureMe_when_findFutureMe_then_expectStatusCode404_and_responseExceptionResponse() {
+    fun given_userDoesNotHasFutureMe_when_findFutureMe_then_expectStatusCode404_and_responseExceptionResponse() {
         mvc.findFutureMe()
             .andExpect(MockMvcResultMatchers.status().isNotFound)
             .expectExceptionResponse()
@@ -80,7 +81,7 @@ class FutureMeIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("캐릭터 이미지 조회 테스트")
     fun given_type_when_findCharacterImage_then_responseCharacterImage() {
-        val type = Character.Type.CHEESE
+        val type = CharacterType.CHEESE
 
         mvc.findCharacterImage(type)
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -100,8 +101,8 @@ class FutureMeIntegrationTest @Autowired constructor(
 
     @Test
     @DisplayName("미래의 나 생성 테스트")
-    fun given_type_when_createFutureMe_then_responseCreatedFutureMe() {
-        val request = CreateFutureMeRequest(Character.Type.CHEESE)
+    fun given_type_when_create_then_responseCreatedFutureMe() {
+        val request = CreateFutureMeRequest(CharacterType.CHEESE)
 
         mvc
             .createFutureMe(request)
@@ -110,28 +111,25 @@ class FutureMeIntegrationTest @Autowired constructor(
     }
 
     @Test
-    @DisplayName("미래의 나 제목 등록/변경 테스트")
-    fun given_request_when_updateTitle_then_responseUpdatedFutureMe() {
-        val request = UpdateFutureMeRequest("테스트")
-
-        mvc.createFutureMe(CreateFutureMeRequest(Character.Type.CHEESE)).andReturn<FutureMe>()
+    @DisplayName("미래의 나 수정 테스트")
+    fun given_request_when_update_then_responseUpdatedFutureMe() {
+        mvc.createFutureMe(CreateFutureMeRequest(CharacterType.CHEESE)).andReturn<FutureMe>()
 
         mvc
-            .updateFutureMe(request)
+            .updateFutureMe(UPDATE_REQUEST)
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("title").value(request.title))
+            .andExpect(MockMvcResultMatchers.jsonPath("title").value(UPDATE_REQUEST.title))
+            .andExpect(MockMvcResultMatchers.jsonPath("character.type").value(UPDATE_REQUEST.characterType?.name))
     }
 
     @Test
-    @DisplayName("미래의 나가 없는 사용자의 제목 등록/변경 테스트")
-    fun given_userHasNotFutureMe_when_updateTitle_then_expectStatusCode404_and_responseExceptionResponse() {
-        val request = UpdateFutureMeRequest("테스트")
-
+    @DisplayName("미래의 나가 없는 사용자의 수정 테스트")
+    fun given_userHasNotFutureMe_when_update_then_expectStatusCode404_and_responseExceptionResponse() =
         mvc
-            .updateFutureMe(request)
+            .updateFutureMe(UPDATE_REQUEST)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
             .expectExceptionResponse()
-    }
+
 
     @Test
     @DisplayName("미래의 나 길이 초과된 제목으로 등록/변경 테스트")
@@ -143,30 +141,9 @@ class FutureMeIntegrationTest @Autowired constructor(
     }
 
     @Test
-    @DisplayName("미래의 나 캐릭터 변경")
-    fun given_request_when_updateCharacter_then_responseUpdatedFutureMe() {
-        val type = Character.Type.CHEESE
-        val request = UpdateFutureMeRequest(type = type)
-        mvc.createFutureMe(CreateFutureMeRequest(Character.Type.VEGA))
-        mvc.updateFutureMe(request)
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("character.type").value(type.name))
-    }
-
-    @Test
-    @DisplayName("미래의 나가 없는 사용자의 캐릭터 변경 테스트")
-    fun given_userHasNotFutureMe_when_updateCharacter_then_expectStatusCode404_and_responseExceptionResponse() {
-        val request = UpdateFutureMeRequest(type = Character.Type.CHEESE)
-
-        mvc.updateFutureMe(request)
-            .andExpect(MockMvcResultMatchers.status().isNotFound)
-            .expectExceptionResponse()
-    }
-
-    @Test
     @DisplayName("이미 미래의 나가 존재할 때 미래의 나 생성 테스트")
     fun given_requestWithAlreadyExistFutureMe_when_createFutureMe_then_expectStatusCode409_and_responseExceptionResponse(){
-        val request = CreateFutureMeRequest(Character.Type.CHEESE)
+        val request = CreateFutureMeRequest(CharacterType.CHEESE)
         mvc.createFutureMe(request)
         mvc.createFutureMe(request)
             .andExpect(MockMvcResultMatchers.status().isConflict)

@@ -1,5 +1,6 @@
 package ac.kr.smu.endticket.futureme.domain.futureme.model
 
+import ac.kr.smu.endticket.common.web.enum.CharacterType
 import ac.kr.smu.endticket.futureme.domain.event.model.Event
 import ac.kr.smu.endticket.futureme.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.model.TicketCompletedEvent
@@ -21,7 +22,7 @@ class Character(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Schema(description = "캐릭터 종류", example = "VEGA")
-    val type: Type
+    val type: CharacterType
 ) {
     companion object{
         private const val MAX_LEVEL = 40
@@ -37,17 +38,6 @@ class Character(
     @Schema(description = "경험치", example = "100", minimum = "0", maximum = "$MAX_EXPERIENCE_POINTS")
     var experiencePoints: Int = 0
         private set
-
-    /**
-     * 캐릭터의 종류
-     */
-    @Schema(description = "캐릭터의 종류")
-    enum class Type{
-        KIA, CHEESE, VEGA;
-
-        // 캐릭터의 이미지 파일
-        var imageResource = ClassPathResource("characters/${name.lowercase()}.svg")
-    }
 
     /**
      * 이벤트를 받아 각 이벤트에 맞는 경험치를 상승한다.

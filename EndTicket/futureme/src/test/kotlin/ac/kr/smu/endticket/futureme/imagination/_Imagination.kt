@@ -5,18 +5,18 @@ import ac.kr.smu.endticket.futureme.ui.request.ImaginationRequest
 
 
 const val USER_ID = 1L
-val request = ImaginationRequest(
+val REQUEST = ImaginationRequest(
     "b",
     "t",
     Color.BLUE1
 )
 
-val invalidBehaviorRequest = ImaginationRequest(
+val INVALID_BEHAVIOR_REQUEST = ImaginationRequest(
     behavior = "new behavior",
     target = "target",
     color = Color.GRAY2
 )
-val invalidTargetRequest = ImaginationRequest(
+val INVALID_TARGET_REQUEST = ImaginationRequest(
     behavior = "behavior",
     target = "new target with exceed",
     color = Color.GRAY2
