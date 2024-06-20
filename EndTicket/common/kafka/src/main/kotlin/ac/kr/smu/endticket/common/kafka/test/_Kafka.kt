@@ -20,6 +20,7 @@ import org.springframework.kafka.test.utils.KafkaTestUtils
 
 /**
  * 테스트를 위한 KafkaMessageListenerContainer를 생성하는 메소드
+ * @param V record의 value 타입
  * @param broker 테스트를 위한 카프카 브로커
  * @param topic 테스트할 카프카 토픽
  * @return 생성된 카프카 컨테이너
@@ -37,6 +38,7 @@ inline fun <reified V> createKafkaContainer(broker: EmbeddedKafkaBroker, topic:S
 
 /**
  * KafkaMessageListenerContainer에 MessageListener를 추가하고 컨테이너를 시작하는 메소드
+ * @param V record의 value 타입
  * @param broker 테스트를 위한 카프카 브로커
  * @param onMessage 메시지를 수신 시 호출되는 콜백 메소드
  */
@@ -55,6 +57,7 @@ inline fun <reified V> KafkaMessageListenerContainer<String, V>.messageListener(
 
 /**
  * 카프카 프로듀서를 생성하는 메소드
+ * @param V record의 value 타입
  * @param broker 테스트를 위한 카프카 브로커
  * @return 생성된 카프카 프로듀서
  */
