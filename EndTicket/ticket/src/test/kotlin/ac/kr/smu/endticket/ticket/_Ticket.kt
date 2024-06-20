@@ -1,5 +1,7 @@
 package ac.kr.smu.endticket.ticket
 
+import ac.kr.smu.endticket.common.web.enum.Color
+import ac.kr.smu.endticket.common.web.enum.TicketType
 import ac.kr.smu.endticket.ticket.domain.model.Ticket
 import ac.kr.smu.endticket.ticket.ui.request.TicketRequest
 
@@ -9,8 +11,8 @@ val TICKET_REQUEST =
     TicketRequest(
         behavior = "b",
         target = "t",
-        color = Ticket.Color.BLUE1,
-        type = Ticket.Type.SELF_IMPROVEMENT,
+        color = Color.BLUE1,
+        type = TicketType.SELF_IMPROVEMENT,
         maxSwipeCount = Ticket.MaxSwipeCount.FIVE,
 )
 
@@ -18,7 +20,7 @@ val TICKET_REQUEST =
 val UPDATE_REQUEST = TicketRequest(
     "abcd",
     "abcd",
-    Ticket.Color.GRAY2,
-    Ticket.Type.PERSONALITY,
+    Color.GRAY2,
+    TicketType.PERSONALITY,
     Ticket.MaxSwipeCount.FIFTEEN
 )

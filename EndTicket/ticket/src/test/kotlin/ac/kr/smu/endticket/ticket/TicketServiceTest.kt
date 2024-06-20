@@ -1,6 +1,8 @@
 package ac.kr.smu.endticket.ticket
 
 import ac.kr.smu.endticket.common.test.mockAny
+import ac.kr.smu.endticket.common.web.enum.Color
+import ac.kr.smu.endticket.common.web.enum.TicketType
 import ac.kr.smu.endticket.ticket.domain.exception.TicketNotFoundException
 import ac.kr.smu.endticket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endticket.ticket.domain.model.Ticket
@@ -45,7 +47,7 @@ class TicketServiceTest (
         Mockito.`when`(repo.save(ticket))
             .thenReturn(ticket)
 
-        assertEquals(TicketResponse.from(ticket), service.createTicket(TICKET_REQUEST, USER_ID))
+        assertEquals(ticket.toResponse(), service.createTicket(TICKET_REQUEST, USER_ID))
         Mockito.verify(repo, Mockito.times(1)).countIncompleteTicketsOfUser(USER_ID)
     }
     @Test
@@ -64,7 +66,7 @@ class TicketServiceTest (
             Mockito.`when`(repo.findById(Mockito.anyLong()))
             .thenReturn(Optional.of(ticket))
 
-        assertEquals(service.updateTicket(UPDATE_REQUEST, ticket.id, USER_ID) , TicketResponse.from(ticket))
+        assertEquals(service.updateTicket(UPDATE_REQUEST, ticket.id, USER_ID) , ticket.toResponse())
     }
     @Test
     @DisplayName("존재하지 않는 티켓 수정 테스트")
@@ -80,8 +82,8 @@ class TicketServiceTest (
             TicketRequest(
                 "b",
                 "t",
-                Ticket.Color.RED2,
-                Ticket.Type.HEALTH,
+                Color.RED2,
+                TicketType.HEALTH,
                 Ticket.MaxSwipeCount.TEN
             ),
             USER_ID
@@ -96,7 +98,7 @@ class TicketServiceTest (
 
         val updatedTicket = service.updateTicket(TICKET_REQUEST, ticket.id , USER_ID)
 
-        assertEquals(TicketResponse.from(ticket), updatedTicket)
+        assertEquals(ticket.toResponse(), updatedTicket)
         Mockito.verify(eventService, Mockito.times(1)).publishEvent(mockAny())
     }
 
@@ -182,7 +184,7 @@ class TicketServiceTest (
 
         Mockito.`when`(repo.findById(ticket.id)).thenReturn(Optional.of(ticket))
 
-        repeat(ticket.maxSwipeCount.value){
+        repeat(TICKET_REQUEST.maxSwipeCount.value){
             service.swipeTicket(ticket.id, ticket.userId)
         }
 
@@ -196,7 +198,7 @@ class TicketServiceTest (
         Mockito.`when`(repo.findIncompleteTicketsOfUser(USER_ID))
             .thenReturn(tickets)
 
-        assertEquals(tickets.map { TicketResponse.from(it) }, service.findIncompleteTickets(USER_ID))
+        assertEquals(tickets.map { it.toResponse() }, service.findIncompleteTickets(USER_ID))
     }
     @Test
     @DisplayName("존재하지 않는 티켓 삭제 테스트")

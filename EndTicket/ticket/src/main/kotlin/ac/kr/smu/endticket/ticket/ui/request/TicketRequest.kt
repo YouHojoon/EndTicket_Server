@@ -1,5 +1,7 @@
 package ac.kr.smu.endticket.ticket.ui.request
 
+import ac.kr.smu.endticket.common.web.enum.Color
+import ac.kr.smu.endticket.common.web.enum.TicketType
 import ac.kr.smu.endticket.ticket.domain.model.Ticket
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
@@ -28,12 +30,12 @@ data class TicketRequest(
     val target: String,
 
     @field:NotNull
-    @Schema(description = "티켓의 색", implementation = Ticket.Color::class)
-    val color: Ticket.Color,
+    @Schema(description = "티켓의 색", implementation = Color::class)
+    val color: Color,
 
     @field:NotNull
-    @Schema(description = "분류", implementation = Ticket.Type::class)
-    val type: Ticket.Type,
+    @Schema(description = "분류", implementation = TicketType::class)
+    val type: TicketType,
 
     @field:NotNull
     @Schema(description = "최대 스와이프 횟수", implementation = Ticket.MaxSwipeCount::class)

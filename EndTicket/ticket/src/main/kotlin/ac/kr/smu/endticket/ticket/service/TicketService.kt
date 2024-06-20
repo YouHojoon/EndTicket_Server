@@ -40,9 +40,8 @@ class TicketService(
 
         check(count < TICKET_LIMIT){"티켓을 $TICKET_LIMIT 개 이상 생성할 수 없습니다."}
 
-        return TicketResponse.from(
-            repo.save(Ticket.from(request,userId))
-        )
+        return repo.save(Ticket.from(request,userId)).toResponse()
+
     }
 
 
@@ -63,7 +62,7 @@ class TicketService(
         if (ticket.updateAndCheckCompletion(request,userId))
             completeTicket(ticket)
 
-        return TicketResponse.from(ticket)
+        return ticket.toResponse()
     }
 
     /**
@@ -80,7 +79,7 @@ class TicketService(
         if (ticket.swipeAndCheckCompletion(userId))
             completeTicket(ticket)
 
-        return TicketResponse.from(ticket)
+        return ticket.toResponse()
     }
 
     /**
@@ -89,7 +88,7 @@ class TicketService(
      * @return 조회된 사용자의 티켓 리스트
      */
     @Transactional(readOnly = true)
-    fun findIncompleteTickets(userId: Long): List<TicketResponse> = repo.findIncompleteTicketsOfUser(userId).map{ TicketResponse.from(it)}
+    fun findIncompleteTickets(userId: Long): List<TicketResponse> = repo.findIncompleteTicketsOfUser(userId).map{ it.toResponse()}
 
     /**
      * 티켓 스와이프 취소
@@ -104,7 +103,7 @@ class TicketService(
 
         ticket.cancelSwipeTicket(userId)
 
-        return TicketResponse.from(ticket)
+        return ticket.toResponse()
     }
 
     /**

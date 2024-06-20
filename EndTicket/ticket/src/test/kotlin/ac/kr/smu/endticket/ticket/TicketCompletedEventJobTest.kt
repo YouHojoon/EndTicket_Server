@@ -9,6 +9,7 @@ import ac.kr.smu.endticket.ticket.job.TicketCompletedEventJob
 import ac.kr.smu.endticket.ticket.domain.model.Ticket
 import ac.kr.smu.endticket.ticket.domain.model.TicketCompletedEvent
 import ac.kr.smu.endticket.ticket.domain.repository.TicketCompletedEventRepository
+import ac.kr.smu.endticket.ticket.infra.messaging.TicketCompletedEventResponse
 import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.AfterEach
@@ -38,14 +39,14 @@ import kotlin.test.assertTrue
 @EmbeddedKafka
 class TicketCompletedEventJobTest @Autowired constructor(
     @SpyBean
-    private val messageService: KafkaMessageService<String, TicketResponse>,
+    private val messageService: KafkaMessageService<String, TicketCompletedEventResponse>,
     @MockBean
     private val repo: TicketCompletedEventRepository,
     private val broker: EmbeddedKafkaBroker,
     private val job: TicketCompletedEventJob
 ) {
 
-    private lateinit var container: KafkaMessageListenerContainer<String, TicketResponse>
+    private lateinit var container: KafkaMessageListenerContainer<String, TicketCompletedEventResponse>
 
     @BeforeTest
     fun init(){
@@ -59,7 +60,7 @@ class TicketCompletedEventJobTest @Autowired constructor(
     @DisplayName("전송 실패한 티켓 완료 이벤트 재전송 테스트")
     fun given_notSentTicketCompletedEvent_when_resendTicketCompletionEvent_then_resendMessage_and_saveIsSent(){
         val events = setOf(TicketCompletedEvent(Ticket.from(TICKET_REQUEST, USER_ID)))
-        val queue = LinkedBlockingQueue<ConsumerRecord<String, TicketResponse>>()
+        val queue = LinkedBlockingQueue<ConsumerRecord<String, TicketCompletedEventResponse>>()
 
         Mockito.`when`(repo.findByIsSentFalseAndAuditCreatedAtBefore(mockAny()))
             .thenReturn(events)
