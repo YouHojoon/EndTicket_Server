@@ -85,7 +85,9 @@ class Imagination private constructor(
      * 수정을 요청하는 메소드
      * @param request 수정 요청
      * @param userId 수정을 요청한 사용자
+     * @throws ImaginationOwnershipException 사용자가 소유자가 아닐 시
      */
+    @Throws(ImaginationOwnershipException::class)
     fun update(request: ImaginationRequest, userId: Long){
         checkOwnership(userId)
 
@@ -98,7 +100,9 @@ class Imagination private constructor(
     /**
      * 상상해보기 완료를 요청하는 메소드
      * @param userId 완료를 요청한 사용자
+     * @throws ImaginationOwnershipException 사용자가 소유자가 아닐 시
      */
+    @Throws(ImaginationOwnershipException::class)
     fun complete(userId: Long){
         checkOwnership(userId)
         isComplete = true
