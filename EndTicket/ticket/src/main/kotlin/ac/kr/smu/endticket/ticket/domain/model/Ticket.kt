@@ -8,6 +8,7 @@ import ac.kr.smu.endticket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endticket.ticket.infra.messaging.TicketCompletedEventResponse
 import ac.kr.smu.endticket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 
@@ -75,9 +76,28 @@ class Ticket private constructor(
     @Embedded
     val audit = Audit()
 
+    /**
+     * 티켓의 최대 스와이프 횟수
+     * @property FIVE 5회
+     * @property TEN 10회
+     * @property FIFTEEN 15회
+     * @property value 각 횟수의 맞는 값
+     */
+    @Schema(description = "티켓의 최대 스와이프 횟수")
     enum class MaxSwipeCount(val value: Int){
-        FIVE(5), TEN(10), FIFTEEN(15);
+        @Schema(description = "5회")
+        FIVE(5),
+        @Schema(description = "10회")
+        TEN(10),
+        @Schema(description = "15회")
+        FIFTEEN(15);
         companion object {
+            /**
+             * value 로부터 티켓 최대 스와이프 횟수를 생성하는 메소드
+             * @param value 생성을 원하는 값
+             * @return 생성된 티켓 최대 스와이프 횟수
+             * @throws IllegalArgumentException 지원하지 않는 value일 때
+             */
             fun fromValue(value: Int): MaxSwipeCount {
                 return values().firstOrNull { it.value == value } ?: throw IllegalArgumentException("$value 의 MaxSwipeCount가 존재하지 않습니다.")
             }
@@ -93,6 +113,10 @@ class Ticket private constructor(
         return o.id == id
     }
 
+    /**
+     * 티켓으로부터 응답을 생성하는 메소드
+     * @return 생성된 응답
+     */
     fun toResponse() = TicketResponse(
         id = id,
         behavior = behavior,
@@ -103,6 +127,10 @@ class Ticket private constructor(
         maxSwipeCount = maxSwipeCount
     )
 
+    /**
+     * 티켓으로부터 이벤트 완료 응답을 생성하는 메소드
+     * @return 이벤트 완료 응답
+     */
     fun toEventResponse() = TicketCompletedEventResponse(
         id = id,
         behavior = behavior,
@@ -133,6 +161,7 @@ class Ticket private constructor(
 
     /**
      * 티켓을 스와이프하고 완료를 확인하는 메소드
+     * @param userId 소유자 Id
      * @return 완료 여부
      * @throws TicketOwnershipException 티켓의 소유자가 아닌 사용자가 요청했을 시
      */
@@ -146,6 +175,11 @@ class Ticket private constructor(
         return swipeCount == maxSwipeCount.value
     }
 
+    /**
+     * 티켓의 스와이프를 취소하는 메소드, 0회 이하로는 내려가지 않는다.
+     * @param userId 소유자 Id
+     * @throws TicketOwnershipException 소유자가 아닐 시
+     */
     @Throws(TicketOwnershipException::class)
     fun cancelSwipeTicket(userId: Long){
         checkOwnership(userId)
