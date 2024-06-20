@@ -1,5 +1,6 @@
 package ac.kr.smu.endticket.history.ui.response
 
+import ac.kr.smu.endticket.history.domain.model.Color
 import ac.kr.smu.endticket.history.domain.model.TicketHistory
 import io.swagger.v3.oas.annotations.media.Schema
 
@@ -19,8 +20,8 @@ data class TicketHistoryResponse(
     @Schema(description = "목표", example = "많은 사람들 앞에서 당당한 내 모습")
     val target: String,
 
-    @Schema(description = "티켓의 색", implementation = TicketHistory.Color::class)
-    val color: TicketHistory.Color,
+    @Schema(description = "티켓의 색", implementation = Color::class)
+    val color: Color,
 
     @Schema(description = "분류", implementation = TicketHistory.Type::class)
     val type: TicketHistory.Type,

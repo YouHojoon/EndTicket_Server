@@ -7,25 +7,27 @@ import jakarta.persistence.*
 
 /**
  * 티켓 기록
- * @property id 티켓의 id
+ * @property ticketId 티켓의 id
  * @property behavior 행동
  * @property target 목표
  * @property color 색
  * @property type 분류
  * @property swipeCount 스와이프 횟수
+ * @property userId 소유자 ID
  */
 @Entity
 @Table(indexes = [
-    Index(name = "idx_ticket_id", columnList = "ticket_id"),
+    Index(name = "idx_ticket_id", columnList = "ticket_id", unique = true),
     Index(name = "idx_user_id", columnList = "user_id")
 ])
+@PrimaryKeyJoinColumn
 class TicketHistory private constructor(
     @Column(updatable = false, nullable = false)
     private val ticketId: Long,
-    @Column(updatable = false, nullable = false)
+    @Column(updatable = false, nullable = false, length = 20)
     private val behavior: String,
 
-    @Column(updatable = false, nullable = false)
+    @Column(updatable = false, nullable = false, length = 20)
     private val target: String,
 
     @Column(updatable = false, nullable = false)
@@ -42,6 +44,12 @@ class TicketHistory private constructor(
 ): History() {
 
     companion object{
+        /**
+         * 티켓 완료 이벤트로부터 티켓 기록 생성
+         * @param response 티켓 완료 응답
+         * @param userId 소유자 ID
+         * @return 티켓 기록
+         */
         fun from(response: TicketCompletedEventResponse, userId: Long) = TicketHistory(
             ticketId = response.id,
             behavior = response.behavior,
@@ -59,15 +67,5 @@ class TicketHistory private constructor(
     @Schema(description = "분류")
     enum class Type{
         HEALTH, PERSONALITY, VALUE, SELF_IMPROVEMENT, RELATIONSHIP
-    }
-
-    @Schema(description = "티켓의 색")
-    enum class Color(val value: String) {
-        RED1("#E591A6"), RED2("#E28089"), RED3("#C56859"),
-        ORANGE1("#EFCB7E"), ORANGE2("#EABD97"), ORANGE3("#E99D7B"),
-        GREEN1("#88C7B2"), GREEN2("#83ABA5"), GREEN3("#4CA199"),
-        BLUE1("#8DD3E8"), BLUE2("#7FBAD5"), BLUE3("#6D98DE"),
-        PURPLE1("#B0BAF0"), PURPLE2("#A49CDA"), PURPLE3("#9F7E99"),
-        GRAY1("#C2C8CF"), GRAY2("#A3A8B3"), GRAY3("#616871")
     }
 }
