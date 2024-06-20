@@ -2,6 +2,7 @@ package ac.kr.smu.endticket.futureme.ui.controller
 
 import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 import ac.kr.smu.endticket.common.constant.HttpHeaderName
+import ac.kr.smu.endticket.common.web.enum.CharacterType
 import ac.kr.smu.endticket.futureme.service.FutureMeService
 import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
 import ac.kr.smu.endticket.futureme.domain.futureme.exception.FutureMeNotFoundException
@@ -45,11 +46,11 @@ class FutureMeController(
     fun findCharacterImage(
         @Parameter(
             name = "캐릭터의 타입",
-            schema = Schema(implementation = Character.Type::class),
+            schema = Schema(implementation = CharacterType::class),
             required = true
         )
         @PathVariable("type")
-        type: Character.Type
+        type: CharacterType
     ) =  ResponseEntity
                 .ok()
                 .contentType(MediaType.valueOf("image/svg+xml"))
@@ -86,7 +87,7 @@ class FutureMeController(
 
     @PatchMapping
     @UpdateFutureMeApiResponses
-    fun updateTitle(
+    fun updateFutureMe(
         @Parameter(
             description = "미래의 나 수정 요청",
             schema = Schema(implementation = UpdateFutureMeRequest::class),
@@ -99,7 +100,7 @@ class FutureMeController(
         @RequestHeader(HttpHeaderName.USER_ID)
         @Parameter(hidden = true)
         userId: Long
-    ) = ResponseEntity.ok(service.update(request,userId))
+    ) = ResponseEntity.ok(service.updateFutureMe(request,userId))
 
     @ExceptionHandler(FutureMeNotFoundException::class)
     fun handleNotFoundFutureMeException(e: FutureMeNotFoundException): ResponseEntity<ExceptionResponse>{

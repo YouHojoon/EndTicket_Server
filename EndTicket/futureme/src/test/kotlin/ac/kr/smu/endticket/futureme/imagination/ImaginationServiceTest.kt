@@ -42,12 +42,12 @@ class ImaginationServiceTest(
         Mockito.`when`(repo.countByUserIdAndIsCompleteIsFalse(USER_ID))
             .thenReturn(6)
 
-        assertThrows<IllegalStateException> {  service.createImagination(request, USER_ID)}
+        assertThrows<IllegalStateException> {  service.createImagination(REQUEST, USER_ID)}
     }
     @Test
     @DisplayName("상상해보기 수정 테스트")
     fun given_request_when_updateImagination_then_returnUpdatedImagination(){
-        val imagination = Imagination.from(request, USER_ID)
+        val imagination = Imagination.from(REQUEST, USER_ID)
         val request = ImaginationRequest("xx", "zzz", Color.GRAY2)
         Mockito
             .`when`(repo.findById(imagination.id))
@@ -63,7 +63,7 @@ class ImaginationServiceTest(
     @Test
     @DisplayName("소유자가 아닌 사용자의 상상해보기 테스트")
     fun given_userWhoNotOwner_when_updateImagination_then_throwImaginationOwnershipException(){
-        val imagination = Imagination.from(request, USER_ID)
+        val imagination = Imagination.from(REQUEST, USER_ID)
 
         Mockito.`when`(repo.findById(imagination.id))
             .thenReturn(Optional.of(imagination))
@@ -85,7 +85,7 @@ class ImaginationServiceTest(
     @Test
     @DisplayName("상상해보기 완료 테스트")
     fun given_imagination_when_completeImagination_then_publishImaginationCompletionEvent(){
-        val imagination = Imagination.from(request, USER_ID)
+        val imagination = Imagination.from(REQUEST, USER_ID)
 
         Mockito.`when`(repo.findById(imagination.id))
             .thenReturn(Optional.of(imagination))
@@ -109,7 +109,7 @@ class ImaginationServiceTest(
     @Test
     @DisplayName("소유자가 아닌 사용자의 상상해보기 완료 테스트")
     fun given_userWhoNotOwner__when_completeImagination_then_throwImaginationOwnershipException(){
-        val imagination = Imagination.from(request, USER_ID)
+        val imagination = Imagination.from(REQUEST, USER_ID)
 
         Mockito.`when`(repo.findById(imagination.id))
             .thenReturn(Optional.of(imagination))
@@ -122,7 +122,7 @@ class ImaginationServiceTest(
     @Test
     @DisplayName("상상해보기 조회 테스트")
     fun given_user_when_findImagination_then_return_imaginations(){
-        val imaginations = setOf(Imagination.from(request, USER_ID))
+        val imaginations = setOf(Imagination.from(REQUEST, USER_ID))
 
         Mockito.`when`(repo.findByUserIdAndIsCompleteIsFalse(USER_ID))
             .thenReturn(imaginations)
@@ -138,7 +138,7 @@ class ImaginationServiceTest(
     @Test
     @DisplayName("상상해보기 삭제 테스트")
     fun given_id_when_deleteImagination_then_success(){
-        val imagination = Imagination.from(request, USER_ID)
+        val imagination = Imagination.from(REQUEST, USER_ID)
 
         Mockito.`when`(repo.findById(imagination.id))
             .thenReturn(Optional.of(imagination))
@@ -158,7 +158,7 @@ class ImaginationServiceTest(
     @Test
     @DisplayName("소유자가 아닌 사용자의 상상해보기 삭제 테스트")
     fun given_userWhoNotOwner_when_deleteImagination_then_throwImaginationOwnershipException(){
-        val imagination = Imagination.from(request, USER_ID)
+        val imagination = Imagination.from(REQUEST, USER_ID)
 
         Mockito.`when`(repo.findById(imagination.id))
             .thenReturn(Optional.of(imagination))

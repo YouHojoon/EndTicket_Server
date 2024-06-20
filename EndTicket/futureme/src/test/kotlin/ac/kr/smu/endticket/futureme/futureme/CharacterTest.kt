@@ -1,5 +1,6 @@
 package ac.kr.smu.endticket.futureme.futureme
 
+import ac.kr.smu.endticket.common.web.enum.CharacterType
 import ac.kr.smu.endticket.futureme.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.model.TicketCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.futureme.model.Character
@@ -13,13 +14,13 @@ class CharacterTest {
     @Test
     @DisplayName("캐릭터 각 타입별 이미지가 존재하는 지 테스트")
     fun test_eachTypeImageIsExist(){
-        assertTrue(Character.Type.values().map { it.imageResource.exists() }.none { !it })
+        assertTrue(CharacterType.values().map { it.imageResource.exists() }.none { !it })
     }
 
     @Test
     @DisplayName("각 이벤트 별 경험치 상승 테스트")
     fun given_event_when_gainExperiencePoints_then_increasedExperiencePoints(){
-        val character = Character(Character.Type.CHEESE)
+        val character = Character(CharacterType.CHEESE)
 
         character.gainExperiencePoints(Mockito.mock<TicketCompletedEvent>())
         character.gainExperiencePoints(Mockito.mock<ImaginationCompletedEvent>())
@@ -30,7 +31,7 @@ class CharacterTest {
     @Test
     @DisplayName("레벨 업 테스트")
     fun given_characterWithReachedMaxExperiencePoints_when_gainExperiencePoints_then_increasedLevel(){
-        val character = Character(Character.Type.CHEESE)
+        val character = Character(CharacterType.CHEESE)
         val beforeLevel = character.level
 
         repeat(5){
@@ -44,7 +45,7 @@ class CharacterTest {
     @Test
     @DisplayName("레벨 및 경험치 최대치 테스트")
     fun given_characterWithReachedMaxLevel_when_gainExperiencePoints_then_nothingChange(){
-        val character = Character(Character.Type.CHEESE)
+        val character = Character(CharacterType.CHEESE)
         repeat(40 * 1000 / 20){
             character.gainExperiencePoints(Mockito.mock<TicketCompletedEvent>())
         }

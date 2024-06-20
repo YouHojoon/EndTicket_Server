@@ -2,6 +2,7 @@ package ac.kr.smu.endticket.futureme.domain.futureme.model
 
 import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
 import ac.kr.smu.endticket.common.jpa.Audit
+import ac.kr.smu.endticket.common.web.enum.CharacterType
 import ac.kr.smu.endticket.futureme.ui.request.UpdateFutureMeRequest
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
@@ -14,7 +15,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 @Table
 @EntityListeners(AuditingEntityListener::class)
 class FutureMe private constructor(
-    type: Character.Type,
+    type: CharacterType,
 
     @Id
     val userId: Long
@@ -49,7 +50,7 @@ class FutureMe private constructor(
      */
     fun update(request: UpdateFutureMeRequest){
         val title = request.title
-        val type = request.type
+        val type = request.characterType
 
         if (request.isEmpty())
             throw IllegalArgumentException("요청이 비어있습니다.")
