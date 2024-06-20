@@ -3,7 +3,7 @@ package ac.kr.smu.endticket.history.service
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.history.domain.model.ImaginationHistory
 import ac.kr.smu.endticket.history.domain.model.TicketHistory
-import ac.kr.smu.endticket.history.domain.repository.TicketHistoryRepository
+import ac.kr.smu.endticket.history.domain.repository.HistoryRepository
 import ac.kr.smu.endticket.history.infra.messaging.EventResponse
 import ac.kr.smu.endticket.history.infra.messaging.ImaginationCompletedEventResponse
 import ac.kr.smu.endticket.history.infra.messaging.TicketCompletedEventResponse
@@ -16,7 +16,7 @@ import java.time.Duration
 
 @Service
 class EventConsumeService(
-    private val repo: TicketHistoryRepository
+    private val repo: HistoryRepository
 ) {
     private val log = LoggerFactory.getLogger(EventConsumeService::class.java)
 
@@ -26,7 +26,7 @@ class EventConsumeService(
      * @param ack kafka commit을 위한 객체
      */
     @KafkaListener(topics = [KafkaTopic.TICKET_COMPLETION, KafkaTopic.IMAGINATION_COMPLETION])
-    fun consume(record: ConsumerRecord<String,EventResponse>, ack: Acknowledgment){
+    fun consume(record: ConsumerRecord<String, out EventResponse>, ack: Acknowledgment){
         val response = record.value()
         val userId = record.key().toLong()
         val (type, entity) = when(record.topic()){

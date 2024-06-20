@@ -3,6 +3,7 @@ package ac.kr.smu.endticket.history.infra.messaging
 import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.common.web.enum.TicketType
 import ac.kr.smu.endticket.history.domain.model.TicketHistory
+import java.time.LocalDateTime
 
 /**
  * 티켓 완료 이벤트의 응답
@@ -12,6 +13,7 @@ import ac.kr.smu.endticket.history.domain.model.TicketHistory
  * @property color 색
  * @property type 분류
  * @property swipeCount 스와이프 횟수
+ * @property completedAt 이벤트의 완료 일자
  */
 class TicketCompletedEventResponse(
     id: Long,
@@ -20,4 +22,5 @@ class TicketCompletedEventResponse(
     val color: Color,
     val type: TicketType,
     val swipeCount: Int,
-): EventResponse(id)
+    completedAt: LocalDateTime
+): EventResponse(id, completedAt)
