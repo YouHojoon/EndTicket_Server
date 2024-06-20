@@ -1,6 +1,7 @@
 package ac.kr.smu.endticket.futureme.futureme
 
 import ac.kr.smu.endticket.common.constant.HttpHeaderName
+import ac.kr.smu.endticket.common.web.enum.CharacterType
 import ac.kr.smu.endticket.futureme.domain.futureme.model.Character
 import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
 import ac.kr.smu.endticket.futureme.ui.request.UpdateFutureMeRequest
@@ -18,7 +19,7 @@ fun MockMvc.findFutureMe(userId: Long = USER_ID): ResultActions = perform(
         .header(HttpHeaderName.USER_ID, userId)
 )
 
-fun MockMvc.findCharacterImage(type: Character.Type): ResultActions = perform(
+fun MockMvc.findCharacterImage(type: CharacterType): ResultActions = perform(
     MockMvcRequestBuilders
         .get("$BASE_URL/characters/${type.name.lowercase()}")
 )

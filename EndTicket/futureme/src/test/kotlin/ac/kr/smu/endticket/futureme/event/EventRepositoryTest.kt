@@ -5,8 +5,8 @@ import ac.kr.smu.endticket.futureme.domain.event.model.TicketCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.repository.EventRepository
 import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
 import ac.kr.smu.endticket.futureme.domain.imagination.repository.ImaginationRepository
+import ac.kr.smu.endticket.futureme.imagination.REQUEST
 import ac.kr.smu.endticket.futureme.imagination.USER_ID
-import ac.kr.smu.endticket.futureme.imagination.request
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,7 +25,7 @@ class EventRepositoryTest @Autowired constructor(
     @Test
     @DisplayName("미전송 상상해보기 완료 이벤트 조회 테스트")
     fun given_date_when_findNotSentEventBefore_then_returnEvents(){
-        val imagination = imaginationRepository.save(Imagination.from(request, USER_ID))
+        val imagination = imaginationRepository.save(Imagination.from(REQUEST, USER_ID))
         val event = ImaginationCompletedEvent(imagination)
         val now = event.audit.createdAt.plusMinutes(10)
 

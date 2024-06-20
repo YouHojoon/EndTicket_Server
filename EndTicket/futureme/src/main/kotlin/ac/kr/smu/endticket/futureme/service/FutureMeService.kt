@@ -38,7 +38,7 @@ class FutureMeService(
      */
     @Transactional
     @Throws(FutureMeNotFoundException::class)
-    fun update(request: UpdateFutureMeRequest, userId: Long): FutureMeResponse {
+    fun updateFutureMe(request: UpdateFutureMeRequest, userId: Long): FutureMeResponse {
         val futureMe = repo.findById(userId).getOrNull() ?: throw FutureMeNotFoundException(userId)
 
         futureMe.update(request)
@@ -68,5 +68,10 @@ class FutureMeService(
         val futureMe = repo.findById(userId).getOrNull() ?: throw FutureMeNotFoundException(userId)
 
         return FutureMeResponse.from(futureMe)
+    }
+
+    @Transactional
+    fun deleteFutureMe(userId: Long){
+        repo.deleteById(userId)
     }
 }
