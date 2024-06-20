@@ -1,6 +1,6 @@
 package ac.kr.smu.endticket.history.infra.messaging
 
-import ac.kr.smu.endticket.history.domain.model.Color
+import ac.kr.smu.endticket.common.web.enum.Color
 
 /**
  * 상상해보기 완료 이벤트 응답

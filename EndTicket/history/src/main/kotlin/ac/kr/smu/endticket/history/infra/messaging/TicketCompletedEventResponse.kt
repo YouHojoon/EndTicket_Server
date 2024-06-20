@@ -1,6 +1,7 @@
 package ac.kr.smu.endticket.history.infra.messaging
 
-import ac.kr.smu.endticket.history.domain.model.Color
+import ac.kr.smu.endticket.common.web.enum.Color
+import ac.kr.smu.endticket.common.web.enum.TicketType
 import ac.kr.smu.endticket.history.domain.model.TicketHistory
 
 /**
@@ -17,6 +18,6 @@ class TicketCompletedEventResponse(
     val behavior: String,
     val target: String,
     val color: Color,
-    val type: TicketHistory.Type,
+    val type: TicketType,
     val swipeCount: Int,
 ): EventResponse(id)

@@ -1,6 +1,7 @@
 package ac.kr.smu.endticket.history
 
-import ac.kr.smu.endticket.history.domain.model.Color
+import ac.kr.smu.endticket.common.web.enum.Color
+import ac.kr.smu.endticket.common.web.enum.TicketType
 import ac.kr.smu.endticket.history.domain.model.TicketHistory
 import ac.kr.smu.endticket.history.infra.messaging.ImaginationCompletedEventResponse
 import ac.kr.smu.endticket.history.infra.messaging.TicketCompletedEventResponse
@@ -11,7 +12,7 @@ val TICKET_COMPLETED_EVENT_RESPONSE = TicketCompletedEventResponse(
     behavior = "behavior",
     target = "target",
     color = Color.BLUE1,
-    type = TicketHistory.Type.HEALTH,
+    type = TicketType.HEALTH,
     swipeCount = 5)
 
 val IMAGINATION_COMPLETED_EVENT_RESPONSE = ImaginationCompletedEventResponse(

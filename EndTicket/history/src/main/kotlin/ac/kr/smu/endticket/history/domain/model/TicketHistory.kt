@@ -1,6 +1,8 @@
 package ac.kr.smu.endticket.history.domain.model
 
 import ac.kr.smu.endticket.common.jpa.Audit
+import ac.kr.smu.endticket.common.web.enum.Color
+import ac.kr.smu.endticket.common.web.enum.TicketType
 import ac.kr.smu.endticket.history.infra.messaging.TicketCompletedEventResponse
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
@@ -34,7 +36,7 @@ class TicketHistory private constructor(
     private val color: Color,
 
     @Column(updatable = false, nullable = false)
-    private val type: Type,
+    private val type: TicketType,
 
     @Column(updatable = false, nullable = false)
     private val swipeCount: Int,
@@ -63,9 +65,4 @@ class TicketHistory private constructor(
 
     @Embedded
     val audit = Audit()
-
-    @Schema(description = "분류")
-    enum class Type{
-        HEALTH, PERSONALITY, VALUE, SELF_IMPROVEMENT, RELATIONSHIP
-    }
 }

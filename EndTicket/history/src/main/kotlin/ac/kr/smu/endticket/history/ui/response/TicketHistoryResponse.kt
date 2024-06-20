@@ -1,6 +1,6 @@
 package ac.kr.smu.endticket.history.ui.response
 
-import ac.kr.smu.endticket.history.domain.model.Color
+import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.history.domain.model.TicketHistory
 import io.swagger.v3.oas.annotations.media.Schema
 
