@@ -1,5 +1,6 @@
 package ac.kr.smu.endticket.futureme.infra.messaging
 
+import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
 import java.time.LocalDateTime
 
@@ -15,6 +16,6 @@ data class ImaginationCompletedEventResponse(
     val id: Long,
     val behavior: String,
     val target: String,
-    val color: Imagination.Color,
+    val color: Color,
     val completedDate: LocalDateTime
 )

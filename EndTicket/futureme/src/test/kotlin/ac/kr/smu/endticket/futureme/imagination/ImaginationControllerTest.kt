@@ -3,6 +3,7 @@ package ac.kr.smu.endticket.futureme.imagination
 import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationOwnershipException
 import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
+import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.common.web.test.expectBindingException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationNotFoundException
@@ -41,7 +42,7 @@ class ImaginationControllerTest @Autowired constructor(
     @DisplayName("상상해보기 조회 테스트")
     fun given_user_when_findImaginations_then_responseImaginations(){
         val imaginations = setOf(
-            ImaginationResponse.from(Imagination.from(request, USER_ID))
+            Imagination.from(request, USER_ID).toResponse()
         )
 
         Mockito.`when`(service.findImaginations(USER_ID))
@@ -55,7 +56,7 @@ class ImaginationControllerTest @Autowired constructor(
     @Test
     @DisplayName("상상해보기 생성 테스트")
     fun given_request_when_createImagination_then_responseCreatedImagination(){
-        val imagination = ImaginationResponse.from(Imagination.from(request, USER_ID))
+        val imagination = Imagination.from(request, USER_ID).toResponse()
 
         Mockito.`when`(service.createImagination(request, USER_ID))
             .thenReturn(imagination)
@@ -93,9 +94,9 @@ class ImaginationControllerTest @Autowired constructor(
         val request = ImaginationRequest(
             behavior = "new behav",
             target = "new target",
-            color = Imagination.Color.GRAY2
+            color = Color.GRAY2
         )
-        val response =  ImaginationResponse.from(Imagination.from(request, USER_ID))
+        val response = Imagination.from(request, USER_ID).toResponse()
 
         Mockito.`when`(
             service.updateImagination(request, id, USER_ID)

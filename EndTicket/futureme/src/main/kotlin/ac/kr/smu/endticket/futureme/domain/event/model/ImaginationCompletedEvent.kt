@@ -33,14 +33,7 @@ class ImaginationCompletedEvent(
      */
     fun toMessage() = KafkaMessage(
         key = imagination.userId.toString(),
-        payload =
-        ImaginationCompletedEventResponse(
-            id = imagination.id,
-            behavior = imagination.behavior,
-            target = imagination.target,
-            color = imagination.color,
-            completedDate = imagination.audit.updatedAt ?: LocalDateTime.now()
-        )
+        payload = imagination.toEventResponse()
     )
 
     /**

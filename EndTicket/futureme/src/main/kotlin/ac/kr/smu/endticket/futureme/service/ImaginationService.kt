@@ -30,7 +30,7 @@ class ImaginationService(
     fun createImagination(request: ImaginationRequest, userId: Long): ImaginationResponse {
         check (repo.countByUserIdAndIsCompleteIsFalse(userId) < IMAGINATION_LIMIT){"$IMAGINATION_LIMIT 이상으로 상상해보기를 생성할 수 없습니다."}
 
-        return ImaginationResponse.from(repo.save(Imagination.from(request,userId)))
+        return repo.save(Imagination.from(request,userId)).toResponse()
     }
 
     /**
@@ -47,7 +47,7 @@ class ImaginationService(
         val imagination = repo.findById(id).getOrNull() ?: throw ImaginationNotFoundException(id)
 
         imagination.update(request,userId)
-        return ImaginationResponse.from(imagination)
+        return imagination.toResponse()
     }
 
     /**
@@ -73,7 +73,7 @@ class ImaginationService(
     @Transactional(readOnly = true)
     fun findImaginations(userId: Long): Set<ImaginationResponse> =
         repo.findByUserIdAndIsCompleteIsFalse(userId)
-            .map { ImaginationResponse.from(it) }
+            .map { it.toResponse() }
             .toSet()
 
     /**
