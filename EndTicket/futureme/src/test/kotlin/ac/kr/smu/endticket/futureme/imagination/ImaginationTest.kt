@@ -1,5 +1,6 @@
 package ac.kr.smu.endticket.futureme.imagination
 
+import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationOwnershipException
 import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
 import ac.kr.smu.endticket.futureme.ui.request.ImaginationRequest
@@ -15,30 +16,32 @@ class ImaginationTest {
     @DisplayName("상상해보기 생성 테스트")
     fun given_imaginationRequest_when_from_then_returnCreatedImagination(){
         val imagination = Imagination.from(request, USER_ID)
+        val response = imagination.toResponse()
 
-        assertEquals(imagination.behavior, request.behavior)
-        assertEquals(imagination.target, request.target)
-        assertEquals(imagination.color, request.color)
+        assertEquals(response.behavior, request.behavior)
+        assertEquals(response.target, request.target)
+        assertEquals(response.color, request.color)
     }
 
     @Test
     @DisplayName("상상해보기 수정 테스트")
     fun given_imaginationRequest_when_update_then_success(){
         val imagination = Imagination.from(request, USER_ID)
-        val updateRequest = ImaginationRequest("aa","www",Imagination.Color.GRAY2)
+        val updateRequest = ImaginationRequest("aa","www", Color.GRAY2)
 
         imagination.update(updateRequest, USER_ID)
 
-        assertEquals(updateRequest.behavior, imagination.behavior)
-        assertEquals(updateRequest.target, imagination.target)
-        assertEquals(updateRequest.color, imagination.color)
+        val response = imagination.toResponse()
+        assertEquals(updateRequest.behavior, response.behavior)
+        assertEquals(updateRequest.target, response.target)
+        assertEquals(updateRequest.color, response.color)
     }
 
     @Test
     @DisplayName("소유자가 아닌 사용자 상상해보기 수정 테스트")
     fun given_userWhoNotOwner_when_update_then_throwImaginationOwnershipException(){
         val imagination = Imagination.from(request, USER_ID)
-        val updateRequest = ImaginationRequest("aa","www",Imagination.Color.GRAY2)
+        val updateRequest = ImaginationRequest("aa","www",Color.GRAY2)
 
         assertThrows<ImaginationOwnershipException> {  imagination.update(updateRequest, 2L)}
     }

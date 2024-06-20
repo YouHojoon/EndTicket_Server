@@ -2,6 +2,7 @@ package ac.kr.smu.endticket.futureme.imagination
 
 import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationOwnershipException
 import ac.kr.smu.endticket.common.test.mockAny
+import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationNotFoundException
 import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
 import ac.kr.smu.endticket.futureme.domain.imagination.repository.ImaginationRepository
@@ -47,7 +48,7 @@ class ImaginationServiceTest(
     @DisplayName("상상해보기 수정 테스트")
     fun given_request_when_updateImagination_then_returnUpdatedImagination(){
         val imagination = Imagination.from(request, USER_ID)
-        val request = ImaginationRequest("xx", "zzz", Imagination.Color.GRAY2)
+        val request = ImaginationRequest("xx", "zzz", Color.GRAY2)
         Mockito
             .`when`(repo.findById(imagination.id))
             .thenReturn(Optional.of(imagination))
@@ -67,7 +68,7 @@ class ImaginationServiceTest(
         Mockito.`when`(repo.findById(imagination.id))
             .thenReturn(Optional.of(imagination))
 
-        val request = ImaginationRequest("xx", "zzz", Imagination.Color.GRAY2)
+        val request = ImaginationRequest("xx", "zzz", Color.GRAY2)
         assertThrows<ImaginationOwnershipException> {  service.updateImagination(request, imagination.id, 2L)}
     }
 
@@ -77,7 +78,7 @@ class ImaginationServiceTest(
         Mockito.`when`(repo.findById(Mockito.anyLong()))
             .thenReturn(Optional.empty())
 
-        val request = ImaginationRequest("xx", "zzz", Imagination.Color.GRAY2)
+        val request = ImaginationRequest("xx", "zzz", Color.GRAY2)
         assertThrows<ImaginationNotFoundException> {  service.updateImagination(request,1L, USER_ID)}
     }
 
@@ -130,7 +131,7 @@ class ImaginationServiceTest(
         assertTrue(result.isNotEmpty())
 
         for((lhs,rhs) in imaginations.zip(result)){
-            assertEquals(ImaginationResponse.from(lhs),rhs)
+            assertEquals(lhs.toResponse(),rhs)
         }
     }
 
