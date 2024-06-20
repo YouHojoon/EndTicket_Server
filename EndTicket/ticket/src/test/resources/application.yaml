@@ -11,6 +11,12 @@ spring:
     producer:
       key-serializer:  org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "ac.kr.smu.endticket.ticket.infra.messaging"
   jpa:
     hibernate:
       ddl-auto: create

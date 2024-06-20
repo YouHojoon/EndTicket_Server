@@ -1,5 +1,7 @@
 package ac.kr.smu.endticket.ticket
 
+import ac.kr.smu.endticket.common.web.enum.Color
+import ac.kr.smu.endticket.common.web.enum.TicketType
 import ac.kr.smu.endticket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endticket.ticket.domain.model.Ticket
 import ac.kr.smu.endticket.ticket.ui.request.TicketRequest
@@ -18,8 +20,8 @@ class TicketTest {
         val updateRequest = TicketRequest(
             "abcd",
             "abcd",
-            Ticket.Color.GRAY2,
-            Ticket.Type.PERSONALITY,
+            Color.GRAY2,
+            TicketType.PERSONALITY,
             Ticket.MaxSwipeCount.FIFTEEN
         )
 
@@ -57,7 +59,7 @@ class TicketTest {
     fun given_ticketReachedMaxSwipeCount_when_swipeTicket_then_nothingChange(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
 
-        repeat(ticket.maxSwipeCount.value){
+        repeat(TICKET_REQUEST.maxSwipeCount.value){
             ticket.swipeAndCheckCompletion(USER_ID)
         }
 

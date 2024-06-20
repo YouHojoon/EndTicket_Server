@@ -1,10 +1,13 @@
 package ac.kr.smu.endticket.ticket.domain.model
 
 import ac.kr.smu.endticket.common.jpa.Audit
+import ac.kr.smu.endticket.common.web.enum.Color
+import ac.kr.smu.endticket.common.web.enum.TicketType
 import ac.kr.smu.endticket.ticket.domain.converter.MaxSwipeCountConverter
 import ac.kr.smu.endticket.ticket.domain.exception.TicketOwnershipException
+import ac.kr.smu.endticket.ticket.infra.messaging.TicketCompletedEventResponse
 import ac.kr.smu.endticket.ticket.ui.request.TicketRequest
-import io.swagger.v3.oas.annotations.media.Schema
+import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 
@@ -23,39 +26,27 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 ])
 @EntityListeners(AuditingEntityListener::class)
 class Ticket private constructor(
-    behavior: String,
-    target: String,
-    color: Color,
-    type: Type,
-    maxSwipeCount: MaxSwipeCount,
+    @Column(nullable = false, length = 20)
+    private var behavior: String,
+
+    @Column(nullable = false, length = 20)
+    private var target: String,
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private var color: Color,
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private var type: TicketType,
+
+    @Column(nullable = false)
+    @Convert(converter = MaxSwipeCountConverter::class)
+    private var maxSwipeCount: MaxSwipeCount,
 
     @Column(name = "user_id", updatable = false, nullable = false)
     val userId: Long,
 ){
-    @Column(nullable = false, length = 20)
-    var behavior: String private set
-    @Column(nullable = false, length = 20)
-    var target: String private set
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    var color: Color private set
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    var type: Type private set
-
-    @Column(nullable = false)
-    @Convert(converter = MaxSwipeCountConverter::class)
-    var maxSwipeCount: MaxSwipeCount private set
-
-    init {
-        this.behavior = behavior
-        this.target = target
-        this.color = color
-        this.type = type
-        this.maxSwipeCount = maxSwipeCount
-    }
     companion object{
         /**
          * [TicketRequest] 로부터 티켓을 생성하는 메소드
@@ -93,20 +84,6 @@ class Ticket private constructor(
         }
     }
 
-    @Schema(description = "분류")
-    enum class Type{
-        HEALTH, PERSONALITY, VALUE, SELF_IMPROVEMENT, RELATIONSHIP
-    }
-    @Schema(description = "티켓의 색")
-    enum class Color(val value: String) {
-        RED1("#E591A6"), RED2("#E28089"), RED3("#C56859"),
-        ORANGE1("#EFCB7E"), ORANGE2("#EABD97"), ORANGE3("#E99D7B"),
-        GREEN1("#88C7B2"), GREEN2("#83ABA5"), GREEN3("#4CA199"),
-        BLUE1("#8DD3E8"), BLUE2("#7FBAD5"), BLUE3("#6D98DE"),
-        PURPLE1("#B0BAF0"), PURPLE2("#A49CDA"), PURPLE3("#9F7E99"),
-        GRAY1("#C2C8CF"), GRAY2("#A3A8B3"), GRAY3("#616871")
-    }
-
     override fun equals(other: Any?): Boolean {
         if (other == null)
             return false
@@ -116,6 +93,24 @@ class Ticket private constructor(
         return o.id == id
     }
 
+    fun toResponse() = TicketResponse(
+        id = id,
+        behavior = behavior,
+        target = target,
+        type = type,
+        color = color,
+        swipeCount = swipeCount,
+        maxSwipeCount = maxSwipeCount
+    )
+
+    fun toEventResponse() = TicketCompletedEventResponse(
+        id = id,
+        behavior = behavior,
+        target = target,
+        type = type,
+        color = color,
+        swipeCount = swipeCount,
+    )
 
     /**
      * 티켓의 수정 메소드

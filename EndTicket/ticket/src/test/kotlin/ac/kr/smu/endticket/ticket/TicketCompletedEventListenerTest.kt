@@ -8,6 +8,7 @@ import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.ticket.domain.model.Ticket
 import ac.kr.smu.endticket.ticket.domain.model.TicketCompletedEvent
 import ac.kr.smu.endticket.ticket.domain.repository.TicketCompletedEventRepository
+import ac.kr.smu.endticket.ticket.infra.messaging.TicketCompletedEventResponse
 import ac.kr.smu.endticket.ticket.listener.TicketCompletedEventListener
 import ac.kr.smu.endticket.ticket.service.TicketCompletedEventService
 import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
@@ -43,11 +44,11 @@ class TicketCompletedEventListenerTest @Autowired constructor(
     @MockBean
     private val repo: TicketCompletedEventRepository,
     @SpyBean
-    private val messageService: KafkaMessageService<String, TicketResponse>,
+    private val messageService: KafkaMessageService<String, TicketCompletedEventResponse>,
     private val eventService: TicketCompletedEventService,
     private val broker: EmbeddedKafkaBroker
 ) {
-    private lateinit var container: KafkaMessageListenerContainer<String, TicketResponse>
+    private lateinit var container: KafkaMessageListenerContainer<String, TicketCompletedEventResponse>
 
     @BeforeTest
     fun init(){
@@ -63,7 +64,7 @@ class TicketCompletedEventListenerTest @Autowired constructor(
     fun given_ticketCompletionEvent_then_saveEvent_and_sendMessage(){
         val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
         val event = TicketCompletedEvent(ticket)
-        val queue = LinkedBlockingQueue<ConsumerRecord<String, TicketResponse>>()
+        val queue = LinkedBlockingQueue<ConsumerRecord<String, TicketCompletedEventResponse>>()
 
         container.messageListener(broker){
             queue.add(it)

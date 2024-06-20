@@ -4,6 +4,8 @@ import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endticket.common.kafka.test.messageListener
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
+import ac.kr.smu.endticket.common.web.enum.Color
+import ac.kr.smu.endticket.common.web.enum.TicketType
 import ac.kr.smu.endticket.common.web.test.andReturn
 import ac.kr.smu.endticket.common.web.test.expectBindingException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
@@ -11,6 +13,7 @@ import ac.kr.smu.endticket.ticket.domain.model.Ticket
 import ac.kr.smu.endticket.ticket.domain.repository.TicketCompletedEventRepository
 import ac.kr.smu.endticket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endticket.ticket.infra.config.KafkaConfig
+import ac.kr.smu.endticket.ticket.infra.messaging.TicketCompletedEventResponse
 import ac.kr.smu.endticket.ticket.listener.TicketCompletedEventListener
 import ac.kr.smu.endticket.ticket.service.TicketCompletedEventService
 import ac.kr.smu.endticket.ticket.service.TicketService
@@ -69,7 +72,7 @@ class TicketIntegrationTest @Autowired constructor(
             .setControllerAdvice(BindExceptionAdvice())
             .build()
 
-    private lateinit var container: KafkaMessageListenerContainer<String, TicketResponse>
+    private lateinit var container: KafkaMessageListenerContainer<String, TicketCompletedEventResponse>
 
     @AfterEach
     fun reset(){
@@ -96,8 +99,8 @@ class TicketIntegrationTest @Autowired constructor(
         val request = TicketRequest(
             behavior = "",
             target = "",
-            color = Ticket.Color.RED1,
-            type = Ticket.Type.HEALTH,
+            color = Color.RED1,
+            type = TicketType.HEALTH,
             maxSwipeCount = Ticket.MaxSwipeCount.FIVE
         )
 
@@ -248,7 +251,7 @@ class TicketIntegrationTest @Autowired constructor(
             .andExpect(MockMvcResultMatchers.jsonPath("swipeCount").value(ticket.maxSwipeCount.value))
             .andReturn<TicketResponse>()
 
-        val queue = LinkedBlockingQueue<ConsumerRecord<String, TicketResponse>>()
+        val queue = LinkedBlockingQueue<ConsumerRecord<String, TicketCompletedEventResponse>>()
 
         container = createKafkaContainer(broker, KafkaTopic.TICKET_COMPLETION)
         container.messageListener(broker){
@@ -256,10 +259,16 @@ class TicketIntegrationTest @Autowired constructor(
         }
 
         val record = queue.poll(1000, TimeUnit.MILLISECONDS)
+        val response = record.value()
 
         assertNotNull(record)
         assertEquals(USER_ID, record.key().toLong())
-        assertEquals(completeTicket, record.value())
+        assertEquals(completeTicket.id, response.id)
+        assertEquals(completeTicket.behavior, response.behavior)
+        assertEquals(completeTicket.target, response.target)
+        assertEquals(completeTicket.color, response.color)
+        assertEquals(completeTicket.swipeCount, response.swipeCount)
+
     }
 
     @Test

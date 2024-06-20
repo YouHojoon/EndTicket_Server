@@ -3,6 +3,7 @@ package ac.kr.smu.endticket.ticket.job
 import KafkaMessageService
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.ticket.domain.repository.TicketCompletedEventRepository
+import ac.kr.smu.endticket.ticket.infra.messaging.TicketCompletedEventResponse
 import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
@@ -19,7 +20,7 @@ import kotlin.system.measureTimeMillis
 @Component
 class TicketCompletedEventJob(
     private val repo: TicketCompletedEventRepository,
-    private val messageService: KafkaMessageService<String, TicketResponse>
+    private val messageService: KafkaMessageService<String, TicketCompletedEventResponse>
 ) {
     private val log = LoggerFactory.getLogger(TicketCompletedEventJob::class.java)
 
