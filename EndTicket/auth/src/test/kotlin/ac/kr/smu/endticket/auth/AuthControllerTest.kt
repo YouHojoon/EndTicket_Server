@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.auth
+package ac.kr.smu.endticket.auth
 
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
 import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2TokenResponse
@@ -21,7 +21,6 @@ import org.springframework.context.annotation.Import
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import java.lang.IllegalStateException
-import kotlin.test.assertNotNull
 
 @WebMvcTest(controllers = [AuthController::class])
 @Import(RedisTestConfig::class, SecurityTestConfig::class, AutoRedisConfig::class)

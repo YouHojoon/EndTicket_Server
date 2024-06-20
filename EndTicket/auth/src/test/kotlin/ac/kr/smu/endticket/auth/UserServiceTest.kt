@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.auth
+package ac.kr.smu.endticket.auth
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.service.UserService
@@ -16,7 +16,7 @@ import kotlin.test.assertEquals
 @SpringBootTest(
     classes = [
         UserService::class,
-        GrpcConfiguration::class,
+        GrpcConfig::class,
         CircuitBreakerAutoConfiguration::class,
         AopAutoConfiguration::class
     ]
@@ -27,10 +27,6 @@ class UserServiceTest @Autowired constructor(
     private val registry: CircuitBreakerRegistry
 
 ) {
-    companion object{
-        const val USER_ID = 1L
-    }
-
     @Test
     @DisplayName("gRPC를 통한 userID 수신 테스트")
     @DirtiesContext

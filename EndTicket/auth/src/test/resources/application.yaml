@@ -31,3 +31,5 @@ grpc:
   client:
     user:
       address: in-process:test
+    token:
+      address: in-process:test
