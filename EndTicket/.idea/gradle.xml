@@ -21,9 +21,9 @@
             <option value="$PROJECT_DIR$/common/zipkin" />
             <option value="$PROJECT_DIR$/config" />
             <option value="$PROJECT_DIR$/eureka" />
-            <option value="$PROJECT_DIR$/futureMe" />
             <option value="$PROJECT_DIR$/futureme" />
             <option value="$PROJECT_DIR$/gateway" />
+            <option value="$PROJECT_DIR$/history" />
             <option value="$PROJECT_DIR$/ticket" />
             <option value="$PROJECT_DIR$/user" />
           </set>
