@@ -1,6 +1,5 @@
 package ac.kr.smu.endticket.ticket
 
-import ac.kr.smu.endticket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endticket.common.kafka.test.messageListener
@@ -8,9 +7,6 @@ import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endticket.common.web.test.andReturn
 import ac.kr.smu.endticket.common.web.test.expectBindException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
-<<<<<<< HEAD:EndTicket/ticket/src/test/kotlin/ac/kr/smu/endTicket/ticket/TicketIntegrationTest.kt
-=======
->>>>>>> develop:EndTicket/ticket/src/test/kotlin/ac/kr/smu/endticket/ticket/TicketIntegrationTest.kt
 import ac.kr.smu.endticket.ticket.domain.repository.TicketCompletedEventRepository
 import ac.kr.smu.endticket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endticket.ticket.infra.config.KafkaConfig
@@ -19,6 +15,7 @@ import ac.kr.smu.endticket.ticket.listener.TicketCompletedEventListener
 import ac.kr.smu.endticket.ticket.service.TicketCompletedEventService
 import ac.kr.smu.endticket.ticket.service.TicketService
 import ac.kr.smu.endticket.ticket.ui.controller.TicketController
+import ac.kr.smu.endticket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.AfterEach
@@ -85,20 +82,20 @@ class TicketIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("티켓 생성 테스트")
     fun given_ticketRequest_when_createTicket_then_expectStatusCode204_and_responseCreatedTicket(){
-        mvc.createTicket(TICKET_REQUEST)
+        mvc.createTicket(TicketTestParameters.TICKET_REQUEST)
             .andExpect(MockMvcResultMatchers.status().isCreated)
-            .andExpect(MockMvcResultMatchers.jsonPath("behavior").value(TICKET_REQUEST.behavior))
-            .andExpect(MockMvcResultMatchers.jsonPath("target").value(TICKET_REQUEST.target))
-            .andExpect(MockMvcResultMatchers.jsonPath("color").value(TICKET_REQUEST.color.name))
-            .andExpect(MockMvcResultMatchers.jsonPath("type").value(TICKET_REQUEST.type.name))
-            .andExpect(MockMvcResultMatchers.jsonPath("maxSwipeCount").value(TICKET_REQUEST.maxSwipeCount.name))
+            .andExpect(MockMvcResultMatchers.jsonPath("behavior").value(TicketTestParameters.TICKET_REQUEST.behavior))
+            .andExpect(MockMvcResultMatchers.jsonPath("target").value(TicketTestParameters.TICKET_REQUEST.target))
+            .andExpect(MockMvcResultMatchers.jsonPath("color").value(TicketTestParameters.TICKET_REQUEST.color.name))
+            .andExpect(MockMvcResultMatchers.jsonPath("type").value(TicketTestParameters.TICKET_REQUEST.type.name))
+            .andExpect(MockMvcResultMatchers.jsonPath("maxSwipeCount").value(TicketTestParameters.TICKET_REQUEST.maxSwipeCount.name))
             .andExpect(MockMvcResultMatchers.jsonPath("swipeCount").value(0))
     }
 
     @ParameterizedTest
     @DisplayName("비정상적인 티켓 생성 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideInvalidRequest")
-    fun given_invalidTicketRequest_when_createTicket_then_responseBindingExceptionResponseWithStatus400(request: TicketRequest){
+    fun given_invalidTicketRequest_when_createTicket_then_responseBindException(request: TicketRequest){
         mvc.createTicket(request).expectBindException()
     }
 
@@ -106,10 +103,10 @@ class TicketIntegrationTest @Autowired constructor(
     @DisplayName("티캣 개수 제한 이상으로 생성 테스트")
     fun given_userHasReachedTicketLimit_when_createTicket_then_responseExceptionResponseWithStatus409(){
         repeat(5){
-            mvc.createTicket(TICKET_REQUEST)
+            mvc.createTicket(TicketTestParameters.TICKET_REQUEST)
         }
 
-        mvc.createTicket(TICKET_REQUEST)
+        mvc.createTicket(TicketTestParameters.TICKET_REQUEST)
             .andExpect(MockMvcResultMatchers.status().isConflict)
             .expectExceptionResponse()
     }
@@ -117,17 +114,17 @@ class TicketIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("티켓 수정 테스트")
     fun given_ticketRequest_when_updateTicket_then_responseUpdatedTicket(){
-        val ticket = mvc.createTicket(TICKET_REQUEST).andReturn<TicketResponse>()
+        val ticket = mvc.createTicket(TicketTestParameters.TICKET_REQUEST).andReturn<TicketResponse>()
 
-        mvc.updateTicket(UPDATE_REQUEST, ticket.id)
+        mvc.updateTicket(TicketTestParameters.UPDATE_REQUEST, ticket.id)
             .andExpect(MockMvcResultMatchers.status().isOk)
     }
 
     @ParameterizedTest
     @DisplayName("비정상적인 티켓 수정 요청 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideInvalidRequest")
-    fun given_invalidTicketRequest_when_updateTicket_then_responseBindingExceptionResponseWithStatus400(request: TicketRequest){
-        val ticket = mvc.createTicket(TICKET_REQUEST).andReturn<TicketResponse>()
+    fun given_invalidTicketRequest_when_updateTicket_then_responseBindExceptionResponse(request: TicketRequest){
+        val ticket = mvc.createTicket(TicketTestParameters.TICKET_REQUEST).andReturn<TicketResponse>()
         mvc.updateTicket(request,ticket.id).expectBindException()
     }
 
@@ -135,7 +132,7 @@ class TicketIntegrationTest @Autowired constructor(
     @DisplayName("존재하지 않는 티켓 수정 요청 테스트")
     fun given_notExistTicket_when_updateTicket_then_responseExceptionResponseWithStatus404() =
         mvc
-            .updateTicket(TICKET_REQUEST, 1L)
+            .updateTicket(TicketTestParameters.TICKET_REQUEST, 1L)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
             .expectExceptionResponse()
 
@@ -143,16 +140,16 @@ class TicketIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("티켓의 소유자가 아닌 사용자의 티켓 수정 요청 테스트")
     fun given_userWhoNotOwnerOfTicket_when_updateTicket_then_responseExceptionResponseWithStatus403(){
-       val ticket = mvc.createTicket(TICKET_REQUEST, 2L).andReturn<TicketResponse>()
+       val ticket = mvc.createTicket(TicketTestParameters.TICKET_REQUEST, 2L).andReturn<TicketResponse>()
 
-        mvc.updateTicket(TICKET_REQUEST, ticket.id)
+        mvc.updateTicket(TicketTestParameters.TICKET_REQUEST, ticket.id)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
             .expectExceptionResponse()
     }
     @Test
     @DisplayName("티켓 스와이프 테스트")
     fun given_Id_when_swipeTicket_then_responseSwipedTicket(){
-        val ticket = mvc.createTicket(TICKET_REQUEST).andReturn<TicketResponse>()
+        val ticket = mvc.createTicket(TicketTestParameters.TICKET_REQUEST).andReturn<TicketResponse>()
 
         mvc.swipeTicket(ticket.id)
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -171,7 +168,7 @@ class TicketIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("티켓의 소유자가 아닌 사용자의 스와이프 테스트")
     fun given_userWhoNotOwnerOfTicket_when_swipeTicket_then_responseExceptionResponseWithStatus403(){
-        val ticket = mvc.createTicket(TICKET_REQUEST, 2L).andReturn<TicketResponse>()
+        val ticket = mvc.createTicket(TicketTestParameters.TICKET_REQUEST, 2L).andReturn<TicketResponse>()
 
         mvc.swipeTicket(ticket.id)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
@@ -181,7 +178,7 @@ class TicketIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("티켓 스와이프 취소 테스트")
     fun given_Id_when_cancelSwipeTicket_then_responseSwipeCanceledTicket(){
-        val ticket = mvc.createTicket(TICKET_REQUEST).andReturn<TicketResponse>()
+        val ticket = mvc.createTicket(TicketTestParameters.TICKET_REQUEST).andReturn<TicketResponse>()
         val beforeSwipeCount = mvc.swipeTicket(ticket.id).andReturn<TicketResponse>().swipeCount
 
         mvc.cancelSwipeTicket(ticket.id)
@@ -201,7 +198,7 @@ class TicketIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("소유자가 아닌 사용자 티켓 스와이프 취소 테스트")
     fun given_userWhoNotOwnerOfTicket_when_cancelSwipeTicket_then_responseExceptionResponseWithStatus403(){
-        val ticket = mvc.createTicket(TICKET_REQUEST, 2L).andReturn<TicketResponse>()
+        val ticket = mvc.createTicket(TicketTestParameters.TICKET_REQUEST, 2L).andReturn<TicketResponse>()
 
         mvc.cancelSwipeTicket(ticket.id)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
@@ -211,7 +208,7 @@ class TicketIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("미완료된 티켓 조회")
     fun given_userId_when_findIncompleteTickets_then_responseIncompleteTickets(){
-       val ticket = mvc.createTicket(TICKET_REQUEST).andReturn<TicketResponse>()
+       val ticket = mvc.createTicket(TicketTestParameters.TICKET_REQUEST).andReturn<TicketResponse>()
 
         val json = mvc.findTickets()
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -227,7 +224,7 @@ class TicketIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("티켓 완료 테스트")
     fun given_ticketWhichRightBeforeCompletion_when_swipeTicket_then_responseCompleteTicket_and_sendTicketCompletionEvent(){
-        val ticket = mvc.createTicket(TICKET_REQUEST).andReturn<TicketResponse>()
+        val ticket = mvc.createTicket(TicketTestParameters.TICKET_REQUEST).andReturn<TicketResponse>()
 
         repeat(ticket.maxSwipeCount.value - 1){
             mvc.swipeTicket(ticket.id)
@@ -249,7 +246,7 @@ class TicketIntegrationTest @Autowired constructor(
         val response = record.value()
 
         assertNotNull(record)
-        assertEquals(USER_ID, record.key().toLong())
+        assertEquals(TicketTestParameters.USER_ID, record.key().toLong())
         assertEquals(completeTicket.id, response.id)
         assertEquals(completeTicket.behavior, response.behavior)
         assertEquals(completeTicket.target, response.target)
@@ -261,7 +258,7 @@ class TicketIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("티켓 삭제 테스트")
     fun given_id_when_deleteTicket_then_expectStatusCode204(){
-        val ticket = mvc.createTicket(TICKET_REQUEST).andReturn<TicketResponse>()
+        val ticket = mvc.createTicket(TicketTestParameters.TICKET_REQUEST).andReturn<TicketResponse>()
         mvc.deleteTicket(ticket.id)
             .andExpect(MockMvcResultMatchers.status().isNoContent)
     }
@@ -277,7 +274,7 @@ class TicketIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("소유자가 아닌 사용자의 티켓 삭제 테스트")
     fun given_userWhoNotOwner_when_deleteTicket_then_responseExceptionResponseWithStatus403(){
-        val ticket = mvc.createTicket(TICKET_REQUEST, 2L).andReturn<TicketResponse>()
+        val ticket = mvc.createTicket(TicketTestParameters.TICKET_REQUEST, 2L).andReturn<TicketResponse>()
         mvc.deleteTicket(ticket.id)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
             .expectExceptionResponse()

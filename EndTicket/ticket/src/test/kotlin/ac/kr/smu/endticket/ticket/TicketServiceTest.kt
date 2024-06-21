@@ -48,16 +48,16 @@ class TicketServiceTest (
         Mockito.`when`(repo.save(ticket))
             .thenReturn(ticket)
 
-        assertEquals(ticket.toResponse(), service.createTicket(TICKET_REQUEST, USER_ID))
-        Mockito.verify(repo, Mockito.times(1)).countIncompleteTicketsOfUser(USER_ID)
+        assertEquals(ticket.toResponse(), service.createTicket(TicketTestParameters.TICKET_REQUEST, TicketTestParameters.USER_ID))
+        Mockito.verify(repo, Mockito.times(1)).countIncompleteTicketsOfUser(TicketTestParameters.USER_ID)
     }
     @Test
     @DisplayName("티켓 개수 제한 이상으로 생성 테스트")
     fun given_userHasReachedTicketLimit_when_createTicket_then_throwIllegalStateException(){
-        Mockito.`when`(repo.countIncompleteTicketsOfUser(USER_ID))
+        Mockito.`when`(repo.countIncompleteTicketsOfUser(TicketTestParameters.USER_ID))
             .thenReturn(5)
 
-        assertThrows<IllegalStateException> { service.createTicket(TICKET_REQUEST, USER_ID) }
+        assertThrows<IllegalStateException> { service.createTicket(TicketTestParameters.TICKET_REQUEST, TicketTestParameters.USER_ID) }
     }
     @ParameterizedTest
     @DisplayName("티켓 수정 테스트")
@@ -66,7 +66,7 @@ class TicketServiceTest (
             Mockito.`when`(repo.findById(Mockito.anyLong()))
             .thenReturn(Optional.of(ticket))
 
-        assertEquals(service.updateTicket(UPDATE_REQUEST, ticket.id, USER_ID) , ticket.toResponse())
+        assertEquals(service.updateTicket(TicketTestParameters.UPDATE_REQUEST, ticket.id, TicketTestParameters.USER_ID) , ticket.toResponse())
     }
     @ParameterizedTest
     @DisplayName("비정상적인 티켓 수정 테스트")
@@ -79,7 +79,7 @@ class TicketServiceTest (
         val id = ticket?.id ?: 1L
         Mockito.`when`(repo.findById(id))
             .thenReturn(Optional.ofNullable(ticket))
-        assertFailsWith(exception) {  service.updateTicket(UPDATE_REQUEST, id, userId)}
+        assertFailsWith(exception) {  service.updateTicket(TicketTestParameters.UPDATE_REQUEST, id, userId)}
     }
 
     @Test
@@ -93,17 +93,17 @@ class TicketServiceTest (
                 TicketType.HEALTH,
                 Ticket.MaxSwipeCount.TEN
             ),
-            USER_ID
+            TicketTestParameters.USER_ID
         )
 
         repeat(Ticket.MaxSwipeCount.FIVE.value){
-            ticket.swipeAndCheckCompletion(USER_ID)
+            ticket.swipeAndCheckCompletion(TicketTestParameters.USER_ID)
         }
 
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
 
-        val updatedTicket = service.updateTicket(TICKET_REQUEST, ticket.id , USER_ID)
+        val updatedTicket = service.updateTicket(TicketTestParameters.TICKET_REQUEST, ticket.id , TicketTestParameters.USER_ID)
 
         assertEquals(ticket.toResponse(), updatedTicket)
         Mockito.verify(eventService, Mockito.times(1)).publishEvent(mockAny())
@@ -172,7 +172,7 @@ class TicketServiceTest (
     fun given_ticketWhichRightBeforeCompletion_when_swipeTicket_then_runCompleteTicket(ticket: Ticket){
         Mockito.`when`(repo.findById(ticket.id)).thenReturn(Optional.of(ticket))
 
-        repeat(TICKET_REQUEST.maxSwipeCount.value){
+        repeat(TicketTestParameters.TICKET_REQUEST.maxSwipeCount.value){
             service.swipeTicket(ticket.id, ticket.userId)
         }
 
@@ -185,10 +185,10 @@ class TicketServiceTest (
     fun given_userId_when_findIncompleteTickets_then_returnIncompleteTickets(ticket: Ticket){
         val tickets = listOf(ticket)
 
-        Mockito.`when`(repo.findIncompleteTicketsOfUser(USER_ID))
+        Mockito.`when`(repo.findIncompleteTicketsOfUser(TicketTestParameters.USER_ID))
             .thenReturn(tickets)
 
-        assertEquals(tickets.map { it.toResponse() }, service.findIncompleteTickets(USER_ID))
+        assertEquals(tickets.map { it.toResponse() }, service.findIncompleteTickets(TicketTestParameters.USER_ID))
     }
     @ParameterizedTest
     @DisplayName("비정상적인 티켓 삭제 테스트")
