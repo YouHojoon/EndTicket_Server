@@ -1,6 +1,7 @@
 package ac.kr.smu.endticket.futureme.futureme
 
 import ac.kr.smu.endticket.common.web.enum.CharacterType
+import ac.kr.smu.endticket.futureme.domain.event.model.Event
 import ac.kr.smu.endticket.futureme.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.model.TicketCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.futureme.exception.FutureMeNotFoundException
@@ -17,6 +18,8 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
@@ -82,25 +85,17 @@ class FutureMeServiceTest(
         assertThrows<FutureMeNotFoundException> {  service.findFutureMe(USER_ID)}
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("경험치 상승 테스트")
-    fun given_event_when_gainExperiencePoints_then_increaseExperiencePointsForEachEvent(){
-        val futureMe = FutureMe.from(CreateFutureMeRequest(CharacterType.CHEESE), USER_ID)
+    @MethodSource("${FutureMeTestParameters.PATH}#provideFutureMeAndEvent")
+    fun given_event_when_gainExperiencePoints_then_increaseExperiencePointsForEachEvent(futureMe: FutureMe, event: Event, amount: Int){
         var beforeExperiencePoints = futureMe.character.experiencePoints
-        val ticketCompletedEvent = Mockito.mock(TicketCompletedEvent::class.java)
-        val imaginationCompletedEvent = Mockito.mock(ImaginationCompletedEvent::class.java)
 
         Mockito.`when`(repo.findById(USER_ID))
             .thenReturn(Optional.of(futureMe))
-        Mockito.`when`(ticketCompletedEvent.userId).thenReturn(USER_ID)
-        Mockito.`when`(imaginationCompletedEvent.userId).thenReturn(USER_ID)
 
-        service.gainExperiencePoints(ticketCompletedEvent)
-        assertEquals(beforeExperiencePoints + 20,futureMe.character.experiencePoints)
-
-        beforeExperiencePoints = futureMe.character.experiencePoints
-        service.gainExperiencePoints(imaginationCompletedEvent)
-        assertEquals(beforeExperiencePoints + 10,futureMe.character.experiencePoints)
+        service.gainExperiencePoints(event)
+        assertEquals(beforeExperiencePoints + amount,futureMe.character.experiencePoints)
     }
 
     @Test

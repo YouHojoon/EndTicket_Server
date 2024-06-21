@@ -23,6 +23,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
@@ -71,12 +73,10 @@ class ImaginationCompletedEventListenerTest @Autowired constructor(
         container.stop()
     }
 
-    @Test
     @DisplayName("상상해보기 완료 이벤트 테스트")
-    fun given_imaginationCompletedEvent_then_saveEvent_and_sendMessage(){
-        val imagination = Imagination.from(REQUEST, USER_ID)
-        val event = ImaginationCompletedEvent(imagination)
-
+    @ParameterizedTest
+    @MethodSource("${EventTestParameters.PATH}#provideImaginationCompletedEvent")
+    fun given_imaginationCompletedEvent_then_saveEvent_and_sendMessage(event: ImaginationCompletedEvent){
         eventService.publishEvent(event)
         Thread.sleep(1000L)
 
@@ -92,10 +92,10 @@ class ImaginationCompletedEventListenerTest @Autowired constructor(
         assertEquals(expectPayload.characterType, record.value().characterType)
         assertEquals(event.userId.toString(), record.key())
     }
-    @Test
+    @ParameterizedTest
     @DisplayName("상상해보기 완료 이벤트 메시지 전송 실패 테스트")
-    fun given_imaginationCompletedEvent_when_sendMessageFail_then_doNothing(){
-        val event = ImaginationCompletedEvent(Imagination.from(REQUEST, USER_ID))
+    @MethodSource("${EventTestParameters.PATH}#provideImaginationCompletedEvent")
+    fun given_imaginationCompletedEvent_when_sendMessageFail_then_doNothing(event: ImaginationCompletedEvent){
         val mockEvent = Mockito.spy(event)
         val message = event.toMessage(FUTURE_ME.character.type)
 
