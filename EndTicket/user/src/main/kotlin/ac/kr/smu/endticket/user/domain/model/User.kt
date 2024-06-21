@@ -1,6 +1,6 @@
 package ac.kr.smu.endticket.user.domain.model
 
-import ac.kr.smu.endticket.user.ui.request.RegisterNicknameRequest
+import ac.kr.smu.endticket.user.ui.request.NicknameRegisterRequest
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -62,7 +62,7 @@ class User(
      * @throws IllegalStateException 닉네임이 null이 아닐 떄
      */
     @Throws(IllegalStateException::class)
-    fun registerNickname(request: RegisterNicknameRequest){
+    fun registerNickname(request: NicknameRegisterRequest){
         check(this.nickname == null){"닉네임을 변경할 수 없습니다."}
         this.nickname = request.nickname
     }

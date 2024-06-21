@@ -1,13 +1,15 @@
 package ac.kr.smu.endticket.user
 
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
+import ac.kr.smu.endticket.common.web.test.expectBindException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
-import ac.kr.smu.endticket.user.domain.exception.NotFoundUserException
 import ac.kr.smu.endticket.user.service.UserService
 import ac.kr.smu.endticket.user.ui.controller.UserController
-import ac.kr.smu.endticket.user.ui.request.RegisterNicknameRequest
+import ac.kr.smu.endticket.user.ui.request.NicknameRegisterRequest
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -30,59 +32,41 @@ class UserControllerTest @Autowired constructor(
         .setControllerAdvice(BindExceptionAdvice())
         .build()
 
-    companion object{
-        private const val NICKNAME = "닉네임"
-    }
-
     @Test
     @DisplayName("닉네임 등록")
     fun given_nickname_when_updateNickname_then_updateNicknameOfUser(){
-        val request = RegisterNicknameRequest(NICKNAME)
+        val request = NicknameRegisterRequest(UserTestParameters.NICKNAME)
 
         mockMvc
             .registerNickname(request)
             .andExpect(MockMvcResultMatchers.status().isNoContent)
 
         Mockito
-            .verify(service, Mockito.times(1))
+            .verify(service)
             .registerNickname(request, USER_ID)
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("부적절한 닉네임 등록 테스트")
-    fun given_invalidNickname_when_updateNickname_then_expectStatusCode400_and_responseBindingException(){
-        val lowLengthNickname = RegisterNicknameRequest("ac/kr/smu/endticket/common/web")
-        val patternMismatchedNickname = RegisterNicknameRequest("$^&@(a")
-
-        mockMvc.registerNickname(lowLengthNickname).expectBindingException()
-        mockMvc.registerNickname(patternMismatchedNickname).expectBindingException()
+    @MethodSource("${UserTestParameters.PATH}#provideInvalidNicknameRegisterRequest")
+    fun given_invalidNickname_when_updateNickname_then_responseBindException(request: NicknameRegisterRequest){
+        mockMvc.registerNickname(request).expectBindException()
     }
 
-    @Test
-    @DisplayName("존재하지 않는 사용자의 닉네임 등록 테스트")
-    fun given_notExistUser_when_registerNickname_then_expectStatusCode404_and_responseExceptionResponse(){
-        val request = RegisterNicknameRequest(NICKNAME)
-
+    @ParameterizedTest
+    @DisplayName("비정상적인 사용자의 닉네임 등록 테스트")
+    @MethodSource("${UserTestParameters.PATH}#provideNicknameRegisterRequestAndException")
+    fun given_invalidUser_when_registerNickname_then_responseExceptionResponseWithExpectedStatus(
+        request: NicknameRegisterRequest,
+        exception: Throwable,
+        status: Int
+    ){
         Mockito.`when`(service.registerNickname(request, USER_ID))
-            .thenAnswer { throw NotFoundUserException(USER_ID) }
+            .thenAnswer { throw exception}
 
         mockMvc
             .registerNickname(request)
-            .andExpect(MockMvcResultMatchers.status().isNotFound)
-            .expectExceptionResponse()
-    }
-
-    @Test
-    @DisplayName("닉네임이 등록되어 있는 사용자의 닉네임 등록 테스트")
-    fun given_userWithNicknameAlreadyRegistered_when_registerNickname_then_expectStatus409_and_responseExceptionResponse(){
-        val request = RegisterNicknameRequest(NICKNAME)
-
-        Mockito.`when`(service.registerNickname(request, USER_ID))
-            .thenAnswer { throw IllegalStateException("") }
-
-        mockMvc
-            .registerNickname(request)
-            .andExpect(MockMvcResultMatchers.status().isConflict)
+            .andExpect(MockMvcResultMatchers.status().`is`(status))
             .expectExceptionResponse()
     }
 }

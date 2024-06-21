@@ -3,15 +3,11 @@ package ac.kr.smu.endticket.ticket
 import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.common.web.enum.TicketType
-import ac.kr.smu.endticket.ticket.domain.exception.TicketNotFoundException
-import ac.kr.smu.endticket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endticket.ticket.domain.model.Ticket
 import ac.kr.smu.endticket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endticket.ticket.service.TicketCompletedEventService
 import ac.kr.smu.endticket.ticket.service.TicketService
 import ac.kr.smu.endticket.ticket.ui.request.TicketRequest
-import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
-import com.fasterxml.jackson.annotation.JsonTypeInfo.As
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
