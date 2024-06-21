@@ -1,11 +1,14 @@
 package ac.kr.smu.endticket.futureme.futureme
 
 import ac.kr.smu.endticket.common.web.enum.CharacterType
+import ac.kr.smu.endticket.futureme.domain.event.model.Event
 import ac.kr.smu.endticket.futureme.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.model.TicketCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.futureme.model.Character
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -17,15 +20,12 @@ class CharacterTest {
         assertTrue(CharacterType.values().map { it.imageResource.exists() }.none { !it })
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("각 이벤트 별 경험치 상승 테스트")
-    fun given_event_when_gainExperiencePoints_then_increasedExperiencePoints(){
-        val character = Character(CharacterType.CHEESE)
-
-        character.gainExperiencePoints(Mockito.mock<TicketCompletedEvent>())
-        character.gainExperiencePoints(Mockito.mock<ImaginationCompletedEvent>())
-
-        assertEquals(30, character.experiencePoints)
+    @MethodSource("${FutureMeTestParameters.PATH}#provideCharacterAndEvent")
+    fun given_event_when_gainExperiencePoints_then_increasedExperiencePoints(character: Character,event: Event, amount: Int){
+        character.gainExperiencePoints(event)
+        assertEquals(amount, character.experiencePoints)
     }
 
     @Test

@@ -72,7 +72,7 @@ class FutureMeIntegrationTest @Autowired constructor(
 
     @Test
     @DisplayName("존재하지 않는 미래의 나 조회 테스트")
-    fun given_userDoesNotHasFutureMe_when_findFutureMe_then_expectStatusCode404_and_responseExceptionResponse() {
+    fun given_userDoesNotHasFutureMe_when_findFutureMe_then_responseExceptionResponseWithStatus404() {
         mvc.findFutureMe()
             .andExpect(MockMvcResultMatchers.status().isNotFound)
             .expectExceptionResponse()
@@ -91,7 +91,7 @@ class FutureMeIntegrationTest @Autowired constructor(
 
     @Test
     @DisplayName("존재하지 않는 캐릭터 이미지 조회 테스트")
-    fun given_notExistType_when_findCharacterImage_then_expectStatusCode404_and_responseExceptionResponse() {
+    fun given_notExistType_when_findCharacterImage_then_responseExceptionResponseWithStatus404() {
         mvc.perform(
             MockMvcRequestBuilders.get("$BASE_URL/characters/xxx")
         )
@@ -124,7 +124,7 @@ class FutureMeIntegrationTest @Autowired constructor(
 
     @Test
     @DisplayName("미래의 나가 없는 사용자의 수정 테스트")
-    fun given_userHasNotFutureMe_when_update_then_expectStatusCode404_and_responseExceptionResponse() =
+    fun given_userHasNotFutureMe_when_update_then_responseExceptionResponseWithStatus404() =
         mvc
             .updateFutureMe(UPDATE_REQUEST)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -133,7 +133,7 @@ class FutureMeIntegrationTest @Autowired constructor(
 
     @Test
     @DisplayName("미래의 나 길이 초과된 제목으로 등록/변경 테스트")
-    fun given_requestWithExceedMaxLength_when_updateTitle_then_expectStatusCode400_and_responseBindingExceptionResponse() {
+    fun given_requestWithExceedMaxLength_when_updateTitle_then_responseBindingExceptionResponseWithStatus400() {
         val request = UpdateFutureMeRequest("미래의 나 길이 초과된 제목 테스트")
 
         mvc.updateFutureMe(request)
@@ -142,7 +142,7 @@ class FutureMeIntegrationTest @Autowired constructor(
 
     @Test
     @DisplayName("이미 미래의 나가 존재할 때 미래의 나 생성 테스트")
-    fun given_requestWithAlreadyExistFutureMe_when_createFutureMe_then_expectStatusCode409_and_responseExceptionResponse(){
+    fun given_requestWithAlreadyExistFutureMe_when_createFutureMe_then_responseExceptionResponseWithStatus409(){
         val request = CreateFutureMeRequest(CharacterType.CHEESE)
         mvc.createFutureMe(request)
         mvc.createFutureMe(request)

@@ -56,7 +56,7 @@ class FutureMeControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("존재하지 않는 미래의 나 조회 테스트")
-    fun given_userHasNotFutureMe_when_findFutureMe_then_expectStatusCode404_and_responseExceptionResponse(){
+    fun given_userHasNotFutureMe_when_findFutureMe_then_responseExceptionResponseWithStatus404(){
         Mockito.`when`(service.findFutureMe(USER_ID))
             .thenAnswer { throw FutureMeNotFoundException(USER_ID) }
 
@@ -78,7 +78,7 @@ class FutureMeControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("존재하지 않는 캐릭터 이미지 조회 테스트")
-    fun given_notExistType_when_findCharacterImage_then_expectStatusCode404_and_responseExceptionResponse(){
+    fun given_notExistType_when_findCharacterImage_then_responseExceptionResponseWithStatus404(){
         mvc.perform(
             MockMvcRequestBuilders.get("$BASE_URL/characters/xxx")
         ).andExpect(MockMvcResultMatchers.status().isBadRequest)
@@ -117,7 +117,7 @@ class FutureMeControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("미래의 나가 없는 사용자의 수정 테스트")
-    fun given_userDoesNotHasFutureMee_when_updateFutureMe_then_expectStatusCode404_and_responseExceptionResponse(){
+    fun given_userDoesNotHasFutureMee_when_updateFutureMe_then_responseExceptionResponseWithStatus404(){
         val request = UpdateFutureMeRequest("테스트")
 
         Mockito
@@ -132,7 +132,7 @@ class FutureMeControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("미래의 나 길이 초과된 제목으로 등록/변경 테스트")
-    fun given_requestWithExceedMaxLength_when_updateFutureMe_then_expectStatusCode400_and_responseBindingExceptionResponse(){
+    fun given_requestWithExceedMaxLength_when_updateFutureMe_then_responseBindingExceptionResponseWithStatus400(){
         val request = UpdateFutureMeRequest("미래의 나 길이 초과된 제목 테스트")
 
         mvc.updateFutureMe(request)
@@ -140,7 +140,7 @@ class FutureMeControllerTest @Autowired constructor(
     }
     @Test
     @DisplayName("이미 미래의 나가 존재할 때 미래의 나 생성 테스트")
-    fun given_requestWithAlreadyExistFutureMe_when_createFutureMe_then_expectStatusCode409_and_responseExceptionResponse(){
+    fun given_requestWithAlreadyExistFutureMe_when_createFutureMe_then_responseExceptionResponseWithStatus409(){
         val request = CreateFutureMeRequest(CharacterType.CHEESE)
 
         Mockito.`when`(service.createFutureMe(request, USER_ID))
