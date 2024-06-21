@@ -6,11 +6,9 @@ import ac.kr.smu.endticket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endticket.common.kafka.test.messageListener
 import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.ticket.job.TicketCompletedEventJob
-import ac.kr.smu.endticket.ticket.domain.model.Ticket
 import ac.kr.smu.endticket.ticket.domain.model.TicketCompletedEvent
 import ac.kr.smu.endticket.ticket.domain.repository.TicketCompletedEventRepository
 import ac.kr.smu.endticket.ticket.infra.messaging.TicketCompletedEventResponse
-import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
@@ -28,7 +26,6 @@ import org.springframework.kafka.test.context.EmbeddedKafka
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.test.BeforeTest
-import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 

@@ -2,7 +2,7 @@ package ac.kr.smu.endticket.user.ui.controller
 
 import ac.kr.smu.endticket.common.constant.HttpHeaderName
 import ac.kr.smu.endticket.user.service.UserService
-import ac.kr.smu.endticket.user.ui.request.RegisterNicknameRequest
+import ac.kr.smu.endticket.user.ui.request.NicknameRegisterRequest
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController
 import ac.kr.smu.endticket.common.web.response.BindExceptionResponse
 import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 
-import ac.kr.smu.endticket.user.domain.exception.NotFoundUserException
+import ac.kr.smu.endticket.user.domain.exception.UserNotFoundException
 
 @RestController
 @RequestMapping("/users")
@@ -63,8 +63,8 @@ class  UserController(
     fun registerNickname(
         @Valid
         @RequestBody
-        @Parameter(description = "등록할 닉네임", schema = Schema(implementation = RegisterNicknameRequest::class))
-        request: RegisterNicknameRequest,
+        @Parameter(description = "등록할 닉네임", schema = Schema(implementation = NicknameRegisterRequest::class))
+        request: NicknameRegisterRequest,
 
         @RequestHeader(HttpHeaderName.USER_ID)
         @Parameter(hidden = true)
@@ -76,7 +76,7 @@ class  UserController(
             log.info("{id: $id}", e)
             ResponseEntity(ExceptionResponse(409, "닉네임 등록에 에러가 발생했습니다.", e.message), HttpStatus.CONFLICT)
         }
-        catch (e: NotFoundUserException){
+        catch (e: UserNotFoundException){
             log.info("{id: $id}", e)
             ResponseEntity(ExceptionResponse(404, "닉네임 등록에 에러가 발생했습니다.", e.message), HttpStatus.NOT_FOUND)
         }

@@ -3,10 +3,10 @@ package ac.kr.smu.endticket.user.service
 import ac.kr.smu.endticket.protobuf.FindUserIdRequest
 import ac.kr.smu.endticket.protobuf.UserIdResponse
 import ac.kr.smu.endticket.protobuf.UserServiceGrpc
-import ac.kr.smu.endticket.user.domain.exception.NotFoundUserException
+import ac.kr.smu.endticket.user.domain.exception.UserNotFoundException
 import ac.kr.smu.endticket.user.domain.model.User
 import ac.kr.smu.endticket.user.domain.repository.UserRepository
-import ac.kr.smu.endticket.user.ui.request.RegisterNicknameRequest
+import ac.kr.smu.endticket.user.ui.request.NicknameRegisterRequest
 import io.grpc.stub.StreamObserver
 import net.devh.boot.grpc.server.service.GrpcService
 import org.springframework.stereotype.Service
@@ -49,10 +49,10 @@ class UserService(
      * @param id 닉네임을 등록할 사용자
      * @throws NotFoundUserException id의 사용자가 없을 시
      */
-    @Throws(NotFoundUserException::class)
+    @Throws(UserNotFoundException::class)
     @Transactional
-    fun registerNickname(request: RegisterNicknameRequest, id: Long){
-        val user = repo.findById(id).getOrNull() ?: throw NotFoundUserException(id)
+    fun registerNickname(request: NicknameRegisterRequest, id: Long){
+        val user = repo.findById(id).getOrNull() ?: throw UserNotFoundException(id)
         
         user.registerNickname(request)
     }
