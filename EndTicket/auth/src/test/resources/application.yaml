@@ -8,7 +8,7 @@ resilience4j:
 
 jwt:
   secret: testtesttesttesttesttesttesttesttesttesttesttest
-  access-token-expiration: 1000 # 1시간
+  access-token-expiration: 10000 # 1시간
   refresh-token-expiration: 604800000 # 30일
   refresh-token-reissue-expiration: 259200000
 

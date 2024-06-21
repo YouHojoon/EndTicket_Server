@@ -47,7 +47,7 @@ class OAuth2AuthorizationFilter(
         val code = request.getParameter(CODE_URI_VARIABLE_NAME) ?: ""
         require(code.isNotBlank()){"code가 비어있습니다."}
 
-        val oAuth2TokenResponse = oAuthService.oAuth(socialType, code)
+        val oAuth2TokenResponse = oAuthService.oauth(socialType, code)
         val socialUserNumber = oAuthService.parseSocialUserNumber(socialType, oAuth2TokenResponse.idToken)
         val oAuth2User = OAuth2User(socialUserNumber, socialType)
 
