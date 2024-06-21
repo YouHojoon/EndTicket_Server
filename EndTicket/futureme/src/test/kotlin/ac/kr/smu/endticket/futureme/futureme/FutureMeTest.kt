@@ -15,13 +15,15 @@ class FutureMeTest {
     @Test
     @DisplayName("미래의 나 수정 테스트")
     fun given_updateTitleOfFutureMeRequest_when_update_then_success(){
-        val futureMe = FutureMe.from(CreateFutureMeRequest(CharacterType.CHEESE), USER_ID)
+        val futureMe = FutureMe.from(CreateFutureMeRequest(CharacterType.CHEESE), FutureMeTestParameters.USER_ID)
 
-        futureMe.update(UPDATE_REQUEST)
+        futureMe.update(FutureMeTestParameters.UPDATE_REQUEST)
 
-        val characterType = UPDATE_REQUEST.characterType
+        val characterType = FutureMeTestParameters.UPDATE_REQUEST.characterType
+        val response = futureMe.toResponse()
+
         assertNotNull(characterType)
-        assertEquals(UPDATE_REQUEST.title, futureMe.title)
-        assertEquals(characterType, futureMe.character.type)
+        assertEquals(FutureMeTestParameters.UPDATE_REQUEST.title, response.title)
+        assertEquals(characterType, response.character.type)
     }
 }

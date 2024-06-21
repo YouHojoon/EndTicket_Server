@@ -6,12 +6,15 @@ import ac.kr.smu.endticket.futureme.domain.event.model.TicketCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.futureme.model.Character
 import ac.kr.smu.endticket.futureme.domain.futureme.model.FutureMe
 import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
+import ac.kr.smu.endticket.futureme.ui.request.UpdateFutureMeRequest
 import org.junit.jupiter.params.provider.Arguments
 import org.mockito.Mockito
 import java.util.stream.Stream
 
 object FutureMeTestParameters {
     const val PATH = "ac.kr.smu.endticket.futureme.futureme.FutureMeTestParameters"
+    const val USER_ID = 1L
+    val UPDATE_REQUEST = UpdateFutureMeRequest("title", CharacterType.VEGA)
 
     @JvmStatic
     fun provideFutureMeAndEvent() = Stream.of(

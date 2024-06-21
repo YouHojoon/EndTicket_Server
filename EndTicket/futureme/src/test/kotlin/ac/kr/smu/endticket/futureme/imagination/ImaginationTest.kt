@@ -16,17 +16,17 @@ class ImaginationTest {
     @Test
     @DisplayName("상상해보기 생성 테스트")
     fun given_request_when_from_then_returnCreatedImagination(){
-        val imagination = Imagination.from(REQUEST, USER_ID)
+        val imagination = Imagination.from(ImaginationParameters.REQUEST, ImaginationParameters.USER_ID)
         val response = imagination.toResponse()
 
-        assertEquals(response.behavior, REQUEST.behavior)
-        assertEquals(response.target, REQUEST.target)
-        assertEquals(response.color, REQUEST.color)
+        assertEquals(response.behavior, ImaginationParameters.REQUEST.behavior)
+        assertEquals(response.target, ImaginationParameters.REQUEST.target)
+        assertEquals(response.color, ImaginationParameters.REQUEST.color)
     }
 
     @DisplayName("상상해보기 수정 테스트")
     @ParameterizedTest
-    @MethodSource("${ImaginationParameters.PATH}#provideImaginationAndUpdateRequest")
+    @MethodSource("${ImaginationParameters.PATH}#provideImaginationAndRequest")
     fun given_requestAndUserId_when_update_then_success(imagination: Imagination, request: ImaginationRequest){
         imagination.update(request, imagination.userId)
 
@@ -38,14 +38,14 @@ class ImaginationTest {
 
     @DisplayName("소유자가 아닌 사용자 상상해보기 수정 테스트")
     @ParameterizedTest
-    @MethodSource("${ImaginationParameters.PATH}#provideImaginationAndUpdateRequest")
+    @MethodSource("${ImaginationParameters.PATH}#provideImaginationAndRequest")
     fun given_userIdWhoNotOwnerAndRequest_when_update_then_throwImaginationOwnershipException(imagination: Imagination, request: ImaginationRequest){
         assertThrows<ImaginationOwnershipException> {  imagination.update(request, 2L)}
     }
 
     @DisplayName("상상해보기 완료 테스트")
     @ParameterizedTest
-    @MethodSource("a${ImaginationParameters.PATH}s#provideImagination")
+    @MethodSource("${ImaginationParameters.PATH}#provideImagination")
     fun given_userId_when_complete_then_success(imagination: Imagination){
         assertDoesNotThrow { imagination.complete(imagination.userId)}
     }

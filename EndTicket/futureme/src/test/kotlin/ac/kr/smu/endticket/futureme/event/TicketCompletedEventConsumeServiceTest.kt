@@ -5,7 +5,6 @@ import ac.kr.smu.endticket.common.kafka.test.createProducer
 import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.futureme.domain.event.model.TicketCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.repository.EventRepository
-import ac.kr.smu.endticket.futureme.imagination.USER_ID
 import ac.kr.smu.endticket.futureme.infra.config.KafkaConfig
 import ac.kr.smu.endticket.futureme.infra.messaging.TicketCompletedEventResponse
 import ac.kr.smu.endticket.futureme.service.FutureMeService
@@ -46,7 +45,7 @@ class TicketCompletedEventConsumeServiceTest @Autowired constructor(
     fun given_ticketCompletedEvent_when_consume_then_gainExperiencePoints_and_saveEvent(){
         val producer = createProducer<TicketCompletedEventResponse>(broker)
         val eventResponse = TicketCompletedEventResponse(1L)
-        val record = ProducerRecord(KafkaTopic.TICKET_COMPLETION, USER_ID.toString(), eventResponse)
+        val record = ProducerRecord(KafkaTopic.TICKET_COMPLETION, EventTestParameters.USER_ID.toString(), eventResponse)
 
         Mockito
             .`when`(repo.existsBySpecificIdAndType(eventResponse.id, TicketCompletedEvent::class))
