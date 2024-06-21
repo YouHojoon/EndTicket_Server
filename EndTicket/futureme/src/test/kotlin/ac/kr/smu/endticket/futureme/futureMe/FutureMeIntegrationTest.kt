@@ -1,8 +1,8 @@
-package ac.kr.smu.endticket.futureme.futureMe
+package ac.kr.smu.endticket.futureme.futureme
 
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endticket.common.web.test.andReturn
-import ac.kr.smu.endticket.common.web.test.expectBindingException
+import ac.kr.smu.endticket.common.web.test.expectBindException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endticket.futureme.domain.converter.CharacterTypeConverter
 import ac.kr.smu.endticket.futureme.domain.futureme.model.Character
@@ -139,7 +139,7 @@ class FutureMeIntegrationTest @Autowired constructor(
         val request = UpdateFutureMeRequest("미래의 나 길이 초과된 제목 테스트")
 
         mvc.updateFutureMe(request)
-            .expectBindingException()
+            .expectBindException()
     }
 
     @Test
