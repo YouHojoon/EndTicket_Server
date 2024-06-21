@@ -31,21 +31,16 @@ class UserServiceTest @Autowired constructor(
     @DisplayName("gRPC를 통한 userID 수신 테스트")
     @DirtiesContext
     fun given_socialTypeAndSocialUserNumber_when_findUserID_then_returnFindUserID(){
-        val socialType = SocialType.KAKAO
-        val socialUserNumber = "1"
-
-        assertEquals(USER_ID,  service.findUserId(socialType,socialUserNumber))
+        assertEquals(AuthTestParameters.USER_ID,  service.findUserId(AuthTestParameters.SOCIAL_TYPE,AuthTestParameters.SOCIAL_USER_NUMBER))
     }
 
     @Test
     @DisplayName("fallback 메소드 테스트")
     @DirtiesContext
     fun when_findUserIDThrowException_then_runFallback(){
-        val socialType = SocialType.KAKAO
-        val socialUserNumber = "2"
         val breaker = registry.circuitBreaker("find-user-id")
 
-        assertEquals(-1, service.findUserId(socialType,socialUserNumber))
+        assertEquals(-1, service.findUserId(AuthTestParameters.SOCIAL_TYPE,"2"))
         assertEquals(CircuitBreaker.State.OPEN,breaker.state)
     }
 }

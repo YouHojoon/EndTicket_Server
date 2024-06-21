@@ -9,7 +9,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 
 const val BASE_URL = "http://localhost:8081/auth"
 
-fun MockMvc.createToken(socialType: SocialType = SOCIAL_TYPE, code: String = AUTHORIZATION_CODE): ResultActions = perform(
+fun MockMvc.createToken(socialType: SocialType = AuthTestParameters.SOCIAL_TYPE, code: String = AuthTestParameters.AUTHORIZATION_CODE): ResultActions =
+    perform(
     MockMvcRequestBuilders
         .post("$BASE_URL/sns?socialType=$socialType&code=$code")
 )

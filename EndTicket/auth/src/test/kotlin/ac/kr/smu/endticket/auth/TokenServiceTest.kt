@@ -57,21 +57,21 @@ class TokenServiceTest @Autowired constructor(
     @DisplayName("Access 토큰 검증 테스트")
     @DirtiesContext
     fun given_accessToken_when_validationToken_then_returnResponse(){
-        val token = service.createAccessAndRefreshToken(USER_ID).accessToken
+        val token = service.createAccessAndRefreshToken(AuthTestParameters.USER_ID).accessToken
         val response = stub.validateAccessToken(
             AccessToken.newBuilder().setToken(token).build()
         )
 
-        assertEquals(USER_ID, response.userId)
+        assertEquals(AuthTestParameters.USER_ID, response.userId)
         assertEquals(200, response.status)
     }
 
 
     @ParameterizedTest
     @DisplayName("올바르지 않은 Access 토큰 검증 테스트")
-    @MethodSource("ac.kr.smu.endticket.auth.AuthTestParameters#provideInvalidAccessTokenAndExpectedStatus")
+    @MethodSource("${AuthTestParameters.PATH}#provideInvalidAccessTokenAndExpectedStatus")
     @DirtiesContext
-    fun given_invalidAccessToken_when_validationToken_then_returnResponseWithExpepectedStatus(accessToken: AccessToken, expectedStatus: Int){
+    fun given_invalidAccessToken_when_validationToken_then_returnResponseWithExpectedStatus(accessToken: AccessToken, expectedStatus: Int){
         val response = stub.validateAccessToken(accessToken)
 
         assertEquals(expectedStatus, response.status)
@@ -81,8 +81,8 @@ class TokenServiceTest @Autowired constructor(
     @Test
     @DisplayName("리프레시 토큰으로 토큰 검증 테스트")
     @DirtiesContext
-    fun given_refreshToken_when_validationToken_then_returnResponseStatus400(){
-        val createTokenResponse = service.createAccessAndRefreshToken(USER_ID)
+    fun given_refreshToken_when_validationToken_then_returnResponseWithStatus400(){
+        val createTokenResponse = service.createAccessAndRefreshToken(AuthTestParameters.USER_ID)
         val response = stub.validateAccessToken(
             AccessToken.newBuilder()
                 .setToken(createTokenResponse.refreshToken)
@@ -96,22 +96,22 @@ class TokenServiceTest @Autowired constructor(
     @DisplayName("정상 유저 토큰 발급 테스트")
     fun given_userID_when_createAccessAndRefreshToken_then_success(){
         assertDoesNotThrow {
-            service.createAccessAndRefreshToken(userId = USER_ID)
+            service.createAccessAndRefreshToken(AuthTestParameters.USER_ID)
         }
     }
 
     @Test
     @DisplayName("access 토큰으로 사용자 ID 파싱")
     fun given_accessToken_when_parseUserID_then_returnUserID() {
-        val token = service.createAccessAndRefreshToken(USER_ID)
+        val token = service.createAccessAndRefreshToken(AuthTestParameters.USER_ID)
 
-        assertEquals(service.parseUserId(token.accessToken), USER_ID)
+        assertEquals(service.parseUserId(token.accessToken),AuthTestParameters.USER_ID)
     }
 
     @Test
     @DisplayName("refresh 토큰으로 사용자 ID 파싱 테스트")
     fun given_refreshToken_when_parseUserID_then_throwUnsupportedJwtException(){
-        val token = service.createAccessAndRefreshToken(USER_ID)
+        val token = service.createAccessAndRefreshToken(AuthTestParameters.USER_ID)
         val refreshToken = token.refreshToken
 
         assertNotNull(refreshToken)
@@ -121,13 +121,13 @@ class TokenServiceTest @Autowired constructor(
     @Test
     @DisplayName("access 토큰 재발급 테스트")
     fun given_refreshToken_when_reissueToken_then_returnOnlyAccessToken(){
-        val token = service.createAccessAndRefreshToken(USER_ID)
+        val token = service.createAccessAndRefreshToken(AuthTestParameters.USER_ID)
         val refreshToken = token.refreshToken
 
         assertNotNull(refreshToken)
 
         Mockito.`when`(ops.get(refreshToken))
-            .thenReturn(USER_ID.toString())
+            .thenReturn(AuthTestParameters.USER_ID.toString())
 
         assertDoesNotThrow {
             assertNull(service.reissueToken(refreshToken).refreshToken)
@@ -142,7 +142,7 @@ class TokenServiceTest @Autowired constructor(
         assertNotNull(refreshToken)
 
         Mockito.`when`(ops.get(refreshToken))
-            .thenReturn(USER_ID.toString())
+            .thenReturn(AuthTestParameters.USER_ID.toString())
 
         val response = service.reissueToken(refreshToken)
         assertNotNull(response.refreshToken)
@@ -156,15 +156,15 @@ class TokenServiceTest @Autowired constructor(
         assertNotNull(refreshToken)
 
         Mockito.`when`(ops.get(refreshToken))
-            .thenReturn(USER_ID.toString())
+            .thenReturn(AuthTestParameters.USER_ID.toString())
 
         assertThrows<RefreshTokenExpiredException> { service.reissueToken(refreshToken) }
     }
 
     @Test
     @DisplayName("캐시에 저장되어 있지 않은 refresh 토큰으로 access 토큰 재발급 테스트")
-    fun given_notStored_refreshToken_when_reissueToken_then_throw_IllegalArgumentException(){
-        val token = service.createAccessAndRefreshToken(USER_ID)
+    fun given_notStoredRefreshToken_when_reissueToken_then_throwIllegalArgumentException(){
+        val token = service.createAccessAndRefreshToken(AuthTestParameters.USER_ID)
         val refreshToken = token.refreshToken
 
         assertNotNull(refreshToken)

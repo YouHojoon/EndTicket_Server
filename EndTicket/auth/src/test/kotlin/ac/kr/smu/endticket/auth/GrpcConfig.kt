@@ -22,9 +22,9 @@ class GrpcConfig {
     @GrpcService
     class UserServiceImpl : UserServiceGrpc.UserServiceImplBase(){
         override fun findUserId(request: FindUserIdRequest, responseObserver: StreamObserver<UserIdResponse>) {
-            if (request.socialUserNumber == "1") {
+            if (request.socialUserNumber == AuthTestParameters.SOCIAL_USER_NUMBER) {
                 responseObserver.onNext(
-                    UserIdResponse.newBuilder().setUserId(USER_ID).build()
+                    UserIdResponse.newBuilder().setUserId(AuthTestParameters.USER_ID).build()
                 )
                 responseObserver.onCompleted()
             }

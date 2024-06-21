@@ -14,7 +14,7 @@ interface OAuthService {
      * @param code SNS 인증에서 반환받은 authorization code
      * @return access token 응답
      */
-    fun oAuth(socialType: SocialType, code: String): OAuth2TokenResponse
+    fun oauth(socialType: SocialType, code: String): OAuth2TokenResponse
 
     /**
      * idToken에서 SNS 사용자 번호를 반환하는 메소드

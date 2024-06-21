@@ -30,7 +30,7 @@ class OAuth2ServiceImpl(
      * @param code SNS 인증에서 반환받은 authorization code
      * @return access 토큰 응답을 반환, 에러 발생 시 null 반환
      */
-    override fun oAuth(socialType: SocialType, code: String): OAuth2TokenResponse {
+    override fun oauth(socialType: SocialType, code: String): OAuth2TokenResponse {
         val provider = clientRegistrationRepository.findByRegistrationId(socialType.name.lowercase())
 
         return runBlocking {

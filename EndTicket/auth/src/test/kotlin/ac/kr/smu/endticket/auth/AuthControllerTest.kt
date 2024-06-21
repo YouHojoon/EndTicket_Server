@@ -12,6 +12,8 @@ import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -27,7 +29,7 @@ import java.lang.IllegalStateException
 @AutoConfigureMockMvc
 class AuthControllerTest @Autowired constructor(
     @MockBean
-    private val oAuthService: OAuthService,
+    private val oauthService: OAuthService,
     @MockBean
     private val tokenService: TokenService,
     @MockBean
@@ -37,27 +39,27 @@ class AuthControllerTest @Autowired constructor(
 
     @BeforeEach
     fun init(){
-        mockOAuthService()
-        Mockito.`when`(tokenService.createAccessAndRefreshToken(USER_ID))
-            .thenReturn(TokenResponse(ACCESS_TOKEN, REFRESH_TOKEN))
+        mockOauthService(oauthService)
+        Mockito.`when`(tokenService.createAccessAndRefreshToken(AuthTestParameters.USER_ID))
+            .thenReturn(TokenResponse(AuthTestParameters.ACCESS_TOKEN, AuthTestParameters.REFRESH_TOKEN))
     }
 
     @Test
     @DisplayName("사용자 토큰 생성 테스트")
-    fun given_user_when_createToken_then_responseAccessToken_and_refreshToken(){
-        Mockito.`when`(userService.findUserId(SOCIAL_TYPE, SOCIAL_USER_NUMBER))
-            .thenReturn(USER_ID)
+    fun given_user_when_createToken_then_responseAccessTokenAndRefreshToken(){
+        Mockito.`when`(userService.findUserId(AuthTestParameters.SOCIAL_TYPE, AuthTestParameters.SOCIAL_USER_NUMBER))
+            .thenReturn(AuthTestParameters.USER_ID)
 
         mvc.createToken()
             .andExpect(MockMvcResultMatchers.status().isCreated)
-            .andExpect(MockMvcResultMatchers.jsonPath("accessToken").value(ACCESS_TOKEN))
-            .andExpect(MockMvcResultMatchers.jsonPath("refreshToken").value(REFRESH_TOKEN))
+            .andExpect(MockMvcResultMatchers.jsonPath("accessToken").value(AuthTestParameters.ACCESS_TOKEN))
+            .andExpect(MockMvcResultMatchers.jsonPath("refreshToken").value(AuthTestParameters.REFRESH_TOKEN))
     }
 
     @Test
     @DisplayName("사용자 서비스와 통신 실패 시 토큰 생성 테스트")
-    fun given_invalidUserId_when_createToken_then_expectStatusCode503_and_responseExceptionResponse(){
-        Mockito.`when`(userService.findUserId(SOCIAL_TYPE, SOCIAL_USER_NUMBER))
+    fun given_invalidUserId_when_createToken_then_responseExceptionResponseWithStatus503(){
+        Mockito.`when`(userService.findUserId(AuthTestParameters.SOCIAL_TYPE, AuthTestParameters.SOCIAL_USER_NUMBER))
             .thenReturn(-1)
 
         mvc.createToken()
@@ -67,53 +69,25 @@ class AuthControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("리프레시 토큰으로 토큰 재발급 테스트")
-    fun given_refreshToken_when_reissueToken_then_reissueAccessToken_and_refreshToken(){
-        Mockito.`when`(tokenService.reissueToken(REFRESH_TOKEN))
-            .thenReturn(TokenResponse(ACCESS_TOKEN, REFRESH_TOKEN))
+    fun given_refreshToken_when_reissueToken_then_reissueAccessTokenAndRefreshToken(){
+        Mockito.`when`(tokenService.reissueToken(AuthTestParameters.REFRESH_TOKEN))
+            .thenReturn(TokenResponse(AuthTestParameters.ACCESS_TOKEN, AuthTestParameters.REFRESH_TOKEN))
 
-
-        mvc.reissueToken(REFRESH_TOKEN)
+        mvc.reissueToken(AuthTestParameters.REFRESH_TOKEN)
             .andExpect(MockMvcResultMatchers.status().isCreated)
-            .andExpect(MockMvcResultMatchers.jsonPath("accessToken").value(ACCESS_TOKEN))
-            .andExpect(MockMvcResultMatchers.jsonPath("refreshToken").value(REFRESH_TOKEN))
+            .andExpect(MockMvcResultMatchers.jsonPath("accessToken").value(AuthTestParameters.ACCESS_TOKEN))
+            .andExpect(MockMvcResultMatchers.jsonPath("refreshToken").value(AuthTestParameters.REFRESH_TOKEN))
     }
 
-    @Test
-    @DisplayName("리프레시 토큰 없이 재발급 테스트")
-    fun given_emptyRefreshToken_when_reissueToken_then_expectStatusCode400_and_responseExceptionResponse() {
-        mvc.reissueToken()
-            .andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .expectExceptionResponse()
-    }
-
-
-    @Test
+    @ParameterizedTest
     @DisplayName("비정상적인 리프레시 토큰 재발급 테스트")
-    fun given_invalidRefreshToken_when_reissueToken_then_expectStatusCode400_and_responseExceptionResponse(){
+    @MethodSource("${AuthTestParameters.PATH}#provideInvalidRefreshToken")
+    fun given_invalidRefreshToken_when_reissueToken_then_responseExceptionResponseWithStatus400(token: String?){
         Mockito.`when`(tokenService.reissueToken(Mockito.anyString()))
             .thenThrow(IllegalStateException(""))
 
-        mvc.reissueToken(REFRESH_TOKEN)
+        mvc.reissueToken(token)
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
             .expectExceptionResponse()
-    }
-
-    private fun mockOAuthService(){
-        Mockito.`when`(oAuthService.oAuth(SOCIAL_TYPE, AUTHORIZATION_CODE))
-            .thenReturn(
-                OAuth2TokenResponse(
-                    accessToken = ACCESS_TOKEN,
-                    refreshToken = REFRESH_TOKEN,
-                    idToken = ID_TOKEN,
-                    expiresIn = 1,
-                    tokenType = "t",
-                    scope = "",
-                    refreshTokenExpiresIn = ""
-                )
-            )
-
-        Mockito
-            .`when`(oAuthService.parseSocialUserNumber(SOCIAL_TYPE, ID_TOKEN))
-            .thenReturn(SOCIAL_USER_NUMBER)
     }
 }

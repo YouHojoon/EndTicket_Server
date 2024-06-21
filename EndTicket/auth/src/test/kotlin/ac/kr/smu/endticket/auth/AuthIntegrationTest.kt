@@ -15,6 +15,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
@@ -42,7 +44,7 @@ import kotlin.test.assertNotNull
 @AutoConfigureMockMvc
 class AuthIntegrationTest @Autowired constructor(
     @MockBean
-    private val oAuthService: OAuthService,
+    private val oauthService: OAuthService,
     @MockBean
     private val userService: UserService,
     private val redisTemplate: RedisTemplate<String, Any>,
@@ -50,7 +52,7 @@ class AuthIntegrationTest @Autowired constructor(
 ) {
     @BeforeEach
     fun init(){
-        mockOAuthService()
+        mockOauthService(oauthService)
     }
 
     @AfterEach
@@ -62,9 +64,9 @@ class AuthIntegrationTest @Autowired constructor(
 
     @Test
     @DisplayName("사용자 토큰 생성 테스트")
-    fun given_user_when_createToken_then_responseAccessToken_and_refreshToken(){
-        Mockito.`when`(userService.findUserId(SOCIAL_TYPE, SOCIAL_USER_NUMBER))
-            .thenReturn(USER_ID)
+    fun given_user_when_createToken_then_responseAccessTokenAndRefreshToken(){
+        Mockito.`when`(userService.findUserId(AuthTestParameters.SOCIAL_TYPE, AuthTestParameters.SOCIAL_USER_NUMBER))
+            .thenReturn(AuthTestParameters.USER_ID)
 
         mvc.createToken()
             .andExpect(MockMvcResultMatchers.jsonPath("accessToken").isString)
@@ -73,8 +75,8 @@ class AuthIntegrationTest @Autowired constructor(
 
     @Test
     @DisplayName("사용자 서비스와 통신 실패 시 토큰 생성 테스트")
-    fun given_invalidUserId_when_createToken_then_expectStatusCode503_and_responseExceptionResponse(){
-        Mockito.`when`(userService.findUserId(SOCIAL_TYPE, SOCIAL_USER_NUMBER))
+    fun given_invalidUserId_when_createToken_then_responseExceptionResponseWithStatus503(){
+        Mockito.`when`(userService.findUserId(AuthTestParameters.SOCIAL_TYPE, AuthTestParameters.SOCIAL_USER_NUMBER))
             .thenReturn(-1)
 
         mvc.createToken()
@@ -84,9 +86,9 @@ class AuthIntegrationTest @Autowired constructor(
 
     @Test
     @DisplayName("리프레시 토큰으로 토큰 재발급 테스트")
-    fun given_refreshToken_when_reissueToken_then_reissueAccessToken_and_refreshToken(){
-        Mockito.`when`(userService.findUserId(SOCIAL_TYPE, SOCIAL_USER_NUMBER))
-            .thenReturn(USER_ID)
+    fun given_refreshToken_when_reissueToken_then_reissueAccessTokenAndRefreshToken(){
+        Mockito.`when`(userService.findUserId(AuthTestParameters.SOCIAL_TYPE, AuthTestParameters.SOCIAL_USER_NUMBER))
+            .thenReturn(AuthTestParameters.USER_ID)
 
         val refreshToken = mvc.createToken().andReturn<TokenResponse>().refreshToken
 
@@ -97,39 +99,15 @@ class AuthIntegrationTest @Autowired constructor(
             .andExpect(MockMvcResultMatchers.jsonPath("accessToken").isString)
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("리프레시 토큰 없이 재발급 테스트")
-    fun given_emptyRefreshToken_when_reissueToken_then_expectStatusCode400_and_responseExceptionResponse() {
-        mvc.reissueToken()
+    @MethodSource("${AuthTestParameters.PATH}#provideInvalidRefreshToken")
+    fun given_invalidRefreshToken_when_reissueToken_then_responseExceptionResponseWithStatus400(
+        token: String?
+    ) {
+        mvc.reissueToken(token)
             .andExpect(MockMvcResultMatchers.status().isBadRequest)
             .expectExceptionResponse()
     }
 
-
-    @Test
-    @DisplayName("비정상적인 리프레시 토큰 재발급 테스트")
-    fun given_invalidRefreshToken_when_reissueToken_then_expectStatusCode400_and_responseExceptionResponse(){
-        mvc.reissueToken("aaa")
-            .andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .expectExceptionResponse()
-    }
-
-    private fun mockOAuthService(){
-        Mockito.`when`(oAuthService.oAuth(SOCIAL_TYPE, AUTHORIZATION_CODE))
-            .thenReturn(
-                OAuth2TokenResponse(
-                    accessToken = ACCESS_TOKEN,
-                    refreshToken = REFRESH_TOKEN,
-                    idToken = ID_TOKEN,
-                    expiresIn = 1,
-                    tokenType = "t",
-                    scope = "",
-                    refreshTokenExpiresIn = ""
-                )
-            )
-
-        Mockito
-            .`when`(oAuthService.parseSocialUserNumber(SOCIAL_TYPE, ID_TOKEN))
-            .thenReturn(SOCIAL_USER_NUMBER)
-    }
 }
