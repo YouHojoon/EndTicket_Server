@@ -3,7 +3,9 @@ package ac.kr.smu.endticket.futureme.domain.futureme.model
 import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
 import ac.kr.smu.endticket.common.jpa.Audit
 import ac.kr.smu.endticket.common.web.enum.CharacterType
+import ac.kr.smu.endticket.futureme.domain.event.model.Event
 import ac.kr.smu.endticket.futureme.ui.request.UpdateFutureMeRequest
+import ac.kr.smu.endticket.futureme.ui.response.FutureMeResponse
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 
@@ -21,15 +23,13 @@ class FutureMe private constructor(
     val userId: Long
 ) {
     @Column(length = 13)
-    var title: String = ""
-        private set
+    private var title: String = ""
 
     @Embedded
-    var character: Character
-        private set
+    private var character: Character
 
     @Embedded
-    val audit: Audit = Audit()
+    private val audit: Audit = Audit()
 
     companion object{
         /**
@@ -44,6 +44,8 @@ class FutureMe private constructor(
     init {
         character = Character(type)
     }
+
+    val characterType = character.type
     /**
      * 제목을 수정하는 메소드
      * @param request 수정 요청
@@ -61,4 +63,20 @@ class FutureMe private constructor(
         if (title != null)
             this.title = title
     }
+
+
+    /**
+     * 이벤트에 맞는 캐릭터 경험치 상승
+     * @param event 발생한 이벤트
+     */
+    fun gainExperiencePoints(event: Event) = character.gainExperiencePoints(event)
+
+    /**
+     * 미래의 나로부터 응답을 생성하는 메소드
+     * @return 생성된 응답
+     */
+    fun toResponse() = FutureMeResponse(
+        title = title,
+        character = character.copy()
+    )
 }

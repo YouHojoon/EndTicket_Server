@@ -5,24 +5,17 @@ import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endticket.common.kafka.test.messageListener
 import ac.kr.smu.endticket.common.test.mockAny
-import ac.kr.smu.endticket.common.web.enum.CharacterType
 import ac.kr.smu.endticket.futureme.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.repository.EventRepository
-import ac.kr.smu.endticket.futureme.domain.futureme.model.FutureMe
-import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
-import ac.kr.smu.endticket.futureme.imagination.REQUEST
-import ac.kr.smu.endticket.futureme.imagination.USER_ID
+import ac.kr.smu.endticket.futureme.imagination.ImaginationParameters
 import ac.kr.smu.endticket.futureme.infra.messaging.ImaginationCompletedEventResponse
 import ac.kr.smu.endticket.futureme.listener.ImaginationCompletedEventListener
 import ac.kr.smu.endticket.futureme.service.FutureMeEventService
 import ac.kr.smu.endticket.futureme.service.FutureMeService
-import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
-import ac.kr.smu.endticket.futureme.ui.response.FutureMeResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
@@ -65,8 +58,8 @@ class ImaginationCompletedEventListenerTest @Autowired constructor(
         container.messageListener(broker){
             queue.add(it)
         }
-        Mockito.`when`(futureMeService.findFutureMe(USER_ID))
-            .thenReturn(FutureMeResponse.from(FUTURE_ME))
+        Mockito.`when`(futureMeService.findFutureMe(ImaginationParameters.USER_ID))
+            .thenReturn(EventTestParameters.FUTURE_ME.toResponse())
     }
     @AfterEach
     fun reset(){
@@ -84,7 +77,7 @@ class ImaginationCompletedEventListenerTest @Autowired constructor(
         Mockito.verify(repo, Mockito.times(2)).save(mockAny())
 
         val record = queue.poll()
-        val expectPayload = event.toMessage(FUTURE_ME.character.type).payload
+        val expectPayload = event.toMessage(EventTestParameters.FUTURE_ME.characterType).payload
 
         assertEquals(expectPayload.behavior, record.value().behavior)
         assertEquals(expectPayload.target, record.value().target)
@@ -97,9 +90,9 @@ class ImaginationCompletedEventListenerTest @Autowired constructor(
     @MethodSource("${EventTestParameters.PATH}#provideImaginationCompletedEvent")
     fun given_imaginationCompletedEvent_when_sendMessageFail_then_doNothing(event: ImaginationCompletedEvent){
         val mockEvent = Mockito.spy(event)
-        val message = event.toMessage(FUTURE_ME.character.type)
+        val message = event.toMessage(EventTestParameters.FUTURE_ME.characterType)
 
-        Mockito.`when`(mockEvent.toMessage(FUTURE_ME.character.type))
+        Mockito.`when`(mockEvent.toMessage(EventTestParameters.FUTURE_ME.characterType))
             .thenReturn(message)
         Mockito.`when`(messageService.send(KafkaTopic.IMAGINATION_COMPLETION, message))
             .thenReturn(CompletableFuture.failedFuture(RuntimeException()))

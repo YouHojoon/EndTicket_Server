@@ -61,13 +61,13 @@ class FutureMeIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("미래의 나 조회 테스트")
     fun given_user_when_findFutureMe_then_responseFutureMe() {
-        val futureMe = mvc
-            .createFutureMe(CreateFutureMeRequest(CharacterType.CHEESE))
-            .andReturn<FutureMe>()
+        val response = mvc.createFutureMe(CreateFutureMeRequest(CharacterType.CHEESE)).andReturn<FutureMeResponse>()
 
         mvc.findFutureMe()
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(FutureMeResponse.from(futureMe))))
+            .andExpect(MockMvcResultMatchers
+                .content()
+                .string(ObjectMapper().writeValueAsString(response)))
     }
 
     @Test
@@ -113,27 +113,27 @@ class FutureMeIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("미래의 나 수정 테스트")
     fun given_request_when_update_then_responseUpdatedFutureMe() {
-        mvc.createFutureMe(CreateFutureMeRequest(CharacterType.CHEESE)).andReturn<FutureMe>()
+        mvc.createFutureMe(CreateFutureMeRequest(CharacterType.CHEESE))
 
         mvc
-            .updateFutureMe(UPDATE_REQUEST)
+            .updateFutureMe(FutureMeTestParameters.UPDATE_REQUEST)
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("title").value(UPDATE_REQUEST.title))
-            .andExpect(MockMvcResultMatchers.jsonPath("character.type").value(UPDATE_REQUEST.characterType?.name))
+            .andExpect(MockMvcResultMatchers.jsonPath("title").value(FutureMeTestParameters.UPDATE_REQUEST.title))
+            .andExpect(MockMvcResultMatchers.jsonPath("character.type").value(FutureMeTestParameters.UPDATE_REQUEST.characterType?.name))
     }
 
     @Test
     @DisplayName("미래의 나가 없는 사용자의 수정 테스트")
     fun given_userHasNotFutureMe_when_update_then_responseExceptionResponseWithStatus404() =
         mvc
-            .updateFutureMe(UPDATE_REQUEST)
+            .updateFutureMe(FutureMeTestParameters.UPDATE_REQUEST)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
             .expectExceptionResponse()
 
 
     @Test
     @DisplayName("미래의 나 길이 초과된 제목으로 등록/변경 테스트")
-    fun given_requestWithExceedMaxLength_when_updateTitle_then_responseBindingExceptionResponseWithStatus400() {
+    fun given_requestWithExceedMaxLength_when_updateTitle_then_responseBindExceptionResponseWithStatus400() {
         val request = UpdateFutureMeRequest("미래의 나 길이 초과된 제목 테스트")
 
         mvc.updateFutureMe(request)

@@ -1,14 +1,12 @@
 package ac.kr.smu.endticket.futureme.futureme
 
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
-import ac.kr.smu.endticket.common.web.test.expectBindException
 import ac.kr.smu.endticket.common.web.enum.CharacterType
+import ac.kr.smu.endticket.common.web.test.expectBindException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endticket.futureme.domain.converter.CharacterTypeConverter
 import ac.kr.smu.endticket.futureme.domain.futureme.exception.FutureMeNotFoundException
-import ac.kr.smu.endticket.futureme.domain.futureme.model.Character
 import ac.kr.smu.endticket.futureme.domain.futureme.model.FutureMe
-import ac.kr.smu.endticket.futureme.futureme.USER_ID
 import ac.kr.smu.endticket.futureme.service.FutureMeService
 import ac.kr.smu.endticket.futureme.ui.controller.FutureMeController
 import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
@@ -44,21 +42,25 @@ class FutureMeControllerTest @Autowired constructor(
     @Test
     @DisplayName("미래의 나 조회 테스트")
     fun given_user_when_findFutureMe_then_responseFutureMe(){
-        val futureMe = FutureMe.from(CreateFutureMeRequest(CharacterType.CHEESE), USER_ID)
+        val futureMe = FutureMe.from(CreateFutureMeRequest(CharacterType.CHEESE), FutureMeTestParameters.USER_ID)
 
-        Mockito.`when`(service.findFutureMe(USER_ID))
-            .thenReturn(FutureMeResponse.from(futureMe))
+        Mockito.`when`(service.findFutureMe( FutureMeTestParameters.USER_ID))
+            .thenReturn(futureMe.toResponse())
 
         mvc.findFutureMe()
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(FutureMeResponse.from(futureMe))))
+            .andExpect(MockMvcResultMatchers
+                .content()
+                .string(
+                    ObjectMapper()
+                    .writeValueAsString(futureMe.toResponse())))
     }
 
     @Test
     @DisplayName("존재하지 않는 미래의 나 조회 테스트")
     fun given_userHasNotFutureMe_when_findFutureMe_then_responseExceptionResponseWithStatus404(){
-        Mockito.`when`(service.findFutureMe(USER_ID))
-            .thenAnswer { throw FutureMeNotFoundException(USER_ID) }
+        Mockito.`when`(service.findFutureMe( FutureMeTestParameters.USER_ID))
+            .thenAnswer { throw FutureMeNotFoundException( FutureMeTestParameters.USER_ID) }
 
         mvc.findFutureMe()
             .andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -90,8 +92,8 @@ class FutureMeControllerTest @Autowired constructor(
     fun given_type_when_createFutureMe_then_responseCreatedFutureMe(){
         val request = CreateFutureMeRequest(CharacterType.CHEESE)
 
-        Mockito.`when`(service.createFutureMe(request, USER_ID))
-            .thenReturn(FutureMeResponse.from(FutureMe.from(request, USER_ID)))
+        Mockito.`when`(service.createFutureMe(request,  FutureMeTestParameters.USER_ID))
+            .thenReturn(FutureMe.from(request, FutureMeTestParameters.USER_ID).toResponse())
 
         mvc
             .createFutureMe(request)
@@ -102,17 +104,15 @@ class FutureMeControllerTest @Autowired constructor(
     @Test
     @DisplayName("미래의 나 제목 수정 테스트")
     fun given_request_when_updateFutureMe_then_responseUpdatedFutureMe(){
-        val request = UpdateFutureMeRequest("테스트")
-        val futureMe = FutureMe.from(CreateFutureMeRequest(CharacterType.CHEESE), USER_ID)
-        futureMe.update(request)
+        val futureMe = FutureMe.from(CreateFutureMeRequest(CharacterType.CHEESE),  FutureMeTestParameters.USER_ID)
 
-        Mockito.`when`(service.updateFutureMe(request, USER_ID))
-            .thenReturn(FutureMeResponse.from(futureMe))
+        Mockito.`when`(service.updateFutureMe( FutureMeTestParameters.UPDATE_REQUEST,  FutureMeTestParameters.USER_ID))
+            .thenReturn(futureMe.also { it.update( FutureMeTestParameters.UPDATE_REQUEST) }.toResponse())
 
         mvc
-            .updateFutureMe(request)
+            .updateFutureMe(FutureMeTestParameters.UPDATE_REQUEST)
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("title").value(request.title))
+            .andExpect(MockMvcResultMatchers.jsonPath("title").value(FutureMeTestParameters.UPDATE_REQUEST.title))
     }
 
     @Test
@@ -121,8 +121,8 @@ class FutureMeControllerTest @Autowired constructor(
         val request = UpdateFutureMeRequest("테스트")
 
         Mockito
-            .`when`(service.updateFutureMe(request, USER_ID))
-            .thenAnswer { throw FutureMeNotFoundException(USER_ID) }
+            .`when`(service.updateFutureMe(request,FutureMeTestParameters.USER_ID))
+            .thenAnswer { throw FutureMeNotFoundException(FutureMeTestParameters.USER_ID) }
 
         mvc
             .updateFutureMe(request)
@@ -132,7 +132,7 @@ class FutureMeControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("미래의 나 길이 초과된 제목으로 등록/변경 테스트")
-    fun given_requestWithExceedMaxLength_when_updateFutureMe_then_responseBindingExceptionResponseWithStatus400(){
+    fun given_requestWithExceedMaxLength_when_updateFutureMe_then_responseBindExceptionResponseWithStatus400(){
         val request = UpdateFutureMeRequest("미래의 나 길이 초과된 제목 테스트")
 
         mvc.updateFutureMe(request)
@@ -143,7 +143,7 @@ class FutureMeControllerTest @Autowired constructor(
     fun given_requestWithAlreadyExistFutureMe_when_createFutureMe_then_responseExceptionResponseWithStatus409(){
         val request = CreateFutureMeRequest(CharacterType.CHEESE)
 
-        Mockito.`when`(service.createFutureMe(request, USER_ID))
+        Mockito.`when`(service.createFutureMe(request, FutureMeTestParameters.USER_ID))
             .thenAnswer { throw IllegalStateException("") }
 
         mvc.createFutureMe(request)

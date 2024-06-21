@@ -5,24 +5,17 @@ import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endticket.common.kafka.test.messageListener
 import ac.kr.smu.endticket.common.test.mockAny
-import ac.kr.smu.endticket.common.web.enum.CharacterType
 import ac.kr.smu.endticket.futureme.domain.event.model.Event
 import ac.kr.smu.endticket.futureme.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.repository.EventRepository
-import ac.kr.smu.endticket.futureme.domain.futureme.model.FutureMe
-import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
-import ac.kr.smu.endticket.futureme.imagination.REQUEST
-import ac.kr.smu.endticket.futureme.imagination.USER_ID
+import ac.kr.smu.endticket.futureme.imagination.ImaginationParameters
 import ac.kr.smu.endticket.futureme.infra.messaging.ImaginationCompletedEventResponse
 import ac.kr.smu.endticket.futureme.job.ImaginationCompletedEventJob
 import ac.kr.smu.endticket.futureme.service.FutureMeService
-import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
-import ac.kr.smu.endticket.futureme.ui.response.FutureMeResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
@@ -66,8 +59,8 @@ class ImaginationCompletedEventJobTest @Autowired constructor(
         container.messageListener(broker){
             queue.add(it)
         }
-        Mockito.`when`(futureMeService.findFutureMe(USER_ID))
-            .thenReturn(FutureMeResponse.from(FUTURE_ME))
+        Mockito.`when`(futureMeService.findFutureMe(ImaginationParameters.USER_ID))
+            .thenReturn(EventTestParameters.FUTURE_ME.toResponse())
     }
     @AfterEach
     fun reset(){
@@ -91,7 +84,7 @@ class ImaginationCompletedEventJobTest @Autowired constructor(
 
         assertTrue(queue.isNotEmpty())
         for ((event, record) in events.zip(queue)){
-            val message = event.toMessage(FUTURE_ME.character.type)
+            val message = event.toMessage(EventTestParameters.FUTURE_ME.characterType)
 
             assertEquals(message.key, record.key())
             assertEquals(message.payload.behavior, record.value().behavior)

@@ -42,7 +42,7 @@ class ImaginationControllerTest @Autowired constructor(
     @MethodSource("${ImaginationParameters.PATH}#provideImaginationResponses")
     fun given_userId_when_findImaginations_then_responseImaginations(imaginationResponses: Set<ImaginationResponse>){
         Mockito
-            .`when`(service.findImaginations(USER_ID))
+            .`when`(service.findImaginations(ImaginationParameters.USER_ID))
             .thenReturn(imaginationResponses)
 
         mvc.findImaginations()
@@ -56,7 +56,7 @@ class ImaginationControllerTest @Autowired constructor(
     @DisplayName("상상해보기 생성 테스트")
     @MethodSource("${ImaginationParameters.PATH}#provideImaginationResponseAndRequest")
     fun given_requestAndUserId_when_createImagination_then_responseCreatedImagination(response: ImaginationResponse, request: ImaginationRequest){
-        Mockito.`when`(service.createImagination(request, USER_ID))
+        Mockito.`when`(service.createImagination(request, ImaginationParameters.USER_ID))
             .thenReturn(response)
 
         mvc
@@ -76,10 +76,10 @@ class ImaginationControllerTest @Autowired constructor(
     @Test
     @DisplayName("최대 개수 이상으로 상상해보기 생성 테스트")
     fun given_requestExceedImaginationLimit_when_createImagination_then_responseExceptionResponseWithStatus409(){
-        Mockito.`when`(service.createImagination(REQUEST, USER_ID))
+        Mockito.`when`(service.createImagination(ImaginationParameters.REQUEST, ImaginationParameters.USER_ID))
             .thenThrow(IllegalStateException("") )
 
-        mvc.createImagination(REQUEST)
+        mvc.createImagination(ImaginationParameters.REQUEST)
             .andExpect(MockMvcResultMatchers.status().isConflict)
             .expectExceptionResponse()
     }
@@ -89,21 +89,21 @@ class ImaginationControllerTest @Autowired constructor(
     @MethodSource("${ImaginationParameters.PATH}#provideImaginationResponseAndRequest")
     fun given_request_when_updateImagination_then_responseUpdatedImagination(response: ImaginationResponse, request: ImaginationRequest){
         Mockito.`when`(
-            service.updateImagination(request, response.id, USER_ID)
+            service.updateImagination(request, response.id, ImaginationParameters.USER_ID)
         ).thenReturn(response)
 
-        mvc.updateImagination(request, response.id, USER_ID)
+        mvc.updateImagination(request, response.id, ImaginationParameters.USER_ID)
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(response)))
 
-        Mockito.verify(service, Mockito.times(1)).updateImagination(request,response.id, USER_ID)
+        Mockito.verify(service, Mockito.times(1)).updateImagination(request,response.id, ImaginationParameters.USER_ID)
     }
 
     @ParameterizedTest
     @DisplayName("비정상적인 수정 요청으로 상상해보기 수정 테스트")
     @MethodSource("${ImaginationParameters.PATH}#provideInvalidImaginationRequest")
     fun given_invalidRequest_when_updateImagination_then_responseBindExceptionResponseWithStatus400(request: ImaginationRequest){
-       mvc.updateImagination(request, 1L, USER_ID)
+       mvc.updateImagination(request, 1L, ImaginationParameters.USER_ID)
            .expectBindException()
     }
 
@@ -129,10 +129,11 @@ class ImaginationControllerTest @Autowired constructor(
     @Test
     @DisplayName("상상해보기 삭제 테스트")
     fun given_id_when_deleteImagination_then_expectStatus204(){
-        mvc.deleteImagination(1L)
+        val id = 1L
+        mvc.deleteImagination(id)
             .andExpect(MockMvcResultMatchers.status().isNoContent)
 
-        Mockito.verify(service, Mockito.times(1)).deleteImagination(1L, USER_ID)
+        Mockito.verify(service, Mockito.times(1)).deleteImagination(id, ImaginationParameters.USER_ID)
     }
 
     @ParameterizedTest
@@ -156,13 +157,15 @@ class ImaginationControllerTest @Autowired constructor(
     @Test
     @DisplayName("상상해보기 완료 테스트")
     fun given_id_when_completeImagination_then_expectStatusCode204AndPublishImaginationCompletionEvent(){
-        Mockito.`when`(service.completeImagination(1L, USER_ID)).then { eventService.publishEvent(mockAny()) }
+        val id = 1L
+        Mockito.`when`(service.completeImagination(id, ImaginationParameters.USER_ID))
+            .then { eventService.publishEvent(mockAny()) }
 
-        mvc.completeImagination(1L)
+        mvc.completeImagination(id)
             .andExpect(MockMvcResultMatchers.status().isNoContent)
 
-        Mockito.verify(service, Mockito.times(1)).completeImagination(1L, USER_ID)
-        Mockito.verify(eventService, Mockito.times(1)).publishEvent(mockAny())
+        Mockito.verify(service).completeImagination(id, ImaginationParameters.USER_ID)
+        Mockito.verify(eventService).publishEvent(mockAny())
     }
 
     @ParameterizedTest

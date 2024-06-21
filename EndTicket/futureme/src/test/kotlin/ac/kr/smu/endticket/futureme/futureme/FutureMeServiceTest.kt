@@ -8,7 +8,6 @@ import ac.kr.smu.endticket.futureme.domain.futureme.exception.FutureMeNotFoundEx
 import ac.kr.smu.endticket.futureme.domain.futureme.model.Character
 import ac.kr.smu.endticket.futureme.domain.futureme.model.FutureMe
 import ac.kr.smu.endticket.futureme.domain.futureme.repository.FutureMeRepository
-import ac.kr.smu.endticket.futureme.futureme.USER_ID
 import ac.kr.smu.endticket.futureme.service.FutureMeService
 import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
 import ac.kr.smu.endticket.futureme.ui.request.UpdateFutureMeRequest
@@ -46,56 +45,55 @@ class FutureMeServiceTest(
     @Test
     @DisplayName("미래의 나 수정 테스트")
     fun given_request_when_updateFutureMe_then_returnUpdatedFutureMe(){
-        val futureMe = FutureMe.from(CreateFutureMeRequest(CharacterType.CHEESE), USER_ID)
+        val futureMe = FutureMe.from(CreateFutureMeRequest(CharacterType.CHEESE), FutureMeTestParameters.USER_ID)
 
-        Mockito.`when`(repo.findById(USER_ID))
+        Mockito.`when`(repo.findById(FutureMeTestParameters.USER_ID))
             .thenReturn(Optional.of(futureMe))
 
-        val updated = service.updateFutureMe(UPDATE_REQUEST, USER_ID)
+        val updated = service.updateFutureMe(FutureMeTestParameters.UPDATE_REQUEST, FutureMeTestParameters.USER_ID)
 
-        assertEquals(UPDATE_REQUEST.title, updated.title)
-        assertEquals(UPDATE_REQUEST.characterType, updated.character.type)
+        assertEquals(FutureMeTestParameters.UPDATE_REQUEST.title, updated.title)
+        assertEquals(FutureMeTestParameters.UPDATE_REQUEST.characterType, updated.character.type)
     }
 
     @Test
     @DisplayName("존재하지 않는 미래의 나 수정 테스트")
     fun given_userIdDoesNotHasFutureMe_when_updateFutureMe_then_throwFutureMeNotFoundException(){
-        Mockito.`when`(repo.findById(USER_ID))
+        Mockito.`when`(repo.findById(FutureMeTestParameters.USER_ID))
             .thenReturn(Optional.empty())
 
-        assertThrows<FutureMeNotFoundException> { service.updateFutureMe(UPDATE_REQUEST, USER_ID) }
+        assertThrows<FutureMeNotFoundException> { service.updateFutureMe(FutureMeTestParameters.UPDATE_REQUEST, FutureMeTestParameters.USER_ID) }
     }
 
     @Test
     @DisplayName("미래의 나 조회 테스트")
     fun given_user_when_findFutureMe_then_return_futureMe(){
-        val futureMe = FutureMe.from(CreateFutureMeRequest(CharacterType.CHEESE), USER_ID)
-        Mockito.`when`(repo.findById(USER_ID))
+        val futureMe = FutureMe.from(CreateFutureMeRequest(CharacterType.CHEESE), FutureMeTestParameters.USER_ID)
+        Mockito.`when`(repo.findById(FutureMeTestParameters.USER_ID))
             .thenReturn(Optional.of(futureMe))
 
-        assertEquals(FutureMeResponse.from(futureMe), service.findFutureMe(USER_ID))
+        assertEquals(futureMe.toResponse(), service.findFutureMe(FutureMeTestParameters.USER_ID))
     }
 
     @Test
     @DisplayName("존재하지 않는 미래의 나 조회 테스트")
     fun given_userDoesNotHasFutureMe_when_findFutureMe_then_throwFutureMeNotFoundException(){
-        Mockito.`when`(repo.findById(USER_ID))
+        Mockito.`when`(repo.findById(FutureMeTestParameters.USER_ID))
             .thenReturn(Optional.empty())
 
-        assertThrows<FutureMeNotFoundException> {  service.findFutureMe(USER_ID)}
+        assertThrows<FutureMeNotFoundException> {  service.findFutureMe(FutureMeTestParameters.USER_ID)}
     }
 
     @ParameterizedTest
     @DisplayName("경험치 상승 테스트")
     @MethodSource("${FutureMeTestParameters.PATH}#provideFutureMeAndEvent")
     fun given_event_when_gainExperiencePoints_then_increaseExperiencePointsForEachEvent(futureMe: FutureMe, event: Event, amount: Int){
-        var beforeExperiencePoints = futureMe.character.experiencePoints
 
-        Mockito.`when`(repo.findById(USER_ID))
+        Mockito.`when`(repo.findById(FutureMeTestParameters.USER_ID))
             .thenReturn(Optional.of(futureMe))
 
         service.gainExperiencePoints(event)
-        assertEquals(beforeExperiencePoints + amount,futureMe.character.experiencePoints)
+        assertEquals(amount,futureMe.toResponse().character.experiencePoints)
     }
 
     @Test
@@ -107,14 +105,14 @@ class FutureMeServiceTest(
     @Test
     @DisplayName("이미 미래의 나가 존재할 때 미래의 나 생성 테스트")
     fun given_requestWithAlreadyExistFutureMe_when_createFutureMe_then_throwIllegalStateException(){
-        Mockito.`when`(repo.existsById(USER_ID)).thenReturn(true)
-        assertThrows<IllegalStateException> { service.createFutureMe(CreateFutureMeRequest(CharacterType.CHEESE), USER_ID) }
+        Mockito.`when`(repo.existsById(FutureMeTestParameters.USER_ID)).thenReturn(true)
+        assertThrows<IllegalStateException> { service.createFutureMe(CreateFutureMeRequest(CharacterType.CHEESE), FutureMeTestParameters.USER_ID) }
     }
 
     @Test
     @DisplayName("미래의 나 삭제 테스트")
     fun given_userId_when_deleteFutureMe_then_success(){
-        service.deleteFutureMe(USER_ID)
-        Mockito.verify(repo).deleteById(USER_ID)
+        service.deleteFutureMe(FutureMeTestParameters.USER_ID)
+        Mockito.verify(repo).deleteById(FutureMeTestParameters.USER_ID)
     }
 }

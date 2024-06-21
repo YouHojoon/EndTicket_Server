@@ -43,14 +43,14 @@ class ImaginationServiceTest(
     @Test
     @DisplayName("제한 개수 이상으로 상상해보기 생성 테스트")
     fun given_requestMoreThanImaginationLimit_when_createImagination_then_throwIllegalStateException(){
-        Mockito.`when`(repo.countByUserIdAndIsCompleteIsFalse(USER_ID))
+        Mockito.`when`(repo.countByUserIdAndIsCompleteIsFalse(ImaginationParameters.USER_ID))
             .thenReturn(6)
 
-        assertThrows<IllegalStateException> {  service.createImagination(REQUEST, USER_ID)}
+        assertThrows<IllegalStateException> {  service.createImagination(ImaginationParameters.REQUEST, ImaginationParameters.USER_ID)}
     }
     @ParameterizedTest
     @DisplayName("상상해보기 수정 테스트")
-    @MethodSource("${ImaginationParameters.PATH}#provideImaginationAndUpdateRequest")
+    @MethodSource("${ImaginationParameters.PATH}#provideImaginationAndRequest")
     fun given_idAndRequest_when_updateImagination_then_returnUpdatedImagination(imagination: Imagination, request: ImaginationRequest){
         Mockito
             .`when`(repo.findById(imagination.id))
@@ -65,7 +65,7 @@ class ImaginationServiceTest(
 
     @ParameterizedTest
     @DisplayName("비정상적인 상상해보기 수정 테스트")
-    @MethodSource("${ImaginationParameters.PATH}#provideInvalidImaginationOfUpdate")
+    @MethodSource("${ImaginationParameters.PATH}#provideInvalidImaginationAndReqeuest")
     fun given_invalidIdAndRequest_when_updateImagination_then_throwExpectedException(
         imagination: Imagination?,
         request: ImaginationRequest,
@@ -113,10 +113,10 @@ class ImaginationServiceTest(
     @DisplayName("상상해보기 조회 테스트")
     @MethodSource("${ImaginationParameters.PATH}#provideImaginations")
     fun given_userId_when_findImagination_then_return_imaginations(imaginations: Set<Imagination>){
-        Mockito.`when`(repo.findByUserIdAndIsCompleteIsFalse(USER_ID))
+        Mockito.`when`(repo.findByUserIdAndIsCompleteIsFalse(ImaginationParameters.USER_ID))
             .thenReturn(imaginations)
 
-        val result = service.findImaginations(USER_ID)
+        val result = service.findImaginations(ImaginationParameters.USER_ID)
         assertTrue(result.isNotEmpty())
 
         for((lhs,rhs) in imaginations.zip(result)){

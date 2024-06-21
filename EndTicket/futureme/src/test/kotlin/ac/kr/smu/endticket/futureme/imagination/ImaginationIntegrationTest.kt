@@ -78,11 +78,11 @@ class ImaginationIntegrationTest @Autowired constructor(
     private val mvc: MockMvc = MockMvcBuilders.standaloneSetup(controller).setControllerAdvice(BindExceptionAdvice()).build()
     @BeforeTest
     fun init(){
-        futureMeService.createFutureMe(CreateFutureMeRequest(CharacterType.CHEESE),USER_ID)
+        futureMeService.createFutureMe(CreateFutureMeRequest(CharacterType.CHEESE),ImaginationParameters.USER_ID)
     }
     @AfterTest
     fun reset(){
-        futureMeService.deleteFutureMe(USER_ID)
+        futureMeService.deleteFutureMe(ImaginationParameters.USER_ID)
         eventRepo.deleteAll()
         repo.deleteAll()
     }
@@ -91,17 +91,17 @@ class ImaginationIntegrationTest @Autowired constructor(
     @DisplayName("상상해보기 생성 테스트")
     fun given_request_when_createImagination_then_responseCreatedImagination() {
         mvc
-            .createImagination(REQUEST)
+            .createImagination(ImaginationParameters.REQUEST)
             .andExpect(MockMvcResultMatchers.status().isCreated)
-            .andExpect(MockMvcResultMatchers.jsonPath("behavior").value(REQUEST.behavior))
-            .andExpect(MockMvcResultMatchers.jsonPath("target").value(REQUEST.target))
-            .andExpect(MockMvcResultMatchers.jsonPath("color").value(REQUEST.color.name))
+            .andExpect(MockMvcResultMatchers.jsonPath("behavior").value(ImaginationParameters.REQUEST.behavior))
+            .andExpect(MockMvcResultMatchers.jsonPath("target").value(ImaginationParameters.REQUEST.target))
+            .andExpect(MockMvcResultMatchers.jsonPath("color").value(ImaginationParameters.REQUEST.color.name))
     }
 
     @Test
     @DisplayName("상상해보기 조회 테스트")
     fun given_user_when_findImaginations_then_responseImaginations(){
-        mvc.createImagination(REQUEST)
+        mvc.createImagination(ImaginationParameters.REQUEST)
 
         mvc.findImaginations()
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -120,10 +120,10 @@ class ImaginationIntegrationTest @Autowired constructor(
     @DisplayName("최대 개수 이상으로 상상해보기 생성 테스트")
     fun given_requestExceedImaginationLimit_when_createImagination_then_responseExceptionResponseWithStatus409(){
         repeat(6){
-            mvc.createImagination(REQUEST)
+            mvc.createImagination(ImaginationParameters.REQUEST)
         }
 
-        mvc.createImagination(REQUEST)
+        mvc.createImagination(ImaginationParameters.REQUEST)
             .andExpect(MockMvcResultMatchers.status().isConflict)
             .expectExceptionResponse()
     }
@@ -131,18 +131,13 @@ class ImaginationIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("상상해보기 수정 테스트")
     fun given_request_when_updateImagination_then_responseUpdatedImagination(){
-        val request = ImaginationRequest(
-            behavior = "new behav",
-            target = "new target",
-            color = Color.GRAY2
-        )
-        val imagination = mvc.createImagination(REQUEST).andReturn<ImaginationResponse>()
+        val imagination = mvc.createImagination(ImaginationParameters.REQUEST).andReturn<ImaginationResponse>()
 
-        mvc.updateImagination(request, imagination.id, USER_ID)
+        mvc.updateImagination(ImaginationParameters.UPDATE_REQUEST, imagination.id, ImaginationParameters.USER_ID)
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("behavior").value(request.behavior))
-            .andExpect(MockMvcResultMatchers.jsonPath("target").value(request.target))
-            .andExpect(MockMvcResultMatchers.jsonPath("color").value(request.color.name))
+            .andExpect(MockMvcResultMatchers.jsonPath("behavior").value(ImaginationParameters.UPDATE_REQUEST.behavior))
+            .andExpect(MockMvcResultMatchers.jsonPath("target").value(ImaginationParameters.UPDATE_REQUEST.target))
+            .andExpect(MockMvcResultMatchers.jsonPath("color").value(ImaginationParameters.UPDATE_REQUEST.color.name))
 
     }
 
@@ -150,16 +145,16 @@ class ImaginationIntegrationTest @Autowired constructor(
     @DisplayName("비정상적인 상상해보기 수정 요청 테스트")
     @MethodSource("${ImaginationParameters.PATH}#provideInvalidImaginationRequest")
     fun given_invalidRequest_when_updateImagination_then_responseBindExceptionResponseWithStatus400(request: ImaginationRequest){
-        val imagination = mvc.createImagination(REQUEST).andReturn<ImaginationResponse>()
+        val imagination = mvc.createImagination(ImaginationParameters.REQUEST).andReturn<ImaginationResponse>()
 
-        mvc.updateImagination(request, imagination.id, USER_ID)
+        mvc.updateImagination(request, imagination.id, ImaginationParameters.USER_ID)
             .expectBindException()
     }
 
     @Test
     @DisplayName("존재하지 않는 상상해보기 수정 테스트")
     fun given_notExistsImaginationId_when_updateImagination_then_responseExceptionResponseWithStatus404(){
-        mvc.updateImagination(REQUEST, 1L, USER_ID)
+        mvc.updateImagination(ImaginationParameters.REQUEST, 1L, ImaginationParameters.USER_ID)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
             .expectExceptionResponse()
     }
@@ -168,9 +163,9 @@ class ImaginationIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("소유자가 아닌 사용자 상상해보기 수정 테스트")
     fun given_userIdWhoNotOwner_when_updateImagination_then_responseExceptionResponseWithStatus403(){
-        val imagination = mvc.createImagination(REQUEST, USER_ID).andReturn<ImaginationResponse>()
+        val imagination = mvc.createImagination(ImaginationParameters.REQUEST, ImaginationParameters.USER_ID).andReturn<ImaginationResponse>()
 
-        mvc.updateImagination(REQUEST, imagination.id, 2L)
+        mvc.updateImagination(ImaginationParameters.REQUEST, imagination.id, 2L)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
             .expectExceptionResponse()
     }
@@ -178,7 +173,7 @@ class ImaginationIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("상상해보기 삭제 테스트")
     fun given_id_when_deleteImagination_then_expectStatus204(){
-        val imagination = mvc.createImagination(REQUEST).andReturn<ImaginationResponse>()
+        val imagination = mvc.createImagination(ImaginationParameters.REQUEST).andReturn<ImaginationResponse>()
 
         mvc.deleteImagination(imagination.id)
             .andExpect(MockMvcResultMatchers.status().isNoContent)
@@ -195,7 +190,7 @@ class ImaginationIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("소유자가 아닌 사용자의 상상해보기 삭제 테스트")
     fun given_userWhoNotOwner_when_deleteImagination_then_responseExceptionResponseWithStatus403(){
-        val imagination = mvc.createImagination(REQUEST).andReturn<ImaginationResponse>()
+        val imagination = mvc.createImagination(ImaginationParameters.REQUEST).andReturn<ImaginationResponse>()
 
         mvc.deleteImagination(imagination.id, 2L)
             .andExpect(MockMvcResultMatchers.status().isForbidden)
@@ -210,22 +205,25 @@ class ImaginationIntegrationTest @Autowired constructor(
         container.messageListener(broker){
             queue.add(it)
         }
-        val imagination = mvc.createImagination(REQUEST).andReturn<ImaginationResponse>()
+        val imagination = mvc.createImagination(ImaginationParameters.REQUEST).andReturn<ImaginationResponse>()
 
         mvc.completeImagination(imagination.id)
             .andExpect(MockMvcResultMatchers.status().isNoContent)
 
         val record = queue.poll(500, TimeUnit.MILLISECONDS)
-        val futureMe = futureMeService.findFutureMe(USER_ID)
+        val futureMe = futureMeService.findFutureMe(ImaginationParameters.USER_ID)
 
+        //레코드 검증
         assertNotNull(record)
-        assertEquals(USER_ID, record.key().toLong())
+        assertEquals(ImaginationParameters.USER_ID, record.key().toLong())
         assertEquals(imagination.id, record.value().id)
         assertEquals(imagination.behavior, record.value().behavior)
         assertEquals(imagination.color, record.value().color)
         assertEquals(imagination.target, record.value().target)
         assertEquals(futureMe.character.type, record.value().characterType)
+        //이벤트 저장 검증
         assertTrue(eventRepo.existsBySpecificIdAndType(imagination.id, ImaginationCompletedEvent::class))
+        //경험치 상승 검증
         assertEquals(10,futureMe.character.experiencePoints)
     }
 
@@ -240,7 +238,7 @@ class ImaginationIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("소유자가 아닌 사용자의 상상해보기 완료 테스트")
     fun given_userWhoNotOwner_when_completeImagination_then_responseExceptionResponseWithStatus403(){
-        val imagination = mvc.createImagination(REQUEST).andReturn<ImaginationResponse>()
+        val imagination = mvc.createImagination(ImaginationParameters.REQUEST).andReturn<ImaginationResponse>()
 
         mvc.completeImagination(imagination.id, 2L)
             .andExpect(MockMvcResultMatchers.status().isForbidden)

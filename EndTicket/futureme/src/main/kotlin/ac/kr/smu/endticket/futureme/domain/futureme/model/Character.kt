@@ -18,9 +18,9 @@ import org.springframework.core.io.ClassPathResource
  */
 @Embeddable
 @Schema(description = "캐릭터")
-class Character(
+data class Character(
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     @Schema(description = "캐릭터 종류", example = "VEGA")
     val type: CharacterType
 ) {
@@ -33,7 +33,6 @@ class Character(
     @Schema(description = "레벨", example = "1", minimum = "0", maximum = "$MAX_LEVEL")
     var level: Int = 1
         private set
-
     @Column
     @Schema(description = "경험치", example = "100", minimum = "0", maximum = "$MAX_EXPERIENCE_POINTS")
     var experiencePoints: Int = 0
@@ -52,6 +51,19 @@ class Character(
 
         if (experiencePoints >= MAX_EXPERIENCE_POINTS)
             levelUpWhenLowerThanMaxLevel()
+    }
+
+    /**
+     * 자기와 같은 객체를 반환한다.
+     */
+    fun copy(): Character{
+        val level = level
+        val exp = experiencePoints
+
+        return Character(type).apply {
+            this.level = level
+            experiencePoints = exp
+        }
     }
 
     /**
