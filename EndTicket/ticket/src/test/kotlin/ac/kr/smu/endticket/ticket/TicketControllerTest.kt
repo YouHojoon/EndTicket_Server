@@ -44,13 +44,13 @@ class TicketControllerTest @Autowired constructor(
     @Test
     @DisplayName("티켓 생성 테스트")
     fun given_ticketRequest_when_createTicket_then_responseCreatedTicket(){
-        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
+        val ticket = Ticket.from(TicketTestParameters.TICKET_REQUEST, TicketTestParameters.USER_ID)
 
         Mockito
-            .`when`(service.createTicket(TICKET_REQUEST, USER_ID))
+            .`when`(service.createTicket(TicketTestParameters.TICKET_REQUEST, TicketTestParameters.USER_ID))
             .thenReturn(ticket.toResponse())
 
-        mvc.createTicket(TICKET_REQUEST)
+        mvc.createTicket(TicketTestParameters.TICKET_REQUEST)
             .andExpect(MockMvcResultMatchers.status().isCreated)
             .andExpect(MockMvcResultMatchers.content().string(
                 ObjectMapper().writeValueAsString(
@@ -62,7 +62,7 @@ class TicketControllerTest @Autowired constructor(
     @ParameterizedTest
     @DisplayName("비정상적인 티켓 생성 요청 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideInvalidRequest")
-    fun given_invalidTicketRequest_when_createTicket_then_responseExceptionResponseWithStatus400(request: TicketRequest){
+    fun given_invalidTicketRequest_when_createTicket_then_responseBindException(request: TicketRequest){
         mvc
             .createTicket(request)
             .expectBindException()
@@ -72,10 +72,10 @@ class TicketControllerTest @Autowired constructor(
     @DisplayName("티캣 개수 제한 이상으로 생성 테스트")
     fun given_userHasReachedTicketLimit_when_createTicket_then_responseExceptionResponseWithStatus409(){
         Mockito
-            .`when`(service.createTicket(TICKET_REQUEST, USER_ID))
+            .`when`(service.createTicket(TicketTestParameters.TICKET_REQUEST, TicketTestParameters.USER_ID))
             .thenThrow(IllegalStateException("티켓 개수 제한 이상으로 생성할 수 없습니다."))
 
-        mvc.createTicket(TICKET_REQUEST)
+        mvc.createTicket(TicketTestParameters.TICKET_REQUEST)
             .andExpect(MockMvcResultMatchers.status().isConflict)
             .expectExceptionResponse()
     }
@@ -84,10 +84,10 @@ class TicketControllerTest @Autowired constructor(
     @DisplayName("티켓 수정 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
     fun given_ticketRequest_when_updateTicket_then_responseUpdatedTicket(ticket: Ticket){
-        Mockito.`when`(service.updateTicket(UPDATE_REQUEST, ticket.id, USER_ID))
-            .thenReturn(ticket.also { it.updateAndCheckCompletion(UPDATE_REQUEST, USER_ID) }.toResponse())
+        Mockito.`when`(service.updateTicket(TicketTestParameters.UPDATE_REQUEST, ticket.id, TicketTestParameters.USER_ID))
+            .thenReturn(ticket.also { it.updateAndCheckCompletion(TicketTestParameters.UPDATE_REQUEST, TicketTestParameters.USER_ID) }.toResponse())
 
-        mvc.updateTicket(UPDATE_REQUEST, ticket.id)
+        mvc.updateTicket(TicketTestParameters.UPDATE_REQUEST, ticket.id)
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().string(
                 ObjectMapper().writeValueAsString(
@@ -99,8 +99,8 @@ class TicketControllerTest @Autowired constructor(
     @ParameterizedTest
     @DisplayName("비정상적인 티켓 수정 요청 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideInvalidRequest")
-    fun given_invalidTicketRequest_when_updateTicket_then_responseExceptionResponseWithStatus400(request: TicketRequest){
-        mvc.updateTicket(request, USER_ID).expectBindException()
+    fun given_invalidTicketRequest_when_updateTicket_then_responseBindException(request: TicketRequest){
+        mvc.updateTicket(request, TicketTestParameters.USER_ID).expectBindException()
     }
 
     @ParameterizedTest
@@ -112,10 +112,10 @@ class TicketControllerTest @Autowired constructor(
         exception: Throwable,
         status: Int
     ){
-        Mockito.`when`(service.updateTicket(UPDATE_REQUEST, id, userId))
+        Mockito.`when`(service.updateTicket(TicketTestParameters.UPDATE_REQUEST, id, userId))
             .thenThrow(exception)
 
-        mvc.updateTicket(UPDATE_REQUEST, id, userId)
+        mvc.updateTicket(TicketTestParameters.UPDATE_REQUEST, id, userId)
             .andExpect(MockMvcResultMatchers.status().`is`(status))
             .expectExceptionResponse()
     }
@@ -123,12 +123,12 @@ class TicketControllerTest @Autowired constructor(
     @Test
     @DisplayName("티켓 스와이프 테스트")
     fun given_Id_when_swipeTicket_then_responseSwipedTicket(){
-        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
+        val ticket = Ticket.from(TicketTestParameters.TICKET_REQUEST, TicketTestParameters.USER_ID)
         val beforeSwipeCount = ticket.swipeCount
 
-        Mockito.`when`(service.swipeTicket(ticket.id, USER_ID))
+        Mockito.`when`(service.swipeTicket(ticket.id, TicketTestParameters.USER_ID))
             .thenReturn(
-               ticket.also { it.swipeAndCheckCompletion(USER_ID)}.toResponse()
+               ticket.also { it.swipeAndCheckCompletion(TicketTestParameters.USER_ID)}.toResponse()
             )
 
         mvc.swipeTicket(ticket.id)
@@ -158,13 +158,13 @@ class TicketControllerTest @Autowired constructor(
     @DisplayName("티켓 스와이프 취소 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
     fun given_Id_when_cancelSwipeTicket_then_responseSwipeCanceledTicket(ticket: Ticket){
-        ticket.swipeAndCheckCompletion(USER_ID)
+        ticket.swipeAndCheckCompletion(TicketTestParameters.USER_ID)
         val beforeSwipeCount = ticket.swipeCount
 
-        Mockito.`when`(service.cancelSwipeTicket(ticket.id, USER_ID))
+        Mockito.`when`(service.cancelSwipeTicket(ticket.id, TicketTestParameters.USER_ID))
             .thenReturn(
                 ticket
-                    .also { it.cancelSwipeTicket(USER_ID) }
+                    .also { it.cancelSwipeTicket(TicketTestParameters.USER_ID) }
                     .toResponse()
             )
 
@@ -194,16 +194,16 @@ class TicketControllerTest @Autowired constructor(
     @DisplayName("미완료된 티켓 조회")
     fun given_userId_when_findIncompleteTickets_then_responseIncompleteTickets(){
         val tickets = listOf(
-            Ticket.from(TICKET_REQUEST, USER_ID).toResponse()
+            Ticket.from(TicketTestParameters.TICKET_REQUEST, TicketTestParameters.USER_ID).toResponse()
         )
-        Mockito.`when`(service.findIncompleteTickets(USER_ID))
+        Mockito.`when`(service.findIncompleteTickets(TicketTestParameters.USER_ID))
             .thenReturn(tickets)
 
         mvc.findTickets()
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("tickets").isArray)
             .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(mapOf("tickets" to service.findIncompleteTickets(
-                USER_ID
+                TicketTestParameters.USER_ID
             )))))
     }
 

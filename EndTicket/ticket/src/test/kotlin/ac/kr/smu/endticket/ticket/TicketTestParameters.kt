@@ -12,6 +12,24 @@ import java.util.stream.Stream
 
 object TicketTestParameters {
     const val PATH = "ac.kr.smu.endticket.ticket.TicketTestParameters"
+    const val USER_ID = 1L
+
+    val TICKET_REQUEST =
+        TicketRequest(
+            behavior = "b",
+            target = "t",
+            color = Color.BLUE1,
+            type = TicketType.SELF_IMPROVEMENT,
+            maxSwipeCount = Ticket.MaxSwipeCount.FIVE,
+        )
+
+    val UPDATE_REQUEST = TicketRequest(
+        "abcd",
+        "abcd",
+        Color.GRAY2,
+        TicketType.PERSONALITY,
+        Ticket.MaxSwipeCount.FIFTEEN
+    )
 
     @JvmStatic
     fun provideTicket() = Stream.of(
