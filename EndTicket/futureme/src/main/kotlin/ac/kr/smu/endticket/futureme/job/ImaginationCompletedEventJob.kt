@@ -2,8 +2,10 @@ package ac.kr.smu.endticket.futureme.job
 
 import KafkaMessageService
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
+import ac.kr.smu.endticket.common.web.enum.CharacterType
 import ac.kr.smu.endticket.futureme.domain.event.repository.EventRepository
 import ac.kr.smu.endticket.futureme.infra.messaging.ImaginationCompletedEventResponse
+import ac.kr.smu.endticket.futureme.service.FutureMeService
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
@@ -21,6 +23,7 @@ import kotlin.system.measureTimeMillis
 @Component
 class ImaginationCompletedEventJob(
     private val repo: EventRepository,
+    private val futureMeService: FutureMeService,
     private val messageService: KafkaMessageService<String, ImaginationCompletedEventResponse>
 ) {
     private val log = LoggerFactory.getLogger(ImaginationCompletedEventJob::class.java)
@@ -36,7 +39,14 @@ class ImaginationCompletedEventJob(
 
         val elapsed = measureTimeMillis {
             val events = repo.findNotSentEventBefore(LocalDateTime.now().minusMinutes(10))
-            val messages = events.map { it.toMessage() }
+            val characterTypes = HashMap<Long, CharacterType>()
+            val messages = events.map {event ->
+                event.toMessage(
+                characterTypes[event.userId] ?:
+                futureMeService
+                    .findFutureMe(event.userId)
+                    .character.type.also { characterTypes[event.userId] = it }
+            ) }
             val futures = messageService
                 .send(KafkaTopic.IMAGINATION_COMPLETION,messages)
                 .mapIndexed {i, future ->

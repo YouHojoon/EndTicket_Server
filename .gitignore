@@ -11,6 +11,7 @@ EndTicket/config/src/main/resources/common/**
 EndTicket/config/src/main/resources/common/**.yml
 EndTicket/config/src/main/resources/auth.yml
 EndTicket/futureMe/src/test/resources/application.yml
+EndTicket/history/src/test/resources/application.yaml
 # Created by https://www.toptal.com/developers/gitignore/api/intellij,kotlin,macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij,kotlin,macos
 

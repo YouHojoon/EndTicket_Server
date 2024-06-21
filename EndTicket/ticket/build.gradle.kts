@@ -9,7 +9,6 @@ dependencies{
     testRuntimeOnly("com.h2database:h2")
 }
 
-
 tasks.test{
     finalizedBy("jacocoTestReport")
 }

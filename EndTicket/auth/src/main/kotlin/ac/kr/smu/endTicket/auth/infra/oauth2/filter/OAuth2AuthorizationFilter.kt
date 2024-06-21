@@ -22,7 +22,7 @@ class OAuth2AuthorizationFilter(
 ): OncePerRequestFilter() {
     private val converter = SocialTypeConverter()
     private val matcher = AntPathRequestMatcher("/auth/sns")
-    companion object{
+    private companion object{
         private const val SOCIAL_TYPE_URI_VARIABLE_NAME = "socialType"
         private const val CODE_URI_VARIABLE_NAME = "code"
     }

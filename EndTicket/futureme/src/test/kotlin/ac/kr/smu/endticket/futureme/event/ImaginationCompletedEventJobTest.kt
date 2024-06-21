@@ -1,23 +1,30 @@
 package ac.kr.smu.endticket.futureme.event
 
 import KafkaMessageService
-import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endticket.common.kafka.test.messageListener
+import ac.kr.smu.endticket.common.test.mockAny
+import ac.kr.smu.endticket.common.web.enum.CharacterType
 import ac.kr.smu.endticket.futureme.domain.event.model.Event
 import ac.kr.smu.endticket.futureme.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.repository.EventRepository
+import ac.kr.smu.endticket.futureme.domain.futureme.model.FutureMe
 import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
+import ac.kr.smu.endticket.futureme.imagination.REQUEST
 import ac.kr.smu.endticket.futureme.imagination.USER_ID
-import ac.kr.smu.endticket.futureme.imagination.request
 import ac.kr.smu.endticket.futureme.infra.messaging.ImaginationCompletedEventResponse
 import ac.kr.smu.endticket.futureme.job.ImaginationCompletedEventJob
+import ac.kr.smu.endticket.futureme.service.FutureMeService
+import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
+import ac.kr.smu.endticket.futureme.ui.response.FutureMeResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
@@ -36,14 +43,17 @@ import kotlin.test.assertTrue
     classes = [
         KafkaAutoConfiguration::class,
         ImaginationCompletedEventJob::class,
+        FutureMeService::class
     ]
 )
 @EmbeddedKafka(partitions = 3)
 class ImaginationCompletedEventJobTest @Autowired constructor(
     @MockBean
     private val repo: EventRepository,
+    @MockBean
+    private val futureMeService: FutureMeService,
     private val broker: EmbeddedKafkaBroker,
-    private val job: ImaginationCompletedEventJob
+    private val job: ImaginationCompletedEventJob,
 ) {
     @SpyBean
     private lateinit var messageService: KafkaMessageService<String, ImaginationCompletedEventResponse>
@@ -56,18 +66,21 @@ class ImaginationCompletedEventJobTest @Autowired constructor(
         container.messageListener(broker){
             queue.add(it)
         }
+        Mockito.`when`(futureMeService.findFutureMe(USER_ID))
+            .thenReturn(FutureMeResponse.from(FUTURE_ME))
     }
     @AfterEach
     fun reset(){
         container.stop()
     }
-    @Test
+    @ParameterizedTest
     @DisplayName("전송되지 않은 상상해보기 완료 이벤트 재전송 테스트")
-    fun given_notSentImaginationCompletionEvent_when_resendImaginationCompletionEvent_then_resendMessage_and_save(){
+    @MethodSource("${EventTestParameters.PATH}#provideImaginationCompletedEvent")
+    fun given_notSentImaginationCompletionEvent_when_resendImaginationCompletionEvent_then_resendMessageAndSave(event:ImaginationCompletedEvent){
         val events = setOf(
-            ImaginationCompletedEvent(
-            Imagination.from(request, USER_ID)
-        )
+            event,
+            Mockito.spy(event)
+                .also { Mockito.`when`(it.imaginationId).thenReturn(2L) }
         )
 
         Mockito.`when`(repo.findNotSentEventBefore(mockAny()))
@@ -78,7 +91,7 @@ class ImaginationCompletedEventJobTest @Autowired constructor(
 
         assertTrue(queue.isNotEmpty())
         for ((event, record) in events.zip(queue)){
-            val message = event.toMessage()
+            val message = event.toMessage(FUTURE_ME.character.type)
 
             assertEquals(message.key, record.key())
             assertEquals(message.payload.behavior, record.value().behavior)
@@ -86,13 +99,14 @@ class ImaginationCompletedEventJobTest @Autowired constructor(
             assertEquals(message.payload.color, record.value().color)
         }
 
+        Mockito.verify(futureMeService, Mockito.atLeast(1)).findFutureMe(Mockito.anyLong())
         Mockito.verify(repo, Mockito.atLeast(1)).saveAll(mockAny<Collection<ImaginationCompletedEvent>>())
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("이벤트 재전송 실패 테스트")
-    fun given_notSentImaginationCompletionEvent_when_resendImaginationCompletionEventFail_then_doNothing() {
-        val event = ImaginationCompletedEvent(Imagination.from(request, USER_ID))
+    @MethodSource("${EventTestParameters.PATH}#provideImaginationCompletedEvent")
+    fun given_notSentImaginationCompletionEvent_when_resendImaginationCompletionEventFail_then_doNothing(event: ImaginationCompletedEvent) {
         val events = setOf(event)
 
         Mockito.doReturn(events)

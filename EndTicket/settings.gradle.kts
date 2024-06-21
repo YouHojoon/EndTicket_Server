@@ -1,4 +1,5 @@
 rootProject.name = "EndTicket"
+
 include("user")
 include("auth")
 include("eureka")
@@ -7,6 +8,8 @@ include("common")
 include("ticket")
 include("futureme")
 include("common:jpa")
+include("config")
+include("history")
 findProject(":common:jpa")?.name = "jpa"
 include("common:redis")
 findProject(":common:redis")?.name = "redis"
@@ -20,7 +23,6 @@ include("common:kafka")
 findProject(":common:kafka")?.name = "kafka"
 include("common:zipkin")
 findProject(":common:zipkin")?.name = "zipkin"
-include("futureMe")
 include("common:webflux")
 findProject(":common:webflux")?.name = "webflux"
-include("config")
+

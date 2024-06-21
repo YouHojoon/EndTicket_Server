@@ -2,24 +2,20 @@ package ac.kr.smu.endTicket.auth.service
 
 import ac.kr.smu.endTicket.auth.domain.exception.NotFoundUserException
 import ac.kr.smu.endTicket.auth.domain.exception.RefreshTokenExpiredException
-
-import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
 import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
-import ac.kr.smu.endTicket.protobuf.AccessToken
-import ac.kr.smu.endTicket.protobuf.TokenServiceGrpc
-import ac.kr.smu.endTicket.protobuf.ValidateAccessTokenResponse
-
+import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
+import ac.kr.smu.endticket.protobuf.AccessToken
+import ac.kr.smu.endticket.protobuf.TokenServiceGrpc
+import ac.kr.smu.endticket.protobuf.ValidateAccessTokenResponse
 import io.grpc.StatusRuntimeException
 import io.grpc.stub.StreamObserver
-
 import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
 import net.devh.boot.grpc.server.service.GrpcService
 import org.springframework.data.redis.core.RedisTemplate
-
 import org.springframework.stereotype.Service
-import java.util.Date
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
@@ -45,9 +41,9 @@ class TokenService(
      */
     override fun validateAccessToken(request: AccessToken, responseObserver: StreamObserver<ValidateAccessTokenResponse>) {
         try {
-            val userID = parseUserID(request.token.split(" ").last())
+            val userId = parseUserId(request.token.split(" ").last())
             responseObserver.onNext(
-                createValidateAccessTokenResponse(userID,200)
+                createValidateAccessTokenResponse(userId,200)
             )
         } catch (e: ExpiredJwtException) {
            responseObserver.onNext(
@@ -74,27 +70,27 @@ class TokenService(
 
     /**
      * 토큰 생성 기능
-     * @param userID 사용자 번호
+     * @param userId 사용자 번호
      * @return JWT 토큰 발급
      */
     @Throws(NotFoundUserException::class)
-    fun createAccessAndRefreshToken(userID: Long): TokenResponse{
+    fun createAccessAndRefreshToken(userId: Long): TokenResponse{
         val issuedAt = Date()
-        val accessToken = createAccessToken(userID, issuedAt)
+        val accessToken = createAccessToken(userId, issuedAt)
         val refreshToken = createRefreshToken(issuedAt)
 
-        redisTemplate.setRefreshToken(userID, refreshToken)
+        redisTemplate.setRefreshToken(userId, refreshToken)
 
         return TokenResponse(accessToken, refreshToken)
     }
 
     /**
-     * access 토큰에서 사용자 ID를 파싱하는 메소드
+     * access 토큰에서 사용자 Id를 파싱하는 메소드
      * @param token access token
-     * @return 사용자 ID
+     * @return 사용자 Id
      * @throws UnsupportedJwtException token에 subject가 없을 시 발생
      */
-    fun parseUserID(token: String): Long{
+    fun parseUserId(token: String): Long{
         val claims = Jwts.parser().parseJWTSignedClaims(token)
 
         val sub = claims.payload.subject ?: throw UnsupportedJwtException(token)
@@ -109,15 +105,15 @@ class TokenService(
      */
     @Throws(IllegalStateException::class)
     fun reissueToken(refreshToken: String): TokenResponse{
-        val userID = redisTemplate.opsForValue().get(refreshToken)
+        val userId = redisTemplate.opsForValue().get(refreshToken)
 
-        checkNotNull(userID){
+        checkNotNull(userId){
             "비정상적인 Refresh 토큰입니다."
         }
 
         val issuedAt = Date()
         val newRefreshToken = if (shouldReissueRefreshToken(refreshToken, issuedAt)) createRefreshToken(issuedAt) else null
-        val accessToken = createAccessToken(userID.toLong(), issuedAt)
+        val accessToken = createAccessToken(userId.toLong(), issuedAt)
 
         return TokenResponse(accessToken, newRefreshToken)
     }
@@ -138,16 +134,16 @@ class TokenService(
     }
     /**
      * access 토큰 생성
-     * @param userID 사용자 ID
+     * @param userId 사용자 Id
      * @param issuedAt 생성 시간
      * @return access 토큰 반환
      */
-    private fun createAccessToken(userID: Long, issuedAt: Date): String{
+    private fun createAccessToken(userId: Long, issuedAt: Date): String{
         return Jwts
             .builder()
             .signWith(key)
             .issuedAt(issuedAt)
-            .subject(userID.toString())
+            .subject(userId.toString())
             .expiration(Date(issuedAt.time + jwtProperties.accessTokenExpiration))
             .compact()
     }
@@ -180,25 +176,25 @@ class TokenService(
 
     /**
      * Refresh 토큰을 캐시에 저장하는 메소드
-     * @param userID 사용자 ID
+     * @param userId 사용자 Id
      * @param refreshToken 저장할 refresh 토큰
      */
-    private fun RedisTemplate<String,String>.setRefreshToken(userID: Long, refreshToken: String){
-        this.opsForValue().set(refreshToken,userID.toString(), jwtProperties.refreshTokenExpiration, TimeUnit.MILLISECONDS)
+    private fun RedisTemplate<String,String>.setRefreshToken(userId: Long, refreshToken: String){
+        this.opsForValue().set(refreshToken,userId.toString(), jwtProperties.refreshTokenExpiration, TimeUnit.MILLISECONDS)
     }
 
     /**
      * gRPC를 통해 반환될 응답을 생성하는 메소드
-     * @param userID 토큰에서 파싱한 사용자 ID
+     * @param userId 토큰에서 파싱한 사용자 Id
      * @param status 상태, HttpStatusCode와 대응된다.
      * @param message 에러 발생 시 메시지
      */
-    private fun createValidateAccessTokenResponse(userID: Long? = null, status: Int, message: String? = null): ValidateAccessTokenResponse {
+    private fun createValidateAccessTokenResponse(userId: Long? = null, status: Int, message: String? = null): ValidateAccessTokenResponse {
         var response = ValidateAccessTokenResponse
             .newBuilder()
             .setStatus(status)
 
-        response.setUserID(userID ?: -1)
+        response.setUserId(userId ?: -1)
         if (message != null)
             response.setMessage(message)
 

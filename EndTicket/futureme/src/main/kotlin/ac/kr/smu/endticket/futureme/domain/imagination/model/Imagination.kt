@@ -1,11 +1,16 @@
 package ac.kr.smu.endticket.futureme.domain.imagination.model
 
 import ac.kr.smu.endticket.common.jpa.Audit
-import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.ImaginationOwnershipException
+import ac.kr.smu.endticket.common.web.enum.CharacterType
+import ac.kr.smu.endticket.common.web.enum.Color
+import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationOwnershipException
+import ac.kr.smu.endticket.futureme.infra.messaging.ImaginationCompletedEventResponse
 import ac.kr.smu.endticket.futureme.ui.request.ImaginationRequest
+import ac.kr.smu.endticket.futureme.ui.response.ImaginationResponse
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.time.LocalDateTime
 
 /**
  * 상상해보기를 추상화한 객체
@@ -22,9 +27,16 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 )
 @EntityListeners(AuditingEntityListener::class)
 class Imagination private constructor(
-    behavior: String,
-    target: String,
-    color: Color,
+    @Column(nullable = false, length = 10)
+    private var behavior: String,
+
+    @Column(nullable = false, length = 20)
+    private var target: String,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private var color: Color,
+
     @Column(name = "user_id", updatable = false, nullable = false)
     val userId: Long
 ) {
@@ -36,34 +48,6 @@ class Imagination private constructor(
                 color = request.color,
                 userId = userId
             )
-    }
-    @Column(nullable = false, length = 10)
-    var behavior: String  = ""
-        protected set
-
-    @Column(nullable = false, length = 20)
-    var target: String =""
-    protected set
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    var color: Color = Color.GRAY2
-    protected set
-
-    init {
-        this.behavior = behavior
-        this.target = target
-        this.color = color
-    }
-
-    @Schema(description = "티켓의 색")
-    enum class Color(val value: String) {
-        RED1("#E591A6"), RED2("#E28089"), RED3("#C56859"),
-        ORANGE1("#EFCB7E"), ORANGE2("#EABD97"), ORANGE3("#E99D7B"),
-        GREEN1("#88C7B2"), GREEN2("#83ABA5"), GREEN3("#4CA199"),
-        BLUE1("#8DD3E8"), BLUE2("#7FBAD5"), BLUE3("#6D98DE"),
-        PURPLE1("#B0BAF0"), PURPLE2("#A49CDA"), PURPLE3("#9F7E99"),
-        GRAY1("#C2C8CF"), GRAY2("#A3A8B3"), GRAY3("#616871")
     }
 
     @Id
@@ -77,10 +61,35 @@ class Imagination private constructor(
     private var isComplete = false
 
     /**
+     * 상상해보기로부터 응답을 만들어내는 메소드
+     * @return 상상해보기 완료 응답
+     */
+    fun toResponse() = ImaginationResponse(
+        id = id,
+        behavior = behavior,
+        target = target,
+        color = color
+    )
+
+    /**
+     * 상상해보기로부터 이벤트 완료 응답을 만들어내는 메소드
+     * @return 상상해보기 완료 응답
+     */
+    fun toEventResponse(characterType: CharacterType) = ImaginationCompletedEventResponse(
+        id = id,
+        behavior = behavior,
+        target = target,
+        color = color,
+        characterType = characterType,
+        completedDate = audit.updatedAt ?: LocalDateTime.now()
+    )
+    /**
      * 수정을 요청하는 메소드
      * @param request 수정 요청
      * @param userId 수정을 요청한 사용자
+     * @throws ImaginationOwnershipException 사용자가 소유자가 아닐 시
      */
+    @Throws(ImaginationOwnershipException::class)
     fun update(request: ImaginationRequest, userId: Long){
         checkOwnership(userId)
 
@@ -93,7 +102,9 @@ class Imagination private constructor(
     /**
      * 상상해보기 완료를 요청하는 메소드
      * @param userId 완료를 요청한 사용자
+     * @throws ImaginationOwnershipException 사용자가 소유자가 아닐 시
      */
+    @Throws(ImaginationOwnershipException::class)
     fun complete(userId: Long){
         checkOwnership(userId)
         isComplete = true

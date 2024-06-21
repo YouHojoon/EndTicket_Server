@@ -1,24 +1,23 @@
 package ac.kr.smu.endticket.futureme.imagination
 
-import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
+import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.futureme.ui.request.ImaginationRequest
 
+
 const val USER_ID = 1L
-val request = ImaginationRequest(
+val REQUEST = ImaginationRequest(
     "b",
     "t",
-    Imagination.Color.BLUE1
+    Color.BLUE1
 )
 
-
-
-val invalidBehaviorRequest = ImaginationRequest(
+val INVALID_BEHAVIOR_REQUEST = ImaginationRequest(
     behavior = "new behavior",
     target = "target",
-    color = Imagination.Color.GRAY2
+    color = Color.GRAY2
 )
-val invalidTargetRequest = ImaginationRequest(
+val INVALID_TARGET_REQUEST = ImaginationRequest(
     behavior = "behavior",
     target = "new target with exceed",
-    color = Imagination.Color.GRAY2
+    color = Color.GRAY2
 )

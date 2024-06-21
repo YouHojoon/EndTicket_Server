@@ -1,12 +1,10 @@
 package ac.kr.smu.endticket.futureme.imagination
 
-import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.ImaginationOwnershipException
+import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationOwnershipException
 import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endticket.common.web.test.expectBindException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
-import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationNotFoundException
-import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
 import ac.kr.smu.endticket.futureme.service.FutureMeEventService
 import ac.kr.smu.endticket.futureme.service.ImaginationService
 import ac.kr.smu.endticket.futureme.ui.controller.ImaginationController
@@ -15,6 +13,8 @@ import ac.kr.smu.endticket.futureme.ui.response.ImaginationResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -37,149 +37,125 @@ class ImaginationControllerTest @Autowired constructor(
 ) {
     private val mvc: MockMvc = MockMvcBuilders.standaloneSetup(controller).setControllerAdvice(BindExceptionAdvice()).build()
 
-    @Test
+    @ParameterizedTest
     @DisplayName("상상해보기 조회 테스트")
-    fun given_user_when_findImaginations_then_responseImaginations(){
-        val imaginations = setOf(
-            ImaginationResponse.from(Imagination.from(request, USER_ID))
-        )
-
-        Mockito.`when`(service.findImaginations(USER_ID))
-            .thenReturn(imaginations)
+    @MethodSource("${ImaginationParameters.PATH}#provideImaginationResponses")
+    fun given_userId_when_findImaginations_then_responseImaginations(imaginationResponses: Set<ImaginationResponse>){
+        Mockito
+            .`when`(service.findImaginations(USER_ID))
+            .thenReturn(imaginationResponses)
 
         mvc.findImaginations()
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(mapOf("imaginations" to imaginations))))
+            .andExpect(MockMvcResultMatchers
+                .content()
+                .string(ObjectMapper().writeValueAsString(mapOf("imaginations" to imaginationResponses))))
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("상상해보기 생성 테스트")
-    fun given_request_when_createImagination_then_responseCreatedImagination(){
-        val imagination = ImaginationResponse.from(Imagination.from(request, USER_ID))
-
+    @MethodSource("${ImaginationParameters.PATH}#provideImaginationResponseAndRequest")
+    fun given_requestAndUserId_when_createImagination_then_responseCreatedImagination(response: ImaginationResponse, request: ImaginationRequest){
         Mockito.`when`(service.createImagination(request, USER_ID))
-            .thenReturn(imagination)
+            .thenReturn(response)
 
         mvc
             .createImagination(request)
             .andExpect(MockMvcResultMatchers.status().isCreated)
-            .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(imagination)))
+            .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(response)))
     }
-    @Test
-    @DisplayName("비정상적인 상상해보기 생성 테스트")
-    fun given_invalidRequest_when_createImagination_then_expectStatusCode400_and_responseBindExceptionResponse(){
-        mvc.createImagination(invalidBehaviorRequest)
-            .expectBindException()
-        mvc.createImagination(invalidTargetRequest)
+
+    @ParameterizedTest
+    @DisplayName("비정상적인 상상해보기 생성 요청 테스트")
+    @MethodSource("${ImaginationParameters.PATH}#provideInvalidImaginationRequest")
+    fun given_invalidRequest_when_createImagination_then_expectStatusCode400_and_responseBindExceptionResponse(request: ImaginationRequest){
+        mvc.createImagination(request)
             .expectBindException()
     }
 
     @Test
     @DisplayName("최대 개수 이상으로 상상해보기 생성 테스트")
-    fun given_requestExceedImaginationLimit_when_createImagination_then_expectStatusCode409_and_responseExceptionResponse(){
-        Mockito.`when`(service.createImagination(request, USER_ID))
+    fun given_requestExceedImaginationLimit_when_createImagination_then_responseExceptionResponseWithStatus409(){
+        Mockito.`when`(service.createImagination(REQUEST, USER_ID))
             .thenThrow(IllegalStateException("") )
 
-
-        mvc.createImagination(request)
+        mvc.createImagination(REQUEST)
             .andExpect(MockMvcResultMatchers.status().isConflict)
             .expectExceptionResponse()
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("상상해보기 수정 테스트")
-    fun given_request_when_updateImagination_then_responseUpdatedImagination(){
-        val id = 1L
-        val request = ImaginationRequest(
-            behavior = "new behav",
-            target = "new target",
-            color = Imagination.Color.GRAY2
-        )
-        val response =  ImaginationResponse.from(Imagination.from(request, USER_ID))
-
+    @MethodSource("${ImaginationParameters.PATH}#provideImaginationResponseAndRequest")
+    fun given_request_when_updateImagination_then_responseUpdatedImagination(response: ImaginationResponse, request: ImaginationRequest){
         Mockito.`when`(
-            service.updateImagination(request, id, USER_ID)
+            service.updateImagination(request, response.id, USER_ID)
         ).thenReturn(response)
 
-        mvc.updateImagination(request, id, USER_ID)
+        mvc.updateImagination(request, response.id, USER_ID)
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(response)))
 
-        Mockito.verify(service, Mockito.times(1)).updateImagination(request,id, USER_ID)
+        Mockito.verify(service, Mockito.times(1)).updateImagination(request,response.id, USER_ID)
     }
 
-    @Test
-    @DisplayName("비정상적인 상상해보기 수정 테스트")
-    fun given_invalidRequest_when_updateImagination_then_expectStatusCode400_and_responseBindExceptionResponse(){
-        val id = 1L
-
-       mvc.updateImagination(invalidBehaviorRequest, id, USER_ID)
+    @ParameterizedTest
+    @DisplayName("비정상적인 수정 요청으로 상상해보기 수정 테스트")
+    @MethodSource("${ImaginationParameters.PATH}#provideInvalidImaginationRequest")
+    fun given_invalidRequest_when_updateImagination_then_responseBindExceptionResponseWithStatus400(request: ImaginationRequest){
+       mvc.updateImagination(request, 1L, USER_ID)
            .expectBindException()
-        mvc.updateImagination(invalidTargetRequest, id, USER_ID)
-            .expectBindException()
     }
 
-    @Test
-    @DisplayName("존재하지 않는 상상해보기 수정 테스트")
-    fun given_notExistImagination_when_updateImagination_then_expectStatusCode404_and_responseExceptionResponse(){
-        val id = 1L
-
+    @ParameterizedTest
+    @DisplayName("비정상적인 상상해보기 수정 테스트")
+    @MethodSource("${ImaginationParameters.PATH}#provideInvalidIdAndRequest")
+    fun given_invalidId_when_updateImagination_then_responseExceptionResponseWithExpectedStatus(
+        request: ImaginationRequest,
+        id: Long,
+        userId: Long,
+        exception: Throwable,
+        status: Int
+    ){
         Mockito.`when`(
-            service.updateImagination(request, id, USER_ID)
-        ).thenThrow(ImaginationNotFoundException(id))
+            service.updateImagination(request, id, userId)
+        ).thenThrow(exception)
 
-        mvc.updateImagination(request,id, USER_ID)
-            .andExpect(MockMvcResultMatchers.status().isNotFound)
-            .expectExceptionResponse()
-    }
-
-    @Test
-    @DisplayName("소유자가 아닌 사용자 상상해보기 수정 테스트")
-    fun given_userWhoNotOwner_when_updateImagination_then_expectStatusCode404_and_responseExceptionResponse(){
-        val id = 1L
-
-        Mockito.`when`(
-            service.updateImagination(request, id, USER_ID)
-        ).thenThrow(ImaginationOwnershipException(id, USER_ID))
-
-        mvc.updateImagination(request,id, USER_ID)
-            .andExpect(MockMvcResultMatchers.status().isForbidden)
+        mvc.updateImagination(request,id, userId)
+            .andExpect(MockMvcResultMatchers.status().`is`(status))
             .expectExceptionResponse()
     }
 
     @Test
     @DisplayName("상상해보기 삭제 테스트")
-    fun given_id_when_deleteImagination_then_expectStatusCode204(){
+    fun given_id_when_deleteImagination_then_expectStatus204(){
         mvc.deleteImagination(1L)
             .andExpect(MockMvcResultMatchers.status().isNoContent)
 
         Mockito.verify(service, Mockito.times(1)).deleteImagination(1L, USER_ID)
     }
 
-    @Test
-    @DisplayName("존재하지 않는 상상해보기 삭제 테스트")
-    fun given_notExistImagination_when_deleteImagination_then_expectStatusCode404_and_responseExceptionResponse(){
-        Mockito.`when`(service.deleteImagination(Mockito.anyLong(), Mockito.anyLong()))
-            .thenThrow(ImaginationNotFoundException(1L))
+    @ParameterizedTest
+    @DisplayName("비정상적인 상상해보기 삭제 테스트")
+    @MethodSource("${ImaginationParameters.PATH}#provideInvalidIdAndException")
+    fun given_invalidId_when_deleteImagination_then_responseExceptionResponseWithExpectedStatus(
+        id: Long,
+        userId: Long,
+        exception: Throwable,
+        status: Int
+    ){
+        Mockito
+            .`when`(service.deleteImagination(id, userId))
+            .thenThrow(exception)
 
-        mvc.deleteImagination(1L)
-            .andExpect(MockMvcResultMatchers.status().isNotFound)
-            .expectExceptionResponse()
-    }
-    @Test
-    @DisplayName("소유자가 아닌 사용자의 상상해보기 삭제 테스트")
-    fun given_userWhoNotOwner_when_deleteImagination_then_expectStatusCode403_and_responseExceptionResponse(){
-        Mockito.`when`(service.deleteImagination(Mockito.anyLong(), Mockito.anyLong()))
-            .thenThrow(ImaginationOwnershipException(1L, USER_ID))
-
-        mvc.deleteImagination(1L)
-            .andExpect(MockMvcResultMatchers.status().isForbidden)
+        mvc.deleteImagination(id, userId)
+            .andExpect(MockMvcResultMatchers.status().`is`(status))
             .expectExceptionResponse()
     }
 
     @Test
     @DisplayName("상상해보기 완료 테스트")
-    fun given_id_when_completeImagination_then_expectStatusCode204_and_publishImaginationCompletionEvent(){
+    fun given_id_when_completeImagination_then_expectStatusCode204AndPublishImaginationCompletionEvent(){
         Mockito.`when`(service.completeImagination(1L, USER_ID)).then { eventService.publishEvent(mockAny()) }
 
         mvc.completeImagination(1L)
@@ -189,27 +165,20 @@ class ImaginationControllerTest @Autowired constructor(
         Mockito.verify(eventService, Mockito.times(1)).publishEvent(mockAny())
     }
 
-    @Test
-    @DisplayName("존재하지 않는 상상해보기 완료 테스트")
-    fun given_notExistImagination_when_completeImagination_then_throwNotFoundImaginationException(){
-        val id = 1L
-        Mockito.`when`(service.completeImagination(id, USER_ID))
-            .thenThrow(ImaginationNotFoundException(id))
+    @ParameterizedTest
+    @DisplayName("비정상적인 상상해보기 완료 테스트")
+    @MethodSource("${ImaginationParameters.PATH}#provideInvalidIdAndException")
+    fun given_invalidId_when_completeImagination_then_responseExceptionResponseWithExpectedStatus(
+        id: Long,
+        userId: Long,
+        exception: Throwable,
+        status: Int
+    ){
+        Mockito.`when`(service.completeImagination(id, userId))
+            .thenThrow(exception)
 
-        mvc.completeImagination(id)
-            .andExpect(MockMvcResultMatchers.status().isNotFound)
-            .expectExceptionResponse()
-    }
-
-    @Test
-    @DisplayName("소유자가 아닌 사용자의 상상해보기 완료 테스트")
-    fun given_userWhoNotOwner_when_completeImagination_then_throwNotOwnerOfImagination(){
-        val id = 1L
-        Mockito.`when`(service.completeImagination(id, USER_ID))
-            .thenThrow( ImaginationOwnershipException(id, USER_ID))
-
-        mvc.completeImagination(id)
-            .andExpect(MockMvcResultMatchers.status().isForbidden)
+        mvc.completeImagination(id, userId)
+            .andExpect(MockMvcResultMatchers.status().`is`(status))
             .expectExceptionResponse()
     }
 }
