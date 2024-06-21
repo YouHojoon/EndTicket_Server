@@ -23,6 +23,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
@@ -71,13 +73,14 @@ class ImaginationCompletedEventJobTest @Autowired constructor(
     fun reset(){
         container.stop()
     }
-    @Test
+    @ParameterizedTest
     @DisplayName("전송되지 않은 상상해보기 완료 이벤트 재전송 테스트")
-    fun given_notSentImaginationCompletionEvent_when_resendImaginationCompletionEvent_then_resendMessage_and_save(){
-        val event = ImaginationCompletedEvent(Imagination.from(REQUEST, USER_ID))
+    @MethodSource("${EventTestParameters.PATH}#provideImaginationCompletedEvent")
+    fun given_notSentImaginationCompletionEvent_when_resendImaginationCompletionEvent_then_resendMessageAndSave(event:ImaginationCompletedEvent){
         val events = setOf(
             event,
-            Mockito.spy(event).also { Mockito.`when`(it.imaginationId).thenReturn(2L) }
+            Mockito.spy(event)
+                .also { Mockito.`when`(it.imaginationId).thenReturn(2L) }
         )
 
         Mockito.`when`(repo.findNotSentEventBefore(mockAny()))
@@ -100,10 +103,10 @@ class ImaginationCompletedEventJobTest @Autowired constructor(
         Mockito.verify(repo, Mockito.atLeast(1)).saveAll(mockAny<Collection<ImaginationCompletedEvent>>())
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("이벤트 재전송 실패 테스트")
-    fun given_notSentImaginationCompletionEvent_when_resendImaginationCompletionEventFail_then_doNothing() {
-        val event = ImaginationCompletedEvent(Imagination.from(REQUEST, USER_ID))
+    @MethodSource("${EventTestParameters.PATH}#provideImaginationCompletedEvent")
+    fun given_notSentImaginationCompletionEvent_when_resendImaginationCompletionEventFail_then_doNothing(event: ImaginationCompletedEvent) {
         val events = setOf(event)
 
         Mockito.doReturn(events)
