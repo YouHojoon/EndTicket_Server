@@ -15,6 +15,8 @@ import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
@@ -59,11 +61,10 @@ class TicketCompletedEventListenerTest @Autowired constructor(
         container.stop()
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("티켓 완료 이벤트 테스트")
-    fun given_ticketCompletionEvent_then_saveEvent_and_sendMessage(){
-        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
-        val event = TicketCompletedEvent(ticket)
+    @MethodSource("${TicketTestParameters.PATH}#provideEvent")
+    fun given_ticketCompletionEvent_then_saveEventAndSendMessage(event: TicketCompletedEvent){
         val queue = LinkedBlockingQueue<ConsumerRecord<String, TicketCompletedEventResponse>>()
 
         container.messageListener(broker){
@@ -81,11 +82,10 @@ class TicketCompletedEventListenerTest @Autowired constructor(
         assertEquals(message.key, record.key())
     }
 
-    @Test
-    @DisplayName("티켓 완료 이벤트 테스트")
-    fun given_ticketCompletionEvent_when_sendMessageFail_then_doNothing(){
-        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
-        val event = TicketCompletedEvent(ticket)
+    @ParameterizedTest
+    @DisplayName("티켓 완료 이벤트 전송 실패 테스트")
+    @MethodSource("${TicketTestParameters.PATH}#provideEvent")
+    fun given_ticketCompletionEvent_when_sendMessageFail_then_doNothing(event: TicketCompletedEvent){
         val mockEvent = Mockito.mock(TicketCompletedEvent::class.java)
         val message = event.toMessage()
 
