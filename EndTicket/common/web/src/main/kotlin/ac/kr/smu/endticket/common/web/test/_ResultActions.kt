@@ -52,7 +52,7 @@ fun ResultActions.expectExceptionResponse(): ResultActions{
  * @return BindindException을 예상하는 ResultActions
  */
 @TestOnly
-fun ResultActions.expectBindingException(): ResultActions{
+fun ResultActions.expectBindException(): ResultActions{
     return andExpect(MockMvcResultMatchers.status().isBadRequest)
         .andExpect(MockMvcResultMatchers.jsonPath("field").isString)
         .andExpect(MockMvcResultMatchers.jsonPath("code").value(400))

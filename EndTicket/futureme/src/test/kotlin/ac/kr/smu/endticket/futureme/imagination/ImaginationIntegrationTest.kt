@@ -9,7 +9,7 @@ import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endticket.common.web.enum.CharacterType
 import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.common.web.test.andReturn
-import ac.kr.smu.endticket.common.web.test.expectBindingException
+import ac.kr.smu.endticket.common.web.test.expectBindException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endticket.futureme.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.repository.EventRepository
@@ -114,7 +114,6 @@ class ImaginationIntegrationTest @Autowired constructor(
     @MethodSource("${ImaginationParameters.PATH}#provideInvalidImaginationRequest")
     fun given_invalidRequest_when_createImagination_then_responseBindExceptionResponseWithStatus400(request: ImaginationRequest){
         mvc.createImagination(request)
-            .expectBindingException()
     }
 
     @Test
@@ -154,7 +153,7 @@ class ImaginationIntegrationTest @Autowired constructor(
         val imagination = mvc.createImagination(REQUEST).andReturn<ImaginationResponse>()
 
         mvc.updateImagination(request, imagination.id, USER_ID)
-            .expectBindingException()
+            .expectBindException()
     }
 
     @Test

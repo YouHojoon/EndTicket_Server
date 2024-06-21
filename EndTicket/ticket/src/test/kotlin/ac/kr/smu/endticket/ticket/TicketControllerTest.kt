@@ -1,17 +1,12 @@
 package ac.kr.smu.endticket.ticket
 
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
-import ac.kr.smu.endticket.common.web.enum.Color
-import ac.kr.smu.endticket.common.web.enum.TicketType
-import ac.kr.smu.endticket.common.web.test.expectBindingException
+import ac.kr.smu.endticket.common.web.test.expectBindException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
-import ac.kr.smu.endticket.ticket.domain.exception.TicketNotFoundException
-import ac.kr.smu.endticket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endticket.ticket.domain.model.Ticket
 import ac.kr.smu.endticket.ticket.service.TicketService
 import ac.kr.smu.endticket.ticket.ui.controller.TicketController
 import ac.kr.smu.endticket.ticket.ui.request.TicketRequest
-import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -70,7 +65,7 @@ class TicketControllerTest @Autowired constructor(
     fun given_invalidTicketRequest_when_createTicket_then_responseExceptionResponseWithStatus400(request: TicketRequest){
         mvc
             .createTicket(request)
-            .expectBindingException()
+            .expectBindException()
     }
 
     @Test
@@ -105,7 +100,7 @@ class TicketControllerTest @Autowired constructor(
     @DisplayName("비정상적인 티켓 수정 요청 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideInvalidRequest")
     fun given_invalidTicketRequest_when_updateTicket_then_responseExceptionResponseWithStatus400(request: TicketRequest){
-        mvc.updateTicket(request, USER_ID).expectBindingException()
+        mvc.updateTicket(request, USER_ID).expectBindException()
     }
 
     @ParameterizedTest

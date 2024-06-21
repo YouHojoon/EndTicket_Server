@@ -2,7 +2,6 @@ package ac.kr.smu.endticket.futureme.futureme
 
 import ac.kr.smu.endticket.common.constant.HttpHeaderName
 import ac.kr.smu.endticket.common.web.enum.CharacterType
-import ac.kr.smu.endticket.futureme.domain.futureme.model.Character
 import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
 import ac.kr.smu.endticket.futureme.ui.request.UpdateFutureMeRequest
 import com.fasterxml.jackson.databind.ObjectMapper

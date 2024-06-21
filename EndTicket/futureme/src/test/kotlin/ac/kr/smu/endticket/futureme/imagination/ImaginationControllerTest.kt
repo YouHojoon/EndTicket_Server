@@ -3,11 +3,8 @@ package ac.kr.smu.endticket.futureme.imagination
 import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationOwnershipException
 import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
-import ac.kr.smu.endticket.common.web.enum.Color
-import ac.kr.smu.endticket.common.web.test.expectBindingException
+import ac.kr.smu.endticket.common.web.test.expectBindException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
-import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationNotFoundException
-import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
 import ac.kr.smu.endticket.futureme.service.FutureMeEventService
 import ac.kr.smu.endticket.futureme.service.ImaginationService
 import ac.kr.smu.endticket.futureme.ui.controller.ImaginationController
@@ -67,12 +64,13 @@ class ImaginationControllerTest @Autowired constructor(
             .andExpect(MockMvcResultMatchers.status().isCreated)
             .andExpect(MockMvcResultMatchers.content().string(ObjectMapper().writeValueAsString(response)))
     }
+
     @ParameterizedTest
     @DisplayName("비정상적인 상상해보기 생성 요청 테스트")
     @MethodSource("${ImaginationParameters.PATH}#provideInvalidImaginationRequest")
     fun given_invalidRequest_when_createImagination_then_expectStatusCode400_and_responseBindExceptionResponse(request: ImaginationRequest){
         mvc.createImagination(request)
-            .expectBindingException()
+            .expectBindException()
     }
 
     @Test
@@ -106,7 +104,7 @@ class ImaginationControllerTest @Autowired constructor(
     @MethodSource("${ImaginationParameters.PATH}#provideInvalidImaginationRequest")
     fun given_invalidRequest_when_updateImagination_then_responseBindExceptionResponseWithStatus400(request: ImaginationRequest){
        mvc.updateImagination(request, 1L, USER_ID)
-           .expectBindingException()
+           .expectBindException()
     }
 
     @ParameterizedTest

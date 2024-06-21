@@ -8,9 +8,12 @@ import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.common.web.enum.TicketType
 import ac.kr.smu.endticket.common.web.test.andReturn
-import ac.kr.smu.endticket.common.web.test.expectBindingException
+import ac.kr.smu.endticket.common.web.test.expectBindException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
+<<<<<<< HEAD:EndTicket/ticket/src/test/kotlin/ac/kr/smu/endTicket/ticket/TicketIntegrationTest.kt
+=======
 import ac.kr.smu.endticket.ticket.domain.model.Ticket
+>>>>>>> develop:EndTicket/ticket/src/test/kotlin/ac/kr/smu/endticket/ticket/TicketIntegrationTest.kt
 import ac.kr.smu.endticket.ticket.domain.repository.TicketCompletedEventRepository
 import ac.kr.smu.endticket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endticket.ticket.infra.config.KafkaConfig
@@ -99,7 +102,7 @@ class TicketIntegrationTest @Autowired constructor(
     @DisplayName("비정상적인 티켓 생성 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideInvalidRequest")
     fun given_invalidTicketRequest_when_createTicket_then_responseBindingExceptionResponseWithStatus400(request: TicketRequest){
-        mvc.createTicket(request).expectBindingException()
+        mvc.createTicket(request).expectBindException()
     }
 
     @Test
@@ -128,7 +131,7 @@ class TicketIntegrationTest @Autowired constructor(
     @MethodSource("${TicketTestParameters.PATH}#provideInvalidRequest")
     fun given_invalidTicketRequest_when_updateTicket_then_responseBindingExceptionResponseWithStatus400(request: TicketRequest){
         val ticket = mvc.createTicket(TICKET_REQUEST).andReturn<TicketResponse>()
-        mvc.updateTicket(request,ticket.id).expectBindingException()
+        mvc.updateTicket(request,ticket.id).expectBindException()
     }
 
     @Test
