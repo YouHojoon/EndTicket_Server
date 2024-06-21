@@ -7,7 +7,7 @@ import ac.kr.smu.endticket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endticket.common.kafka.test.messageListener
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endticket.common.web.test.andReturn
-import ac.kr.smu.endticket.common.web.test.expectBindingException
+import ac.kr.smu.endticket.common.web.test.expectBindException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endticket.futureme.domain.event.repository.EventRepository
 import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
@@ -106,9 +106,9 @@ class ImaginationIntegrationTest @Autowired constructor(
     @DisplayName("비정상적인 상상해보기 생성 테스트")
     fun given_invalidRequest_when_createImagination_then_expectStatusCode400_and_responseBindExceptionResponse(){
         mvc.createImagination(invalidBehaviorRequest)
-            .expectBindingException()
+            .expectBindException()
         mvc.createImagination(invalidTargetRequest)
-            .expectBindingException()
+            .expectBindException()
     }
 
     @Test
@@ -147,9 +147,9 @@ class ImaginationIntegrationTest @Autowired constructor(
         val imagination = mvc.createImagination(request).andReturn<ImaginationResponse>()
 
         mvc.updateImagination(invalidBehaviorRequest, imagination.id, USER_ID)
-            .expectBindingException()
+            .expectBindException()
         mvc.updateImagination(invalidTargetRequest, imagination.id, USER_ID)
-            .expectBindingException()
+            .expectBindException()
     }
 
     @Test

@@ -3,7 +3,7 @@ package ac.kr.smu.endticket.futureme.imagination
 import ac.kr.smu.endTicket.futureMe.domain.imagination.exception.ImaginationOwnershipException
 import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
-import ac.kr.smu.endticket.common.web.test.expectBindingException
+import ac.kr.smu.endticket.common.web.test.expectBindException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationNotFoundException
 import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
@@ -69,9 +69,9 @@ class ImaginationControllerTest @Autowired constructor(
     @DisplayName("비정상적인 상상해보기 생성 테스트")
     fun given_invalidRequest_when_createImagination_then_expectStatusCode400_and_responseBindExceptionResponse(){
         mvc.createImagination(invalidBehaviorRequest)
-            .expectBindingException()
+            .expectBindException()
         mvc.createImagination(invalidTargetRequest)
-            .expectBindingException()
+            .expectBindException()
     }
 
     @Test
@@ -114,9 +114,9 @@ class ImaginationControllerTest @Autowired constructor(
         val id = 1L
 
        mvc.updateImagination(invalidBehaviorRequest, id, USER_ID)
-           .expectBindingException()
+           .expectBindException()
         mvc.updateImagination(invalidTargetRequest, id, USER_ID)
-            .expectBindingException()
+            .expectBindException()
     }
 
     @Test
