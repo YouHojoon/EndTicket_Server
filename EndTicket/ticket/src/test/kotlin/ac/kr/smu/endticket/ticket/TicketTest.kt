@@ -1,64 +1,52 @@
 package ac.kr.smu.endticket.ticket
 
-import ac.kr.smu.endticket.common.web.enum.Color
-import ac.kr.smu.endticket.common.web.enum.TicketType
 import ac.kr.smu.endticket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endticket.ticket.domain.model.Ticket
-import ac.kr.smu.endticket.ticket.ui.request.TicketRequest
 import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class TicketTest {
-    @Test
+    @ParameterizedTest
     @DisplayName("티켓 수정 테스트")
-    fun given_ticketRequest_when_updateAndCheckCompletion_then_updateTicket_and_returnIsCompletion(){
-        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
-        val updateRequest = TicketRequest(
-            "abcd",
-            "abcd",
-            Color.GRAY2,
-            TicketType.PERSONALITY,
-            Ticket.MaxSwipeCount.FIFTEEN
-        )
-
-        ticket.updateAndCheckCompletion(updateRequest, USER_ID)
-        assertEquals(Ticket.from(updateRequest, USER_ID), ticket)
+    @MethodSource("${TicketTestParameters.PATH}#provideTicket")
+    fun given_ticketRequest_when_updateAndCheckCompletion_then_updateTicketAndReturnIsCompletion(ticket: Ticket){
+        ticket.updateAndCheckCompletion(UPDATE_REQUEST, USER_ID)
+        assertEquals(Ticket.from(UPDATE_REQUEST, USER_ID), ticket)
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("소유자가 아닌 사용자의 수정 요청 테스트")
-    fun given_userWhoNotOwnerOfTicket_when_updateAndCheckCompletion_then_throwTicketOwnershipException(){
-        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
-
+    @MethodSource("${TicketTestParameters.PATH}#provideTicket")
+    fun given_userWhoNotOwnerOfTicket_when_updateAndCheckCompletion_then_throwTicketOwnershipException(ticket: Ticket){
         assertThrows<TicketOwnershipException> {  ticket.updateAndCheckCompletion(UPDATE_REQUEST, 2L)}
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("티켓 스와이프 테스트")
-    fun given_userId_when_swipeTicket_then_plusSwipeCount_and_returnIsComplete(){
-        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
+    @MethodSource("${TicketTestParameters.PATH}#provideTicket")
+    fun given_userId_when_swipeTicket_then_plusSwipeCount_and_returnIsComplete(ticket: Ticket){
         val beforeSwipeCount = ticket.swipeCount
 
         assertFalse(ticket.swipeAndCheckCompletion(USER_ID))
         assertEquals(beforeSwipeCount + 1, ticket.swipeCount)
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("소유자가 아닌 사용자의 티켓 스와이프 테스트")
-    fun given_userWhoNotOwnerOfTicket_when_swipeTicket_then_throwTicketOwnershipException(){
-        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
+    @MethodSource("${TicketTestParameters.PATH}#provideTicket")
+    fun given_userWhoNotOwnerOfTicket_when_swipeTicket_then_throwTicketOwnershipException(ticket: Ticket){
         assertThrows<TicketOwnershipException> {  ticket.swipeAndCheckCompletion(2L)}
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("최대 스와이프 횟수 이상으로 스와이프 테스트")
-    fun given_ticketReachedMaxSwipeCount_when_swipeTicket_then_nothingChange(){
-        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
-
+    @MethodSource("${TicketTestParameters.PATH}#provideTicket")
+    fun given_ticketReachedMaxSwipeCount_when_swipeTicket_then_nothingChange(ticket: Ticket){
         repeat(TICKET_REQUEST.maxSwipeCount.value){
             ticket.swipeAndCheckCompletion(USER_ID)
         }
@@ -69,30 +57,28 @@ class TicketTest {
         assertEquals(beforeSwipeCount, ticket.swipeCount)
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("티켓 스와이프 취소 테스트")
-    fun given_userId_when_cancelSwipeTicket_then_minusSwipeCount(){
-        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
-
+    @MethodSource("${TicketTestParameters.PATH}#provideTicket")
+    fun given_userId_when_cancelSwipeTicket_then_minusSwipeCount(ticket: Ticket){
         ticket.swipeAndCheckCompletion(USER_ID)
         ticket.cancelSwipeTicket(USER_ID)
 
         assertEquals(0, ticket.swipeCount)
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("소유자가 아닌 사용자의 티켓 스와이프 취소 테스트")
-    fun given_userWhoNotOwnerOfTicket_when_cancelSwipeTicket_then_throwTicketOwnershipException(){
-        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
-
+    @MethodSource("${TicketTestParameters.PATH}#provideTicket")
+    fun given_userWhoNotOwnerOfTicket_when_cancelSwipeTicket_then_throwTicketOwnershipException(ticket: Ticket){
         ticket.swipeAndCheckCompletion(USER_ID)
         assertThrows<TicketOwnershipException> {  ticket.cancelSwipeTicket(2L)}
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("0회 이하로 티켓 스와이프 취소 테스트")
-    fun given_ticketWithSwipeCountZero_when_cancelSwipeTicket_then_nothingChange(){
-        val ticket = Ticket.from(TICKET_REQUEST, USER_ID)
+    @MethodSource("${TicketTestParameters.PATH}#provideTicket")
+    fun given_ticketWithSwipeCountZero_when_cancelSwipeTicket_then_nothingChange(ticket: Ticket){
         ticket.cancelSwipeTicket(USER_ID)
 
         assertEquals(0,ticket.swipeCount)

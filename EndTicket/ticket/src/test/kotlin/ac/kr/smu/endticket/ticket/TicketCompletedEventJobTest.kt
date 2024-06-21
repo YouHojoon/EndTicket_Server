@@ -14,6 +14,8 @@ import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
@@ -56,10 +58,11 @@ class TicketCompletedEventJobTest @Autowired constructor(
     fun reset(){
         container.stop()
     }
-    @Test
+    @ParameterizedTest
     @DisplayName("전송 실패한 티켓 완료 이벤트 재전송 테스트")
-    fun given_notSentTicketCompletedEvent_when_resendTicketCompletionEvent_then_resendMessage_and_saveIsSent(){
-        val events = setOf(TicketCompletedEvent(Ticket.from(TICKET_REQUEST, USER_ID)))
+    @MethodSource("${TicketTestParameters.PATH}#provideEvent")
+    fun given_notSentTicketCompletedEvent_when_resendTicketCompletionEvent_then_resendMessage_and_saveIsSent(event: TicketCompletedEvent){
+        val events = setOf(event)
         val queue = LinkedBlockingQueue<ConsumerRecord<String, TicketCompletedEventResponse>>()
 
         Mockito.`when`(repo.findByIsSentFalseAndAuditCreatedAtBefore(mockAny()))
@@ -82,10 +85,11 @@ class TicketCompletedEventJobTest @Autowired constructor(
         Mockito.verify(repo).saveAll(Mockito.argThat<Collection<TicketCompletedEvent>> { it.isNotEmpty() })
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("티켓 완료 이벤트 메시지 재전송 실패 테스트")
-    fun given_notSentTicketCompletedEvent_when_resendTicketCompletionEventFail_then_doNothing(){
-        val events = setOf(TicketCompletedEvent(Ticket.from(TICKET_REQUEST, USER_ID)))
+    @MethodSource("${TicketTestParameters.PATH}#provideEvent")
+    fun given_notSentTicketCompletedEvent_when_resendTicketCompletionEventFail_then_doNothing(event: TicketCompletedEvent){
+        val events = setOf(event)
 
         Mockito.`when`(repo.findByIsSentFalseAndAuditCreatedAtBefore(mockAny()))
             .thenReturn(events)

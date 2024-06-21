@@ -9,38 +9,38 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 
 const val BASE_URI = "http://localhost:8082/tickets"
 
-fun MockMvc.createTicket(request: TicketRequest, userID: Long = USER_ID) =
+fun MockMvc.createTicket(request: TicketRequest, userId: Long = USER_ID) =
     perform(
         MockMvcRequestBuilders.post(BASE_URI)
-            .header(HttpHeaderName.USER_ID, userID)
+            .header(HttpHeaderName.USER_ID, userId)
             .contentType(MediaType.APPLICATION_JSON)
             .content(ObjectMapper().writeValueAsString(request))
             .characterEncoding(Charsets.UTF_8)
     )
-fun MockMvc.updateTicket(request: TicketRequest, id: Long) =
+fun MockMvc.updateTicket(request: TicketRequest, id: Long, userId: Long = USER_ID) =
    perform(
         MockMvcRequestBuilders.put("$BASE_URI/$id")
-            .header(HttpHeaderName.USER_ID, USER_ID)
+            .header(HttpHeaderName.USER_ID, userId)
             .content(ObjectMapper().writeValueAsString(request))
             .contentType(MediaType.APPLICATION_JSON)
     )
 
-fun MockMvc.swipeTicket(id: Long) =
+fun MockMvc.swipeTicket(id: Long, userId: Long = USER_ID) =
     perform(
         MockMvcRequestBuilders.patch("$BASE_URI/swipe/$id")
-            .header(HttpHeaderName.USER_ID, USER_ID)
+            .header(HttpHeaderName.USER_ID, userId)
     )
 
-fun MockMvc.cancelSwipeTicket(id: Long) =
+fun MockMvc.cancelSwipeTicket(id: Long, userId: Long = USER_ID) =
     perform(
         MockMvcRequestBuilders.delete("$BASE_URI/swipe/$id")
-            .header(HttpHeaderName.USER_ID, USER_ID)
+            .header(HttpHeaderName.USER_ID, userId)
     )
 
-fun MockMvc.deleteTicket(id:Long) =
+fun MockMvc.deleteTicket(id:Long, userId: Long = USER_ID) =
     perform(
         MockMvcRequestBuilders.delete("$BASE_URI/$id")
-            .header(HttpHeaderName.USER_ID, USER_ID)
+            .header(HttpHeaderName.USER_ID, userId)
     )
 
 fun MockMvc.findTickets() = perform(
