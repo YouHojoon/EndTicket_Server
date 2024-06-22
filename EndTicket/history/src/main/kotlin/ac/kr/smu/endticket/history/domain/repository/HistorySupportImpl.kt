@@ -1,18 +1,14 @@
 package ac.kr.smu.endticket.history.domain.repository
 
 import ac.kr.smu.endticket.history.domain.model.History
-import ac.kr.smu.endticket.history.domain.model.HistorySlice
-import ac.kr.smu.endticket.history.domain.model.ImaginationHistory
-import ac.kr.smu.endticket.history.domain.model.TicketHistory
+import ac.kr.smu.endticket.history.ui.response.HistoryCount
+import ac.kr.smu.endticket.history.ui.response.HistorySlice
 import jakarta.persistence.EntityManager
-import org.springframework.data.domain.Page
+import org.hibernate.query.NativeQuery
 import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Slice
-import org.springframework.data.domain.SliceImpl
 import org.springframework.stereotype.Repository
-import kotlin.reflect.KClass
+import kotlin.jvm.optionals.getOrNull
 import kotlin.reflect.cast
-import kotlin.reflect.safeCast
 
 @Repository
 class HistorySupportImpl(
@@ -71,13 +67,46 @@ class HistorySupportImpl(
         return HistorySlice(result, pageable)
     }
 
+    override fun countEachHistoryByUserId(userId: Long): HistoryCount {
+        val query = """
+            SELECT 
+                ${History.Type.values().joinToString(", "){
+                    val table = table(it)
+                    "COUNT((SELECT $table.id FROM $table WHERE $table.id = h.id)) ${table}_count"
+                }}
+            FROM history h
+            WHERE h.user_id = :userId 
+        """.trimIndent()
+
+        return (
+                em.createNativeQuery(query)
+                    .setParameter("userId", userId)
+                    .unwrap(NativeQuery::class.java)
+                    .addScalar("ticket_history_count", Int::class.java)
+                    .addScalar("imagination_history_count", Int::class.java)
+                    .setTupleTransformer { tuple, _ ->
+                        println(tuple[0])
+                        println(tuple[1])
+                        HistoryCount(
+                            ticketHistoryCount = tuple[0] as Int,
+                            imaginationHistoryCount = tuple[1] as Int
+                        )
+                    }.singleResultOrNull
+                ) ?: HistoryCount(0, 0)
+    }
+
+    private fun table(type: History.Type) = when(type){
+        History.Type.TICKET -> "ticket_history"
+        History.Type.IMAGINATION -> "imagination_history"
+    }
+
     /**
      * type에 맞는 table 이름과 specificId와 매칭시킬 column 명을 반환하는 메소드
      * @param type 기록 종류
      * @return table 이름과 column 명
      */
     private fun tableAndSpecOfType(type: History.Type) = when(type){
-        History.Type.TICKET -> "ticket_history" to "ticket_id"
-        History.Type.IMAGINATION -> "imagination_history" to "imagination_id"
+        History.Type.TICKET -> table(type) to "ticket_id"
+        History.Type.IMAGINATION -> table(type) to "imagination_id"
     }
 }

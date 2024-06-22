@@ -1,6 +1,8 @@
 package ac.kr.smu.endticket.history
 
 import ac.kr.smu.endticket.history.domain.model.History
+import ac.kr.smu.endticket.history.domain.model.ImaginationHistory
+import ac.kr.smu.endticket.history.domain.model.TicketHistory
 import ac.kr.smu.endticket.history.domain.repository.HistoryRepository
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.params.ParameterizedTest
@@ -50,5 +52,18 @@ class HistoryRepositoryTest @Autowired constructor(
         for ((history, entity) in histories.zip(entities)) {
             assertEquals(history, entity)
         }
+    }
+
+    @ParameterizedTest
+    @DisplayName("사용자의 기록 개수들 조회 테스트")
+    @MethodSource("${HistoryTestParameters.PATH}#provideHistoriesOfEachType")
+    fun given_userId_countEachHistoryByUserId_then_returnHistoryCount(ticketHistories:Set<TicketHistory>, imaginationHistories: Set<ImaginationHistory>){
+        repo.saveAll(ticketHistories)
+        repo.saveAll(imaginationHistories)
+
+        val count = repo.countEachHistoryByUserId(HistoryTestParameters.USER_ID)
+
+        assertEquals(ticketHistories.size, count.ticketHistoryCount)
+        assertEquals(imaginationHistories.size, count.imaginationHistoryCount)
     }
 }

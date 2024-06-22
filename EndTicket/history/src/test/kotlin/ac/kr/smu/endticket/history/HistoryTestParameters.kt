@@ -68,6 +68,26 @@ object HistoryTestParameters{
         *EventResponse::class.sealedSubclasses.map { Arguments.of(mockRecord(it), historyTypeOfResponse(it)) }.toTypedArray()
     )
 
+    @JvmStatic
+    fun provideHistoriesOfEachType() = Stream.of(
+        Arguments.of(
+            setOf(TicketHistory.from(TICKET_COMPLETED_EVENT_RESPONSE, USER_ID)),
+            setOf(
+                ImaginationHistory.from(IMAGINATION_COMPLETED_EVENT_RESPONSE, USER_ID),
+                ImaginationHistory.from(
+                    ImaginationCompletedEventResponse(
+                        id = 2,
+                        behavior = "behavior",
+                        target = "target",
+                        characterType = CharacterType.KIA,
+                        completedAt = LocalDateTime.now(),
+                        color = Color.BLUE1
+                    )
+                    ,USER_ID
+                )
+            )
+        )
+    )
     /**
      * ConsumerRecord를 mocking 하는 메소드
      * @param responseType mocking할 EventResponse 타입

@@ -1,11 +1,9 @@
 package ac.kr.smu.endticket.history
 
-import ac.kr.smu.endticket.common.web.test.andReturn
 import ac.kr.smu.endticket.history.domain.model.History
-import ac.kr.smu.endticket.history.domain.model.HistorySlice
+import ac.kr.smu.endticket.history.ui.response.HistorySlice
 import ac.kr.smu.endticket.history.service.HistoryService
 import ac.kr.smu.endticket.history.ui.controller.HistoryController
-import ac.kr.smu.endticket.history.ui.response.HistoryResponse
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
@@ -15,13 +13,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Slice
-import org.springframework.data.domain.SliceImpl
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import kotlin.reflect.KClass
-import kotlin.test.assertEquals
 
 @WebMvcTest(controllers = [HistoryController::class])
 @AutoConfigureMockMvc(addFilters = false)
