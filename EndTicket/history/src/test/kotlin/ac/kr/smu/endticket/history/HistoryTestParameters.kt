@@ -19,6 +19,7 @@ import kotlin.reflect.KClass
 
 object HistoryTestParameters{
     const val USER_ID = 1L
+    const val PATH = "ac.kr.smu.endticket.history.HistoryTestParameters"
 
     private val TICKET_COMPLETED_EVENT_RESPONSE = TicketCompletedEventResponse(
         id = 1L,

@@ -49,9 +49,13 @@ class HistorySupportImpl(
             else -> throw IllegalArgumentException("$type 은 지원하지 않는 이벤트 타입입니다.")
         }
 
+        val sortOrder = pageable.sort.joinToString(", "){
+            "${it.property} ${it.direction.name}"
+        }
+
         val query = """
             SELECT * FROM history as h JOIN $table as sb  WHERE h.id = sb.id AND h.user_id = :userId
-            ORDER BY h.completed_at DESC LIMIT :size OFFSET :offset
+            ORDER BY ${sortOrder.ifEmpty { "h.completed_at DESC" }} LIMIT :size OFFSET :offset
         """.trimIndent()
 
         val result = em.createNativeQuery(query, type.java)

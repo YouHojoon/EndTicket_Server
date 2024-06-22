@@ -44,7 +44,7 @@ class EventConsumeServiceTest @Autowired constructor(
 
     @ParameterizedTest
     @DisplayName("완료 이벤트 수신 테스트")
-    @MethodSource("ac.kr.smu.endticket.history.HistoryTestParameters#provideTopicAndResponseAndType")
+    @MethodSource("${HistoryTestParameters.PATH}#provideTopicAndResponseAndType")
     fun given_ticketCompletedEvent_when_consume_then_saveTicketHistory(topic: String, response: EventResponse, type: KClass<out History>){
         Mockito.`when`(repo.existsBySpecificIdAndType(response.id, type))
             .thenReturn(false)
@@ -58,7 +58,7 @@ class EventConsumeServiceTest @Autowired constructor(
 
     @ParameterizedTest
     @DisplayName("완료 이벤트 수신 실패 테스트")
-    @MethodSource("ac.kr.smu.endticket.history.HistoryTestParameters#provideRecord")
+    @MethodSource("${HistoryTestParameters.PATH}#provideRecord")
     fun given_ticketCompletedEvent_when_consumeFail_then_sendNack(record: ConsumerRecord<String,out EventResponse>){
         val ack = Mockito.mock(Acknowledgment::class.java)
 
@@ -71,7 +71,7 @@ class EventConsumeServiceTest @Autowired constructor(
 
     @ParameterizedTest
     @DisplayName("완료 이벤트 중복 처리 테스트")
-    @MethodSource("ac.kr.smu.endticket.history.HistoryTestParameters#provideRecordAndType")
+    @MethodSource("${HistoryTestParameters.PATH}#provideRecordAndType")
     fun given_ticketCompletedEventAlreadyConsumed_when_consume_then_ack(record: ConsumerRecord<String, out EventResponse>, type: KClass<out History>){
         val ack = Mockito.mock(Acknowledgment::class.java)
         Mockito.`when`(repo.existsBySpecificIdAndType(Mockito.anyLong(), mockAny())).thenReturn(true)
