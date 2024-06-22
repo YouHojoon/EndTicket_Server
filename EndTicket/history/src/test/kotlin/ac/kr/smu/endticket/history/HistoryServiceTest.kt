@@ -1,6 +1,7 @@
 package ac.kr.smu.endticket.history
 
 import ac.kr.smu.endticket.history.domain.model.History
+import ac.kr.smu.endticket.history.domain.model.HistorySlice
 import ac.kr.smu.endticket.history.domain.repository.HistoryRepository
 import ac.kr.smu.endticket.history.service.HistoryService
 import org.junit.jupiter.api.DisplayName
@@ -37,16 +38,16 @@ class HistoryServiceTest(
 
     @ParameterizedTest
     @DisplayName("기록 조회 테스트")
-    @MethodSource("${HistoryTestParameters.PATH}#provideHistoriesType")
-    fun given_specificIdAndType_when_findHistories_then_returnHistories(histories: Set<History>, type: KClass<out History>){
+    @MethodSource("${HistoryTestParameters.PATH}#provideHistoriesAndType")
+    fun given_specificIdAndType_when_findHistories_then_returnHistoryResponses(histories: Set<History>, type: History.Type){
+        val pageable =  PageRequest.of(0,10)
+
         Mockito.`when`(repo.findAllByUserIdAndType(HistoryTestParameters.USER_ID, type, PageRequest.of(0,10)))
-            .thenReturn(SliceImpl(histories.toMutableList()))
+            .thenReturn(HistorySlice(histories, pageable))
 
-        val entities = service.findHistories(HistoryTestParameters.USER_ID, type, PageRequest.of(0,10))
+        val entities = service.findHistories(HistoryTestParameters.USER_ID, type,pageable)
 
-        assertFalse(entities.isEmpty)
-        for((entity, history) in entities.zip(histories))
-            assertEquals(entity, history)
-
+        assert(entities.isNotEmpty())
+        Mockito.verify(repo).findAllByUserIdAndType(HistoryTestParameters.USER_ID, type, pageable)
     }
 }

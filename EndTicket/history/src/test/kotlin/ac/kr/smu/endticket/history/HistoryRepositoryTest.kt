@@ -21,8 +21,8 @@ class HistoryRepositoryTest @Autowired constructor(
 ) {
     @ParameterizedTest
     @DisplayName("기록 조회 테스트")
-    @MethodSource("ac.kr.smu.endticket.history.HistoryTestParameters#provideHistorySpecificIdAndType")
-    fun given_specificIdAndType_when_findBySpecificIdAndType_then_returnHistory(history: History, specificId: Long, type: KClass<out History>){
+    @MethodSource("${HistoryTestParameters.PATH}#provideHistorySpecificIdAndType")
+    fun given_specificIdAndType_when_findBySpecificIdAndType_then_returnHistory(history: History, specificId: Long, type: History.Type){
         repo.save(history)
 
         val entity = repo.findBySpecificIdAndType(specificId, type)
@@ -33,8 +33,8 @@ class HistoryRepositoryTest @Autowired constructor(
 
     @ParameterizedTest
     @DisplayName("존재 여부 테스트")
-    @MethodSource("ac.kr.smu.endticket.history.HistoryTestParameters#provideHistorySpecificIdAndType")
-    fun given_specificIdAndType_existsSpecificIdAndType_then_returnIsExists(history: History, specificId: Long, type: KClass<out History>){
+    @MethodSource("${HistoryTestParameters.PATH}#provideHistorySpecificIdAndType")
+    fun given_specificIdAndType_existsSpecificIdAndType_then_returnIsExists(history: History, specificId: Long, type: History.Type){
         repo.save(history)
 
         assertTrue(repo.existsBySpecificIdAndType(specificId, type))
@@ -42,8 +42,8 @@ class HistoryRepositoryTest @Autowired constructor(
 
     @ParameterizedTest
     @DisplayName("사용자의 기록들 조회 테스트")
-    @MethodSource("ac.kr.smu.endticket.history.HistoryTestParameters#provideHistoriesType")
-    fun given_userIdAndType_findAllByUserIdAndType_then_returnHistories(histories: Collection<out History>, type: KClass<out History>) {
+    @MethodSource("${HistoryTestParameters.PATH}#provideHistoriesAndType")
+    fun given_userIdAndType_findAllByUserIdAndType_then_returnHistories(histories: Collection<out History>, type: History.Type) {
         repo.saveAll(histories)
         val entities = repo.findAllByUserIdAndType(HistoryTestParameters.USER_ID, type, PageRequest.of(0, 10))
 

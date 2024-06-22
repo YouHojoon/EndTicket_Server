@@ -42,20 +42,20 @@ object HistoryTestParameters{
 
     @JvmStatic
     fun provideHistorySpecificIdAndType() = Stream.of(
-        Arguments.of(TicketHistory.from(TICKET_COMPLETED_EVENT_RESPONSE, USER_ID), TICKET_COMPLETED_EVENT_RESPONSE.id, TicketHistory::class),
-        Arguments.of(ImaginationHistory.from(IMAGINATION_COMPLETED_EVENT_RESPONSE, USER_ID), IMAGINATION_COMPLETED_EVENT_RESPONSE.id, ImaginationHistory::class)
+        Arguments.of(TicketHistory.from(TICKET_COMPLETED_EVENT_RESPONSE, USER_ID), TICKET_COMPLETED_EVENT_RESPONSE.id, History.Type.TICKET),
+        Arguments.of(ImaginationHistory.from(IMAGINATION_COMPLETED_EVENT_RESPONSE, USER_ID), IMAGINATION_COMPLETED_EVENT_RESPONSE.id, History.Type.IMAGINATION)
     )
 
     @JvmStatic
-    fun provideHistoriesType() = Stream.of(
-        Arguments.of(setOf(TicketHistory.from(TICKET_COMPLETED_EVENT_RESPONSE, USER_ID)), TicketHistory::class),
-        Arguments.of(setOf(ImaginationHistory.from(IMAGINATION_COMPLETED_EVENT_RESPONSE, USER_ID)),ImaginationHistory::class)
+    fun provideHistoriesAndType() = Stream.of(
+        Arguments.of(setOf(TicketHistory.from(TICKET_COMPLETED_EVENT_RESPONSE, USER_ID)), History.Type.TICKET),
+        Arguments.of(setOf(ImaginationHistory.from(IMAGINATION_COMPLETED_EVENT_RESPONSE, USER_ID)),History.Type.IMAGINATION)
     )
 
     @JvmStatic
     fun provideTopicAndResponseAndType() = Stream.of(
-        Arguments.of(KafkaTopic.TICKET_COMPLETION, TICKET_COMPLETED_EVENT_RESPONSE, TicketHistory::class),
-        Arguments.of(KafkaTopic.IMAGINATION_COMPLETION, IMAGINATION_COMPLETED_EVENT_RESPONSE, ImaginationHistory::class)
+        Arguments.of(KafkaTopic.TICKET_COMPLETION, TICKET_COMPLETED_EVENT_RESPONSE, History.Type.TICKET),
+        Arguments.of(KafkaTopic.IMAGINATION_COMPLETION, IMAGINATION_COMPLETED_EVENT_RESPONSE, History.Type.IMAGINATION)
     )
 
     @JvmStatic
@@ -89,13 +89,13 @@ object HistoryTestParameters{
     }
 
     /**
-     * 이벤트 응답에 맞는 기록 type을 반환하는 메소드
+     * 이벤트 응답에 맞는 기록 class을 반환하는 메소드
      * @param responseType 이벤트 응답
-     * @return 기록 type
+     * @return 기록 class
      */
-    private fun historyTypeOfResponse(responseType: KClass<out EventResponse>): KClass<out History> = when(responseType){
-        TicketCompletedEventResponse::class -> TicketHistory::class
-        ImaginationCompletedEventResponse::class -> ImaginationHistory::class
+    private fun historyTypeOfResponse(responseType: KClass<out EventResponse>):History.Type = when(responseType){
+        TicketCompletedEventResponse::class -> History.Type.TICKET
+        ImaginationCompletedEventResponse::class ->  History.Type.IMAGINATION
         else -> throw IllegalArgumentException("$responseType 은 지원하지 않는 타입입니다.")
     }
 }
