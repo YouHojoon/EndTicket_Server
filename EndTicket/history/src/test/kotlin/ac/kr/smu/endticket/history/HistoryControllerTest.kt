@@ -4,7 +4,9 @@ import ac.kr.smu.endticket.history.domain.model.History
 import ac.kr.smu.endticket.history.ui.response.HistorySlice
 import ac.kr.smu.endticket.history.service.HistoryService
 import ac.kr.smu.endticket.history.ui.controller.HistoryController
+import ac.kr.smu.endticket.history.ui.response.HistoryCount
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
@@ -40,5 +42,17 @@ class HistoryControllerTest @Autowired constructor(
             .andExpect(MockMvcResultMatchers.jsonPath("histories").isNotEmpty)
 
         Mockito.verify(service).findHistories(HistoryTestParameters.USER_ID, type, pageable)
+    }
+
+    @Test
+    @DisplayName("기록 개수 조회 테스트")
+    fun given_userId_when_findHistoryCount_then_returnHistoryCount(){
+        Mockito.`when`(service.findHistoryCount(HistoryTestParameters.USER_ID))
+            .thenReturn(HistoryCount(1,1))
+
+        mvc.findHistoryCount()
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("ticketHistoryCount").isNumber)
+            .andExpect(MockMvcResultMatchers.jsonPath("imaginationHistoryCount").isNumber)
     }
 }

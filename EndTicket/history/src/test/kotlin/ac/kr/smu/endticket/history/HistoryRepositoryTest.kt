@@ -57,7 +57,7 @@ class HistoryRepositoryTest @Autowired constructor(
     @ParameterizedTest
     @DisplayName("사용자의 기록 개수들 조회 테스트")
     @MethodSource("${HistoryTestParameters.PATH}#provideHistoriesOfEachType")
-    fun given_userId_countEachHistoryByUserId_then_returnHistoryCount(ticketHistories:Set<TicketHistory>, imaginationHistories: Set<ImaginationHistory>){
+    fun given_userId_when_countEachHistoryByUserId_then_returnHistoryCount(ticketHistories:Set<TicketHistory>, imaginationHistories: Set<ImaginationHistory>){
         repo.saveAll(ticketHistories)
         repo.saveAll(imaginationHistories)
 

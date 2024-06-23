@@ -9,6 +9,11 @@ private const val BASE_URL = "http://localhost:8085/histories"
 
 fun MockMvc.findHistories(type: History.Type) = perform(
     MockMvcRequestBuilders
-        .get("$BASE_URL/${type.name.lowercase()}")
+        .get("$BASE_URL/${type.name.lowercase()}?page=0")
+        .header(HttpHeaderName.USER_ID, HistoryTestParameters.USER_ID)
+)
+
+fun MockMvc.findHistoryCount() = perform(
+    MockMvcRequestBuilders.get("$BASE_URL/count")
         .header(HttpHeaderName.USER_ID, HistoryTestParameters.USER_ID)
 )

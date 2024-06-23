@@ -24,4 +24,10 @@ class HistoryController(
         @RequestHeader(HttpHeaderName.USER_ID)
         userId: Long
     ) = ResponseEntity.ok(service.findHistories(userId, type, pageable))
+
+    @GetMapping("/count")
+    fun findHistoryCount(
+        @RequestHeader(HttpHeaderName.USER_ID)
+        userId: Long
+    ) = ResponseEntity.ok(service.findHistoryCount(userId))
 }
