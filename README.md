@@ -1,4 +1,49 @@
-# [EndTicket_iOS](https://apps.apple.com/kr/app/%EB%A7%88%EC%B9%A8-%ED%91%9C/id1634962397)
+# [EndTicket_Server](https://apps.apple.com/kr/app/%EB%A7%88%EC%B9%A8-%ED%91%9C/id1634962397)
+
+## 서버 구조도
+![제목 없는 다이어그램 drawio-2](https://github.com/YouHojoon/EndTicket_Server/assets/53998480/cfb9294a-c0cb-4aca-8bba-6072e1a38192)
+
+## 테이블 설계
+![image](https://github.com/YouHojoon/EndTicket_Server/assets/53998480/f85c4765-74d5-454b-a0ae-dae5a974d471)
+
+## API 문서
+[https://app.swaggerhub.com/apis-docs/DBGHWNS11_1/end-ticket-api/1.0.0](https://app.swaggerhub.com/apis-docs/DBGHWNS11_1/end-ticket-api/1.0.0
+)
+
+
+
+## 사용 기술
+### Language
+- Kotlin
+
+### Framework
+- Spring Framework
+- Spring Boot
+- Spring Security
+- Spring Cloud Netflix
+- Spring Cloud Gateway
+- Spring Cloud Circuitbreaker Resilience4j
+- Spring Cloud Config
+
+### Middleware
+- Kafka
+- gRPC
+
+### Database
+- MySQL
+- Redis
+- JPA
+  
+### Observation
+- Zipkin
+- Brave
+
+### Test
+- Junit5
+- Jacoco
+
+
+## 소개
 
 "미래의 나를 상상하며 자존감을 올릴 수 있게 도와주는 마음관리 어플리케이션"
 
