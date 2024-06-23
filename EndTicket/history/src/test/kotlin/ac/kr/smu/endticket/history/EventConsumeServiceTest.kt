@@ -16,9 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.core.ValueOperations
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
+import kotlin.test.BeforeTest
 
 @SpringBootTest(
     classes = [
@@ -29,12 +32,19 @@ import org.springframework.kafka.test.context.EmbeddedKafka
 @EmbeddedKafka(partitions = 3)
 class EventConsumeServiceTest @Autowired constructor(
     @MockBean
+    private val ops: ValueOperations<String,Any>,
+    @MockBean
     private val repo: HistoryRepository,
+    @MockBean
+    private val redisTemplate: RedisTemplate<String,Any>,
     private val broker: EmbeddedKafkaBroker,
     private val service: EventConsumeService
 ){
     private val producer = createProducer<EventResponse>(broker)
-
+    @BeforeTest
+    fun init(){
+        Mockito.`when`(redisTemplate.opsForValue()).thenReturn(ops)
+    }
     @ParameterizedTest
     @DisplayName("완료 이벤트 수신 테스트")
     @MethodSource("${HistoryTestParameters.PATH}#provideTopicAndResponseAndType")
@@ -45,6 +55,7 @@ class EventConsumeServiceTest @Autowired constructor(
         producer.send(ProducerRecord(topic, HistoryTestParameters.USER_ID.toString(), response))
 
         Thread.sleep(500L)
+        
         Mockito.verify(repo).save(mockAny())
         Mockito.verify(repo).existsBySpecificIdAndType(response.id, type)
     }

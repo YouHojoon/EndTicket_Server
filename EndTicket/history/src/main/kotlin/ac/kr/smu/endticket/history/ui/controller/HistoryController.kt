@@ -2,7 +2,16 @@ package ac.kr.smu.endticket.history.ui.controller
 
 import ac.kr.smu.endticket.common.constant.HttpHeaderName
 import ac.kr.smu.endticket.history.domain.model.History
+import ac.kr.smu.endticket.history.swagger.apiresponses.FindHistoriesApiResponses
 import ac.kr.smu.endticket.history.service.HistoryService
+import ac.kr.smu.endticket.history.ui.response.HistorySlice
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.ResponseEntity
@@ -10,9 +19,12 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/histories")
+@Tag(name = "/histories")
+@SecurityRequirement(name = "Access token")
 class HistoryController(
     private val service: HistoryService
 ) {
+    @FindHistoriesApiResponses
     @GetMapping("{type}")
     fun findHistories(
         @PathVariable("type")

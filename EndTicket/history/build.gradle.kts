@@ -5,6 +5,7 @@ dependencies {
     implementation(project(":common:web"))
     implementation(project(":common:security"))
     implementation(project(":common:jpa"))
+    implementation(project(":common:redis"))
     implementation(project(":common:zipkin"))
     testRuntimeOnly("com.h2database:h2")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))

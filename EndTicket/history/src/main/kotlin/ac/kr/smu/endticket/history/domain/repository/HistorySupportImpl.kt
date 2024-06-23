@@ -5,9 +5,9 @@ import ac.kr.smu.endticket.history.ui.response.HistoryCount
 import ac.kr.smu.endticket.history.ui.response.HistorySlice
 import jakarta.persistence.EntityManager
 import org.hibernate.query.NativeQuery
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
-import kotlin.jvm.optionals.getOrNull
 import kotlin.reflect.cast
 
 @Repository
@@ -67,6 +67,7 @@ class HistorySupportImpl(
         return HistorySlice(result, pageable)
     }
 
+    @Cacheable(cacheNames = ["history-count"], key = "#userId")
     override fun countEachHistoryByUserId(userId: Long): HistoryCount {
         val query = """
             SELECT 

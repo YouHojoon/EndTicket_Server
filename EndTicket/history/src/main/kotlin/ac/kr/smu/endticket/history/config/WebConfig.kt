@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.history.infra.config
+package ac.kr.smu.endticket.history.config
 
 import ac.kr.smu.endticket.history.domain.converter.HistoryTypeConverter
 import org.springframework.context.annotation.Configuration
