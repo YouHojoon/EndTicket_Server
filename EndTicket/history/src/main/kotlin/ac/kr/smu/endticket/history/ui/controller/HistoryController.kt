@@ -6,6 +6,7 @@ import ac.kr.smu.endticket.history.swagger.apiresponses.FindHistoriesApiResponse
 import ac.kr.smu.endticket.history.service.HistoryService
 import ac.kr.smu.endticket.history.ui.response.HistorySlice
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -28,17 +29,20 @@ class HistoryController(
     @GetMapping("{type}")
     fun findHistories(
         @PathVariable("type")
+        @Parameter(description = "기록의 종류", schema = Schema(implementation = History.Type::class))
         type: History.Type,
 
         @PageableDefault
         pageable: Pageable,
 
+        @Parameter(hidden = true)
         @RequestHeader(HttpHeaderName.USER_ID)
         userId: Long
     ) = ResponseEntity.ok(service.findHistories(userId, type, pageable))
 
     @GetMapping("/count")
     fun findHistoryCount(
+        @Parameter(hidden = true)
         @RequestHeader(HttpHeaderName.USER_ID)
         userId: Long
     ) = ResponseEntity.ok(service.findHistoryCount(userId))
