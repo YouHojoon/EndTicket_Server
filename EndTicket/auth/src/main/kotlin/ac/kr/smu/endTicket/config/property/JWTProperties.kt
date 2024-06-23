@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.auth.infra.property
+package ac.kr.smu.endTicket.config.property
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component

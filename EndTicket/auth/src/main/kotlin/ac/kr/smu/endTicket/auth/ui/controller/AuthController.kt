@@ -3,8 +3,8 @@ package ac.kr.smu.endTicket.auth.ui.controller
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.service.UserService
 import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2User
-import ac.kr.smu.endTicket.auth.infra.swagger.apiResponses.CreateTokenResponses
-import ac.kr.smu.endTicket.auth.infra.swagger.apiResponses.ReissueTokenApiResponses
+import ac.kr.smu.endTicket.swagger.apiresponses.CreateTokenResponses
+import ac.kr.smu.endTicket.swagger.apiresponses.ReissueTokenApiResponses
 import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 import io.swagger.v3.oas.annotations.Parameter

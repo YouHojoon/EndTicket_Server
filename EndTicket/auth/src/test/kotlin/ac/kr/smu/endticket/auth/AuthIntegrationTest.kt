@@ -3,7 +3,7 @@ package ac.kr.smu.endticket.auth
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
 import ac.kr.smu.endTicket.auth.service.UserService
 import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2TokenResponse
-import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
+import ac.kr.smu.endTicket.config.property.JWTProperties
 import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endTicket.auth.ui.controller.AuthController
 import ac.kr.smu.endTicket.auth.ui.response.TokenResponse

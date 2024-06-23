@@ -2,7 +2,7 @@ package ac.kr.smu.endTicket.auth.service
 
 import ac.kr.smu.endTicket.auth.domain.exception.NotFoundUserException
 import ac.kr.smu.endTicket.auth.domain.exception.RefreshTokenExpiredException
-import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
+import ac.kr.smu.endTicket.config.property.JWTProperties
 import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
 import ac.kr.smu.endticket.protobuf.AccessToken
 import ac.kr.smu.endticket.protobuf.TokenServiceGrpc

@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket
 
 import ac.kr.smu.endticket.common.redis.annotation.EnableAutoRedisConfig
-import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
+import ac.kr.smu.endTicket.config.property.JWTProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication

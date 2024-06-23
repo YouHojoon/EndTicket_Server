@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.auth.infra.swagger.apiResponses
+package ac.kr.smu.endTicket.swagger.apiresponses
 
 import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
 import ac.kr.smu.endticket.common.web.response.ExceptionResponse

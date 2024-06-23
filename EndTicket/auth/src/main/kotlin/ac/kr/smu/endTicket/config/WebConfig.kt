@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.auth.infra.config
+package ac.kr.smu.endTicket.config
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.domain.converter.SocialTypeConverter

@@ -1,4 +1,4 @@
-package ac.kr.smu.endTicket.auth.infra.config
+package ac.kr.smu.endTicket.config
 
 import brave.Tracing
 import net.devh.boot.grpc.client.interceptor.GrpcGlobalClientInterceptor

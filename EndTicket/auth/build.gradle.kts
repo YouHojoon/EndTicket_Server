@@ -42,6 +42,7 @@ tasks.jacocoTestReport{
                     "**/domain/*",
                     "**/response/*",
                     "**/request/*",
+                    "**/config/*",
                 )
             }
         })
@@ -60,6 +61,7 @@ tasks.jacocoTestCoverageVerification {
                 "**.domain.*",
                 "**.response.*",
                 "**.request.*",
+                "**.config.*",
             )
 
             element = "CLASS"

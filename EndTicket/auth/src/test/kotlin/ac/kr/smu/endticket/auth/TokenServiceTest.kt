@@ -1,7 +1,7 @@
 package ac.kr.smu.endticket.auth
 
 import ac.kr.smu.endTicket.auth.domain.exception.RefreshTokenExpiredException
-import ac.kr.smu.endTicket.auth.infra.property.JWTProperties
+import ac.kr.smu.endTicket.config.property.JWTProperties
 import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endticket.common.redis.test.RedisTestConfig
 import ac.kr.smu.endticket.protobuf.AccessToken
@@ -42,9 +42,9 @@ class TokenServiceTest @Autowired constructor(
     @MockBean
     private val redisTemplate: RedisTemplate<String,String>,
     private val service: TokenService,
-    private val properties:JWTProperties,
+    private val properties: JWTProperties,
 
-){
+    ){
     @GrpcClient("token")
     private lateinit var stub: TokenServiceBlockingStub
 
