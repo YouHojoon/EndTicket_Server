@@ -1,6 +1,7 @@
 package ac.kr.smu.endticket.history.service
 
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
+import ac.kr.smu.endticket.history.domain.converter.HistoryTypeConverter
 import ac.kr.smu.endticket.history.domain.model.History
 import ac.kr.smu.endticket.history.domain.model.ImaginationHistory
 import ac.kr.smu.endticket.history.domain.model.TicketHistory
@@ -34,8 +35,8 @@ class EventConsumeService(
         val response = record.value()
         val userId = record.key().toLong()
         val (type, entity) = when(record.topic()){
-            KafkaTopic.TICKET_COMPLETED -> TicketHistory::class to TicketHistory.from(response as TicketCompletedEventResponse,userId)
-            KafkaTopic.IMAGINATION_COMPLETED -> ImaginationHistory::class to ImaginationHistory.from(response as ImaginationCompletedEventResponse,userId)
+            KafkaTopic.TICKET_COMPLETED -> History.Type.TICKET to TicketHistory.from(response as TicketCompletedEventResponse,userId)
+            KafkaTopic.IMAGINATION_COMPLETED -> History.Type.IMAGINATION to ImaginationHistory.from(response as ImaginationCompletedEventResponse,userId)
             else -> throw IllegalStateException("${record.topic()}은 알 수 없는 토픽입니다.")
         }
 
