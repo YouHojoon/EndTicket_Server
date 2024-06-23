@@ -10,6 +10,7 @@ object UserTestParameters{
     const val PATH  = "ac.kr.smu.endticket.user.UserTestParameters"
     const val SOCIAL_USER_NUMBER = "1"
     const val NICKNAME = "닉네임"
+    const val USER_ID = 1L
     val SOCIAL_TYPE = User.SocialType.KAKAO
 
     @JvmStatic
