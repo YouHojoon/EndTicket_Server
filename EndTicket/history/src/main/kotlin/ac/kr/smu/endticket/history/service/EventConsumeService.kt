@@ -1,14 +1,17 @@
 package ac.kr.smu.endticket.history.service
 
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
+import ac.kr.smu.endticket.history.domain.model.History
 import ac.kr.smu.endticket.history.domain.model.ImaginationHistory
 import ac.kr.smu.endticket.history.domain.model.TicketHistory
 import ac.kr.smu.endticket.history.domain.repository.HistoryRepository
 import ac.kr.smu.endticket.history.infra.messaging.EventResponse
 import ac.kr.smu.endticket.history.infra.messaging.ImaginationCompletedEventResponse
 import ac.kr.smu.endticket.history.infra.messaging.TicketCompletedEventResponse
+import ac.kr.smu.endticket.history.ui.response.HistoryCount
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.LoggerFactory
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Service
@@ -16,7 +19,8 @@ import java.time.Duration
 
 @Service
 class EventConsumeService(
-    private val repo: HistoryRepository
+    private val repo: HistoryRepository,
+    private val redisTemplate: RedisTemplate<String, Any>
 ) {
     private val log = LoggerFactory.getLogger(EventConsumeService::class.java)
 
@@ -36,13 +40,33 @@ class EventConsumeService(
         }
 
         try {
-            if (!repo.existsBySpecificIdAndType(response.id, type))
+            if (!repo.existsBySpecificIdAndType(response.id, type)) {
                 repo.save(entity)
+                redisTemplate.updateCountIfPresent(userId,type)
+            }
 
             ack.acknowledge()
         }catch (e: Exception){
             log.error("{id: ${response.id}, userId: ${record.key()}, topic: ${record.topic()}", e)
             ack.nack(Duration.ofSeconds(5))
         }
+    }
+
+    /**
+     * 기록 개수가 캐시에 있으면 업데이트 하는 메소드
+     * @param userId 사용자 id
+     * @param type 새로 저장된 기록 종류
+     */
+    private fun RedisTemplate<String,Any>.updateCountIfPresent(userId:Long, type: History.Type){
+        val ops = opsForValue()
+        val key = "history-count::$userId"
+        val count = ops.get(key) as? HistoryCount ?: return
+
+        val newCount = when(type){
+            History.Type.TICKET -> HistoryCount(count.ticketHistoryCount + 1, count.imaginationHistoryCount)
+            History.Type.IMAGINATION -> HistoryCount(count.ticketHistoryCount, count.imaginationHistoryCount + 1)
+        }
+
+        ops.set(key,newCount)
     }
 }

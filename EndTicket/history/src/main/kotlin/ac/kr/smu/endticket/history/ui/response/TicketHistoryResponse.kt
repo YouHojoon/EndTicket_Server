@@ -4,6 +4,7 @@ import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.common.web.enum.TicketType
 import ac.kr.smu.endticket.history.domain.model.TicketHistory
 import io.swagger.v3.oas.annotations.media.Schema
+import java.time.LocalDateTime
 
 /**
  * 티켓 기록 응답
@@ -14,7 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema
  * @property swipeCount 스와이프 횟수
  */
 @Schema(description = "티켓 횟수")
-data class TicketHistoryResponse(
+class TicketHistoryResponse(
     @Schema(description = "행동", example = "힘들어도 눈치 보지 말고 꼭 대화하기")
     val behavior: String,
 
@@ -28,5 +29,8 @@ data class TicketHistoryResponse(
     val type: TicketType,
 
     @Schema(description = "스와이프 횟수", example = "5")
-    val swipeCount: Int
-)
+    val swipeCount: Int,
+
+    @Schema(description = "완료 일자", example = "2024-06-22T12:53:58.834278")
+    completedAt: LocalDateTime
+): HistoryResponse(completedAt)
