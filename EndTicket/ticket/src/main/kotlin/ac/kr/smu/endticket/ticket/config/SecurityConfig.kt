@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.ticket.infra.config
+package ac.kr.smu.endticket.ticket.config
 
 import ac.kr.smu.endticket.common.security.baseConfig
 import ac.kr.smu.endticket.common.security.permitOnlyWhitelistRequest

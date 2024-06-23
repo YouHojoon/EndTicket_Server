@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.ticket.infra.swagger
+package ac.kr.smu.endticket.ticket.swagger.apiresponses
 
 import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
 import io.swagger.v3.oas.annotations.Operation

@@ -2,6 +2,7 @@ package ac.kr.smu.endticket.ticket.infra.messaging
 
 import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.common.web.enum.TicketType
+import java.time.LocalDateTime
 
 
 data class TicketCompletedEventResponse(
@@ -10,5 +11,6 @@ data class TicketCompletedEventResponse(
     val target: String,
     val color: Color,
     val type: TicketType,
-    val swipeCount: Int
+    val swipeCount: Int,
+    val completedAt: LocalDateTime
 )
