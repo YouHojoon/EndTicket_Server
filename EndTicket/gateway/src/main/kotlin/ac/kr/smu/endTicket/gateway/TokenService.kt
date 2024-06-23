@@ -1,8 +1,8 @@
 package ac.kr.smu.endTicket.gateway
 
-import ac.kr.smu.endTicket.protobuf.AccessToken
-import ac.kr.smu.endTicket.protobuf.TokenServiceGrpc.TokenServiceBlockingStub
-import ac.kr.smu.endTicket.protobuf.ValidateAccessTokenResponse
+import ac.kr.smu.endticket.protobuf.AccessToken
+import ac.kr.smu.endticket.protobuf.TokenServiceGrpc.TokenServiceBlockingStub
+import ac.kr.smu.endticket.protobuf.ValidateAccessTokenResponse
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import net.devh.boot.grpc.client.inject.GrpcClient
 import org.slf4j.LoggerFactory
