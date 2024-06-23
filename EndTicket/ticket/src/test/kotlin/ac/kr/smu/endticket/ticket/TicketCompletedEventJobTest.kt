@@ -49,7 +49,7 @@ class TicketCompletedEventJobTest @Autowired constructor(
 
     @BeforeTest
     fun init(){
-        container = createKafkaContainer(broker, KafkaTopic.TICKET_COMPLETION)
+        container = createKafkaContainer(broker, KafkaTopic.TICKET_COMPLETED)
     }
     @AfterEach
     fun reset(){

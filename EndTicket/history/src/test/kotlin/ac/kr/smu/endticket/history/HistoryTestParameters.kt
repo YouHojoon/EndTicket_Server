@@ -53,8 +53,8 @@ object HistoryTestParameters{
 
     @JvmStatic
     fun provideTopicAndResponseAndType() = Stream.of(
-        Arguments.of(KafkaTopic.TICKET_COMPLETION, TICKET_COMPLETED_EVENT_RESPONSE, TicketHistory::class),
-        Arguments.of(KafkaTopic.IMAGINATION_COMPLETION, IMAGINATION_COMPLETED_EVENT_RESPONSE, ImaginationHistory::class)
+        Arguments.of(KafkaTopic.TICKET_COMPLETED, TICKET_COMPLETED_EVENT_RESPONSE, TicketHistory::class),
+        Arguments.of(KafkaTopic.IMAGINATION_COMPLETED, IMAGINATION_COMPLETED_EVENT_RESPONSE, ImaginationHistory::class)
     )
 
     @JvmStatic
@@ -75,8 +75,8 @@ object HistoryTestParameters{
     private fun mockRecord(responseType: KClass<out EventResponse>): ConsumerRecord<String, EventResponse> {
         val record = Mockito.mock(ConsumerRecord::class.java) as ConsumerRecord<String, EventResponse>
         val (topic,value) = when(responseType){
-            TicketCompletedEventResponse::class -> KafkaTopic.TICKET_COMPLETION to TICKET_COMPLETED_EVENT_RESPONSE
-            ImaginationCompletedEventResponse::class ->  KafkaTopic.IMAGINATION_COMPLETION to IMAGINATION_COMPLETED_EVENT_RESPONSE
+            TicketCompletedEventResponse::class -> KafkaTopic.TICKET_COMPLETED to TICKET_COMPLETED_EVENT_RESPONSE
+            ImaginationCompletedEventResponse::class ->  KafkaTopic.IMAGINATION_COMPLETED to IMAGINATION_COMPLETED_EVENT_RESPONSE
             else -> throw IllegalArgumentException("$responseType 은 지원하지 않는 타입입니다.")
         }
 

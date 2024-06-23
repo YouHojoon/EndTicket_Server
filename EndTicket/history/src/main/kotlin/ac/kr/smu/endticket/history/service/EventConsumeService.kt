@@ -25,13 +25,13 @@ class EventConsumeService(
      * @param record 수신한 이벤트
      * @param ack kafka commit을 위한 객체
      */
-    @KafkaListener(topics = [KafkaTopic.TICKET_COMPLETION, KafkaTopic.IMAGINATION_COMPLETION])
+    @KafkaListener(topics = [KafkaTopic.TICKET_COMPLETED, KafkaTopic.IMAGINATION_COMPLETED])
     fun consume(record: ConsumerRecord<String, out EventResponse>, ack: Acknowledgment){
         val response = record.value()
         val userId = record.key().toLong()
         val (type, entity) = when(record.topic()){
-            KafkaTopic.TICKET_COMPLETION -> TicketHistory::class to TicketHistory.from(response as TicketCompletedEventResponse,userId)
-            KafkaTopic.IMAGINATION_COMPLETION -> ImaginationHistory::class to ImaginationHistory.from(response as ImaginationCompletedEventResponse,userId)
+            KafkaTopic.TICKET_COMPLETED -> TicketHistory::class to TicketHistory.from(response as TicketCompletedEventResponse,userId)
+            KafkaTopic.IMAGINATION_COMPLETED -> ImaginationHistory::class to ImaginationHistory.from(response as ImaginationCompletedEventResponse,userId)
             else -> throw IllegalStateException("${record.topic()}은 알 수 없는 토픽입니다.")
         }
 

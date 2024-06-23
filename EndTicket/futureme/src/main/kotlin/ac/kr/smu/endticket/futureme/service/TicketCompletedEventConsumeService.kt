@@ -30,7 +30,7 @@ class TicketCompletedEventConsumeService(
      * @param record 이벤트의 내용
      * @param ack 이벤트의 처리결과를 kafka에 알리기 위한 객체
      */
-    @KafkaListener(topics = [KafkaTopic.TICKET_COMPLETION])
+    @KafkaListener(topics = [KafkaTopic.TICKET_COMPLETED])
     @Transactional
     fun consume(record: ConsumerRecord<String, TicketCompletedEventResponse>, ack: Acknowledgment){
         try {

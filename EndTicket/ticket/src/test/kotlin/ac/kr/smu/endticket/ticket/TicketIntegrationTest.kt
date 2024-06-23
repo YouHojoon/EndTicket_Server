@@ -237,7 +237,7 @@ class TicketIntegrationTest @Autowired constructor(
 
         val queue = LinkedBlockingQueue<ConsumerRecord<String, TicketCompletedEventResponse>>()
 
-        container = createKafkaContainer(broker, KafkaTopic.TICKET_COMPLETION)
+        container = createKafkaContainer(broker, KafkaTopic.TICKET_COMPLETED)
         container.messageListener(broker){
             queue.add(it)
         }

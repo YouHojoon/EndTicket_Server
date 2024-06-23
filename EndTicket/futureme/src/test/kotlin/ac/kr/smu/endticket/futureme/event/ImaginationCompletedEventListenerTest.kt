@@ -54,7 +54,7 @@ class ImaginationCompletedEventListenerTest @Autowired constructor(
 
     @BeforeEach
     fun init(){
-        container = createKafkaContainer(broker, KafkaTopic.IMAGINATION_COMPLETION)
+        container = createKafkaContainer(broker, KafkaTopic.IMAGINATION_COMPLETED)
         container.messageListener(broker){
             queue.add(it)
         }
@@ -94,7 +94,7 @@ class ImaginationCompletedEventListenerTest @Autowired constructor(
 
         Mockito.`when`(mockEvent.toMessage(EventTestParameters.FUTURE_ME.characterType))
             .thenReturn(message)
-        Mockito.`when`(messageService.send(KafkaTopic.IMAGINATION_COMPLETION, message))
+        Mockito.`when`(messageService.send(KafkaTopic.IMAGINATION_COMPLETED, message))
             .thenReturn(CompletableFuture.failedFuture(RuntimeException()))
 
         eventService.publishEvent(mockEvent)

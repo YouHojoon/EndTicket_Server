@@ -5,7 +5,6 @@ import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.ticket.domain.model.TicketCompletedEvent
 import ac.kr.smu.endticket.ticket.domain.repository.TicketCompletedEventRepository
 import ac.kr.smu.endticket.ticket.infra.messaging.TicketCompletedEventResponse
-import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
@@ -36,7 +35,7 @@ class TicketCompletedEventListener(
     fun sendMessage(event: TicketCompletedEvent){
         val message = event.toMessage()
 
-        messageService.send(KafkaTopic.TICKET_COMPLETION,message).whenCompleteAsync { _, e ->
+        messageService.send(KafkaTopic.TICKET_COMPLETED,message).whenCompleteAsync { _, e ->
             if (e == null)
                 repo.save(event.also { it.successSend() })
             else {

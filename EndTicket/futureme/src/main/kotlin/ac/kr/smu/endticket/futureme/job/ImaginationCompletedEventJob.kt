@@ -48,7 +48,7 @@ class ImaginationCompletedEventJob(
                     .character.type.also { characterTypes[event.userId] = it }
             ) }
             val futures = messageService
-                .send(KafkaTopic.IMAGINATION_COMPLETION,messages)
+                .send(KafkaTopic.IMAGINATION_COMPLETED,messages)
                 .mapIndexed {i, future ->
                     future.handle{record, e ->
                         if (e == null)
