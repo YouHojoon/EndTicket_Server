@@ -15,8 +15,7 @@ import java.time.LocalDateTime
 @Entity
 @Table(
     indexes = [
-        Index(name = "idx_completed_at", columnList = "completed_at"),
-        Index(name = "idx_user_id", columnList = "user_id")
+        Index(name = "idx_user_id_completed_at", columnList = "user_id, completed_at")
     ]
 )
 @Inheritance(strategy = InheritanceType.JOINED)
