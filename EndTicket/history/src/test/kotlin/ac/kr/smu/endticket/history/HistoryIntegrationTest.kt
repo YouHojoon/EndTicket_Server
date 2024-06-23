@@ -76,5 +76,6 @@ class HistoryIntegrationTest @Autowired constructor(
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("ticketHistoryCount").value(ticketHistories.size))
             .andExpect(MockMvcResultMatchers.jsonPath("imaginationHistoryCount").value(imaginationHistories.size))
+            .andExpect(MockMvcResultMatchers.jsonPath("ticketSwipeCount").isNumber)
     }
 }

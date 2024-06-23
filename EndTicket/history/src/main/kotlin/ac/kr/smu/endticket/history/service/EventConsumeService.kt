@@ -16,6 +16,7 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
 
 @Service
@@ -30,6 +31,7 @@ class EventConsumeService(
      * @param record 수신한 이벤트
      * @param ack kafka commit을 위한 객체
      */
+    @Transactional
     @KafkaListener(topics = [KafkaTopic.TICKET_COMPLETED, KafkaTopic.IMAGINATION_COMPLETED])
     fun consume(record: ConsumerRecord<String, out EventResponse>, ack: Acknowledgment){
         val response = record.value()
@@ -37,14 +39,13 @@ class EventConsumeService(
         val (type, entity) = when(record.topic()){
             KafkaTopic.TICKET_COMPLETED -> History.Type.TICKET to TicketHistory.from(response as TicketCompletedEventResponse,userId)
             KafkaTopic.IMAGINATION_COMPLETED -> History.Type.IMAGINATION to ImaginationHistory.from(response as ImaginationCompletedEventResponse,userId)
-            else -> throw IllegalStateException("${record.topic()}은 알 수 없는 토픽입니다.")
+            else -> throw IllegalArgumentException("${record.topic()}은 알 수 없는 토픽입니다.")
         }
 
         try {
-            if (!repo.existsBySpecificIdAndType(response.id, type)) {
-                repo.save(entity)
-                redisTemplate.updateCountIfPresent(userId,type)
-            }
+            if (!repo.existsBySpecificIdAndType(response.id, type))
+                redisTemplate.updateCountIfPresent(userId, repo.save(entity))
+
 
             ack.acknowledge()
         }catch (e: Exception){
@@ -58,14 +59,15 @@ class EventConsumeService(
      * @param userId 사용자 id
      * @param type 새로 저장된 기록 종류
      */
-    private fun RedisTemplate<String,Any>.updateCountIfPresent(userId:Long, type: History.Type){
+    private fun RedisTemplate<String,Any>.updateCountIfPresent(userId:Long, history: History){
         val ops = opsForValue()
         val key = "history-count::$userId"
         val count = ops.get(key) as? HistoryCount ?: return
 
-        val newCount = when(type){
-            History.Type.TICKET -> HistoryCount(count.ticketHistoryCount + 1, count.imaginationHistoryCount)
-            History.Type.IMAGINATION -> HistoryCount(count.ticketHistoryCount, count.imaginationHistoryCount + 1)
+        val newCount = when(history){
+            is TicketHistory-> HistoryCount(count.ticketHistoryCount + 1, count.ticketSwipeCount + history.swipeCount, count.imaginationHistoryCount)
+            is ImaginationHistory -> HistoryCount(count.ticketHistoryCount,count.ticketSwipeCount,count.imaginationHistoryCount + 1)
+            else -> throw IllegalArgumentException("$${history::class}는 지원하지 않는 타입입니다.")
         }
 
         ops.set(key,newCount)

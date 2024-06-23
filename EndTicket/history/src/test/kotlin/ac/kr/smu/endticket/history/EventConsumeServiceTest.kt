@@ -5,6 +5,7 @@ import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.history.domain.model.History
 import ac.kr.smu.endticket.history.domain.repository.HistoryRepository
 import ac.kr.smu.endticket.history.infra.messaging.EventResponse
+import ac.kr.smu.endticket.history.infra.messaging.TicketCompletedEventResponse
 import ac.kr.smu.endticket.history.service.EventConsumeService
 import ac.kr.smu.endticket.history.ui.response.HistoryCount
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -48,13 +49,14 @@ class EventConsumeServiceTest @Autowired constructor(
     }
     @ParameterizedTest
     @DisplayName("완료 이벤트 수신 테스트")
-    @MethodSource("${HistoryTestParameters.PATH}#provideTopicAndResponseAndType")
-    fun given_event_when_consume_then_saveHistory(topic: String, response: EventResponse, type: History.Type){
+    @MethodSource("${HistoryTestParameters.PATH}#provideTopicAndResponse")
+    fun given_event_when_consume_then_saveHistory(topic: String, response: EventResponse, type: History.Type, history: History){
         val key = "history-count::${HistoryTestParameters.USER_ID}"
 
         Mockito.`when`(repo.existsBySpecificIdAndType(response.id, type))
             .thenReturn(false)
         Mockito.`when`(ops.get(key)).thenReturn(null)
+        Mockito.`when`(repo.save(mockAny())).thenReturn(history)
 
         producer.send(ProducerRecord(topic, HistoryTestParameters.USER_ID.toString(), response))
 
@@ -67,23 +69,30 @@ class EventConsumeServiceTest @Autowired constructor(
 
     @ParameterizedTest
     @DisplayName("완료 이벤트 수신 시 기록 개수 증가 테스트")
-    @MethodSource("${HistoryTestParameters.PATH}#provideTopicAndResponseAndType")
-    fun given_eventAndHistoryCountInRedis_when_consume_then_saveHistoryAndUpdateHistoryCount(topic: String, response: EventResponse, type: History.Type){
+    @MethodSource("${HistoryTestParameters.PATH}#provideTopicAndResponse")
+    fun given_eventAndHistoryCountInRedis_when_consume_then_saveHistoryAndUpdateHistoryCount(
+        topic: String,
+        response: EventResponse,
+        type: History.Type,
+        history: History
+    ){
         val key = "history-count::${HistoryTestParameters.USER_ID}"
 
         Mockito.`when`(repo.existsBySpecificIdAndType(response.id, type))
             .thenReturn(false)
         Mockito.`when`(ops.get(key))
-            .thenReturn(HistoryCount(0,0))
+            .thenReturn(HistoryCount(0,0,0))
+        Mockito.`when`(repo.save(mockAny()))
+            .thenReturn(history)
 
         producer.send(ProducerRecord(topic, HistoryTestParameters.USER_ID.toString(), response))
 
-        Thread.sleep(500L)
+        Thread.sleep(1000L)
 
         Mockito.verify(repo).save(mockAny())
         Mockito.verify(ops).set(key, when(type){
-            History.Type.TICKET -> HistoryCount(1,0)
-            History.Type.IMAGINATION -> HistoryCount(0,1)
+            History.Type.TICKET -> HistoryCount(1,(response as TicketCompletedEventResponse).swipeCount,0)
+            History.Type.IMAGINATION -> HistoryCount(0,0,1)
         })
         Mockito.verify(repo).existsBySpecificIdAndType(response.id, type)
     }
