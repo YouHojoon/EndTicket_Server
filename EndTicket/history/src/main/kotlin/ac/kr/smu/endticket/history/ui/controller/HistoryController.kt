@@ -4,6 +4,7 @@ import ac.kr.smu.endticket.common.constant.HttpHeaderName
 import ac.kr.smu.endticket.history.domain.model.History
 import ac.kr.smu.endticket.history.swagger.apiresponses.FindHistoriesApiResponses
 import ac.kr.smu.endticket.history.service.HistoryService
+import ac.kr.smu.endticket.history.swagger.apiresponses.FindHistoryCountApiResponses
 import ac.kr.smu.endticket.history.ui.response.HistorySlice
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -33,6 +34,7 @@ class HistoryController(
         type: History.Type,
 
         @PageableDefault
+        @Parameter(description = "조회할 페이지", schema = Schema(implementation = Pageable::class))
         pageable: Pageable,
 
         @Parameter(hidden = true)
@@ -40,6 +42,7 @@ class HistoryController(
         userId: Long
     ) = ResponseEntity.ok(service.findHistories(userId, type, pageable))
 
+    @FindHistoryCountApiResponses
     @GetMapping("/count")
     fun findHistoryCount(
         @Parameter(hidden = true)

@@ -86,8 +86,6 @@ class HistorySupportImpl(
                     .addScalar("ticket_history_count", Int::class.java)
                     .addScalar("imagination_history_count", Int::class.java)
                     .setTupleTransformer { tuple, _ ->
-                        println(tuple[0])
-                        println(tuple[1])
                         HistoryCount(
                             ticketHistoryCount = tuple[0] as Int,
                             imaginationHistoryCount = tuple[1] as Int

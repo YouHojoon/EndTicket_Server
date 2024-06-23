@@ -15,8 +15,6 @@ import java.util.function.Consumer
 
 @Schema(description = "기록들과 마지막 페이지 여부를 나타내는 클래스")
 data class HistorySlice<T>(
-
-
     @Schema(type = "array", oneOf = [TicketHistoryResponse::class, ImaginationHistoryResponse::class])
     val histories: Collection<T>,
     @Schema(hidden = true)
@@ -39,7 +37,9 @@ data class HistorySlice<T>(
     @Schema(hidden = true)
     override fun spliterator(): Spliterator<T> = histories.spliterator()
     @Schema(hidden = true)
+    @JsonIgnore
     fun isEmpty() = histories.isEmpty()
     @Schema(hidden = true)
+    @JsonIgnore
     fun isNotEmpty() = !isEmpty()
 }
