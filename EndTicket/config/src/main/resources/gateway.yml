@@ -62,6 +62,6 @@ springdoc:
         name: Ticket
       - url: "/future-me/api-docs"
         name: FutureMe
-      - url: "/histories/api-docs"
+      - url: "/history/api-docs"
         name: History
 
