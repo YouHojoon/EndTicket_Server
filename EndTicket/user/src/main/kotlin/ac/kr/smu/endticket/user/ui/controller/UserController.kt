@@ -29,6 +29,7 @@ import ac.kr.smu.endticket.user.domain.exception.UserNotFoundException
 @RestController
 @RequestMapping("/users")
 @Tag(name = "/users")
+@SecurityRequirement(name = "Access token")
 class  UserController(
     private val service: UserService
 ) {
@@ -36,8 +37,8 @@ class  UserController(
     @PostMapping("nickname")
     @Operation(
         summary = "닉네임을 등록하는 메소드",
-        description = "닉네임이 등록되지 않은 사용자의 닉네임을 등록합니다.",
-        security = [SecurityRequirement(name = "Access token")])
+        description = "닉네임이 등록되지 않은 사용자의 닉네임을 등록합니다."
+    )
     @ApiResponses(
         value = [
             ApiResponse(
