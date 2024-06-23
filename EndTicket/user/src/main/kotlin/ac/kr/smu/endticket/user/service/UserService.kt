@@ -47,13 +47,31 @@ class UserService(
      * 사용자의 닉네임 등록
      * @param request 닉네임 등록 요청
      * @param id 닉네임을 등록할 사용자
-     * @throws NotFoundUserException id의 사용자가 없을 시
+     * @throws UserNotFoundException id의 사용자가 없을 시
      */
     @Throws(UserNotFoundException::class)
     @Transactional
     fun registerNickname(request: NicknameRegisterRequest, id: Long){
-        val user = repo.findById(id).getOrNull() ?: throw UserNotFoundException(id)
+        val user = repo.findUser(id)
         
         user.registerNickname(request)
     }
+
+    /**
+     * 닉네임 조회 메소드
+     * @param id 사용자 id
+     * @throws UserNotFoundException id 인 사용자가 존재하지 않을 시
+     */
+    @Transactional(readOnly = true)
+    @Throws(UserNotFoundException::class)
+    fun findNickname(id:Long): String? = repo.findUser(id).nickname
+
+
+    /**
+     * 사용자를 조회 메소드
+     * @param id 사용자 id
+     * @throws UserNotFoundException id인 사용자가 존재하지 않을 시
+     */
+    @Throws(UserNotFoundException::class)
+    private fun UserRepository.findUser(id: Long) = findById(id).getOrNull() ?: throw UserNotFoundException(id)
 }

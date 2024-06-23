@@ -25,6 +25,10 @@ import ac.kr.smu.endticket.common.web.response.BindExceptionResponse
 import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 
 import ac.kr.smu.endticket.user.domain.exception.UserNotFoundException
+import ac.kr.smu.endticket.user.swagger.apiresponses.FindNicknameApiResponses
+import ac.kr.smu.endticket.user.swagger.apiresponses.RegisterNicknameApiResponses
+import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.GetMapping
 
 @RestController
 @RequestMapping("/users")
@@ -34,33 +38,9 @@ class  UserController(
     private val service: UserService
 ) {
     private val log = LoggerFactory.getLogger(UserController::class.java)
+
+    @RegisterNicknameApiResponses
     @PostMapping("nickname")
-    @Operation(
-        summary = "닉네임을 등록하는 메소드",
-        description = "닉네임이 등록되지 않은 사용자의 닉네임을 등록합니다."
-    )
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = "204",
-                description = "닉네임 등록 완료"
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "사용자를 찾을 수 없음",
-                content = [
-                    Content(schema = Schema(implementation = ExceptionResponse::class))
-                ]
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "요청 파라미터 에러",
-                content = [
-                    Content(schema = Schema(implementation = BindExceptionResponse::class))
-                ]
-            )
-        ]
-    )
     fun registerNickname(
         @Valid
         @RequestBody
@@ -81,4 +61,20 @@ class  UserController(
             log.info("{id: $id}", e)
             ResponseEntity(ExceptionResponse(404, "닉네임 등록에 에러가 발생했습니다.", e.message), HttpStatus.NOT_FOUND)
         }
+
+    @FindNicknameApiResponses
+    @GetMapping("nickname")
+    fun findNickname(
+        @RequestHeader(HttpHeaderName.USER_ID)
+        @Schema(hidden = true)
+        id: Long
+    ) = ResponseEntity.ok(mapOf("nickname" to service.findNickname(id)))
+
+
+    @ExceptionHandler(UserNotFoundException::class)
+    fun handleUserNotFoundException(e: UserNotFoundException): ResponseEntity<ExceptionResponse> {
+        log.info("{id: ${e.id}}", e)
+        val status = HttpStatus.NOT_FOUND
+        return ResponseEntity(ExceptionResponse(status.value(), "닉네임 등록에 에러가 발생했습니다.", e.message),status)
+    }
 }
