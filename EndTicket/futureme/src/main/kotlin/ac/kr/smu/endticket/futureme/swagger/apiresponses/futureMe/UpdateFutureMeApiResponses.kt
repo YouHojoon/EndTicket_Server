@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 
-@Operation(description = "미래의 나 제목 등록/변경")
+@Operation(description = "미래의 나 제목, 캐릭터 변경")
 @ApiResponses(
     value = [
         ApiResponse(
