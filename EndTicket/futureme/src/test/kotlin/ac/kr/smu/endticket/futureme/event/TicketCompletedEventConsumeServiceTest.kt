@@ -45,7 +45,7 @@ class TicketCompletedEventConsumeServiceTest @Autowired constructor(
     fun given_ticketCompletedEvent_when_consume_then_gainExperiencePoints_and_saveEvent(){
         val producer = createProducer<TicketCompletedEventResponse>(broker)
         val eventResponse = TicketCompletedEventResponse(1L)
-        val record = ProducerRecord(KafkaTopic.TICKET_COMPLETION, EventTestParameters.USER_ID.toString(), eventResponse)
+        val record = ProducerRecord(KafkaTopic.TICKET_COMPLETED, EventTestParameters.USER_ID.toString(), eventResponse)
 
         Mockito
             .`when`(repo.existsBySpecificIdAndType(eventResponse.id, TicketCompletedEvent::class))

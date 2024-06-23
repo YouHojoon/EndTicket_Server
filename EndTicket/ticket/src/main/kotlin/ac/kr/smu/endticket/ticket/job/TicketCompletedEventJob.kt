@@ -4,7 +4,6 @@ import KafkaMessageService
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.ticket.domain.repository.TicketCompletedEventRepository
 import ac.kr.smu.endticket.ticket.infra.messaging.TicketCompletedEventResponse
-import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -35,7 +34,7 @@ class TicketCompletedEventJob(
             val events = repo.findByIsSentFalseAndAuditCreatedAtBefore(LocalDateTime.now().minusMinutes(10))
             val messages = events.map { it.toMessage() }
             val futures = messageService
-                .send(KafkaTopic.TICKET_COMPLETION,messages)
+                .send(KafkaTopic.TICKET_COMPLETED,messages)
                 .mapIndexed { i, future ->
                     future.handle { record, e ->
                         if (e == null)

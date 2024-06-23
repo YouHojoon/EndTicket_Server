@@ -1,19 +1,16 @@
 package ac.kr.smu.endticket.futureme.imagination
 
 
-import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endticket.common.kafka.test.messageListener
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endticket.common.web.enum.CharacterType
-import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.common.web.test.andReturn
 import ac.kr.smu.endticket.common.web.test.expectBindException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endticket.futureme.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.repository.EventRepository
-import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
 import ac.kr.smu.endticket.futureme.domain.imagination.repository.ImaginationRepository
 import ac.kr.smu.endticket.futureme.infra.config.KafkaConfig
 import ac.kr.smu.endticket.futureme.infra.messaging.ImaginationCompletedEventResponse
@@ -28,10 +25,8 @@ import ac.kr.smu.endticket.futureme.ui.response.ImaginationResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
@@ -39,7 +34,6 @@ import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.kafka.listener.KafkaMessageListenerContainer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
@@ -199,7 +193,7 @@ class ImaginationIntegrationTest @Autowired constructor(
     @Test
     @DisplayName("상상해보기 완료 테스트")
     fun given_id_when_completeImagination_then_expectStatusCode204_and_sendImaginationCompletionEventAndGainExperiencePoints(){
-        val container: KafkaMessageListenerContainer<String, ImaginationCompletedEventResponse> = createKafkaContainer(broker, KafkaTopic.IMAGINATION_COMPLETION)
+        val container: KafkaMessageListenerContainer<String, ImaginationCompletedEventResponse> = createKafkaContainer(broker, KafkaTopic.IMAGINATION_COMPLETED)
         val queue = LinkedBlockingQueue<ConsumerRecord<String, ImaginationCompletedEventResponse>>()
 
         container.messageListener(broker){

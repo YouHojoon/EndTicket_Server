@@ -55,7 +55,7 @@ class ImaginationCompletedEventJobTest @Autowired constructor(
 
     @BeforeEach
     fun init(){
-        container = createKafkaContainer(broker, KafkaTopic.IMAGINATION_COMPLETION)
+        container = createKafkaContainer(broker, KafkaTopic.IMAGINATION_COMPLETED)
         container.messageListener(broker){
             queue.add(it)
         }

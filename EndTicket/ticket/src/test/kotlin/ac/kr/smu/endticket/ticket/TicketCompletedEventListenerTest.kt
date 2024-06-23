@@ -51,7 +51,7 @@ class TicketCompletedEventListenerTest @Autowired constructor(
 
     @BeforeTest
     fun init(){
-        container = createKafkaContainer(broker, KafkaTopic.TICKET_COMPLETION)
+        container = createKafkaContainer(broker, KafkaTopic.TICKET_COMPLETED)
     }
     @AfterTest
     fun reset(){
@@ -88,7 +88,7 @@ class TicketCompletedEventListenerTest @Autowired constructor(
 
         Mockito.`when`(mockEvent.toMessage())
             .thenReturn(message)
-        Mockito.`when`(messageService.send(KafkaTopic.TICKET_COMPLETION, message))
+        Mockito.`when`(messageService.send(KafkaTopic.TICKET_COMPLETED, message))
             .thenReturn(CompletableFuture.failedFuture(RuntimeException()))
 
         eventService.publishEvent(mockEvent)

@@ -49,7 +49,7 @@ class ImaginationCompletedEventListener(
     fun sendEvent(event: ImaginationCompletedEvent){
         val message = event.toMessage(futureMeService.findFutureMe(event.userId).character.type)
 
-        messageService.send(KafkaTopic.IMAGINATION_COMPLETION,message).whenCompleteAsync { record, e ->
+        messageService.send(KafkaTopic.IMAGINATION_COMPLETED,message).whenCompleteAsync { record, e ->
             if (e == null)
                 repo.save(event.also { it.successSend() })
             else
