@@ -20,6 +20,7 @@ class FutureMe private constructor(
     type: CharacterType,
 
     @Id
+    @Column(name = "user_id", updatable = false, nullable = false)
     val userId: Long
 ) {
     @Column(length = 13)

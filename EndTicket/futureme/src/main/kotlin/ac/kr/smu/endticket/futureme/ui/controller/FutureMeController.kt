@@ -47,7 +47,7 @@ class FutureMeController(
         @Parameter(
             name = "캐릭터의 타입",
             schema = Schema(implementation = CharacterType::class),
-            required = true
+            required = true,
         )
         @PathVariable("type")
         type: CharacterType
@@ -60,7 +60,7 @@ class FutureMeController(
     @CreateFutureMeApiResponses
     fun createFutureMe(
         @Parameter(
-            name = "캐릭터의 타입",
+            name = "생성 요청",
             schema = Schema(implementation = CreateFutureMeRequest::class),
             required = true
         )
@@ -125,10 +125,10 @@ class FutureMeController(
             .status(status)
             .body(
                 ExceptionResponse(
-                code = status.value(),
-                message = "캐릭터 조회 중 에러가 발생했습니다.",
-                detail = e.message
-            )
+                    code = status.value(),
+                    message = "캐릭터 조회 중 에러가 발생했습니다.",
+                    detail = e.message
+                )
             )
     }
 
