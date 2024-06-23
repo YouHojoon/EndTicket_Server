@@ -3,6 +3,7 @@ package ac.kr.smu.endticket.user
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endticket.common.web.test.expectBindException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
+import ac.kr.smu.endticket.user.domain.exception.UserNotFoundException
 import ac.kr.smu.endticket.user.domain.model.User
 import ac.kr.smu.endticket.user.domain.repository.UserRepository
 import ac.kr.smu.endticket.user.service.UserService
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
@@ -98,6 +100,27 @@ class UserIntegrationTest @Autowired constructor(
         mvc
             .registerNickname(request,id)
             .andExpect(MockMvcResultMatchers.status().isConflict)
+            .expectExceptionResponse()
+    }
+
+
+    @Test
+    @DisplayName("사용자 닉네임 조회 테스트")
+    fun given_id_when_findNickname_then_responseNickname(){
+        val request = NicknameRegisterRequest(UserTestParameters.NICKNAME)
+
+        mvc.registerNickname(request, id)
+
+        mvc.findNickname(id)
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("nickname").value(request.nickname))
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 사용자 닉네임 조회 테스트")
+    fun given_idOfNonExistentUser_when_findNickname_then_responseExceptionResponseWithStatus404(){
+        mvc.findNickname(999L)
+            .andExpect(MockMvcResultMatchers.status().isNotFound)
             .expectExceptionResponse()
     }
 }

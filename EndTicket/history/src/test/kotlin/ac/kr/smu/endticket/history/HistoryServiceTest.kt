@@ -52,7 +52,7 @@ class HistoryServiceTest(
     @DisplayName("기록 개수 조회 테스트")
     fun given_userId_when_findHistoryCount_then_returnHistoryCount(){
         Mockito.`when`(repo.countEachHistoryByUserId(HistoryTestParameters.USER_ID))
-            .thenReturn(HistoryCount(1,1))
+            .thenReturn(HistoryCount(1,5,1))
 
         service.findHistoryCount(HistoryTestParameters.USER_ID)
 

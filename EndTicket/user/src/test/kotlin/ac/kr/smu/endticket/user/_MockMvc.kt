@@ -7,12 +7,17 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 
-const val BASE_URL = "http://localhost:8080"
-const val USER_ID = 1L
+const val BASE_URL = "http://localhost:8080/users"
 
-fun MockMvc.registerNickname(request: NicknameRegisterRequest, id: Long = USER_ID) =
-    perform(MockMvcRequestBuilders.post("$BASE_URL/users/nickname")
+fun MockMvc.registerNickname(request: NicknameRegisterRequest, id: Long = UserTestParameters.USER_ID) =
+    perform(MockMvcRequestBuilders.post("$BASE_URL/nickname")
         .header(HttpHeaderName.USER_ID, id)
         .contentType(MediaType.APPLICATION_JSON)
         .content(ObjectMapper().writeValueAsString(request))
     )
+
+
+fun MockMvc.findNickname(id: Long = UserTestParameters.USER_ID) = perform(
+    MockMvcRequestBuilders.get("$BASE_URL/nickname")
+        .header(HttpHeaderName.USER_ID, id)
+)
