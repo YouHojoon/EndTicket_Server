@@ -12,6 +12,9 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
+allOpen{
+    annotation("jakarta.persistence.Inheritance")
+}
 tasks.test{
     finalizedBy("jacocoTestReport")
 }
