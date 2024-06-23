@@ -1,0 +1,42 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+  data:
+    redis:
+      port: 6382
+  datasource:
+    url: "jdbc:mysql://localhost:3306/test"
+    username: root
+    password: kl709709
+  kafka:
+    producer:
+      key-serializer:  org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "ac.kr.smu.endticket.history.infra.messaging"
+      group-id: history
+      enable-auto-commit: false
+    listener:
+      ack-mode: manual_immediate
+      concurrency: 3
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        use_sql_comments: true
+        format_sql: true
+        show_sql: true
+logging:
+  level:
+    org.hibernate.orm.jdbc.bind: trace
+eureka:
+  client:
+    enabled: false

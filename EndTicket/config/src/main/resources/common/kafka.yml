@@ -17,7 +17,7 @@ spring:
         spring:
           json:
             trusted:
-              packages: "ac.kr.smu.endTicket.*"
+              packages: "ac.kr.smu.endticket.*"
     listener:
       concurrency: 3
       ack-mode: manual_immediate
