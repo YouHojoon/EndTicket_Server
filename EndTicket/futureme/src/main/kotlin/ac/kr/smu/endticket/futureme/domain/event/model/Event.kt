@@ -15,7 +15,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorOptions(force = false)
 @EntityListeners(AuditingEntityListener::class)
-sealed class Event(
+abstract class Event(
     @Column(name = "user_id", nullable = false, updatable = false)
     val userId: Long
 ){

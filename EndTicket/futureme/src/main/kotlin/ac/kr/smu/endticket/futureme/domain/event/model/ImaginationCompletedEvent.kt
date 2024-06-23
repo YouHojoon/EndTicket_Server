@@ -42,7 +42,7 @@ class ImaginationCompletedEvent(
      */
     @Column
     var isSent = false
-        private set
+        protected set
 
     /**
      * 이벤트의 메시지 발행 완료 메소드
