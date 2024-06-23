@@ -81,7 +81,7 @@ class Imagination private constructor(
         target = target,
         color = color,
         characterType = characterType,
-        completedDate = audit.updatedAt ?: LocalDateTime.now()
+        completedAt = audit.updatedAt ?: LocalDateTime.now()
     )
     /**
      * 수정을 요청하는 메소드

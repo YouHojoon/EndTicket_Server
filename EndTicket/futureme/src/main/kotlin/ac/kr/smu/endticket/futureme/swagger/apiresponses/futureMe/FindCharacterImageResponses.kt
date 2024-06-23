@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 
-@Operation(description = "캐릭터 이미지 조회")
+@Operation(description = "캐릭터 이미지 조회", summary = "캐릭터 이미지 조회")
 @ApiResponses(
     value = [
         ApiResponse(

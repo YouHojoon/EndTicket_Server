@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 
-@Operation(description = "미래의 나 생성")
+@Operation(description = "미래의 나 생성", summary = "미래의 나 생성")
 @ApiResponses(
     value = [
         ApiResponse(

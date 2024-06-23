@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 
-@Operation(description = "상상해보기 삭제")
+@Operation(description = "상상해보기 삭제", summary = "상상해보기 삭제")
 @ApiResponses(
     ApiResponse(
         responseCode = "204",

@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 @ApiResponses(
     ApiResponse(
         responseCode = "204",
-        description = "티켓 완료"
+        description = "상상해보기 완료"
     ),
     ApiResponse(
         responseCode = "403",
@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
         content = [Content(schema = Schema(implementation = ExceptionResponse::class))]
     )
 )
-@Operation(description = "티켓 완료")
+@Operation(description = "상상해보기 완료", summary = "상상해보기 완료")
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class CompleteImaginationApiResponses
