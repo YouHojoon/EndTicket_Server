@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.futureme.infra.swagger.apiResponses.imagination
+package ac.kr.smu.endticket.futureme.swagger.apiresponses.imagination
 
 import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 import io.swagger.v3.oas.annotations.Operation
@@ -7,10 +7,11 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 
+@Operation(description = "상상해보기 삭제")
 @ApiResponses(
     ApiResponse(
         responseCode = "204",
-        description = "티켓 완료"
+        description = "삭제 성공"
     ),
     ApiResponse(
         responseCode = "403",
@@ -23,7 +24,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
         content = [Content(schema = Schema(implementation = ExceptionResponse::class))]
     )
 )
-@Operation(description = "티켓 완료")
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class CompleteImaginationApiResponses
+annotation class DeleteImaginationApiResponses

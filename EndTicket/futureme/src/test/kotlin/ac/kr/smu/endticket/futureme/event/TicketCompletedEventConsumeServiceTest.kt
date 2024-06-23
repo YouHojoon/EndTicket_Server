@@ -5,7 +5,7 @@ import ac.kr.smu.endticket.common.kafka.test.createProducer
 import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.futureme.domain.event.model.TicketCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.repository.EventRepository
-import ac.kr.smu.endticket.futureme.infra.config.KafkaConfig
+import ac.kr.smu.endticket.futureme.config.KafkaConfig
 import ac.kr.smu.endticket.futureme.infra.messaging.TicketCompletedEventResponse
 import ac.kr.smu.endticket.futureme.service.FutureMeService
 import ac.kr.smu.endticket.futureme.service.TicketCompletedEventConsumeService

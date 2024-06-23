@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.futureme.infra.swagger.apiResponses.futureMe
+package ac.kr.smu.endticket.futureme.swagger.apiresponses.futureMe
 
 import ac.kr.smu.endticket.common.web.response.BindExceptionResponse
 import ac.kr.smu.endticket.common.web.response.ExceptionResponse

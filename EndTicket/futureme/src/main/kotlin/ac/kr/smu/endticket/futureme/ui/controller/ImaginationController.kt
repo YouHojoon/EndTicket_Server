@@ -5,10 +5,10 @@ import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationOwne
 import ac.kr.smu.endTicket.futureMe.infra.swagger.apiResponses.imagination.UpdateImaginationApiResponses
 import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationNotFoundException
-import ac.kr.smu.endticket.futureme.infra.swagger.apiResponses.imagination.CompleteImaginationApiResponses
-import ac.kr.smu.endticket.futureme.infra.swagger.apiResponses.imagination.CreateImaginationApiResponses
-import ac.kr.smu.endticket.futureme.infra.swagger.apiResponses.imagination.DeleteImaginationApiResponses
-import ac.kr.smu.endticket.futureme.infra.swagger.apiResponses.imagination.FindImaginationsApiResponses
+import ac.kr.smu.endticket.futureme.swagger.apiresponses.imagination.CompleteImaginationApiResponses
+import ac.kr.smu.endticket.futureme.swagger.apiresponses.imagination.CreateImaginationApiResponses
+import ac.kr.smu.endticket.futureme.swagger.apiresponses.imagination.DeleteImaginationApiResponses
+import ac.kr.smu.endticket.futureme.swagger.apiresponses.imagination.FindImaginationsApiResponses
 import ac.kr.smu.endticket.futureme.service.ImaginationService
 import ac.kr.smu.endticket.futureme.ui.request.ImaginationRequest
 import io.swagger.v3.oas.annotations.Parameter
