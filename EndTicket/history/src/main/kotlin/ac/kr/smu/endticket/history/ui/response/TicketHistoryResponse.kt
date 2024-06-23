@@ -14,7 +14,7 @@ import java.time.LocalDateTime
  * @property type 분류
  * @property swipeCount 스와이프 횟수
  */
-@Schema(description = "티켓 횟수")
+@Schema(description = "티켓 기록 응답")
 class TicketHistoryResponse(
     @Schema(description = "행동", example = "힘들어도 눈치 보지 말고 꼭 대화하기")
     val behavior: String,
