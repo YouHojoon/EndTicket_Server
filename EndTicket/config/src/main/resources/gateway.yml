@@ -45,6 +45,12 @@ spring:
             - Path=/future-me/**, /imaginations/**
           filters:
             - AuthorizationFilter
+        - id: history
+          uri: lb://history
+          predicates:
+            - Path=/histories/**
+          filters:
+            - AuthorizationFilter
 springdoc:
   swagger-ui:
     urls:
@@ -56,4 +62,6 @@ springdoc:
         name: Ticket
       - url: "/future-me/api-docs"
         name: FutureMe
+      - url: "/histories/api-docs"
+        name: History
 

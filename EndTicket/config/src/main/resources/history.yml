@@ -1,0 +1,27 @@
+server:
+  port: 8085
+spring:
+  application:
+    name: history
+  config:
+    import:
+      - classpath:/common/jpa.yml
+      - classpath:/common/swagger.yml
+      - classpath:/common/logging.yml
+      - classpath:/common/kafka.yml
+      - classpath:/common/zipkin.yml
+      - classpath:/common/redis.yml
+  kafka:
+    properties:
+      spring:
+        json:
+          type:
+            mapping:
+              - "ac.kr.smu.endticket.ticket.infra.messaging.TicketCompletedEventResponse:ac.kr.smu.endticket.history.infra.messaging.TicketCompletedEventResponse"
+              - "ac.kr.smu.endticket.futureme.infra.messaging.ImaginationCompletedEventResponse:ac.kr.smu.endticket.history.infra.messaging.ImaginationCompletedEventResponse"
+
+springdoc:
+  paths-to-match:
+    - "/histories/**"
+
+
