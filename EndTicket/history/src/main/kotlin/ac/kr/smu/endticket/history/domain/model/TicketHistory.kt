@@ -4,6 +4,7 @@ import ac.kr.smu.endticket.common.jpa.Audit
 import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.common.web.enum.TicketType
 import ac.kr.smu.endticket.history.infra.messaging.TicketCompletedEventResponse
+import ac.kr.smu.endticket.history.ui.response.TicketHistoryResponse
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
 import java.time.LocalDateTime
@@ -65,4 +66,12 @@ class TicketHistory private constructor(
             userId = userId
         )
     }
+    override fun toResponse() = TicketHistoryResponse(
+        behavior = behavior,
+        target = target,
+        color = color,
+        type = type,
+        swipeCount = swipeCount,
+        completedAt = completedAt
+    )
 }

@@ -3,6 +3,7 @@ package ac.kr.smu.endticket.history.domain.model
 import ac.kr.smu.endticket.common.web.enum.CharacterType
 import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.history.infra.messaging.ImaginationCompletedEventResponse
+import ac.kr.smu.endticket.history.ui.response.ImaginationHistoryResponse
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Index
@@ -63,4 +64,12 @@ class ImaginationHistory private constructor(
             userId = userId
         )
     }
+
+    override fun toResponse() = ImaginationHistoryResponse(
+        behavior = behavior,
+        target = target,
+        color = color,
+        completedAt = completedAt,
+        characterType = characterType
+    )
 }
