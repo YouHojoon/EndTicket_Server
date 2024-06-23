@@ -42,7 +42,7 @@ class TicketHistory private constructor(
     private val type: TicketType,
 
     @Column(updatable = false, nullable = false)
-    private val swipeCount: Int,
+    val swipeCount: Int,
 
     completedAt: LocalDateTime,
     userId: Long

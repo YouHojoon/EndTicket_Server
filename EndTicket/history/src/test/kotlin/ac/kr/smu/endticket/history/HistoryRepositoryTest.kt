@@ -68,5 +68,6 @@ class HistoryRepositoryTest @Autowired constructor(
 
         assertEquals(ticketHistories.size, count.ticketHistoryCount)
         assertEquals(imaginationHistories.size, count.imaginationHistoryCount)
+        assertEquals(ticketHistories.sumOf { it.swipeCount }, count.ticketSwipeCount)
     }
 }

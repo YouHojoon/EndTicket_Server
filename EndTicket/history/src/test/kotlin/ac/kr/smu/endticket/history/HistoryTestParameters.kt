@@ -53,14 +53,27 @@ object HistoryTestParameters{
     )
 
     @JvmStatic
-    fun provideTopicAndResponseAndType() = Stream.of(
-        Arguments.of(KafkaTopic.TICKET_COMPLETED, TICKET_COMPLETED_EVENT_RESPONSE, TicketHistory::class),
-        Arguments.of(KafkaTopic.IMAGINATION_COMPLETED, IMAGINATION_COMPLETED_EVENT_RESPONSE, ImaginationHistory::class)
+    fun provideTopicAndResponse() = Stream.of(
+        Arguments.of(
+            KafkaTopic.TICKET_COMPLETED,
+            TICKET_COMPLETED_EVENT_RESPONSE,
+            History.Type.TICKET,
+            TicketHistory.from(TICKET_COMPLETED_EVENT_RESPONSE, USER_ID)
+        ),
+        Arguments.of(
+            KafkaTopic.IMAGINATION_COMPLETED,
+            IMAGINATION_COMPLETED_EVENT_RESPONSE,
+            History.Type.IMAGINATION,
+            ImaginationHistory.from(
+            IMAGINATION_COMPLETED_EVENT_RESPONSE, USER_ID)
+        )
     )
 
     @JvmStatic
     fun provideRecord() = Stream.of(
-        *EventResponse::class.sealedSubclasses.map { Arguments.of(mockRecord(it)) }.toTypedArray()
+        *EventResponse::class.sealedSubclasses.map {
+            Arguments.of(mockRecord(it))
+        }.toTypedArray()
     )
 
     @JvmStatic

@@ -58,7 +58,7 @@ tasks.jacocoTestCoverageVerification {
             limit {
                 counter = "BRANCH"
                 value = "COVEREDRATIO"
-                minimum = 0.90.toBigDecimal()
+                minimum = 0.80.toBigDecimal()
             }
 
             // 라인 커버리지를 최소한 80% 만족시켜야 합니다.

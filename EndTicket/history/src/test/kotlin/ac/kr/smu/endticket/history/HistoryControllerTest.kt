@@ -51,11 +51,12 @@ class HistoryControllerTest @Autowired constructor(
     @DisplayName("기록 개수 조회 테스트")
     fun given_userId_when_findHistoryCount_then_returnHistoryCount(){
         Mockito.`when`(service.findHistoryCount(HistoryTestParameters.USER_ID))
-            .thenReturn(HistoryCount(1,1))
+            .thenReturn(HistoryCount(1,0,1))
 
         mvc.findHistoryCount()
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("ticketHistoryCount").isNumber)
             .andExpect(MockMvcResultMatchers.jsonPath("imaginationHistoryCount").isNumber)
+            .andExpect(MockMvcResultMatchers.jsonPath("ticketSwipeCount").isNumber)
     }
 }
