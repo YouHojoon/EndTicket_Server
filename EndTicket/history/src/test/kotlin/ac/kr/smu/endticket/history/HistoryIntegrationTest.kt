@@ -24,6 +24,8 @@ import org.springframework.format.support.FormattingConversionService
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 
 @SpringBootTest(
     classes = [
@@ -46,6 +48,11 @@ class HistoryIntegrationTest @Autowired constructor(
         .setCustomArgumentResolvers(PageableHandlerMethodArgumentResolver())
         .setConversionService(FormattingConversionService().also { it.addConverter(HistoryTypeConverter()) })
             .build()
+
+    @AfterTest
+    fun reset(){
+        repo.deleteAll()
+    }
 
     @ParameterizedTest
     @DisplayName("기록 조회 테스트")

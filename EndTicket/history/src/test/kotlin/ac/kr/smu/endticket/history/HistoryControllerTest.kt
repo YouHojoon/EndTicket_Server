@@ -1,5 +1,6 @@
 package ac.kr.smu.endticket.history
 
+import ac.kr.smu.endticket.common.redis.test.RedisTestConfig
 import ac.kr.smu.endticket.history.domain.model.History
 import ac.kr.smu.endticket.history.ui.response.HistorySlice
 import ac.kr.smu.endticket.history.service.HistoryService
@@ -14,11 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.context.annotation.Import
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
+@Import(RedisTestConfig::class)
 @WebMvcTest(controllers = [HistoryController::class])
 @AutoConfigureMockMvc(addFilters = false)
 @MockBean(JpaMetamodelMappingContext::class)

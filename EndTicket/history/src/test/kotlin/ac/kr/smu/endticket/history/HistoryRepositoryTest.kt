@@ -1,5 +1,6 @@
 package ac.kr.smu.endticket.history
 
+import ac.kr.smu.endticket.common.redis.test.RedisTestConfig
 import ac.kr.smu.endticket.history.domain.model.History
 import ac.kr.smu.endticket.history.domain.model.ImaginationHistory
 import ac.kr.smu.endticket.history.domain.model.TicketHistory
@@ -10,6 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.context.annotation.Import
 import org.springframework.data.domain.PageRequest
 import kotlin.reflect.KClass
 import kotlin.test.assertEquals
@@ -17,6 +19,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 @DataJpaTest
+@Import(RedisTestConfig::class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class HistoryRepositoryTest @Autowired constructor(
     private val repo: HistoryRepository
