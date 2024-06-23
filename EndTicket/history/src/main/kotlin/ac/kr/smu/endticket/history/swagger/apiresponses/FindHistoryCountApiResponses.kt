@@ -14,8 +14,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
         content = [Content(schema = Schema(implementation = HistoryCount::class))]
     )
 )
-@Operation(description = "기록 개수들 조회")
+@Operation(description = "기록 개수들 조회", summary = "기록 개수들 조회")
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class FindHistoryCount {
+annotation class FindHistoryCountApiResponses {
 }
