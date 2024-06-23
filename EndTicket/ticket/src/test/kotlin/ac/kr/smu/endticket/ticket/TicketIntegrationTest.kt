@@ -9,7 +9,7 @@ import ac.kr.smu.endticket.common.web.test.expectBindException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endticket.ticket.domain.repository.TicketCompletedEventRepository
 import ac.kr.smu.endticket.ticket.domain.repository.TicketRepository
-import ac.kr.smu.endticket.ticket.infra.config.KafkaConfig
+import ac.kr.smu.endticket.ticket.config.KafkaConfig
 import ac.kr.smu.endticket.ticket.infra.messaging.TicketCompletedEventResponse
 import ac.kr.smu.endticket.ticket.listener.TicketCompletedEventListener
 import ac.kr.smu.endticket.ticket.service.TicketCompletedEventService

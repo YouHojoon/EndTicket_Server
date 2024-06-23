@@ -11,6 +11,7 @@ import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.time.LocalDateTime
 
 /**
  * 티켓을 추상화한 클래스
@@ -138,6 +139,7 @@ class Ticket private constructor(
         type = type,
         color = color,
         swipeCount = swipeCount,
+        completedAt = audit.updatedAt ?: LocalDateTime.now()
     )
 
     /**

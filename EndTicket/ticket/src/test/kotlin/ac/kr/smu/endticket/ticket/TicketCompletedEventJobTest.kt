@@ -76,7 +76,11 @@ class TicketCompletedEventJobTest @Autowired constructor(
             val message = event.toMessage()
 
             assertEquals(message.key, record.key())
-            assertEquals(message.payload, record.value())
+            assertEquals(message.payload.id, record.value().id)
+            assertEquals(message.payload.behavior, record.value().behavior)
+            assertEquals(message.payload.target, record.value().target)
+            assertEquals(message.payload.color, record.value().color)
+            assertEquals(message.payload.swipeCount, record.value().swipeCount)
         }
 
         Mockito.verify(repo).saveAll(Mockito.argThat<Collection<TicketCompletedEvent>> { it.isNotEmpty() })

@@ -3,8 +3,8 @@ package ac.kr.smu.endticket.ticket.ui.controller
 import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 import ac.kr.smu.endticket.ticket.domain.exception.TicketNotFoundException
 import ac.kr.smu.endticket.ticket.domain.exception.TicketOwnershipException
-import ac.kr.smu.endticket.ticket.infra.swagger.*
 import ac.kr.smu.endticket.ticket.service.TicketService
+import ac.kr.smu.endticket.ticket.swagger.apiresponses.*
 import ac.kr.smu.endticket.ticket.ui.request.TicketRequest
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema

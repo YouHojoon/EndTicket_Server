@@ -75,7 +75,11 @@ class TicketCompletedEventListenerTest @Autowired constructor(
 
         Mockito.verify(repo, Mockito.times(2)).save(mockAny())
         assertNotNull(record)
-        assertEquals(message.payload, record.value())
+        assertEquals(message.payload.id, record.value().id)
+        assertEquals(message.payload.behavior, record.value().behavior)
+        assertEquals(message.payload.target, record.value().target)
+        assertEquals(message.payload.color, record.value().color)
+        assertEquals(message.payload.swipeCount, record.value().swipeCount)
         assertEquals(message.key, record.key())
     }
 
