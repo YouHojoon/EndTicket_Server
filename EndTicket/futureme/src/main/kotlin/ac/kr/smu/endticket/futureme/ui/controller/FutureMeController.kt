@@ -7,10 +7,10 @@ import ac.kr.smu.endticket.futureme.service.FutureMeService
 import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
 import ac.kr.smu.endticket.futureme.domain.futureme.exception.FutureMeNotFoundException
 import ac.kr.smu.endticket.futureme.domain.futureme.exception.UnsupportedCharacterException
-import ac.kr.smu.endticket.futureme.infra.swagger.apiResponses.futureMe.CreateFutureMeApiResponses
-import ac.kr.smu.endticket.futureme.infra.swagger.apiResponses.futureMe.FindCharacterImageResponses
-import ac.kr.smu.endticket.futureme.infra.swagger.apiResponses.futureMe.FindFutureMeApiResponses
-import ac.kr.smu.endticket.futureme.infra.swagger.apiResponses.futureMe.UpdateFutureMeApiResponses
+import ac.kr.smu.endticket.futureme.swagger.apiresponses.futureMe.CreateFutureMeApiResponses
+import ac.kr.smu.endticket.futureme.swagger.apiresponses.futureMe.FindCharacterImageResponses
+import ac.kr.smu.endticket.futureme.swagger.apiresponses.futureMe.FindFutureMeApiResponses
+import ac.kr.smu.endticket.futureme.swagger.apiresponses.futureMe.UpdateFutureMeApiResponses
 import ac.kr.smu.endticket.futureme.ui.request.UpdateFutureMeRequest
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema

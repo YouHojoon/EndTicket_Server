@@ -12,7 +12,7 @@ import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endticket.futureme.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.repository.EventRepository
 import ac.kr.smu.endticket.futureme.domain.imagination.repository.ImaginationRepository
-import ac.kr.smu.endticket.futureme.infra.config.KafkaConfig
+import ac.kr.smu.endticket.futureme.config.KafkaConfig
 import ac.kr.smu.endticket.futureme.infra.messaging.ImaginationCompletedEventResponse
 import ac.kr.smu.endticket.futureme.listener.ImaginationCompletedEventListener
 import ac.kr.smu.endticket.futureme.service.FutureMeEventService

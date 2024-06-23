@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.futureme.infra.config
+package ac.kr.smu.endticket.futureme.config
 
 import ac.kr.smu.endticket.futureme.domain.converter.CharacterTypeConverter
 import org.springframework.context.annotation.Configuration
