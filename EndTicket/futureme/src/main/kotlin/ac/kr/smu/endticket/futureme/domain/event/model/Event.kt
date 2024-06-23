@@ -11,7 +11,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
  * @property userId 사용자의 Id
  */
 @Entity
-@Table
+@Table(
+    indexes = [
+        Index(name = "idx_created_at", columnList = "created_at")
+    ]
+)
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorOptions(force = false)
 @EntityListeners(AuditingEntityListener::class)
@@ -27,8 +31,8 @@ abstract class Event(
     private val id: Long = 0L
 
     @Embedded
+//    @AttributeOverrides(
+//        AttributeOverride(name = "createdAt", column = Column(name = "created_at"))
+//    )
     val audit = Audit()
-
-    @Column(insertable = false, updatable = false)
-    private val type = ""
 }

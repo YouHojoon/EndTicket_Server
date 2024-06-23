@@ -14,7 +14,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
  * @property userId 사용자 Id
  */
 @Entity
-@Table
+@Table(indexes = [
+    Index(name = "idx_user_id", columnList = "user_id")
+])
 @EntityListeners(AuditingEntityListener::class)
 class FutureMe private constructor(
     type: CharacterType,
