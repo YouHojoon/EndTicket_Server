@@ -4,6 +4,7 @@ import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endticket.common.web.test.expectBindException
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endticket.user.domain.exception.UserNotFoundException
+import ac.kr.smu.endticket.user.domain.model.User
 import ac.kr.smu.endticket.user.service.UserService
 import ac.kr.smu.endticket.user.ui.controller.UserController
 import ac.kr.smu.endticket.user.ui.request.NicknameRegisterRequest
@@ -91,6 +92,23 @@ class UserControllerTest @Autowired constructor(
             .thenThrow(UserNotFoundException(UserTestParameters.USER_ID))
 
         mvc.findNickname()
+            .andExpect(MockMvcResultMatchers.status().isNotFound)
+            .expectExceptionResponse()
+    }
+
+    @Test
+    @DisplayName("사용자 탈퇴 테스트")
+    fun given_id_when_deleteUser_then_responseStatus204(){
+        mvc.deleteUser().andExpect(MockMvcResultMatchers.status().isNoContent)
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 사용자 탈퇴 테스트")
+    fun given_idOfNonExistentUser_when_deleteUser_then_responseExceptionResponseWithStatus404() {
+        Mockito.`when`(service.deleteUser(Mockito.anyLong()))
+            .thenThrow(UserNotFoundException(UserTestParameters.USER_ID))
+
+        mvc.deleteUser()
             .andExpect(MockMvcResultMatchers.status().isNotFound)
             .expectExceptionResponse()
     }

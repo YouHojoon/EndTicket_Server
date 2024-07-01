@@ -1,6 +1,7 @@
 package ac.kr.smu.endticket.user.swagger.apiresponses
 
 import ac.kr.smu.endticket.common.web.response.ExceptionResponse
+import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -19,6 +20,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
         ]
     )
 )
+@Operation(description = "회원 탈퇴", summary = "회원 탈퇴")
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class DeleteUserApiResponses

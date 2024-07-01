@@ -2,6 +2,7 @@ package ac.kr.smu.endticket.user
 
 import ac.kr.smu.endticket.user.domain.exception.UserNotFoundException
 import ac.kr.smu.endticket.user.domain.model.User
+import ac.kr.smu.endticket.user.domain.model.UserDeletedEvent
 import ac.kr.smu.endticket.user.ui.request.NicknameRegisterRequest
 import org.junit.jupiter.params.provider.Arguments
 import java.util.stream.Stream
@@ -35,5 +36,19 @@ object UserTestParameters{
     fun provideNicknameRegisterRequestAndException() = Stream.of(
         Arguments.of(NicknameRegisterRequest(NICKNAME),UserNotFoundException(USER_ID), 404 ),
         Arguments.of(NicknameRegisterRequest(NICKNAME),IllegalStateException(""), 409),
+    )
+
+    @JvmStatic
+    fun provideEvent() = Stream.of(
+        Arguments.of(UserDeletedEvent(user = User(SOCIAL_TYPE, SOCIAL_USER_NUMBER)))
+    )
+
+    @JvmStatic
+    fun provideEvents() = Stream.of(
+        Arguments.of(
+            setOf(
+                UserDeletedEvent(user = User(SOCIAL_TYPE, SOCIAL_USER_NUMBER))
+            )
+        )
     )
 }

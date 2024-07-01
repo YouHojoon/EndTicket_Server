@@ -1,6 +1,8 @@
 package ac.kr.smu.endticket.user.domain.model
 
 import ac.kr.smu.endticket.common.jpa.Audit
+import ac.kr.smu.endticket.common.kafka.messaging.KafkaMessage
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
@@ -17,22 +19,14 @@ import jakarta.persistence.Table
 @Table
 class UserDeletedEvent(
     @MapsId("id")
-    @OneToOne
+    @OneToOne(cascade = [CascadeType.REMOVE])
     private val user: User
 ) {
     @Id
-    val id: Long = 0L
-
-    @Column
-    private var isSent = false
+    private val id: Long = 0L
 
     @Embedded
     private val audit = Audit()
 
-    /**
-     * 메시지 전송 성공 메소드
-     */
-    fun sendSuccess(){
-        isSent = true
-    }
+    fun toMessage() = KafkaMessage<String,Void>(id.toString())
 }

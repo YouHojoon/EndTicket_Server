@@ -21,3 +21,8 @@ fun MockMvc.findNickname(id: Long = UserTestParameters.USER_ID) = perform(
     MockMvcRequestBuilders.get("$BASE_URL/nickname")
         .header(HttpHeaderName.USER_ID, id)
 )
+
+fun MockMvc.deleteUser(id: Long = UserTestParameters.USER_ID) = perform(
+    MockMvcRequestBuilders.delete("$BASE_URL")
+        .header(HttpHeaderName.USER_ID, id)
+)

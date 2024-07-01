@@ -80,6 +80,7 @@ class  UserController(
         @Parameter(hidden = true)
         id: Long
     ): ResponseEntity<Void>{
+        println(id)
         service.deleteUser(id)
         return ResponseEntity.noContent().build()
     }

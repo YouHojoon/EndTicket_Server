@@ -5,6 +5,7 @@ import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.common.kafka.messaging.KafkaMessage
 import ac.kr.smu.endticket.user.domain.model.UserDeletedEvent
 import ac.kr.smu.endticket.user.domain.repository.UserDeletedEventRepository
+import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Propagation
@@ -15,8 +16,9 @@ import org.springframework.transaction.event.TransactionalEventListener
 @Component
 class UserDeletedEventListener(
     private val repo: UserDeletedEventRepository,
-    private val messageService: KafkaMessageService<String, String>
+    private val messageService: KafkaMessageService<String, Void>
 ) {
+    private val log = LoggerFactory.getLogger(UserDeletedEventListener::class.java)
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     fun saveEvent(event: UserDeletedEvent){
         repo.save(event)
@@ -26,9 +28,13 @@ class UserDeletedEventListener(
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun sendMessage(event: UserDeletedEvent){
-        messageService.send(KafkaTopic.USER_DELETED, KafkaMessage<String,String>(event.id.toString(), null))
-            .whenComplete { _, _ ->
-                repo.save(event.also { it.sendSuccess() })
+        val message = event.toMessage()
+        messageService.send(KafkaTopic.USER_DELETED, message)
+            .whenComplete { _, e ->
+                if (e == null)
+                    repo.delete(event)
+                else
+                    log.error("key : ${message.key}",e)
             }
     }
 }

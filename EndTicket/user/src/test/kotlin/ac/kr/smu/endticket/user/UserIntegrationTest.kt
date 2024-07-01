@@ -6,6 +6,7 @@ import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endticket.user.domain.exception.UserNotFoundException
 import ac.kr.smu.endticket.user.domain.model.User
 import ac.kr.smu.endticket.user.domain.repository.UserRepository
+import ac.kr.smu.endticket.user.service.UserEventService
 import ac.kr.smu.endticket.user.service.UserService
 import ac.kr.smu.endticket.user.ui.controller.UserController
 import ac.kr.smu.endticket.user.ui.request.NicknameRegisterRequest
@@ -32,7 +33,7 @@ import kotlin.properties.Delegates
     classes = [
         UserController::class,
         UserService::class,
-        UserRepository::class,
+        UserEventService::class,
         DataSourceAutoConfiguration::class,
         HibernateJpaAutoConfiguration::class,
         TransactionAutoConfiguration::class
@@ -120,6 +121,21 @@ class UserIntegrationTest @Autowired constructor(
     @DisplayName("존재하지 않는 사용자 닉네임 조회 테스트")
     fun given_idOfNonExistentUser_when_findNickname_then_responseExceptionResponseWithStatus404(){
         mvc.findNickname(999L)
+            .andExpect(MockMvcResultMatchers.status().isNotFound)
+            .expectExceptionResponse()
+    }
+
+    @Test
+    @DisplayName("사용자 탈퇴 테스트")
+    fun given_id_when_deleteUser_then_responseStatus204(){
+        mvc.deleteUser(id).andExpect(MockMvcResultMatchers.status().isNoContent)
+    }
+
+
+    @Test
+    @DisplayName("존재하지 않는 사용자 탈퇴 테스트")
+    fun given_idOfNonExistentUser_when_deleteUser_then_responseExceptionResponseWithStatus404() {
+        mvc.deleteUser(999L)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
             .expectExceptionResponse()
     }
