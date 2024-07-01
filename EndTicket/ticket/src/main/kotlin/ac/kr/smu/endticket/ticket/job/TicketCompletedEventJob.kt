@@ -31,26 +31,13 @@ class TicketCompletedEventJob(
         log.info("티켓 완료 이벤트 재전송 시작")
 
         val elapsed = measureTimeMillis {
-            val events = repo.findByIsSentFalseAndAuditCreatedAtBefore(LocalDateTime.now().minusMinutes(10))
+            val events = repo.findByAuditCreatedAtBefore(LocalDateTime.now().minusMinutes(10))
             val messages = events.map { it.toMessage() }
-            val futures = messageService
+            val ids = messageService
                 .send(KafkaTopic.TICKET_COMPLETED,messages)
-                .mapIndexed { i, future ->
-                    future.handle { record, e ->
-                        if (e == null)
-                            record.producerRecord.value().id
-                        else {
-                            val message = messages[i]
-                            log.error("key: ${message.key}, payload: ${message.payload}", e)
-                            null
-                        }
-                    }
-                }
+                .map { it.producerRecord.value().id }
 
-            CompletableFuture.allOf(*futures.toTypedArray()).join()
-            val ids = futures.mapNotNull { it.join() }
-
-            repo.saveAll(events.filter { it.id in ids }.map { it.also { it.successSend() } })
+            repo.deleteAllById(ids)
         }
 
         log.info("티켓 완료 이벤트 재전송 $elapsed ms 시간으로 완료")

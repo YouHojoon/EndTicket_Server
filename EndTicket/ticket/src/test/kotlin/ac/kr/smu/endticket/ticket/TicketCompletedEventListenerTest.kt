@@ -61,7 +61,7 @@ class TicketCompletedEventListenerTest @Autowired constructor(
     @ParameterizedTest
     @DisplayName("티켓 완료 이벤트 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideEvent")
-    fun given_ticketCompletionEvent_then_saveEventAndSendMessage(event: TicketCompletedEvent){
+    fun given_ticketCompletedEvent_then_saveEventAndSendMessage(event: TicketCompletedEvent){
         val queue = LinkedBlockingQueue<ConsumerRecord<String, TicketCompletedEventResponse>>()
 
         container.messageListener(broker){
@@ -73,23 +73,23 @@ class TicketCompletedEventListenerTest @Autowired constructor(
         val record = queue.poll(500, TimeUnit.MILLISECONDS)
         val message = event.toMessage()
 
-        Mockito.verify(repo, Mockito.times(2)).save(mockAny())
+        Mockito.verify(repo, Mockito.times(1)).save(mockAny())
+        Mockito.verify(repo).delete(mockAny())
         assertNotNull(record)
-        assertEquals(message.payload.id, record.value().id)
-        assertEquals(message.payload.behavior, record.value().behavior)
-        assertEquals(message.payload.target, record.value().target)
-        assertEquals(message.payload.color, record.value().color)
-        assertEquals(message.payload.swipeCount, record.value().swipeCount)
+        assertEquals(message.payload?.id, record.value().id)
+        assertEquals(message.payload?.behavior, record.value().behavior)
+        assertEquals(message.payload?.target, record.value().target)
+        assertEquals(message.payload?.color, record.value().color)
+        assertEquals(message.payload?.swipeCount, record.value().swipeCount)
         assertEquals(message.key, record.key())
     }
 
     @ParameterizedTest
     @DisplayName("티켓 완료 이벤트 전송 실패 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideEvent")
-    fun given_ticketCompletionEvent_when_sendMessageFail_then_doNothing(event: TicketCompletedEvent){
-        val mockEvent = Mockito.mock(TicketCompletedEvent::class.java)
+    fun given_ticketCompletedEvent_when_sendMessageFail_then_doNothing(event: TicketCompletedEvent){
         val message = event.toMessage()
-
+        val mockEvent = Mockito.mock(TicketCompletedEvent::class.java)
         Mockito.`when`(mockEvent.toMessage())
             .thenReturn(message)
         Mockito.`when`(messageService.send(KafkaTopic.TICKET_COMPLETED, message))

@@ -122,7 +122,7 @@ class TicketControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("티켓 스와이프 테스트")
-    fun given_Id_when_swipeTicket_then_responseSwipedTicket(){
+    fun given_id_when_swipeTicket_then_responseSwipedTicket(){
         val ticket = Ticket.from(TicketTestParameters.TICKET_REQUEST, TicketTestParameters.USER_ID)
         val beforeSwipeCount = ticket.swipeCount
 
@@ -157,7 +157,7 @@ class TicketControllerTest @Autowired constructor(
     @ParameterizedTest
     @DisplayName("티켓 스와이프 취소 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
-    fun given_Id_when_cancelSwipeTicket_then_responseSwipeCanceledTicket(ticket: Ticket){
+    fun given_id_when_cancelSwipeTicket_then_responseSwipeCanceledTicket(ticket: Ticket){
         ticket.swipeAndCheckCompletion(TicketTestParameters.USER_ID)
         val beforeSwipeCount = ticket.swipeCount
 
@@ -219,7 +219,7 @@ class TicketControllerTest @Autowired constructor(
     @ParameterizedTest
     @DisplayName("존재하지 않는 티켓 삭제 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideInvalidId")
-    fun given_notExistTicket_when_deleteTicket_then_responseExceptionResponseWithExpectedStatus(
+    fun given_notExistentTicket_when_deleteTicket_then_responseExceptionResponseWithExpectedStatus(
         id: Long,
         userId: Long,
         exception: Throwable,

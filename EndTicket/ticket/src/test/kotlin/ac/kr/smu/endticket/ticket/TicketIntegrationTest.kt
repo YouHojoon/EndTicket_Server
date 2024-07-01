@@ -130,7 +130,7 @@ class TicketIntegrationTest @Autowired constructor(
 
     @Test
     @DisplayName("존재하지 않는 티켓 수정 요청 테스트")
-    fun given_notExistTicket_when_updateTicket_then_responseExceptionResponseWithStatus404() =
+    fun given_notExistentTicket_when_updateTicket_then_responseExceptionResponseWithStatus404() =
         mvc
             .updateTicket(TicketTestParameters.TICKET_REQUEST, 1L)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
@@ -148,7 +148,7 @@ class TicketIntegrationTest @Autowired constructor(
     }
     @Test
     @DisplayName("티켓 스와이프 테스트")
-    fun given_Id_when_swipeTicket_then_responseSwipedTicket(){
+    fun given_id_when_swipeTicket_then_responseSwipedTicket(){
         val ticket = mvc.createTicket(TicketTestParameters.TICKET_REQUEST).andReturn<TicketResponse>()
 
         mvc.swipeTicket(ticket.id)
@@ -265,7 +265,7 @@ class TicketIntegrationTest @Autowired constructor(
 
     @Test
     @DisplayName("존재하지 않는 티켓 삭제 테스트")
-    fun given_notExistTicket_when_deleteTicket_then_responseExceptionResponseWithStatus404(){
+    fun given_notExistentTicket_when_deleteTicket_then_responseExceptionResponseWithStatus404(){
         mvc.deleteTicket(1L)
             .andExpect(MockMvcResultMatchers.status().isNotFound)
             .expectExceptionResponse()
