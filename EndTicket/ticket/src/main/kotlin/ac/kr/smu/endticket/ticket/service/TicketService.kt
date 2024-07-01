@@ -55,8 +55,7 @@ class TicketService(
      * @throws TicketNotFoundException id로 조회한 티켓이 없을 시
      * @throws TicketOwnershipException 사용자가 티켓의 소유자가 아닐 시
      */
-
-    @Throws(TicketNotFoundException::class)
+    
     @Transactional
     fun updateTicket(request: TicketRequest, id: Long, userId: Long): TicketResponse {
         val ticket = findById(id)
