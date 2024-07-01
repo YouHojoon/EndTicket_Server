@@ -148,7 +148,6 @@ class Ticket private constructor(
      * @param userId 수정 요청을 한 사용자
      * @throws TicketOwnershipException 티켓의 소유자가 아닌 사용자가 요청했을 시
      */
-    @Throws(TicketOwnershipException::class)
     fun updateAndCheckCompletion(request: TicketRequest, userId: Long): Boolean{
         checkOwnership(userId)
 
@@ -167,7 +166,6 @@ class Ticket private constructor(
      * @return 완료 여부
      * @throws TicketOwnershipException 티켓의 소유자가 아닌 사용자가 요청했을 시
      */
-    @Throws(TicketOwnershipException::class)
     fun swipeAndCheckCompletion(userId: Long): Boolean{
         checkOwnership(userId)
 
@@ -182,7 +180,6 @@ class Ticket private constructor(
      * @param userId 소유자 Id
      * @throws TicketOwnershipException 소유자가 아닐 시
      */
-    @Throws(TicketOwnershipException::class)
     fun cancelSwipeTicket(userId: Long){
         checkOwnership(userId)
 
@@ -195,7 +192,6 @@ class Ticket private constructor(
      * 티켓의 소유권을 확인하는 메소드
      * @throws TicketOwnershipException 소유자가 아닐 시
      */
-    @Throws(TicketOwnershipException::class)
     fun checkOwnership(userId: Long){
         if (userId != this.userId)
             throw TicketOwnershipException(id,userId)
