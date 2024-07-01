@@ -30,6 +30,7 @@ class EventConsumeService(
      * 이벤트를 수신하는 메소드, 수신한 이벤트를 기록으로 저장한다.
      * @param record 수신한 이벤트
      * @param ack kafka commit을 위한 객체
+     * @throws IllegalArgumentException 이벤트 레코드의 토픽이 지원하지 않는 토픽일 때
      */
     @Transactional
     @KafkaListener(topics = [KafkaTopic.TICKET_COMPLETED, KafkaTopic.IMAGINATION_COMPLETED])
@@ -39,7 +40,7 @@ class EventConsumeService(
         val (type, entity) = when(record.topic()){
             KafkaTopic.TICKET_COMPLETED -> History.Type.TICKET to TicketHistory.from(response as TicketCompletedEventResponse,userId)
             KafkaTopic.IMAGINATION_COMPLETED -> History.Type.IMAGINATION to ImaginationHistory.from(response as ImaginationCompletedEventResponse,userId)
-            else -> throw IllegalArgumentException("${record.topic()}은 알 수 없는 토픽입니다.")
+            else -> throw IllegalArgumentException("${record.topic()}은 지원하지 않는 토픽입니다.")
         }
 
         try {
@@ -58,6 +59,7 @@ class EventConsumeService(
      * 기록 개수가 캐시에 있으면 업데이트 하는 메소드
      * @param userId 사용자 id
      * @param type 새로 저장된 기록 종류
+     * @throws IllegalArgumentException 기록의 타입이 지원하지 않는 타입일 때
      */
     private fun RedisTemplate<String,Any>.updateCountIfPresent(userId:Long, history: History){
         val ops = opsForValue()
