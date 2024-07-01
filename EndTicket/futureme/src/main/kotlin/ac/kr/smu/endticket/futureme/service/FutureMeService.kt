@@ -21,8 +21,10 @@ class FutureMeService(
      * @param request 생성 요청
      * @param userId 생성을 요청하는 사용자
      * @return 생성된 미래의 나
+     * @throws IllegalStateException 미래의 나가 이미 존재할 시
      */
     @Transactional
+    @Throws(IllegalStateException::class)
     fun createFutureMe(request: CreateFutureMeRequest, userId: Long) =
         if (repo.existsById(userId))
             throw IllegalStateException("미래의 나가 이미 존재합니다.")
@@ -39,7 +41,7 @@ class FutureMeService(
     @Transactional
     @Throws(FutureMeNotFoundException::class)
     fun updateFutureMe(request: UpdateFutureMeRequest, userId: Long): FutureMeResponse {
-        val futureMe = repo.findById(userId).getOrNull() ?: throw FutureMeNotFoundException(userId)
+        val futureMe = findById(userId)
 
         futureMe.update(request)
 
@@ -52,8 +54,9 @@ class FutureMeService(
      * @throws FutureMeNotFoundException 상상해보기가 존재하지 않을 시
      */
     @Transactional
+    @Throws(FutureMeNotFoundException::class)
     fun gainExperiencePoints(event: Event){
-        val futureMe = repo.findById(event.userId).getOrNull() ?: throw FutureMeNotFoundException(event.userId)
+        val futureMe = findById(event.userId)
         futureMe.gainExperiencePoints(event)
     }
 
@@ -64,8 +67,9 @@ class FutureMeService(
      * @throws FutureMeNotFoundException 미래의 나가 존재하지 않을 시
      */
     @Transactional(readOnly = true)
+    @Throws(FutureMeNotFoundException::class)
     fun findFutureMe(userId: Long): FutureMeResponse {
-        val futureMe = repo.findById(userId).getOrNull() ?: throw FutureMeNotFoundException(userId)
+        val futureMe = findById(userId)
 
         return futureMe.toResponse()
     }
@@ -74,4 +78,12 @@ class FutureMeService(
     fun deleteFutureMe(userId: Long){
         repo.deleteById(userId)
     }
+
+    /**
+     * 사용자 id로 미래의 나를 조회하는 메소드
+     * @param userId 사용자 id
+     * @throws FutureMeNotFoundException id인 미래의 나가 존재하지 않을 시
+     */
+    @Throws(FutureMeNotFoundException::class)
+    private fun findById(userId: Long) = repo.findById(userId).orElseThrow { FutureMeNotFoundException(userId) }
 }
