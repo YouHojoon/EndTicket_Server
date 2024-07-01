@@ -61,7 +61,6 @@ class User(
      * @param nickname 등록할 닉네임
      * @throws IllegalStateException 닉네임이 null이 아닐 떄
      */
-    @Throws(IllegalStateException::class)
     fun registerNickname(request: NicknameRegisterRequest){
         check(this.nickname == null){"닉네임을 변경할 수 없습니다."}
         this.nickname = request.nickname
