@@ -1,6 +1,5 @@
 package ac.kr.smu.endticket.futureme.imagination
 
-import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationOwnershipException
 import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endticket.common.web.test.expectBindException
@@ -159,13 +158,13 @@ class ImaginationControllerTest @Autowired constructor(
     fun given_id_when_completeImagination_then_expectStatusCode204AndPublishImaginationCompletionEvent(){
         val id = 1L
         Mockito.`when`(service.completeImagination(id, ImaginationParameters.USER_ID))
-            .then { eventService.publishEvent(mockAny()) }
+            .then { eventService.publish(mockAny()) }
 
         mvc.completeImagination(id)
             .andExpect(MockMvcResultMatchers.status().isNoContent)
 
         Mockito.verify(service).completeImagination(id, ImaginationParameters.USER_ID)
-        Mockito.verify(eventService).publishEvent(mockAny())
+        Mockito.verify(eventService).publish(mockAny())
     }
 
     @ParameterizedTest

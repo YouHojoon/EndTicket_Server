@@ -1,15 +1,11 @@
 package ac.kr.smu.endticket.futureme.imagination
 
-import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationOwnershipException
 import ac.kr.smu.endticket.common.test.mockAny
-import ac.kr.smu.endticket.common.web.enum.Color
-import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationNotFoundException
 import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
 import ac.kr.smu.endticket.futureme.domain.imagination.repository.ImaginationRepository
 import ac.kr.smu.endticket.futureme.service.FutureMeEventService
 import ac.kr.smu.endticket.futureme.service.ImaginationService
 import ac.kr.smu.endticket.futureme.ui.request.ImaginationRequest
-import ac.kr.smu.endticket.futureme.ui.response.ImaginationResponse
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
@@ -90,7 +86,7 @@ class ImaginationServiceTest(
 
         service.completeImagination(imagination.id, imagination.userId)
 
-        Mockito.verify(eventService, Mockito.times(1)).publishEvent(mockAny())
+        Mockito.verify(eventService, Mockito.times(1)).publish(mockAny())
     }
 
     @ParameterizedTest

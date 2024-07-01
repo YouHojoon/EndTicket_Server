@@ -69,20 +69,20 @@ class ImaginationCompletedEventListenerTest @Autowired constructor(
     @DisplayName("상상해보기 완료 이벤트 테스트")
     @ParameterizedTest
     @MethodSource("${EventTestParameters.PATH}#provideImaginationCompletedEvent")
-    fun given_imaginationCompletedEvent_then_saveEvent_and_sendMessage(event: ImaginationCompletedEvent){
-        eventService.publishEvent(event)
+    fun given_imaginationCompletedEvent_then_saveEventAndSendMessage(event: ImaginationCompletedEvent){
+        eventService.publish(event)
         Thread.sleep(1000L)
 
         Mockito.verify(futureMeService, Mockito.times(1)).gainExperiencePoints(event)
-        Mockito.verify(repo, Mockito.times(2)).save(mockAny())
+        Mockito.verify(repo).delete(mockAny())
 
         val record = queue.poll()
         val expectPayload = event.toMessage(EventTestParameters.FUTURE_ME.characterType).payload
 
-        assertEquals(expectPayload.behavior, record.value().behavior)
-        assertEquals(expectPayload.target, record.value().target)
-        assertEquals(expectPayload.color, record.value().color)
-        assertEquals(expectPayload.characterType, record.value().characterType)
+        assertEquals(expectPayload?.behavior, record.value().behavior)
+        assertEquals(expectPayload?.target, record.value().target)
+        assertEquals(expectPayload?.color, record.value().color)
+        assertEquals(expectPayload?.characterType, record.value().characterType)
         assertEquals(event.userId.toString(), record.key())
     }
     @ParameterizedTest
@@ -97,7 +97,7 @@ class ImaginationCompletedEventListenerTest @Autowired constructor(
         Mockito.`when`(messageService.send(KafkaTopic.IMAGINATION_COMPLETED, message))
             .thenReturn(CompletableFuture.failedFuture(RuntimeException()))
 
-        eventService.publishEvent(mockEvent)
+        eventService.publish(mockEvent)
 
         Mockito.verify(repo, Mockito.only()).save(mockEvent)
         Mockito.verify(futureMeService, Mockito.times(1)).gainExperiencePoints(mockEvent)
