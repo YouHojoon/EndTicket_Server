@@ -31,8 +31,5 @@ abstract class Event(
     private val id: Long = 0L
 
     @Embedded
-//    @AttributeOverrides(
-//        AttributeOverride(name = "createdAt", column = Column(name = "created_at"))
-//    )
     val audit = Audit()
 }

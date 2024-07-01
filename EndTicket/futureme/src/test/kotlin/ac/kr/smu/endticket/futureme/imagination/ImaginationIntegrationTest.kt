@@ -215,8 +215,7 @@ class ImaginationIntegrationTest @Autowired constructor(
         assertEquals(imagination.color, record.value().color)
         assertEquals(imagination.target, record.value().target)
         assertEquals(futureMe.character.type, record.value().characterType)
-        //이벤트 저장 검증
-        assertTrue(eventRepo.existsBySpecificIdAndType(imagination.id, ImaginationCompletedEvent::class))
+
         //경험치 상승 검증
         assertEquals(10,futureMe.character.experiencePoints)
     }

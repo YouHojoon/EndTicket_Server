@@ -72,7 +72,7 @@ class FutureMeIntegrationTest @Autowired constructor(
 
     @Test
     @DisplayName("존재하지 않는 미래의 나 조회 테스트")
-    fun given_userDoesNotHasFutureMe_when_findFutureMe_then_responseExceptionResponseWithStatus404() {
+    fun given_userDoesNotHaveFutureMe_when_findFutureMe_then_responseExceptionResponseWithStatus404() {
         mvc.findFutureMe()
             .andExpect(MockMvcResultMatchers.status().isNotFound)
             .expectExceptionResponse()
@@ -91,7 +91,7 @@ class FutureMeIntegrationTest @Autowired constructor(
 
     @Test
     @DisplayName("존재하지 않는 캐릭터 이미지 조회 테스트")
-    fun given_notExistType_when_findCharacterImage_then_responseExceptionResponseWithStatus404() {
+    fun given_notExistentType_when_findCharacterImage_then_responseExceptionResponseWithStatus404() {
         mvc.perform(
             MockMvcRequestBuilders.get("$BASE_URL/characters/xxx")
         )
@@ -124,7 +124,7 @@ class FutureMeIntegrationTest @Autowired constructor(
 
     @Test
     @DisplayName("미래의 나가 없는 사용자의 수정 테스트")
-    fun given_userHasNotFutureMe_when_update_then_responseExceptionResponseWithStatus404() =
+    fun given_userDoesNotHaveFutureMe_when_update_then_responseExceptionResponseWithStatus404() =
         mvc
             .updateFutureMe(FutureMeTestParameters.UPDATE_REQUEST)
             .andExpect(MockMvcResultMatchers.status().isNotFound)

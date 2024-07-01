@@ -58,7 +58,7 @@ class FutureMeControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("존재하지 않는 미래의 나 조회 테스트")
-    fun given_userHasNotFutureMe_when_findFutureMe_then_responseExceptionResponseWithStatus404(){
+    fun given_userDoesNotHaveFutureMe_when_findFutureMe_then_responseExceptionResponseWithStatus404(){
         Mockito.`when`(service.findFutureMe( FutureMeTestParameters.USER_ID))
             .thenAnswer { throw FutureMeNotFoundException( FutureMeTestParameters.USER_ID) }
 
@@ -80,7 +80,7 @@ class FutureMeControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("존재하지 않는 캐릭터 이미지 조회 테스트")
-    fun given_notExistType_when_findCharacterImage_then_responseExceptionResponseWithStatus404(){
+    fun given_nonExistentType_when_findCharacterImage_then_responseExceptionResponseWithStatus404(){
         mvc.perform(
             MockMvcRequestBuilders.get("$BASE_URL/characters/xxx")
         ).andExpect(MockMvcResultMatchers.status().isBadRequest)
@@ -117,7 +117,7 @@ class FutureMeControllerTest @Autowired constructor(
 
     @Test
     @DisplayName("미래의 나가 없는 사용자의 수정 테스트")
-    fun given_userDoesNotHasFutureMee_when_updateFutureMe_then_responseExceptionResponseWithStatus404(){
+    fun given_userDoesNotHaveFutureMee_when_updateFutureMe_then_responseExceptionResponseWithStatus404(){
         val request = UpdateFutureMeRequest("테스트")
 
         Mockito

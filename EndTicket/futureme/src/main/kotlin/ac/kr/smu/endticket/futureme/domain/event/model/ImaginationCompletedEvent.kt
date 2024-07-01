@@ -36,18 +36,4 @@ class ImaginationCompletedEvent(
         key = imagination.userId.toString(),
         payload = imagination.toEventResponse(characterType)
     )
-
-    /**
-     * 이벤트의 메시지가 발행되었는지 나타내는 필드
-     */
-    @Column
-    var isSent = false
-        protected set
-
-    /**
-     * 이벤트의 메시지 발행 완료 메소드
-     */
-    fun successSend() {
-        isSent = true
-    }
 }

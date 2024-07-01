@@ -9,7 +9,6 @@ import ac.kr.smu.endticket.futureme.ui.request.ImaginationRequest
 import ac.kr.smu.endticket.futureme.ui.response.ImaginationResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import kotlin.jvm.optionals.getOrNull
 
 @Service
 class ImaginationService(
@@ -62,7 +61,7 @@ class ImaginationService(
         val imagination = findById(id)
 
         imagination.complete(userId)
-        futureMeEventService.publishEvent(ImaginationCompletedEvent(imagination))
+        futureMeEventService.publish(ImaginationCompletedEvent(imagination))
     }
 
     /**

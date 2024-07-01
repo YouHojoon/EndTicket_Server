@@ -47,23 +47,12 @@ class ImaginationCompletedEventJob(
                     .findFutureMe(event.userId)
                     .character.type.also { characterTypes[event.userId] = it }
             ) }
-            val futures = messageService
-                .send(KafkaTopic.IMAGINATION_COMPLETED,messages)
-                .mapIndexed {i, future ->
-                    future.handle{record, e ->
-                        if (e == null)
-                            record.producerRecord.value().id
-                        else {
-                            val message = messages[i]
-                            log.error("key: ${message.key}, payload: ${message.payload}",e)
-                            null
-                        }
-                    }
-                }
-            CompletableFuture.allOf(*futures.toTypedArray()).join()
-            val ids = futures.mapNotNull { it.join() }
 
-            repo.saveAll(events.filter { it.imaginationId in ids }.map { it.also { it.successSend() } })
+            val results = messageService
+                .send(KafkaTopic.IMAGINATION_COMPLETED,messages)
+                .map { it.producerRecord.value().id }
+
+            repo.deleteAllById(results)
         }
 
         log.info("상상해보기 이벤트 재전송 $elapsed ms 시간으로 완료")
