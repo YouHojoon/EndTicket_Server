@@ -7,6 +7,7 @@ import ac.kr.smu.endticket.protobuf.UserServiceGrpc
 import ac.kr.smu.endticket.user.domain.exception.UserNotFoundException
 import ac.kr.smu.endticket.user.domain.model.User
 import ac.kr.smu.endticket.user.domain.repository.UserRepository
+import ac.kr.smu.endticket.user.service.UserEventService
 import ac.kr.smu.endticket.user.service.UserService
 import ac.kr.smu.endticket.user.ui.request.NicknameRegisterRequest
 import net.devh.boot.grpc.client.inject.GrpcClient
@@ -28,13 +29,17 @@ import kotlin.test.assertFailsWith
 @SpringBootTest(
     classes = [
         UserService::class,
-        GrpcConfig::class]
+        UserEventService::class,
+        GrpcConfig::class
+    ]
 )
 @DirtiesContext
 class UserServiceTest @Autowired constructor(
     @MockBean
     private val repo: UserRepository,
-    private val service: UserService
+    @MockBean
+    private val eventService: UserEventService,
+    private val service: UserService,
 ) {
     @GrpcClient("user")
     private lateinit var userServiceClient: UserServiceGrpc.UserServiceBlockingStub
@@ -65,7 +70,7 @@ class UserServiceTest @Autowired constructor(
     @MethodSource("${UserTestParameters.PATH}#provideUser")
     fun given_nonRegisteredUser_when_findUserId_then_saveUserAndReturnUserId(user: User){
         Mockito
-            .`when`(repo.findBySocialTypeAndSocialUserNumber(UserTestParameters.SOCIAL_TYPE, UserTestParameters.SOCIAL_USER_NUMBER))
+            .`when`(repo.findBySocialTypeAndSocialUserNumber(user.socialType, UserTestParameters.SOCIAL_USER_NUMBER))
             .thenReturn(null)
         Mockito.`when`(repo.save(mockAny()))
             .thenReturn(user)
@@ -114,10 +119,10 @@ class UserServiceTest @Autowired constructor(
     @DisplayName("사용자 닉네임 조회 테스트")
     @MethodSource("${UserTestParameters.PATH}#provideUser")
     fun given_id_when_findNickname_then_returnNickname(user: User){
-        Mockito.`when`(repo.findById(UserTestParameters.USER_ID))
+        Mockito.`when`(repo.findById(user.id))
             .thenReturn(Optional.of(user))
 
-        assertEquals(user.nickname, service.findNickname(UserTestParameters.USER_ID))
+        assertEquals(user.nickname, service.findNickname(user.id))
     }
 
     @Test
@@ -127,5 +132,26 @@ class UserServiceTest @Autowired constructor(
             .thenReturn(Optional.empty())
 
         assertThrows<UserNotFoundException> {service.findNickname(UserTestParameters.USER_ID)  }
+    }
+
+    @ParameterizedTest
+    @DisplayName("사용 탈퇴 테스트")
+    @MethodSource("${UserTestParameters.PATH}#provideUser")
+    fun given_id_when_deleteUser_then_publicUserDeletedEvent(user: User){
+        Mockito.`when`(repo.findById(user.id))
+            .thenReturn(Optional.of(user))
+
+        service.deleteUser(user.id)
+
+        Mockito.verify(eventService).publish(mockAny())
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 사용자 탈퇴 테스트")
+    fun given_idOfNonExistentUser_when_deleteUser_then_throwUserNotFoundException(){
+        Mockito.`when`(repo.findById(UserTestParameters.USER_ID))
+            .thenReturn(Optional.empty())
+
+        assertThrows<UserNotFoundException> {service.deleteUser(UserTestParameters.USER_ID)  }
     }
 }
