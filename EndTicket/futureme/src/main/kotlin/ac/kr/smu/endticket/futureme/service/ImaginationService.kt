@@ -26,7 +26,6 @@ class ImaginationService(
      * @return 생성된 상상해보기
      * @throws IllegalStateException 최대 개수 이상으로 생성 시도할 시
      */
-    @Throws(IllegalStateException::class)
     @Transactional
     fun createImagination(request: ImaginationRequest, userId: Long): ImaginationResponse {
         check (repo.countByUserIdAndIsCompleteIsFalse(userId) < IMAGINATION_LIMIT){"$IMAGINATION_LIMIT 이상으로 상상해보기를 생성할 수 없습니다."}
@@ -43,7 +42,6 @@ class ImaginationService(
      * @throws ImaginationNotFoundException id인 상상해보기가 존재하지 않을 시
      * @throws ImaginationOwnershipException 사용자가 상상해보기의 소유자가 아닐 시
      */
-    @Throws(ImaginationNotFoundException::class, ImaginationOwnershipException::class)
     @Transactional
     fun updateImagination(request: ImaginationRequest, id: Long, userId: Long): ImaginationResponse {
         val imagination = findById(id)
@@ -60,7 +58,6 @@ class ImaginationService(
      * @throws ImaginationOwnershipException 사용자가 상상해보기의 소유자가 아닐 시
      */
     @Transactional
-    @Throws(ImaginationOwnershipException::class, ImaginationNotFoundException::class)
     fun completeImagination(id: Long, userId: Long){
         val imagination = findById(id)
 
@@ -88,7 +85,6 @@ class ImaginationService(
      * @throws ImaginationOwnershipException 사용자가 상상해보기의 소유자가 아닐 시
      */
     @Transactional
-    @Throws(ImaginationNotFoundException::class, ImaginationOwnershipException::class)
     fun deleteImagination(id: Long, userId: Long){
         val imagination = findById(id)
 
@@ -101,6 +97,5 @@ class ImaginationService(
      * @param id 상상해보기 id
      * @throws ImaginationNotFoundException id인 상상해보기가 존재하지 않을 시
      */
-    @Throws(ImaginationNotFoundException::class)
     private fun findById(id: Long) = repo.findById(id).orElseThrow { ImaginationNotFoundException(id) }
 }

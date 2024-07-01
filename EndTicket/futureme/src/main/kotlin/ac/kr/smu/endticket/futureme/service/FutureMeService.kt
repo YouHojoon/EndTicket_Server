@@ -24,7 +24,6 @@ class FutureMeService(
      * @throws IllegalStateException 미래의 나가 이미 존재할 시
      */
     @Transactional
-    @Throws(IllegalStateException::class)
     fun createFutureMe(request: CreateFutureMeRequest, userId: Long) =
         if (repo.existsById(userId))
             throw IllegalStateException("미래의 나가 이미 존재합니다.")
@@ -39,7 +38,6 @@ class FutureMeService(
      * @throws FutureMeNotFoundException 미래의 나가 존재하지 않을 떄
      */
     @Transactional
-    @Throws(FutureMeNotFoundException::class)
     fun updateFutureMe(request: UpdateFutureMeRequest, userId: Long): FutureMeResponse {
         val futureMe = findById(userId)
 
@@ -54,7 +52,6 @@ class FutureMeService(
      * @throws FutureMeNotFoundException 상상해보기가 존재하지 않을 시
      */
     @Transactional
-    @Throws(FutureMeNotFoundException::class)
     fun gainExperiencePoints(event: Event){
         val futureMe = findById(event.userId)
         futureMe.gainExperiencePoints(event)
@@ -67,7 +64,6 @@ class FutureMeService(
      * @throws FutureMeNotFoundException 미래의 나가 존재하지 않을 시
      */
     @Transactional(readOnly = true)
-    @Throws(FutureMeNotFoundException::class)
     fun findFutureMe(userId: Long): FutureMeResponse {
         val futureMe = findById(userId)
 
@@ -84,6 +80,5 @@ class FutureMeService(
      * @param userId 사용자 id
      * @throws FutureMeNotFoundException id인 미래의 나가 존재하지 않을 시
      */
-    @Throws(FutureMeNotFoundException::class)
     private fun findById(userId: Long) = repo.findById(userId).orElseThrow { FutureMeNotFoundException(userId) }
 }
