@@ -48,11 +48,11 @@ class ImaginationCompletedEventJob(
                     .character.type.also { characterTypes[event.userId] = it }
             ) }
 
-            val results = messageService
+            val ids = messageService
                 .send(KafkaTopic.IMAGINATION_COMPLETED,messages)
                 .map { it.producerRecord.value().id }
 
-            repo.deleteAllById(results)
+            repo.deleteAllById(ids)
         }
 
         log.info("상상해보기 이벤트 재전송 $elapsed ms 시간으로 완료")
