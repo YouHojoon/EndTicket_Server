@@ -6,6 +6,7 @@ import ac.kr.smu.endticket.ticket.domain.model.TicketCompletedEvent
 import ac.kr.smu.endticket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endticket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
+import ac.kr.smu.endticket.ticket.domain.exception.TicketOwnershipException
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -52,12 +53,13 @@ class TicketService(
      * @param userId 티켓의 소유자 Id
      * @return 수정된 티켓 응답
      * @throws TicketNotFoundException id로 조회한 티켓이 없을 시
+     * @throws TicketOwnershipException 사용자가 티켓의 소유자가 아닐 시
      */
 
     @Throws(TicketNotFoundException::class)
     @Transactional
     fun updateTicket(request: TicketRequest, id: Long, userId: Long): TicketResponse {
-        val ticket = repo.findById(id).getOrNull() ?: throw TicketNotFoundException(id)
+        val ticket = findById(id)
 
         if (ticket.updateAndCheckCompletion(request,userId))
             completeTicket(ticket)
@@ -71,10 +73,11 @@ class TicketService(
      * @param userId 티켓의 소유자 Id
      * @return 스와이프 처리된 티켓 응답
      * @throws TicketNotFoundException id로 조회한 티켓이 없을 시
+     * @throws TicketOwnershipException 사용자가 티켓의 소유자가 아닐 시
      */
     @Transactional
     fun swipeTicket(id: Long, userId: Long): TicketResponse {
-        val ticket = repo.findById(id).getOrNull() ?: throw TicketNotFoundException(id)
+        val ticket = findById(id)
 
         if (ticket.swipeAndCheckCompletion(userId))
             completeTicket(ticket)
@@ -96,10 +99,10 @@ class TicketService(
      * @param userId 티켓의 소유자 Id
      * @return 스와이프 취소 처리된 티켓 응답
      * @throws TicketNotFoundException 티켓이 존재하지 않을 때
+     * @throws TicketOwnershipException 사용자가 티켓의 소유자가 아닐 시
      */
-    @Throws(TicketNotFoundException::class)
     fun cancelSwipeTicket(id: Long, userId: Long): TicketResponse {
-        val ticket = repo.findById(id).getOrNull() ?: throw TicketNotFoundException(id)
+        val ticket = findById(id)
 
         ticket.cancelSwipeTicket(userId)
 
@@ -111,10 +114,11 @@ class TicketService(
      * @param id 티켓 id
      * @param userId 사용자 id
      * @throws TicketNotFoundException 티켓이 존재하지 않을 시
+     * @throws TicketOwnershipException 사용자가 티켓의 소유자가 아닐시
      */
     @Transactional
     fun deleteTicket(id: Long, userId: Long){
-        val ticket = repo.findById(id).getOrNull() ?: throw TicketNotFoundException(id)
+        val ticket = findById(id)
 
         ticket.checkOwnership(userId)
         repo.delete(ticket)
@@ -125,4 +129,10 @@ class TicketService(
      */
     private fun completeTicket(ticket: Ticket) = completionEventService.publishEvent(TicketCompletedEvent(ticket))
 
+    /**
+     * 티켓 조회 메소드
+     * @param id 티켓의 id
+     * @throws TicketNotFoundException id인 티켓이 존재하지 않을 시
+     */
+    private fun findById(id: Long) = repo.findById(id).orElseThrow { TicketNotFoundException(id) }
 }
