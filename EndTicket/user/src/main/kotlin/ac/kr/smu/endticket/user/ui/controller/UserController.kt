@@ -25,8 +25,11 @@ import ac.kr.smu.endticket.common.web.response.BindExceptionResponse
 import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 
 import ac.kr.smu.endticket.user.domain.exception.UserNotFoundException
+import ac.kr.smu.endticket.user.swagger.apiresponses.DeleteUserApiResponses
 import ac.kr.smu.endticket.user.swagger.apiresponses.FindNicknameApiResponses
 import ac.kr.smu.endticket.user.swagger.apiresponses.RegisterNicknameApiResponses
+import brave.Response
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
 
@@ -70,6 +73,17 @@ class  UserController(
         id: Long
     ) = ResponseEntity.ok(mapOf("nickname" to service.findNickname(id)))
 
+    @DeleteUserApiResponses
+    @DeleteMapping
+    fun deleteUser(
+        @RequestHeader(HttpHeaderName.USER_ID)
+        @Parameter(hidden = true)
+        id: Long
+    ): ResponseEntity<Void>{
+        println(id)
+        service.deleteUser(id)
+        return ResponseEntity.noContent().build()
+    }
 
     @ExceptionHandler(UserNotFoundException::class)
     fun handleUserNotFoundException(e: UserNotFoundException): ResponseEntity<ExceptionResponse> {
