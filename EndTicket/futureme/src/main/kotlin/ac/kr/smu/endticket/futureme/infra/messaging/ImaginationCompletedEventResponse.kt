@@ -12,7 +12,7 @@ import java.time.LocalDateTime
  * @property target 목표
  * @property color 색
  * @property characterType 캐릭터 종류
- * @property completedDate 완료 날짜
+ * @property completedAt 완료 날짜
  */
 data class ImaginationCompletedEventResponse(
     val id: Long,
@@ -20,5 +20,5 @@ data class ImaginationCompletedEventResponse(
     val target: String,
     val color: Color,
     val characterType: CharacterType,
-    val completedDate: LocalDateTime
+    val completedAt: LocalDateTime
 )

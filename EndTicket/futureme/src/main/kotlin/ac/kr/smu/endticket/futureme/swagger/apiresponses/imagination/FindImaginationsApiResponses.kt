@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.media.SchemaProperty
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 
-@Operation(description = "상상해보기 나 조회")
+@Operation(description = "상상해보기 조회", summary = "상상해보기 조회")
 @ApiResponses(
     ApiResponse(
         responseCode = "200",
