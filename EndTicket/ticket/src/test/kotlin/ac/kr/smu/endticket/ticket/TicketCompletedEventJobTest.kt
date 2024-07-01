@@ -62,7 +62,7 @@ class TicketCompletedEventJobTest @Autowired constructor(
         val events = setOf(event)
         val queue = LinkedBlockingQueue<ConsumerRecord<String, TicketCompletedEventResponse>>()
 
-        Mockito.`when`(repo.findByIsSentFalseAndAuditCreatedAtBefore(mockAny()))
+        Mockito.`when`(repo.findByAuditCreatedAtBefore(mockAny()))
             .thenReturn(events)
         container.messageListener(broker){
             queue.add(it)
@@ -76,14 +76,14 @@ class TicketCompletedEventJobTest @Autowired constructor(
             val message = event.toMessage()
 
             assertEquals(message.key, record.key())
-            assertEquals(message.payload.id, record.value().id)
-            assertEquals(message.payload.behavior, record.value().behavior)
-            assertEquals(message.payload.target, record.value().target)
-            assertEquals(message.payload.color, record.value().color)
-            assertEquals(message.payload.swipeCount, record.value().swipeCount)
+            assertEquals(message.payload?.id, record.value().id)
+            assertEquals(message.payload?.behavior, record.value().behavior)
+            assertEquals(message.payload?.target, record.value().target)
+            assertEquals(message.payload?.color, record.value().color)
+            assertEquals(message.payload?.swipeCount, record.value().swipeCount)
         }
 
-        Mockito.verify(repo).saveAll(Mockito.argThat<Collection<TicketCompletedEvent>> { it.isNotEmpty() })
+        Mockito.verify(repo).deleteAllById(Mockito.argThat<Collection<Long>> { it.isNotEmpty() })
     }
 
     @ParameterizedTest
@@ -92,14 +92,14 @@ class TicketCompletedEventJobTest @Autowired constructor(
     fun given_notSentTicketCompletedEvent_when_resendTicketCompletionEventFail_then_doNothing(event: TicketCompletedEvent){
         val events = setOf(event)
 
-        Mockito.`when`(repo.findByIsSentFalseAndAuditCreatedAtBefore(mockAny()))
+        Mockito.`when`(repo.findByAuditCreatedAtBefore(mockAny()))
             .thenReturn(events)
         Mockito.`when`(messageService.send(Mockito.anyString(), Mockito.anyCollection()))
-            .thenReturn(listOf(CompletableFuture.failedFuture(RuntimeException())))
+            .thenReturn(emptyList())
 
         job.resendTicketCompletedEvent()
 
-        Mockito.verify(repo).saveAll(Mockito.argThat<Collection<TicketCompletedEvent>> { it.isEmpty() })
+        Mockito.verify(repo).deleteAllById(Mockito.argThat<Collection<Long>> { it.isEmpty() })
     }
 
 }

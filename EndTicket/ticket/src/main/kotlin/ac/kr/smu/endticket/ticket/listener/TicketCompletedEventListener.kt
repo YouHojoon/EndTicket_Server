@@ -37,7 +37,7 @@ class TicketCompletedEventListener(
 
         messageService.send(KafkaTopic.TICKET_COMPLETED,message).whenCompleteAsync { _, e ->
             if (e == null)
-                repo.save(event.also { it.successSend() })
+                repo.delete(event)
             else {
                 log.error("{key: ${message.key}}, payload: ${message.payload}", e)
             }

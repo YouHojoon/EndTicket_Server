@@ -20,10 +20,6 @@ class TicketCompletedEvent(
     @MapsId
     private val ticket: Ticket,
 ) {
-
-    @Column
-    var isSent: Boolean = false
-
     @Id
     val id: Long = 0L
 
@@ -33,7 +29,4 @@ class TicketCompletedEvent(
      * 메시지를 전송하기 위한 응답으로 변환하는 메소드
      */
     fun toMessage() = KafkaMessage(ticket.userId.toString(), ticket.toEventResponse())
-    fun successSend(){
-        isSent = true
-    }
 }
