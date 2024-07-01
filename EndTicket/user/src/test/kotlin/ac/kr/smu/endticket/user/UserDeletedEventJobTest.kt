@@ -87,7 +87,7 @@ class UserDeletedEventJobTest @Autowired constructor(
             events
         )
         Mockito.`when`(messageService.send(KafkaTopic.USER_DELETED, messages))
-            .thenReturn(setOf(CompletableFuture.failedFuture(RuntimeException())))
+            .thenReturn(emptySet())
 
         job.resend()
 

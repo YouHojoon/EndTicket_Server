@@ -28,21 +28,11 @@ class UserDeletedEventJob(
             val events = repo
                 .findByAuditCreatedAtBefore(LocalDateTime.now().minusMinutes(10))
             val messages = events.map {it.toMessage()}
-            val futures = messageService
+            val ids = messageService
                 .send(KafkaTopic.USER_DELETED, messages)
-                .mapIndexed{i,future ->
-                    future.handle{record, e ->
-                        if (e == null)
-                            record.producerRecord.key().toLong()
-                        else {
-                            log.error("{key: ${messages[i].key}}", e)
-                            null
-                        }
-                    }
-                }
+                .map { it.producerRecord.key().toLong() }
 
-            CompletableFuture.allOf(*futures.toTypedArray()).join()
-            repo.deleteAllById(futures.mapNotNull { it.join() })
+            repo.deleteAllById(ids)
         }
 
         log.info("사용자 탈퇴 이벤트 재전송 $elapsed ms 시간으로 완료")
