@@ -7,5 +7,5 @@ package ac.kr.smu.endticket.common.kafka.messaging
  */
 data class KafkaMessage<out K:Any, out V>(
     val key: K,
-    val payload: V?
+    val payload: V? = null
 )
