@@ -146,4 +146,11 @@ class ImaginationServiceTest(
 
         assertFailsWith(e) { service.deleteImagination(id, userId) }
     }
+
+    @ParameterizedTest
+    @DisplayName("사용자 id로 삭제 테스트")
+    @MethodSource("${ImaginationParameters.PATH}#provideImagination")
+    fun given_userId_when_deleteByUserId_then_deleteImaginationOfUser(imagination: Imagination){
+
+    }
 }

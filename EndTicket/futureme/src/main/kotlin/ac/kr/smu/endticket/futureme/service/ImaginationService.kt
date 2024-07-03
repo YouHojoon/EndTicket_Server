@@ -92,6 +92,12 @@ class ImaginationService(
     }
 
     /**
+     * 사용자의 상상해보기를 모두 삭제하는 메소드
+     * @param userId 사용자 id
+     */
+    @Transactional
+    fun deleteByUserId(userId: Long) = repo.deleteByUserId(userId)
+    /**
      * 상상해보기 id로 조회하는 메소드
      * @param id 상상해보기 id
      * @throws ImaginationNotFoundException id인 상상해보기가 존재하지 않을 시
