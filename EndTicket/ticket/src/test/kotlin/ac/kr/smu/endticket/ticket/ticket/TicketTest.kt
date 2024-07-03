@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.ticket
+package ac.kr.smu.endticket.ticket.ticket
 
 import ac.kr.smu.endticket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endticket.ticket.domain.model.Ticket

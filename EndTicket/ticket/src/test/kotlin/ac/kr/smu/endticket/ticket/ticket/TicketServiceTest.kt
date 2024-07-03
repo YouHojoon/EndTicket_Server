@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.ticket
+package ac.kr.smu.endticket.ticket.ticket
 
 import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.common.web.enum.Color
@@ -48,7 +48,10 @@ class TicketServiceTest (
         Mockito.`when`(repo.save(ticket))
             .thenReturn(ticket)
 
-        assertEquals(ticket.toResponse(), service.createTicket(TicketTestParameters.TICKET_REQUEST, TicketTestParameters.USER_ID))
+        assertEquals(ticket.toResponse(), service.createTicket(
+            TicketTestParameters.TICKET_REQUEST,
+            TicketTestParameters.USER_ID
+        ))
         Mockito.verify(repo, Mockito.times(1)).countIncompleteTicketsOfUser(TicketTestParameters.USER_ID)
     }
     @Test
@@ -57,7 +60,10 @@ class TicketServiceTest (
         Mockito.`when`(repo.countIncompleteTicketsOfUser(TicketTestParameters.USER_ID))
             .thenReturn(5)
 
-        assertThrows<IllegalStateException> { service.createTicket(TicketTestParameters.TICKET_REQUEST, TicketTestParameters.USER_ID) }
+        assertThrows<IllegalStateException> { service.createTicket(
+            TicketTestParameters.TICKET_REQUEST,
+            TicketTestParameters.USER_ID
+        ) }
     }
     @ParameterizedTest
     @DisplayName("티켓 수정 테스트")
@@ -103,7 +109,10 @@ class TicketServiceTest (
         Mockito.`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
 
-        val updatedTicket = service.updateTicket(TicketTestParameters.TICKET_REQUEST, ticket.id , TicketTestParameters.USER_ID)
+        val updatedTicket = service.updateTicket(
+            TicketTestParameters.TICKET_REQUEST, ticket.id ,
+            TicketTestParameters.USER_ID
+        )
 
         assertEquals(ticket.toResponse(), updatedTicket)
         Mockito.verify(eventService, Mockito.times(1)).publishEvent(mockAny())

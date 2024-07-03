@@ -22,4 +22,6 @@ interface TicketRepository: JpaRepository<Ticket, Long> {
      */
     @Query("select count(t) from Ticket as t where t.swipeCount < t.maxSwipeCount and t.userId = :userId")
     fun countIncompleteTicketsOfUser(userId: Long): Int
+
+    fun deleteByUserId(userId: Long)
 }

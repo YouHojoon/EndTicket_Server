@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.ticket
+package ac.kr.smu.endticket.ticket.ticket
 
 import ac.kr.smu.endticket.common.web.aop.BindExceptionAdvice
 import ac.kr.smu.endticket.common.web.test.expectBindException
@@ -84,8 +84,14 @@ class TicketControllerTest @Autowired constructor(
     @DisplayName("티켓 수정 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
     fun given_ticketRequest_when_updateTicket_then_responseUpdatedTicket(ticket: Ticket){
-        Mockito.`when`(service.updateTicket(TicketTestParameters.UPDATE_REQUEST, ticket.id, TicketTestParameters.USER_ID))
-            .thenReturn(ticket.also { it.updateAndCheckCompletion(TicketTestParameters.UPDATE_REQUEST, TicketTestParameters.USER_ID) }.toResponse())
+        Mockito.`when`(service.updateTicket(
+            TicketTestParameters.UPDATE_REQUEST, ticket.id,
+            TicketTestParameters.USER_ID
+        ))
+            .thenReturn(ticket.also { it.updateAndCheckCompletion(
+                TicketTestParameters.UPDATE_REQUEST,
+                TicketTestParameters.USER_ID
+            ) }.toResponse())
 
         mvc.updateTicket(TicketTestParameters.UPDATE_REQUEST, ticket.id)
             .andExpect(MockMvcResultMatchers.status().isOk)

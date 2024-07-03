@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.ticket
+package ac.kr.smu.endticket.ticket.ticket
 
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.common.kafka.test.createKafkaContainer
