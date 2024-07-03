@@ -1,5 +1,7 @@
 package ac.kr.smu.endticket.history
 
+import ac.kr.smu.endticket.common.redis.config.AutoRedisConfig
+import ac.kr.smu.endticket.common.redis.test.RedisTestConfig
 import ac.kr.smu.endticket.history.domain.converter.HistoryTypeConverter
 import ac.kr.smu.endticket.history.domain.model.History
 import ac.kr.smu.endticket.history.domain.model.ImaginationHistory
@@ -13,11 +15,13 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.format.support.FormattingConversionService
@@ -33,9 +37,11 @@ import kotlin.test.BeforeTest
         HistoryService::class,
         DataSourceAutoConfiguration::class,
         TransactionAutoConfiguration::class,
-        HibernateJpaAutoConfiguration::class
+        HibernateJpaAutoConfiguration::class,
+        RedisAutoConfiguration::class
     ]
 )
+@Import(RedisTestConfig::class, AutoRedisConfig::class)
 @EnableJpaRepositories("ac.kr.smu.endticket.history.domain.repository")
 @EntityScan("ac.kr.smu.endticket.history.domain.model")
 class HistoryIntegrationTest @Autowired constructor(
