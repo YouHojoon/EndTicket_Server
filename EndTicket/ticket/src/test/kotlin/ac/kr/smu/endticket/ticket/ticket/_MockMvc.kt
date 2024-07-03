@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.ticket
+package ac.kr.smu.endticket.ticket.ticket
 
 import ac.kr.smu.endticket.common.constant.HttpHeaderName
 import ac.kr.smu.endticket.ticket.ui.request.TicketRequest

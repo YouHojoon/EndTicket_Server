@@ -1,10 +1,11 @@
-package ac.kr.smu.endticket.ticket
+package ac.kr.smu.endticket.ticket.event
 
 import KafkaMessageService
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endticket.common.kafka.test.messageListener
 import ac.kr.smu.endticket.common.test.mockAny
+import ac.kr.smu.endticket.ticket.ticket.TicketTestParameters
 import ac.kr.smu.endticket.ticket.job.TicketCompletedEventJob
 import ac.kr.smu.endticket.ticket.domain.model.TicketCompletedEvent
 import ac.kr.smu.endticket.ticket.domain.repository.TicketCompletedEventRepository
@@ -23,7 +24,6 @@ import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.kafka.listener.KafkaMessageListenerContainer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
@@ -57,8 +57,8 @@ class TicketCompletedEventJobTest @Autowired constructor(
     }
     @ParameterizedTest
     @DisplayName("전송 실패한 티켓 완료 이벤트 재전송 테스트")
-    @MethodSource("${TicketTestParameters.PATH}#provideEvent")
-    fun given_notSentTicketCompletedEvent_when_resendTicketCompletionEvent_then_resendMessage_and_saveIsSent(event: TicketCompletedEvent){
+    @MethodSource("${EventTestParameters.PATH}#provideEvent")
+    fun given_notSentTicketCompletedEvent_when_resendTicketCompletionEvent_then_resendMessage(event: TicketCompletedEvent){
         val events = setOf(event)
         val queue = LinkedBlockingQueue<ConsumerRecord<String, TicketCompletedEventResponse>>()
 
@@ -88,7 +88,7 @@ class TicketCompletedEventJobTest @Autowired constructor(
 
     @ParameterizedTest
     @DisplayName("티켓 완료 이벤트 메시지 재전송 실패 테스트")
-    @MethodSource("${TicketTestParameters.PATH}#provideEvent")
+    @MethodSource("${EventTestParameters.PATH}#provideEvent")
     fun given_notSentTicketCompletedEvent_when_resendTicketCompletionEventFail_then_doNothing(event: TicketCompletedEvent){
         val events = setOf(event)
 

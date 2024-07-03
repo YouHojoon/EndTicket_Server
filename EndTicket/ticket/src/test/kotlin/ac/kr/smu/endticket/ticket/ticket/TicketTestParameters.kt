@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.ticket
+package ac.kr.smu.endticket.ticket.ticket
 
 import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.common.web.enum.TicketType
@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.Arguments
 import java.util.stream.Stream
 
 object TicketTestParameters {
-    const val PATH = "ac.kr.smu.endticket.ticket.TicketTestParameters"
+    const val PATH = "ac.kr.smu.endticket.ticket.ticket.TicketTestParameters"
     const val USER_ID = 1L
 
     val TICKET_REQUEST =
@@ -89,5 +89,5 @@ object TicketTestParameters {
         )
     )
     @JvmStatic
-    fun provideEvent() = Stream.of(Arguments.of(TicketCompletedEvent( Ticket.from(TICKET_REQUEST, USER_ID))))
+    fun provideEvent() = Stream.of(Arguments.of(TicketCompletedEvent(Ticket.from(TICKET_REQUEST, USER_ID))))
 }

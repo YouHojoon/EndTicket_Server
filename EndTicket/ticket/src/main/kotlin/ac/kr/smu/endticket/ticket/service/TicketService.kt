@@ -122,6 +122,15 @@ class TicketService(
         ticket.checkOwnership(userId)
         repo.delete(ticket)
     }
+
+
+    /**
+     * 사용자의 티켓 삭제 메소드
+     * @param userId 사용자 id
+     */
+    @Transactional
+    fun deleteByUserId(userId: Long) = repo.deleteByUserId(userId)
+
     /**
      * 티켓 완료 메소드, kafka를 통해 이벤트를 전송한다.
      * @param ticket 완료된 티켓

@@ -1,10 +1,11 @@
-package ac.kr.smu.endticket.ticket
+package ac.kr.smu.endticket.ticket.event
 
 import KafkaMessageService
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endticket.common.kafka.test.messageListener
 import ac.kr.smu.endticket.common.test.mockAny
+import ac.kr.smu.endticket.ticket.ticket.TicketTestParameters
 import ac.kr.smu.endticket.ticket.domain.model.TicketCompletedEvent
 import ac.kr.smu.endticket.ticket.domain.repository.TicketCompletedEventRepository
 import ac.kr.smu.endticket.ticket.infra.messaging.TicketCompletedEventResponse
@@ -60,7 +61,7 @@ class TicketCompletedEventListenerTest @Autowired constructor(
 
     @ParameterizedTest
     @DisplayName("티켓 완료 이벤트 테스트")
-    @MethodSource("${TicketTestParameters.PATH}#provideEvent")
+    @MethodSource("${EventTestParameters.PATH}#provideEvent")
     fun given_ticketCompletedEvent_then_saveEventAndSendMessage(event: TicketCompletedEvent){
         val queue = LinkedBlockingQueue<ConsumerRecord<String, TicketCompletedEventResponse>>()
 
@@ -86,7 +87,7 @@ class TicketCompletedEventListenerTest @Autowired constructor(
 
     @ParameterizedTest
     @DisplayName("티켓 완료 이벤트 전송 실패 테스트")
-    @MethodSource("${TicketTestParameters.PATH}#provideEvent")
+    @MethodSource("${EventTestParameters.PATH}#provideEvent")
     fun given_ticketCompletedEvent_when_sendMessageFail_then_doNothing(event: TicketCompletedEvent){
         val message = event.toMessage()
         val mockEvent = Mockito.mock(TicketCompletedEvent::class.java)
