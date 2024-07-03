@@ -3,8 +3,7 @@ package ac.kr.smu.endticket.ticket.event
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.common.kafka.test.createProducer
 import ac.kr.smu.endticket.common.test.mockAny
-import ac.kr.smu.endticket.ticket.domain.repository.TicketCompletedEventRepository
-import ac.kr.smu.endticket.ticket.domain.repository.TicketRepository
+import ac.kr.smu.endticket.ticket.service.TicketService
 import ac.kr.smu.endticket.ticket.service.UserDeletedEventConsumeService
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -18,7 +17,6 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
-import java.lang.RuntimeException
 
 @SpringBootTest(
     classes = [
@@ -29,10 +27,7 @@ import java.lang.RuntimeException
 @EmbeddedKafka
 class UserDeletedEventConsumeServiceTest @Autowired constructor(
     @MockBean
-    private val ticketRepo: TicketRepository,
-    @MockBean
-    private val eventRepo: TicketCompletedEventRepository,
-
+    private val ticketService: TicketService,
     private val service: UserDeletedEventConsumeService,
     private val broker: EmbeddedKafkaBroker
 ) {
@@ -46,7 +41,7 @@ class UserDeletedEventConsumeServiceTest @Autowired constructor(
         producer.send(ProducerRecord(KafkaTopic.USER_DELETED, EventTestParameters.USER_ID.toString(),null))
         Thread.sleep(1000L)
 
-        Mockito.verify(ticketRepo).deleteByUserId(EventTestParameters.USER_ID)
+        Mockito.verify(ticketService).deleteByUserId(EventTestParameters.USER_ID)
     }
 
     @Test

@@ -12,16 +12,15 @@ import java.time.Duration
 
 @Service
 class UserDeletedEventConsumeService(
-    private val repo: TicketRepository
+    private val service: TicketService
 ) {
     private val log = LoggerFactory.getLogger(UserDeletedEventConsumeService::class.java)
 
     @KafkaListener(topics = [KafkaTopic.USER_DELETED])
-    @Transactional
     fun consume(record: ConsumerRecord<String, Void>, ack: Acknowledgment){
         try{
             val userId = record.key().toLong()
-            repo.deleteByUserId(userId)
+            service.deleteByUserId(userId)
 
             ack.acknowledge()
         }catch (e: Exception){

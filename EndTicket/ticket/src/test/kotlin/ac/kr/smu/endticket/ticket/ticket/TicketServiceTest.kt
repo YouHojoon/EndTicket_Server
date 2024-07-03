@@ -213,4 +213,12 @@ class TicketServiceTest (
 
         assertFailsWith(exception) { service.deleteTicket(id, userId)}
     }
+
+    @Test
+    @DisplayName("사용자의 티켓 삭제 테스트")
+    fun given_userId_when_deleteByUserId_then_deleteTicketOfUser(){
+        service.deleteByUserId(TicketTestParameters.USER_ID)
+
+        Mockito.verify(repo).deleteByUserId(TicketTestParameters.USER_ID)
+    }
 }
