@@ -26,7 +26,7 @@ abstract class History(
     protected val completedAt: LocalDateTime,
 
     @Column(name = "user_id", updatable = false, nullable = false)
-    private val userId: Long
+    val userId: Long
 ){
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

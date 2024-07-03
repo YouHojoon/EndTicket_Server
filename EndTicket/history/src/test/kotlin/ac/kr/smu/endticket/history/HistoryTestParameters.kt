@@ -41,7 +41,7 @@ object HistoryTestParameters{
     )
 
     @JvmStatic
-    fun provideHistorySpecificIdAndType() = Stream.of(
+    fun provideHistoryAndSpecificIdAndType() = Stream.of(
         Arguments.of(TicketHistory.from(TICKET_COMPLETED_EVENT_RESPONSE, USER_ID), TICKET_COMPLETED_EVENT_RESPONSE.id, History.Type.TICKET),
         Arguments.of(ImaginationHistory.from(IMAGINATION_COMPLETED_EVENT_RESPONSE, USER_ID), IMAGINATION_COMPLETED_EVENT_RESPONSE.id, History.Type.IMAGINATION)
     )
@@ -53,19 +53,21 @@ object HistoryTestParameters{
     )
 
     @JvmStatic
-    fun provideTopicAndResponse() = Stream.of(
+    fun provideEventResponseAndUserId() = Stream.of(
+        Arguments.of(TICKET_COMPLETED_EVENT_RESPONSE, USER_ID),
+        Arguments.of(IMAGINATION_COMPLETED_EVENT_RESPONSE, USER_ID),
+    )
+    @JvmStatic
+    fun provideTopicAndResponseAndType() = Stream.of(
         Arguments.of(
             KafkaTopic.TICKET_COMPLETED,
             TICKET_COMPLETED_EVENT_RESPONSE,
-            History.Type.TICKET,
-            TicketHistory.from(TICKET_COMPLETED_EVENT_RESPONSE, USER_ID)
+            History.Type.TICKET
         ),
         Arguments.of(
             KafkaTopic.IMAGINATION_COMPLETED,
             IMAGINATION_COMPLETED_EVENT_RESPONSE,
-            History.Type.IMAGINATION,
-            ImaginationHistory.from(
-            IMAGINATION_COMPLETED_EVENT_RESPONSE, USER_ID)
+            History.Type.IMAGINATION
         )
     )
 

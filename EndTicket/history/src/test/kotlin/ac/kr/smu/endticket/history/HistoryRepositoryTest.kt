@@ -13,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.context.annotation.Import
 import org.springframework.data.domain.PageRequest
-import kotlin.reflect.KClass
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -26,7 +25,7 @@ class HistoryRepositoryTest @Autowired constructor(
 ) {
     @ParameterizedTest
     @DisplayName("기록 조회 테스트")
-    @MethodSource("${HistoryTestParameters.PATH}#provideHistorySpecificIdAndType")
+    @MethodSource("${HistoryTestParameters.PATH}#provideHistoryAndSpecificIdAndType")
     fun given_specificIdAndType_when_findBySpecificIdAndType_then_returnHistory(history: History, specificId: Long, type: History.Type){
         repo.save(history)
 
@@ -38,7 +37,7 @@ class HistoryRepositoryTest @Autowired constructor(
 
     @ParameterizedTest
     @DisplayName("존재 여부 테스트")
-    @MethodSource("${HistoryTestParameters.PATH}#provideHistorySpecificIdAndType")
+    @MethodSource("${HistoryTestParameters.PATH}#provideHistoryAndSpecificIdAndType")
     fun given_specificIdAndType_existsSpecificIdAndType_then_returnIsExists(history: History, specificId: Long, type: History.Type){
         repo.save(history)
 
