@@ -56,6 +56,9 @@ class HistoryService(
         redisTemplate.updateCountIfPresent(history)
     }
 
+    @Transactional
+    fun deleteByUserId(userId:Long) = repo.deleteByUserId(userId)
+
 
     /**
      * 기록 개수가 캐시에 있으면 업데이트 하는 메소드
