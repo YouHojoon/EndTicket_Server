@@ -21,3 +21,7 @@ grpc:
   server:
     port: 9090
 
+schedules:
+  resend-user-deleted-event:
+    fixed-delay: 600000
+    inital-delay: 60000
