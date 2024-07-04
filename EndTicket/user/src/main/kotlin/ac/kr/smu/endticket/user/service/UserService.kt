@@ -70,6 +70,7 @@ class UserService(
      * @param id 사용자 id
      * @throws UserNotFoundException id인 사용자가 존재하지 않을 시
      */
+    @Transactional
     fun deleteUser(id: Long){
         eventService.publish(UserDeletedEvent(findById(id)))
     }

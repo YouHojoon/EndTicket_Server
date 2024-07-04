@@ -2,14 +2,7 @@ package ac.kr.smu.endticket.user.domain.model
 
 import ac.kr.smu.endticket.common.jpa.Audit
 import ac.kr.smu.endticket.common.kafka.messaging.KafkaMessage
-import jakarta.persistence.CascadeType
-import jakarta.persistence.Column
-import jakarta.persistence.Embedded
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.MapsId
-import jakarta.persistence.OneToOne
-import jakarta.persistence.Table
+import jakarta.persistence.*
 
 /**
  * 사용자 삭제 이벤트
@@ -18,8 +11,9 @@ import jakarta.persistence.Table
 @Entity
 @Table
 class UserDeletedEvent(
-    @MapsId("id")
-    @OneToOne(cascade = [CascadeType.REMOVE])
+    @OneToOne(fetch = FetchType.LAZY,cascade = [CascadeType.REMOVE])
+    @JoinColumn(name = "id")
+    @MapsId
     private val user: User
 ) {
     @Id
