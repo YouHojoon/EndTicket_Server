@@ -1,5 +1,5 @@
 schedules:
-  resend-ticket-completion-event:
+  resend-ticket-completed-event:
     fixed-delay: 600000 # 10분
     initial-delay: 60000 # 1분
 server:
