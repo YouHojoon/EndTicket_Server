@@ -79,11 +79,6 @@ object HistoryTestParameters{
     )
 
     @JvmStatic
-    fun provideRecordAndType() = Stream.of(
-        *EventResponse::class.sealedSubclasses.map { Arguments.of(mockRecord(it), historyTypeOfResponse(it)) }.toTypedArray()
-    )
-
-    @JvmStatic
     fun provideHistoriesOfEachType() = Stream.of(
         Arguments.of(
             setOf(TicketHistory.from(TICKET_COMPLETED_EVENT_RESPONSE, USER_ID)),
@@ -121,17 +116,6 @@ object HistoryTestParameters{
         Mockito.`when`(record.value()).thenReturn(value)
 
         return record
-    }
-
-    /**
-     * 이벤트 응답에 맞는 기록 class을 반환하는 메소드
-     * @param responseType 이벤트 응답
-     * @return 기록 class
-     */
-    private fun historyTypeOfResponse(responseType: KClass<out EventResponse>):History.Type = when(responseType){
-        TicketCompletedEventResponse::class -> History.Type.TICKET
-        ImaginationCompletedEventResponse::class ->  History.Type.IMAGINATION
-        else -> throw IllegalArgumentException("$responseType 은 지원하지 않는 타입입니다.")
     }
 }
 
