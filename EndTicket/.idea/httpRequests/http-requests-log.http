@@ -1,3 +1,14 @@
+POST http://127.0.0.1:8888/actuator/refresh
+Accept: application/vnd.spring-boot.actuator.v3+json
+Content-Length: 0
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.8)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-07-05T014250.200.json
+
+###
+
 GET http://127.0.0.1:8888/actuator
 Accept: application/vnd.spring-boot.actuator.v3+json
 Connection: Keep-Alive
