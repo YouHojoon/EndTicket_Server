@@ -5,7 +5,7 @@ import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter
 
 @Converter(autoApply = true)
-class MaxSwipeCountConverter : AttributeConverter<Ticket.MaxSwipeCount, Int>{
+class MaxSwipeCountConverter : AttributeConverter<Ticket.MaxSwipeCount, Int> {
     override fun convertToDatabaseColumn(attribute: Ticket.MaxSwipeCount?): Int? {
         val maxSwipeCount = attribute ?: return null
 

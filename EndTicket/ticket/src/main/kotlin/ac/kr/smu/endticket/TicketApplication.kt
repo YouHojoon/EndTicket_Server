@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @EnableJpaAuditing
 @EnableAsync
 class TicketApplication
+
 fun main(args: Array<String>) {
     runApplication<TicketApplication>(*args)
 }

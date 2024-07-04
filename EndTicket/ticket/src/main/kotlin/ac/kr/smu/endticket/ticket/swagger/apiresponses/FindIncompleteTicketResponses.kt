@@ -18,11 +18,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
                 Content(
                     schema = Schema(type = "object", requiredProperties = ["tickets"]),
                     schemaProperties = [
-                        SchemaProperty(name = "tickets", array = ArraySchema(schema = Schema(implementation = TicketResponse::class)))
-                    ]
-                )
-            ])
-    ]
+                        SchemaProperty(
+                            name = "tickets",
+                            array = ArraySchema(schema = Schema(implementation = TicketResponse::class)),
+                        ),
+                    ],
+                ),
+            ],
+        ),
+    ],
 )
 @Operation(summary = "미완료된 티켓 조회")
 @Target(AnnotationTarget.FUNCTION)

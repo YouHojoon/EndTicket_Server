@@ -13,20 +13,19 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
         description = "스와이프 취소 성공",
         responseCode = "200",
         content = [
-            Content(schema = Schema(implementation = TicketResponse::class))
-        ]
+            Content(schema = Schema(implementation = TicketResponse::class)),
+        ],
     ),
     ApiResponse(
         description = "티켓 소유자가 아닌 사용자의 티켓 스와이프 취소 요청",
         responseCode = "403",
-        content = [Content(schema = Schema(implementation = ExceptionResponse::class))]
+        content = [Content(schema = Schema(implementation = ExceptionResponse::class))],
     ),
-
     ApiResponse(
         description = "존재하지 않는 티켓의 스와이프 취소 요청",
         responseCode = "404",
-        content = [Content(schema = Schema(implementation = ExceptionResponse::class))]
-    )
+        content = [Content(schema = Schema(implementation = ExceptionResponse::class))],
+    ),
 )
 @Operation(summary = "티켓 스와이프 취소")
 @Target(AnnotationTarget.FUNCTION)

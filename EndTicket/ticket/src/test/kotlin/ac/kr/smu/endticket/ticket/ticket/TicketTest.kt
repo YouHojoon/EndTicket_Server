@@ -14,7 +14,7 @@ class TicketTest {
     @ParameterizedTest
     @DisplayName("티켓 수정 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
-    fun given_ticketRequest_when_updateAndCheckCompletion_then_updateTicketAndReturnIsCompletion(ticket: Ticket){
+    fun given_ticketRequest_when_updateAndCheckCompletion_then_updateTicketAndReturnIsCompletion(ticket: Ticket) {
         ticket.updateAndCheckCompletion(TicketTestParameters.UPDATE_REQUEST, TicketTestParameters.USER_ID)
         assertEquals(Ticket.from(TicketTestParameters.UPDATE_REQUEST, TicketTestParameters.USER_ID), ticket)
     }
@@ -22,14 +22,19 @@ class TicketTest {
     @ParameterizedTest
     @DisplayName("소유자가 아닌 사용자의 수정 요청 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
-    fun given_userWhoNotOwnerOfTicket_when_updateAndCheckCompletion_then_throwTicketOwnershipException(ticket: Ticket){
-        assertThrows<TicketOwnershipException> {  ticket.updateAndCheckCompletion(TicketTestParameters.UPDATE_REQUEST, 2L)}
+    fun given_userWhoNotOwnerOfTicket_when_updateAndCheckCompletion_then_throwTicketOwnershipException(ticket: Ticket) {
+        assertThrows<TicketOwnershipException> {
+            ticket.updateAndCheckCompletion(
+                TicketTestParameters.UPDATE_REQUEST,
+                2L,
+            )
+        }
     }
 
     @ParameterizedTest
     @DisplayName("티켓 스와이프 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
-    fun given_userId_when_swipeTicket_then_plusSwipeCount_and_returnIsComplete(ticket: Ticket){
+    fun given_userId_when_swipeTicket_then_plusSwipeCount_and_returnIsComplete(ticket: Ticket) {
         val beforeSwipeCount = ticket.swipeCount
 
         assertFalse(ticket.swipeAndCheckCompletion(TicketTestParameters.USER_ID))
@@ -39,15 +44,15 @@ class TicketTest {
     @ParameterizedTest
     @DisplayName("소유자가 아닌 사용자의 티켓 스와이프 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
-    fun given_userWhoNotOwnerOfTicket_when_swipeTicket_then_throwTicketOwnershipException(ticket: Ticket){
-        assertThrows<TicketOwnershipException> {  ticket.swipeAndCheckCompletion(2L)}
+    fun given_userWhoNotOwnerOfTicket_when_swipeTicket_then_throwTicketOwnershipException(ticket: Ticket) {
+        assertThrows<TicketOwnershipException> { ticket.swipeAndCheckCompletion(2L) }
     }
 
     @ParameterizedTest
     @DisplayName("최대 스와이프 횟수 이상으로 스와이프 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
-    fun given_ticketReachedMaxSwipeCount_when_swipeTicket_then_nothingChange(ticket: Ticket){
-        repeat(TicketTestParameters.TICKET_REQUEST.maxSwipeCount.value){
+    fun given_ticketReachedMaxSwipeCount_when_swipeTicket_then_nothingChange(ticket: Ticket) {
+        repeat(TicketTestParameters.TICKET_REQUEST.maxSwipeCount.value) {
             ticket.swipeAndCheckCompletion(TicketTestParameters.USER_ID)
         }
 
@@ -60,7 +65,7 @@ class TicketTest {
     @ParameterizedTest
     @DisplayName("티켓 스와이프 취소 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
-    fun given_userId_when_cancelSwipeTicket_then_minusSwipeCount(ticket: Ticket){
+    fun given_userId_when_cancelSwipeTicket_then_minusSwipeCount(ticket: Ticket) {
         ticket.swipeAndCheckCompletion(TicketTestParameters.USER_ID)
         ticket.cancelSwipeTicket(TicketTestParameters.USER_ID)
 
@@ -70,17 +75,17 @@ class TicketTest {
     @ParameterizedTest
     @DisplayName("소유자가 아닌 사용자의 티켓 스와이프 취소 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
-    fun given_userWhoNotOwnerOfTicket_when_cancelSwipeTicket_then_throwTicketOwnershipException(ticket: Ticket){
+    fun given_userWhoNotOwnerOfTicket_when_cancelSwipeTicket_then_throwTicketOwnershipException(ticket: Ticket) {
         ticket.swipeAndCheckCompletion(TicketTestParameters.USER_ID)
-        assertThrows<TicketOwnershipException> {  ticket.cancelSwipeTicket(2L)}
+        assertThrows<TicketOwnershipException> { ticket.cancelSwipeTicket(2L) }
     }
 
     @ParameterizedTest
     @DisplayName("0회 이하로 티켓 스와이프 취소 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
-    fun given_ticketWithSwipeCountZero_when_cancelSwipeTicket_then_nothingChange(ticket: Ticket){
+    fun given_ticketWithSwipeCountZero_when_cancelSwipeTicket_then_nothingChange(ticket: Ticket) {
         ticket.cancelSwipeTicket(TicketTestParameters.USER_ID)
 
-        assertEquals(0,ticket.swipeCount)
+        assertEquals(0, ticket.swipeCount)
     }
 }
