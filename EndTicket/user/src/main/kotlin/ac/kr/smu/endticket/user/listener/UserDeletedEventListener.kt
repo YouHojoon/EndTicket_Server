@@ -28,9 +28,11 @@ class UserDeletedEventListener(
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun sendMessage(event: UserDeletedEvent){
+        println("aaaa")
         val message = event.toMessage()
         messageService.send(KafkaTopic.USER_DELETED, message)
             .whenComplete { _, e ->
+                println("????")
                 if (e == null)
                     repo.delete(event)
                 else
