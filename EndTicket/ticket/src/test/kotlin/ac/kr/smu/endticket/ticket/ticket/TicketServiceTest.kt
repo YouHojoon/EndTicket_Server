@@ -26,93 +26,111 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 @ExtendWith(MockitoExtension::class)
-class TicketServiceTest (
+class TicketServiceTest(
     @Mock
     private val repo: TicketRepository,
     @Mock
     private val eventService: TicketCompletedEventService,
-
-
-    ) {
+) {
     @InjectMocks
     private lateinit var service: TicketService
+
     @BeforeEach
-    fun init(){
+    fun init() {
         MockitoAnnotations.openMocks(this)
     }
 
     @ParameterizedTest
     @DisplayName("티켓 생성 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
-    fun given_ticketRequest_when_createTicket_then_returnCreatedTicket(ticket: Ticket){
-        Mockito.`when`(repo.save(ticket))
+    fun given_ticketRequest_when_createTicket_then_returnCreatedTicket(ticket: Ticket) {
+        Mockito
+            .`when`(repo.save(ticket))
             .thenReturn(ticket)
 
-        assertEquals(ticket.toResponse(), service.createTicket(
-            TicketTestParameters.TICKET_REQUEST,
-            TicketTestParameters.USER_ID
-        ))
+        assertEquals(
+            ticket.toResponse(),
+            service.createTicket(
+                TicketTestParameters.TICKET_REQUEST,
+                TicketTestParameters.USER_ID,
+            ),
+        )
         Mockito.verify(repo, Mockito.times(1)).countIncompleteTicketsOfUser(TicketTestParameters.USER_ID)
     }
+
     @Test
     @DisplayName("티켓 개수 제한 이상으로 생성 테스트")
-    fun given_userHasReachedTicketLimit_when_createTicket_then_throwIllegalStateException(){
-        Mockito.`when`(repo.countIncompleteTicketsOfUser(TicketTestParameters.USER_ID))
+    fun given_userHasReachedTicketLimit_when_createTicket_then_throwIllegalStateException() {
+        Mockito
+            .`when`(repo.countIncompleteTicketsOfUser(TicketTestParameters.USER_ID))
             .thenReturn(5)
 
-        assertThrows<IllegalStateException> { service.createTicket(
-            TicketTestParameters.TICKET_REQUEST,
-            TicketTestParameters.USER_ID
-        ) }
+        assertThrows<IllegalStateException> {
+            service.createTicket(
+                TicketTestParameters.TICKET_REQUEST,
+                TicketTestParameters.USER_ID,
+            )
+        }
     }
+
     @ParameterizedTest
     @DisplayName("티켓 수정 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
-    fun given_ticketRequest_when_updateTicket_then_returnUpdatedTicket(ticket: Ticket){
-            Mockito.`when`(repo.findById(Mockito.anyLong()))
+    fun given_ticketRequest_when_updateTicket_then_returnUpdatedTicket(ticket: Ticket) {
+        Mockito
+            .`when`(repo.findById(Mockito.anyLong()))
             .thenReturn(Optional.of(ticket))
 
-        assertEquals(service.updateTicket(TicketTestParameters.UPDATE_REQUEST, ticket.id, TicketTestParameters.USER_ID) , ticket.toResponse())
+        assertEquals(
+            service.updateTicket(TicketTestParameters.UPDATE_REQUEST, ticket.id, TicketTestParameters.USER_ID),
+            ticket.toResponse(),
+        )
     }
+
     @ParameterizedTest
     @DisplayName("비정상적인 티켓 수정 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideInvalidTicket")
     fun given_invalidId_when_updateTicket_then_throwExpectedException(
         ticket: Ticket?,
         userId: Long,
-        exception: KClass<out Throwable>
-    ){
+        exception: KClass<out Throwable>,
+    ) {
         val id = ticket?.id ?: 1L
-        Mockito.`when`(repo.findById(id))
+        Mockito
+            .`when`(repo.findById(id))
             .thenReturn(Optional.ofNullable(ticket))
-        assertFailsWith(exception) {  service.updateTicket(TicketTestParameters.UPDATE_REQUEST, id, userId)}
+        assertFailsWith(exception) { service.updateTicket(TicketTestParameters.UPDATE_REQUEST, id, userId) }
     }
 
     @Test
     @DisplayName("티켓 수정 후 티켓 완료 테스트")
-    fun given_completeTicketAfterUpdate_when_updateTicket_then_runCompleteTicket(){
-        val ticket = Ticket.from(
-            TicketRequest(
-                "b",
-                "t",
-                Color.RED2,
-                TicketType.HEALTH,
-                Ticket.MaxSwipeCount.TEN
-            ),
-            TicketTestParameters.USER_ID
-        )
+    fun given_completeTicketAfterUpdate_when_updateTicket_then_runCompleteTicket() {
+        val ticket =
+            Ticket.from(
+                TicketRequest(
+                    "b",
+                    "t",
+                    Color.RED2,
+                    TicketType.HEALTH,
+                    Ticket.MaxSwipeCount.TEN,
+                ),
+                TicketTestParameters.USER_ID,
+            )
 
-        repeat(Ticket.MaxSwipeCount.FIVE.value){
+        repeat(Ticket.MaxSwipeCount.FIVE.value) {
             ticket.swipeAndCheckCompletion(TicketTestParameters.USER_ID)
         }
 
-        Mockito.`when`(repo.findById(ticket.id))
+        Mockito
+            .`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
 
-        val updatedTicket = service.updateTicket(
-            TicketTestParameters.TICKET_REQUEST, ticket.id ,
-            TicketTestParameters.USER_ID
-        )
+        val updatedTicket =
+            service.updateTicket(
+                TicketTestParameters.TICKET_REQUEST,
+                ticket.id,
+                TicketTestParameters.USER_ID,
+            )
 
         assertEquals(ticket.toResponse(), updatedTicket)
         Mockito.verify(eventService, Mockito.times(1)).publishEvent(mockAny())
@@ -121,39 +139,44 @@ class TicketServiceTest (
     @ParameterizedTest
     @DisplayName("티켓 스와이프 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
-    fun given_id_when_swipeTicket_then_returnSwipedTicket(ticket: Ticket){
+    fun given_id_when_swipeTicket_then_returnSwipedTicket(ticket: Ticket) {
         val beforeSwipeCount = ticket.swipeCount
 
-        Mockito.`when`(repo.findById(ticket.id))
+        Mockito
+            .`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
 
         val swipedTicket = service.swipeTicket(ticket.id, ticket.userId)
 
         assertEquals(beforeSwipeCount + 1, swipedTicket.swipeCount)
     }
+
     @ParameterizedTest
     @DisplayName("티켓 소유자가 아닌 사용자의 스와이프 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideInvalidTicket")
     fun given_invalidTicket_whenSwipeTicket_then_throwExpectedException(
         ticket: Ticket?,
         userId: Long,
-        exception: KClass<out Throwable>
-    ){
+        exception: KClass<out Throwable>,
+    ) {
         val id = ticket?.id ?: 1L
 
-        Mockito.`when`(repo.findById(id))
+        Mockito
+            .`when`(repo.findById(id))
             .thenReturn(Optional.ofNullable(ticket))
 
-        assertFailsWith (exception){  service.swipeTicket(id, userId)}
+        assertFailsWith(exception) { service.swipeTicket(id, userId) }
     }
+
     @ParameterizedTest
     @DisplayName("스와이프 취소 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
-    fun given_id_when_cancelSwipe_then_returnSwipeCanceledTicket(ticket: Ticket){
+    fun given_id_when_cancelSwipe_then_returnSwipeCanceledTicket(ticket: Ticket) {
         ticket.swipeAndCheckCompletion(ticket.userId)
         val beforeSwipeCount = ticket.swipeCount
 
-        Mockito.`when`(repo.findById(ticket.id))
+        Mockito
+            .`when`(repo.findById(ticket.id))
             .thenReturn(Optional.of(ticket))
 
         service.cancelSwipeTicket(ticket.id, ticket.userId)
@@ -167,21 +190,23 @@ class TicketServiceTest (
     fun given_invalidTicket_when_swipeTicket_then_throwExpectedException(
         ticket: Ticket?,
         userId: Long,
-        exception: KClass<out Throwable>
-    ){
+        exception: KClass<out Throwable>,
+    ) {
         val id = ticket?.id ?: 1L
-        Mockito.`when`(repo.findById(id))
+        Mockito
+            .`when`(repo.findById(id))
             .thenReturn(Optional.ofNullable(ticket))
 
-        assertFailsWith(exception) { service.cancelSwipeTicket(id, userId)}
+        assertFailsWith(exception) { service.cancelSwipeTicket(id, userId) }
     }
+
     @ParameterizedTest
     @DisplayName("티켓 완료 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
-    fun given_ticketWhichRightBeforeCompletion_when_swipeTicket_then_runCompleteTicket(ticket: Ticket){
+    fun given_ticketWhichRightBeforeCompletion_when_swipeTicket_then_runCompleteTicket(ticket: Ticket) {
         Mockito.`when`(repo.findById(ticket.id)).thenReturn(Optional.of(ticket))
 
-        repeat(TicketTestParameters.TICKET_REQUEST.maxSwipeCount.value){
+        repeat(TicketTestParameters.TICKET_REQUEST.maxSwipeCount.value) {
             service.swipeTicket(ticket.id, ticket.userId)
         }
 
@@ -191,32 +216,35 @@ class TicketServiceTest (
     @ParameterizedTest
     @DisplayName("미완료된 티켓 조회")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
-    fun given_userId_when_findIncompleteTickets_then_returnIncompleteTickets(ticket: Ticket){
+    fun given_userId_when_findIncompleteTickets_then_returnIncompleteTickets(ticket: Ticket) {
         val tickets = listOf(ticket)
 
-        Mockito.`when`(repo.findIncompleteTicketsOfUser(TicketTestParameters.USER_ID))
+        Mockito
+            .`when`(repo.findIncompleteTicketsOfUser(TicketTestParameters.USER_ID))
             .thenReturn(tickets)
 
         assertEquals(tickets.map { it.toResponse() }, service.findIncompleteTickets(TicketTestParameters.USER_ID))
     }
+
     @ParameterizedTest
     @DisplayName("비정상적인 티켓 삭제 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideInvalidTicket")
     fun given_notExistTicket_when_deleteTicket_then_throwTicketNotFoundException(
         ticket: Ticket?,
         userId: Long,
-        exception: KClass<out Throwable>
-    ){
+        exception: KClass<out Throwable>,
+    ) {
         val id = ticket?.id ?: 1L
-        Mockito.`when`(repo.findById(id))
+        Mockito
+            .`when`(repo.findById(id))
             .thenReturn(Optional.ofNullable(ticket))
 
-        assertFailsWith(exception) { service.deleteTicket(id, userId)}
+        assertFailsWith(exception) { service.deleteTicket(id, userId) }
     }
 
     @Test
     @DisplayName("사용자의 티켓 삭제 테스트")
-    fun given_userId_when_deleteByUserId_then_deleteTicketOfUser(){
+    fun given_userId_when_deleteByUserId_then_deleteTicketOfUser() {
         service.deleteByUserId(TicketTestParameters.USER_ID)
 
         Mockito.verify(repo).deleteByUserId(TicketTestParameters.USER_ID)

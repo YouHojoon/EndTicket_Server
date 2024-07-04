@@ -22,38 +22,38 @@ import org.springframework.kafka.test.context.EmbeddedKafka
     classes = [
         UserDeletedEventConsumeService::class,
         KafkaAutoConfiguration::class,
-    ]
+    ],
 )
 @EmbeddedKafka
-class UserDeletedEventConsumeServiceTest @Autowired constructor(
-    @MockBean
-    private val ticketService: TicketService,
-    private val service: UserDeletedEventConsumeService,
-    private val broker: EmbeddedKafkaBroker
-) {
+class UserDeletedEventConsumeServiceTest
+    @Autowired
+    constructor(
+        @MockBean
+        private val ticketService: TicketService,
+        private val service: UserDeletedEventConsumeService,
+        private val broker: EmbeddedKafkaBroker,
+    ) {
+        @Test
+        @DisplayName("회원 탈퇴 이벤트 테스트")
+        fun given_userDeletedEvent_whenConsume_then_deleteAllTicketOfUser() {
+            val producer = createProducer<Void>(broker)
 
+            producer.send(ProducerRecord(KafkaTopic.USER_DELETED, EventTestParameters.USER_ID.toString(), null))
+            Thread.sleep(1000L)
 
-    @Test
-    @DisplayName("회원 탈퇴 이벤트 테스트")
-    fun given_userDeletedEvent_whenConsume_then_deleteAllTicketOfUser(){
-        val producer = createProducer<Void>(broker)
+            Mockito.verify(ticketService).deleteByUserId(EventTestParameters.USER_ID)
+        }
 
-        producer.send(ProducerRecord(KafkaTopic.USER_DELETED, EventTestParameters.USER_ID.toString(),null))
-        Thread.sleep(1000L)
+        @Test
+        @DisplayName("이벤트 수신 실패 테스트")
+        fun given_userDeletedEvent_whenConsumeFail_then_sendNack() {
+            val record = Mockito.mock(ConsumerRecord::class.java) as ConsumerRecord<String, Void>
+            val ack = Mockito.mock(Acknowledgment::class.java)
 
-        Mockito.verify(ticketService).deleteByUserId(EventTestParameters.USER_ID)
+            Mockito.`when`(record.key()).thenThrow(RuntimeException())
+
+            service.consume(record, ack)
+
+            Mockito.verify(ack).nack(mockAny())
+        }
     }
-
-    @Test
-    @DisplayName("이벤트 수신 실패 테스트")
-    fun given_userDeletedEvent_whenConsumeFail_then_sendNack(){
-        val record = Mockito.mock(ConsumerRecord::class.java) as ConsumerRecord<String, Void>
-        val ack = Mockito.mock(Acknowledgment::class.java)
-
-        Mockito.`when`(record.key()).thenThrow(RuntimeException())
-
-        service.consume(record,ack)
-
-        Mockito.verify(ack).nack(mockAny())
-    }
-}

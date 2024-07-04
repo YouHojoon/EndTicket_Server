@@ -21,24 +21,25 @@ import org.springframework.transaction.event.TransactionalEventListener
 @Component
 class TicketCompletedEventListener(
     private val repo: TicketCompletedEventRepository,
-    private val messageService: KafkaMessageService<String, TicketCompletedEventResponse>
+    private val messageService: KafkaMessageService<String, TicketCompletedEventResponse>,
 ) {
     private val log = LoggerFactory.getLogger(TicketCompletedEventListener::class.java)
+
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    fun saveEvent(event: TicketCompletedEvent){
+    fun saveEvent(event: TicketCompletedEvent) {
         repo.save(event)
     }
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    fun sendMessage(event: TicketCompletedEvent){
+    fun sendMessage(event: TicketCompletedEvent) {
         val message = event.toMessage()
 
-        messageService.send(KafkaTopic.TICKET_COMPLETED,message).whenCompleteAsync { _, e ->
-            if (e == null)
+        messageService.send(KafkaTopic.TICKET_COMPLETED, message).whenCompleteAsync { _, e ->
+            if (e == null) {
                 repo.delete(event)
-            else {
+            } else {
                 log.error("{key: ${message.key}}, payload: ${message.payload}", e)
             }
         }

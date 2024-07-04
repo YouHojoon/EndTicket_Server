@@ -1,16 +1,14 @@
 package ac.kr.smu.endticket.ticket.service
 
 import ac.kr.smu.endticket.ticket.domain.exception.TicketNotFoundException
+import ac.kr.smu.endticket.ticket.domain.exception.TicketOwnershipException
 import ac.kr.smu.endticket.ticket.domain.model.Ticket
 import ac.kr.smu.endticket.ticket.domain.model.TicketCompletedEvent
 import ac.kr.smu.endticket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endticket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
-import ac.kr.smu.endticket.ticket.domain.exception.TicketOwnershipException
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import kotlin.jvm.optionals.getOrNull
 
 /**
  * 티켓 관련한 기능을 처리하는 클래스
@@ -20,11 +18,9 @@ import kotlin.jvm.optionals.getOrNull
 @Service
 class TicketService(
     private val repo: TicketRepository,
-    private val completionEventService: TicketCompletedEventService
+    private val completionEventService: TicketCompletedEventService,
 ) {
-    private val log = LoggerFactory.getLogger(TicketService::class.java)
-
-    private companion object{
+    private companion object {
         private const val TICKET_LIMIT = 5
     }
 
@@ -36,15 +32,16 @@ class TicketService(
      * @throws IllegalStateException 티켓 개수 제한 이상으로 생성을 시도할 시
      */
     @Transactional
-    fun createTicket(request: TicketRequest, userId: Long): TicketResponse {
+    fun createTicket(
+        request: TicketRequest,
+        userId: Long,
+    ): TicketResponse {
         val count = repo.countIncompleteTicketsOfUser(userId)
 
-        check(count < TICKET_LIMIT){"티켓을 $TICKET_LIMIT 개 이상 생성할 수 없습니다."}
+        check(count < TICKET_LIMIT) { "티켓을 $TICKET_LIMIT 개 이상 생성할 수 없습니다." }
 
-        return repo.save(Ticket.from(request,userId)).toResponse()
-
+        return repo.save(Ticket.from(request, userId)).toResponse()
     }
-
 
     /**
      * 티켓을 수정하는 메소드
@@ -55,13 +52,18 @@ class TicketService(
      * @throws TicketNotFoundException id로 조회한 티켓이 없을 시
      * @throws TicketOwnershipException 사용자가 티켓의 소유자가 아닐 시
      */
-    
+
     @Transactional
-    fun updateTicket(request: TicketRequest, id: Long, userId: Long): TicketResponse {
+    fun updateTicket(
+        request: TicketRequest,
+        id: Long,
+        userId: Long,
+    ): TicketResponse {
         val ticket = findById(id)
 
-        if (ticket.updateAndCheckCompletion(request,userId))
+        if (ticket.updateAndCheckCompletion(request, userId)) {
             completeTicket(ticket)
+        }
 
         return ticket.toResponse()
     }
@@ -75,11 +77,15 @@ class TicketService(
      * @throws TicketOwnershipException 사용자가 티켓의 소유자가 아닐 시
      */
     @Transactional
-    fun swipeTicket(id: Long, userId: Long): TicketResponse {
+    fun swipeTicket(
+        id: Long,
+        userId: Long,
+    ): TicketResponse {
         val ticket = findById(id)
 
-        if (ticket.swipeAndCheckCompletion(userId))
+        if (ticket.swipeAndCheckCompletion(userId)) {
             completeTicket(ticket)
+        }
 
         return ticket.toResponse()
     }
@@ -90,7 +96,7 @@ class TicketService(
      * @return 조회된 사용자의 티켓 리스트
      */
     @Transactional(readOnly = true)
-    fun findIncompleteTickets(userId: Long): List<TicketResponse> = repo.findIncompleteTicketsOfUser(userId).map{ it.toResponse()}
+    fun findIncompleteTickets(userId: Long): List<TicketResponse> = repo.findIncompleteTicketsOfUser(userId).map { it.toResponse() }
 
     /**
      * 티켓 스와이프 취소
@@ -100,7 +106,10 @@ class TicketService(
      * @throws TicketNotFoundException 티켓이 존재하지 않을 때
      * @throws TicketOwnershipException 사용자가 티켓의 소유자가 아닐 시
      */
-    fun cancelSwipeTicket(id: Long, userId: Long): TicketResponse {
+    fun cancelSwipeTicket(
+        id: Long,
+        userId: Long,
+    ): TicketResponse {
         val ticket = findById(id)
 
         ticket.cancelSwipeTicket(userId)
@@ -116,13 +125,15 @@ class TicketService(
      * @throws TicketOwnershipException 사용자가 티켓의 소유자가 아닐시
      */
     @Transactional
-    fun deleteTicket(id: Long, userId: Long){
+    fun deleteTicket(
+        id: Long,
+        userId: Long,
+    ) {
         val ticket = findById(id)
 
         ticket.checkOwnership(userId)
         repo.delete(ticket)
     }
-
 
     /**
      * 사용자의 티켓 삭제 메소드
