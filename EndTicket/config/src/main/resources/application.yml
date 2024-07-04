@@ -9,5 +9,10 @@ spring:
     config:
       server:
         native:
-          search-locations: classpath:/
+          search-locations: classpath:/]
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health
 
