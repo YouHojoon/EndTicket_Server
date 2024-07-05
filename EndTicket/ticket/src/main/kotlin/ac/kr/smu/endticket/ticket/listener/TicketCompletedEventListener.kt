@@ -40,7 +40,7 @@ class TicketCompletedEventListener(
             if (e == null) {
                 repo.delete(event)
             } else {
-                log.error("{key: ${message.key}}, payload: ${message.payload}", e)
+                log.error("티켓 완료 메시지 전송 실패 : {key: ${message.key}}, payload: ${message.payload}", e)
             }
         }
     }
