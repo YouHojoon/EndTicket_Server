@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
  * User 서버와 gRPC를 통해 통신하는 객체
  */
 @Service
-class UserService{
+class UserService {
     @GrpcClient("user")
     private lateinit var userStub: UserServiceGrpc.UserServiceBlockingStub
     private val log = LoggerFactory.getLogger(UserService::class.java)
@@ -25,13 +25,20 @@ class UserService{
      */
 
     @CircuitBreaker(name = "find-user-id", fallbackMethod = "fallbackFindUserId")
-    fun findUserId(socialType: SocialType, socialUserNumber: String): Long = userStub.findUserId(
-        FindUserIdRequest.newBuilder()
-            .setSocialType(ac.kr.smu.endticket.protobuf.SocialType.valueOf(socialType.name))
-            .setSocialUserNumber(socialUserNumber)
-            .build()
-    ).userId
-
+    fun findUserId(
+        socialType: SocialType,
+        socialUserNumber: String,
+    ): Long =
+        userStub
+            .findUserId(
+                FindUserIdRequest
+                    .newBuilder()
+                    .setSocialType(
+                        ac.kr.smu.endticket.protobuf.SocialType
+                            .valueOf(socialType.name),
+                    ).setSocialUserNumber(socialUserNumber)
+                    .build(),
+            ).userId
 
     /**
      * findUserId의 fallback 메소드
@@ -40,8 +47,12 @@ class UserService{
      * @param e 발생한 에러
      * @return -1 반환
      */
-    private fun fallbackFindUserId(socialType: SocialType, socialUserNumber: String, e: Exception): Long{
-        log.error("{socialType: $socialType, socialUserNumber: $socialUserNumber}",e)
+    private fun fallbackFindUserId(
+        socialType: SocialType,
+        socialUserNumber: String,
+        e: Exception,
+    ): Long {
+        log.error("{socialType: $socialType, socialUserNumber: $socialUserNumber}", e)
 
         return -1
     }

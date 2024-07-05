@@ -9,5 +9,5 @@ package ac.kr.smu.endTicket.auth.infra.oauth2.idtoken
 data class IdTokenHeader(
     var kid: String = "",
     var typ: String = "",
-    var alg: String = ""
+    var alg: String = "",
 )

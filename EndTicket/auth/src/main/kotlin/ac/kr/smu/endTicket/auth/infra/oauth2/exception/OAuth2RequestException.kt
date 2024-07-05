@@ -5,4 +5,7 @@ package ac.kr.smu.endTicket.auth.infra.oauth2.exception
  * @property message 실패 메시지
  * @property cause 원래의 에러
  */
-class OAuth2RequestException(message: String? = null, cause: Throwable? = null): RuntimeException(message, cause)
+class OAuth2RequestException(
+    message: String? = null,
+    cause: Throwable? = null,
+) : RuntimeException(message, cause)

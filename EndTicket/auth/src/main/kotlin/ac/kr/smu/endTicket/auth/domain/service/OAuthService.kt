@@ -3,7 +3,6 @@ package ac.kr.smu.endTicket.auth.domain.service
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2TokenResponse
 
-
 /**
  * 외부 SNS 서비스의 인증 기능을 위한 인터페이스
  */
@@ -14,7 +13,10 @@ interface OAuthService {
      * @param code SNS 인증에서 반환받은 authorization code
      * @return access token 응답
      */
-    fun oauth(socialType: SocialType, code: String): OAuth2TokenResponse
+    fun oAuth(
+        socialType: SocialType,
+        code: String,
+    ): OAuth2TokenResponse
 
     /**
      * idToken에서 SNS 사용자 번호를 반환하는 메소드
@@ -22,5 +24,8 @@ interface OAuthService {
      * @param idToken idToken
      * @return 파싱된 회원 번호
      */
-    fun parseSocialUserNumber(socialType: SocialType, idToken: String): String
+    fun parseSocialUserNumber(
+        socialType: SocialType,
+        idToken: String,
+    ): String
 }

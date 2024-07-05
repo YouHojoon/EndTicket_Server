@@ -11,26 +11,27 @@ import net.devh.boot.grpc.server.service.GrpcService
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration
 import org.springframework.context.annotation.Configuration
 
-
 @Configuration
 @ImportAutoConfiguration(
     GrpcServerAutoConfiguration::class,
     GrpcServerFactoryAutoConfiguration::class,
-    GrpcClientAutoConfiguration::class
+    GrpcClientAutoConfiguration::class,
 )
 class GrpcConfig {
     @GrpcService
-    class UserServiceImpl : UserServiceGrpc.UserServiceImplBase(){
-        override fun findUserId(request: FindUserIdRequest, responseObserver: StreamObserver<UserIdResponse>) {
+    class UserServiceImpl : UserServiceGrpc.UserServiceImplBase() {
+        override fun findUserId(
+            request: FindUserIdRequest,
+            responseObserver: StreamObserver<UserIdResponse>,
+        ) {
             if (request.socialUserNumber == AuthTestParameters.SOCIAL_USER_NUMBER) {
                 responseObserver.onNext(
-                    UserIdResponse.newBuilder().setUserId(AuthTestParameters.USER_ID).build()
+                    UserIdResponse.newBuilder().setUserId(AuthTestParameters.USER_ID).build(),
                 )
                 responseObserver.onCompleted()
-            }
-            else
+            } else {
                 responseObserver.onError(RuntimeException())
-
+            }
         }
     }
 }

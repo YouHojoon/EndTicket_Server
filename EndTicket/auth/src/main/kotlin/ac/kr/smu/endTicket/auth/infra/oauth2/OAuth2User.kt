@@ -12,23 +12,18 @@ import org.springframework.security.oauth2.core.user.OAuth2User
  */
 class OAuth2User(
     socialUserNumber: String,
-    socialType: SocialType
-): OAuth2User {
+    socialType: SocialType,
+) : OAuth2User {
     private val attr = mutableMapOf<String, Any>()
 
     init {
         attr["socialUserNumber"] = socialUserNumber
         attr["socialType"] = socialType
     }
-    override fun getName(): String {
-        return attr["socialUserNumber"].toString()
-    }
 
-    override fun getAttributes(): MutableMap<String, Any> {
-        return attr
-    }
+    override fun getName(): String = attr["socialUserNumber"].toString()
 
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
-        return mutableListOf(SimpleGrantedAuthority("USER"))
-    }
+    override fun getAttributes(): MutableMap<String, Any> = attr
+
+    override fun getAuthorities(): MutableCollection<out GrantedAuthority> = mutableListOf(SimpleGrantedAuthority("USER"))
 }
