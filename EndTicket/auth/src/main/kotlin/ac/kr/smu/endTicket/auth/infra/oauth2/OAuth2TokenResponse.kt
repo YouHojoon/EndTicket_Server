@@ -3,7 +3,6 @@ package ac.kr.smu.endTicket.auth.infra.oauth2
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.databind.annotation.JsonNaming
 
-
 /**
  * OAuth의 응답을 추상화한 클래스
  * @property tokenType bearer로 고정
@@ -22,6 +21,6 @@ data class OAuth2TokenResponse(
     val idToken: String,
     private val expiresIn: Int,
     private val refreshToken: String?,
-    private val refreshTokenExpiresIn:String?,
-    private val scope: String
+    private val refreshTokenExpiresIn: String?,
+    private val scope: String,
 )

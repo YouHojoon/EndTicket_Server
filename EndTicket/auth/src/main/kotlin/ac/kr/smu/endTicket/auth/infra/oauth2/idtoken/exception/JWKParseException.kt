@@ -1,6 +1,5 @@
 package ac.kr.smu.endTicket.auth.infra.oauth2.idtoken.exception
 
-
 /**
  * ID 토큰을 검증하는 공개키를 받아오는 데 실패했을 시 발생하는 Exception
  * @property clientName 공개키를 받는데 실패한 client 이름
@@ -9,6 +8,6 @@ package ac.kr.smu.endTicket.auth.infra.oauth2.idtoken.exception
  */
 class JWKParseException(
     val clientName: String,
-    message:String? = null,
-    cause: Throwable? = null
-): RuntimeException(message, cause)
+    message: String? = null,
+    cause: Throwable? = null,
+) : RuntimeException(message, cause)

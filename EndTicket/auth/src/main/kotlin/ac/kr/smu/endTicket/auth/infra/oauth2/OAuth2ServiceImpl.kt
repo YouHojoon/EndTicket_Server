@@ -13,6 +13,7 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.reactive.function.client.awaitBody
+
 /**
  *
  * [OAuthService]의 구현체
@@ -22,19 +23,22 @@ import org.springframework.web.reactive.function.client.awaitBody
 @Service
 class OAuth2ServiceImpl(
     private val clientRegistrationRepository: ClientRegistrationRepository,
-    private val idTokenService: IdTokenService
-): OAuthService {
+    private val idTokenService: IdTokenService,
+) : OAuthService {
     /**
      * 외부 SNS 서비스 인증을 하여 access 토큰 응답을 반환하는 메소드
      * @param socialType SNS 종류
      * @param code SNS 인증에서 반환받은 authorization code
      * @return access 토큰 응답을 반환, 에러 발생 시 null 반환
      */
-    override fun oauth(socialType: SocialType, code: String): OAuth2TokenResponse {
+    override fun oAuth(
+        socialType: SocialType,
+        code: String,
+    ): OAuth2TokenResponse {
         val provider = clientRegistrationRepository.findByRegistrationId(socialType.name.lowercase())
 
         return runBlocking {
-            getToken(provider,code)
+            getToken(provider, code)
         }
     }
 
@@ -44,9 +48,10 @@ class OAuth2ServiceImpl(
      * @param idToken ID 토큰
      * @return 파싱된 회원 번호
      */
-    override fun parseSocialUserNumber(socialType: SocialType, idToken: String): String {
-        return idTokenService.parseSocialUserNumber(socialType,idToken)
-    }
+    override fun parseSocialUserNumber(
+        socialType: SocialType,
+        idToken: String,
+    ): String = idTokenService.parseSocialUserNumber(socialType, idToken)
 
     /**
      * 외부 SNS 서비스와 통신하여 응답 결과를 반환하는 메소드
@@ -56,25 +61,27 @@ class OAuth2ServiceImpl(
      * @throws OAuth2RequestException OAuth 요청이 에러일 때 발생
      */
     @Throws(OAuth2RequestException::class)
-    private suspend fun getToken(provider: ClientRegistration, code: String): OAuth2TokenResponse {
-       try {
-           return WebClient.create()
-               .post()
-               .uri(provider.providerDetails.tokenUri)
-               .headers {
-                   it.contentType = MediaType.APPLICATION_FORM_URLENCODED
-               }
-               .bodyValue(tokenRequest(provider, code))
-               .retrieve()
-               .awaitBody()
-       }
-
-       catch (e: Exception){
-           if (e is WebClientResponseException)
-               throw OAuth2RequestException(e.getResponseBodyAs(Map::class.java).toString())
-           else
-               throw OAuth2RequestException(e.message)
-       }
+    private suspend fun getToken(
+        provider: ClientRegistration,
+        code: String,
+    ): OAuth2TokenResponse {
+        try {
+            return WebClient
+                .create()
+                .post()
+                .uri(provider.providerDetails.tokenUri)
+                .headers {
+                    it.contentType = MediaType.APPLICATION_FORM_URLENCODED
+                }.bodyValue(tokenRequest(provider, code))
+                .retrieve()
+                .awaitBody()
+        } catch (e: Exception) {
+            if (e is WebClientResponseException) {
+                throw OAuth2RequestException(e.getResponseBodyAs(Map::class.java).toString())
+            } else {
+                throw OAuth2RequestException(e.message)
+            }
+        }
     }
 
     /**
@@ -83,13 +90,16 @@ class OAuth2ServiceImpl(
      * @param code SNS 인증에서 반환받은 authorization code
      * @return 요청에 필요한 body
      */
-    private fun tokenRequest(provider: ClientRegistration, code: String): LinkedMultiValueMap<String, String> {
+    private fun tokenRequest(
+        provider: ClientRegistration,
+        code: String,
+    ): LinkedMultiValueMap<String, String> {
         var body = LinkedMultiValueMap<String, String>()
         body.add("code", code)
-        body.add("grant_type","authorization_code")
+        body.add("grant_type", "authorization_code")
         body.add("redirect_uri", provider.redirectUri)
         body.add("client_secret", provider.clientSecret)
-        body.add("client_id",provider.clientId)
+        body.add("client_id", provider.clientId)
 
         return body
     }

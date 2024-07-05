@@ -14,7 +14,6 @@ data class IdTokenPayload(
     var sub: String = "",
     var exp: Long = 0,
     var iat: Long = 0,
-
     var nonce: String? = null,
     var email: String? = null,
     var auth_time: Long? = null,

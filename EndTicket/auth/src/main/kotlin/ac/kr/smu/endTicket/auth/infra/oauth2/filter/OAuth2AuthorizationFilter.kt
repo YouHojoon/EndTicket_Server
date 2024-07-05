@@ -1,8 +1,8 @@
 package ac.kr.smu.endTicket.auth.infra.oauth2.filter
 
 import ac.kr.smu.endTicket.auth.domain.converter.SocialTypeConverter
-import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2User
 import ac.kr.smu.endTicket.auth.domain.service.OAuthService
+import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2User
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -18,11 +18,12 @@ import org.springframework.web.filter.OncePerRequestFilter
  * @property oAuthService 인증을 처리하는 서비스 객체
  */
 class OAuth2AuthorizationFilter(
-    private val oAuthService: OAuthService
-): OncePerRequestFilter() {
+    private val oAuthService: OAuthService,
+) : OncePerRequestFilter() {
     private val converter = SocialTypeConverter()
     private val matcher = AntPathRequestMatcher("/auth/sns")
-    private companion object{
+
+    private companion object {
         private const val SOCIAL_TYPE_URI_VARIABLE_NAME = "socialType"
         private const val CODE_URI_VARIABLE_NAME = "code"
     }
@@ -31,28 +32,29 @@ class OAuth2AuthorizationFilter(
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        filterChain: FilterChain
+        filterChain: FilterChain,
     ) {
-        if (!matcher.matches(request) || request.method != HttpMethod.POST.name()){
-            filterChain.doFilter(request,response)
+        if (!matcher.matches(request) || request.method != HttpMethod.POST.name()) {
+            filterChain.doFilter(request, response)
             return
         }
 
         val socialTypeString = request.getParameter(SOCIAL_TYPE_URI_VARIABLE_NAME) ?: ""
-        require(socialTypeString.isNotBlank()){"SocialType이 비어있습니다."}
+        require(socialTypeString.isNotBlank()) { "SocialType이 비어있습니다." }
 
         val socialType = converter.convert(socialTypeString)
-        requireNotNull(socialType){"지원하지 않는 SNS입니다."}
+        requireNotNull(socialType) { "지원하지 않는 SNS입니다." }
 
         val code = request.getParameter(CODE_URI_VARIABLE_NAME) ?: ""
-        require(code.isNotBlank()){"code가 비어있습니다."}
+        require(code.isNotBlank()) { "code가 비어있습니다." }
 
-        val oAuth2TokenResponse = oAuthService.oauth(socialType, code)
+        val oAuth2TokenResponse = oAuthService.oAuth(socialType, code)
         val socialUserNumber = oAuthService.parseSocialUserNumber(socialType, oAuth2TokenResponse.idToken)
         val oAuth2User = OAuth2User(socialUserNumber, socialType)
 
-        SecurityContextHolder.getContext().authentication =  OAuth2AuthenticationToken(oAuth2User, oAuth2User.authorities, socialTypeString)
+        SecurityContextHolder.getContext().authentication =
+            OAuth2AuthenticationToken(oAuth2User, oAuth2User.authorities, socialTypeString)
 
-        filterChain.doFilter(request,response)
+        filterChain.doFilter(request, response)
     }
 }

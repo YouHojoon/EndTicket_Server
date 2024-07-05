@@ -29,24 +29,29 @@ import java.util.*
 @Service
 class IdTokenService(
     private val clientRegistrationRepository: ClientRegistrationRepository,
-    private val redisTemplate: RedisTemplate<String, Any>
+    private val redisTemplate: RedisTemplate<String, Any>,
 ) {
-    private val JWK_REDIS_KEY_PREFIX = "JWK:"
+    private companion object {
+        private const val JWK_REDIS_KEY_PREFIX = "JWK:"
+    }
+
     /**
      * ID 토큰을 이용해 SNS 사용자 번호를 반환하는 메소드
      * @param socialType ID 토큰을 발급받은 SNS
      * @param idToken ID 토큰
      * @throws UnverifiedIDTokenException ID 토큰 검증 실패 의
      */
-    @Throws(UnverifiedIdTokenException::class)
-    fun parseSocialUserNumber(socialType: SocialType, idToken: String): String{
+    fun parseSocialUserNumber(
+        socialType: SocialType,
+        idToken: String,
+    ): String {
         val (header, payload, _) = parseIDToken(idToken)
         val key = findPublicKey(socialType, header.kid)
 
         try {
-            verifyIDToken(socialType,idToken, payload, key)
-        }catch (e: IllegalArgumentException){
-            throw UnverifiedIdTokenException(socialType,idToken ,e.message)
+            verifyIDToken(socialType, idToken, payload, key)
+        } catch (e: IllegalArgumentException) {
+            throw UnverifiedIdTokenException(socialType, idToken, e.message)
         }
 
         return payload.sub
@@ -60,25 +65,31 @@ class IdTokenService(
      * @param key ID 토큰의 공개키
      * @throws IllegalArgumentException ID 토큰 검증 실패 시
      */
-    @Throws(IllegalArgumentException::class)
-    private fun verifyIDToken(socialType: SocialType, idToken: String, payload: IdTokenPayload, key:PublicKey){
+    private fun verifyIDToken(
+        socialType: SocialType,
+        idToken: String,
+        payload: IdTokenPayload,
+        key: PublicKey,
+    ) {
         val provider = clientRegistrationRepository.findByRegistrationId(socialType.name.lowercase())
 
-        require(payload.iss == provider.providerDetails.issuerUri){
+        require(payload.iss == provider.providerDetails.issuerUri) {
             "payload의 iss가 일치하지 않습니다. iss: ${payload.iss}, provider iss: ${provider.providerDetails.issuerUri}"
         }
-        require(payload.aud == provider.clientId){
+        require(payload.aud == provider.clientId) {
             "aud가 client id와 일치하지 않습니다. aud: ${payload.aud}, provider clientId: ${provider.clientId}"
         }
-        require(payload.exp > Instant.now().epochSecond){
+        require(payload.exp > Instant.now().epochSecond) {
             "id 토큰이 만료되었습니다."
         }
 
-        require(Jwts.parser()
-            .verifyWith(key)
-            .build()
-            .isSigned(idToken)
-        ){
+        require(
+            Jwts
+                .parser()
+                .verifyWith(key)
+                .build()
+                .isSigned(idToken),
+        ) {
             "서명 검증에 실패하였습니다."
         }
     }
@@ -90,8 +101,10 @@ class IdTokenService(
      * @return id와 일치하는 공개키 반환
      * @throws IllegalStateException 일치하는 공개키가 없을 시
      */
-    @Throws(IllegalStateException::class)
-    private fun findPublicKey(socialType: SocialType, kid: String): PublicKey {
+    private fun findPublicKey(
+        socialType: SocialType,
+        kid: String,
+    ): PublicKey {
         val provider = clientRegistrationRepository.findByRegistrationId(socialType.name.lowercase())
 
         return runBlocking {
@@ -100,35 +113,38 @@ class IdTokenService(
             checkNotNull(key)
 
             val keyFactory = KeyFactory.getInstance("RSA")
-            keyFactory.generatePublic(keyFactory.getKeySpec(key,RSAPublicKeySpec::class.java))
+            keyFactory.generatePublic(keyFactory.getKeySpec(key, RSAPublicKeySpec::class.java))
         }
     }
 
     /**
      * 공개키 목록 조회하기, 캐시에 존재하는 경우 캐시값 반환
-     * @param  provider 공개키 목록을 조회할 SNS 서비스
+     * @param provider 공개키 목록을 조회할 SNS 서비스
      * @return 조회된 공개키 목록 반환
      * @throws JWKParseException 파싱 실패 시
      */
-    @Throws(JWKParseException::class)
-    private suspend fun getJwkSet(provider: ClientRegistration): JwkSet{
+    private suspend fun getJwkSet(provider: ClientRegistration): JwkSet {
         val key = "${JWK_REDIS_KEY_PREFIX}${provider.clientName.lowercase()}"
         val jwks = redisTemplate.opsForValue().get(key) as? String
 
-        val json = jwks ?:
-
-        WebClient.create()
-            .get()
-            .uri(provider.providerDetails.jwkSetUri)
-            .retrieve()
-            .onStatus({ it.isError }) {
-                it.createException()
-                    .map {
-                        JWKParseException(provider.clientName, it.getResponseBodyAs(Map::class.java).toString(), it.rootCause)
-                    }
-            }
-            .awaitBody<String>()
-            .also { redisTemplate.opsForValue().set(key, it) }
+        val json =
+            jwks ?: WebClient
+                .create()
+                .get()
+                .uri(provider.providerDetails.jwkSetUri)
+                .retrieve()
+                .onStatus({ it.isError }) {
+                    it
+                        .createException()
+                        .map {
+                            JWKParseException(
+                                provider.clientName,
+                                it.getResponseBodyAs(Map::class.java).toString(),
+                                it.rootCause,
+                            )
+                        }
+                }.awaitBody<String>()
+                .also { redisTemplate.opsForValue().set(key, it) }
 
         return Jwks.setParser().build().parse(json)
     }
@@ -144,16 +160,14 @@ class IdTokenService(
         val decoder = Base64.getDecoder()
 
         val decodedPayload = String(decoder.decode(payload))
-        val decodedHeader= String(decoder.decode(header))
+        val decodedHeader = String(decoder.decode(header))
 
         return IDToken(
             objectMapper.readValue(decodedHeader, IdTokenHeader::class.java),
             objectMapper.readValue(decodedPayload, IdTokenPayload::class.java),
-            signature
+            signature,
         )
     }
-
 }
 
-private typealias IDToken = Triple<IdTokenHeader, IdTokenPayload,String>
-
+private typealias IDToken = Triple<IdTokenHeader, IdTokenPayload, String>

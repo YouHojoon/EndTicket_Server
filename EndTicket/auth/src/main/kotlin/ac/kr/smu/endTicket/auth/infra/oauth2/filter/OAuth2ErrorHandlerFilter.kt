@@ -16,32 +16,35 @@ import org.springframework.web.filter.OncePerRequestFilter
 /**
  * OAuth2 인증 과정에서 발생한 에러를 처리하는 Filter
  */
-class OAuth2ErrorHandlerFilter: OncePerRequestFilter() {
+class OAuth2ErrorHandlerFilter : OncePerRequestFilter() {
     private val log = LoggerFactory.getLogger(this::class.java)
+
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        filterChain: FilterChain
+        filterChain: FilterChain,
     ) {
         try {
-            filterChain.doFilter(request,response)
-        }catch (e: OAuth2RequestException){
-            log.error("{parameters: ${
-                request
-                    .parameterMap
-                    .map { "${it.key} : [${it.value.joinToString(", ")}]" }
-                    .joinToString(", ")
-            }",
-                e)
+            filterChain.doFilter(request, response)
+        } catch (e: OAuth2RequestException) {
+            log.error(
+                "SNS 인증에 실패했습니다. : {parameters: ${
+                    request
+                        .parameterMap
+                        .map { "${it.key} : [${it.value.joinToString(", ")}]" }
+                        .joinToString(", ")
+                }",
+                e,
+            )
             sendResponse(response, HttpStatus.INTERNAL_SERVER_ERROR)
-        }catch (e: UnverifiedIdTokenException){
-            log.info("{idToken: ${e.idToken}, message: ${e.message}}", e)
+        } catch (e: UnverifiedIdTokenException) {
+            log.info("비정상적인 id 토큰 입니다. : {idToken: ${e.idToken}}", e)
             sendResponse(response, HttpStatus.BAD_REQUEST)
-        }catch (e: JWKParseException){
-            log.error("clientName: ${e.clientName}, message: ${e.message}",e)
+        } catch (e: JWKParseException) {
+            log.error("JWK 파싱에 실패했습니다. : {clientName: ${e.clientName}}", e)
             sendResponse(response, HttpStatus.INTERNAL_SERVER_ERROR)
-        }catch (e: IllegalArgumentException){
-            log.info("{message: ${e.message}}",e)
+        } catch (e: IllegalArgumentException) {
+            log.info("비정상적인 요청 입니다.", e)
             sendResponse(response, HttpStatus.BAD_REQUEST, message = e.message ?: "")
         }
     }
@@ -52,7 +55,11 @@ class OAuth2ErrorHandlerFilter: OncePerRequestFilter() {
      * @param status 응답의 statusCode
      * @param message 응답 body에 전송될 메시지
      */
-    private fun sendResponse(response: HttpServletResponse, status: HttpStatus, message: String = "SNS 인증에 실패했습니다."){
+    private fun sendResponse(
+        response: HttpServletResponse,
+        status: HttpStatus,
+        message: String = "SNS 인증에 실패했습니다.",
+    ) {
         response.contentType = MediaType.APPLICATION_JSON_VALUE
         response.characterEncoding = "UTF-8"
         response.status = status.value()

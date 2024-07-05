@@ -8,5 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema
  */
 @Schema(description = "인증에 사용할 SNS")
 enum class SocialType {
-    KAKAO, GOOGLE, APPLE
+    KAKAO,
+    GOOGLE,
+    APPLE,
 }
