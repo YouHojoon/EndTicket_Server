@@ -6,34 +6,21 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.util.matcher.IpAddressMatcher
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig(
-    private val whiteListProperties: WhitelistProperties
-) {
+class SecurityConfig {
     @Bean
-    fun ipAddressMatcher(): List<IpAddressMatcher>{
-        return whiteListProperties.addresses.map{IpAddressMatcher(it)}
-    }
-
-    @Bean
-    fun filterChain(http: HttpSecurity): SecurityFilterChain{
-        http{
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
+        http {
             formLogin { disable() }
             csrf { disable() }
 
             authorizeRequests {
-//                authorize(anyRequest, permitAll)
-                for (matcher in ipAddressMatcher()){
-                    authorize(matcher, permitAll)
-                }
-                authorize(anyRequest, denyAll)
+                authorize(anyRequest, permitAll)
             }
         }
 
         return http.build()
     }
-
 }
