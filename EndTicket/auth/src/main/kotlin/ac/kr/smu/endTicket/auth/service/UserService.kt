@@ -4,9 +4,11 @@ import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endticket.protobuf.FindUserIdRequest
 import ac.kr.smu.endticket.protobuf.UserServiceGrpc
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter
 import net.devh.boot.grpc.client.inject.GrpcClient
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.util.concurrent.CompletableFuture
 
 /**
  * User 서버와 gRPC를 통해 통신하는 객체
@@ -25,20 +27,23 @@ class UserService {
      */
 
     @CircuitBreaker(name = "find-user-id", fallbackMethod = "fallbackFindUserId")
+    @TimeLimiter(name = "find-user-id")
     fun findUserId(
         socialType: SocialType,
         socialUserNumber: String,
-    ): Long =
-        userStub
-            .findUserId(
-                FindUserIdRequest
-                    .newBuilder()
-                    .setSocialType(
-                        ac.kr.smu.endticket.protobuf.SocialType
-                            .valueOf(socialType.name),
-                    ).setSocialUserNumber(socialUserNumber)
-                    .build(),
-            ).userId
+    ): CompletableFuture<Long> =
+        CompletableFuture.completedFuture(
+            userStub
+                .findUserId(
+                    FindUserIdRequest
+                        .newBuilder()
+                        .setSocialType(
+                            ac.kr.smu.endticket.protobuf.SocialType
+                                .valueOf(socialType.name),
+                        ).setSocialUserNumber(socialUserNumber)
+                        .build(),
+                ).userId,
+        )
 
     /**
      * findUserId의 fallback 메소드
@@ -51,9 +56,9 @@ class UserService {
         socialType: SocialType,
         socialUserNumber: String,
         e: Exception,
-    ): Long {
+    ): CompletableFuture<Long> {
         log.error("{socialType: $socialType, socialUserNumber: $socialUserNumber}", e)
 
-        return -1
+        return CompletableFuture.failedFuture(e)
     }
 }

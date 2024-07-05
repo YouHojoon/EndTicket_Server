@@ -40,18 +40,15 @@ class AuthController(
         code: String,
         @AuthenticationPrincipal
         oAuth2User: OAuth2User,
-    ): ResponseEntity<*> {
-        val userId = userService.findUserId(socialType, oAuth2User.name)
-
-        if (userId == -1L) {
-            return ResponseEntity
-                .status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(ExceptionResponse(503, "토큰을 발급하는 과정에서 에러가 발생했습니다.", "시용자 서버와 통신에 실패했습니다"))
-        }
-
-        return ResponseEntity
+    ) = try {
+        val userId = userService.findUserId(socialType, oAuth2User.name).get()
+        ResponseEntity
             .status(HttpStatus.CREATED)
             .body(tokenService.createAccessAndRefreshToken(userId))
+    } catch (e: Exception) {
+        ResponseEntity
+            .status(HttpStatus.SERVICE_UNAVAILABLE)
+            .body(ExceptionResponse(503, "토큰을 발급하는 과정에서 에러가 발생했습니다.", "시용자 서버와 통신에 실패했습니다"))
     }
 
     @ReissueTokenApiResponses
@@ -81,7 +78,7 @@ class AuthController(
                 .status(HttpStatus.CREATED)
                 .body(token)
         } catch (e: IllegalStateException) {
-            log.info("{refreshToken: $refreshToken, message: ${e.message}}", e)
+            log.info("{refreshToken: $refreshToken}", e)
 
             return ResponseEntity
                 .badRequest()

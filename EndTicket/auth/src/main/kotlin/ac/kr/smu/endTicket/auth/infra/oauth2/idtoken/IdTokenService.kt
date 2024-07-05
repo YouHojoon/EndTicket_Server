@@ -31,10 +31,9 @@ class IdTokenService(
     private val clientRegistrationRepository: ClientRegistrationRepository,
     private val redisTemplate: RedisTemplate<String, Any>,
 ) {
-    private companion object{
+    private companion object {
         private const val JWK_REDIS_KEY_PREFIX = "JWK:"
     }
-
 
     /**
      * ID 토큰을 이용해 SNS 사용자 번호를 반환하는 메소드

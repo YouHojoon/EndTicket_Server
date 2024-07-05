@@ -28,7 +28,7 @@ class OAuth2ErrorHandlerFilter : OncePerRequestFilter() {
             filterChain.doFilter(request, response)
         } catch (e: OAuth2RequestException) {
             log.error(
-                "{parameters: ${
+                "SNS 인증에 실패했습니다. : {parameters: ${
                     request
                         .parameterMap
                         .map { "${it.key} : [${it.value.joinToString(", ")}]" }
@@ -38,13 +38,13 @@ class OAuth2ErrorHandlerFilter : OncePerRequestFilter() {
             )
             sendResponse(response, HttpStatus.INTERNAL_SERVER_ERROR)
         } catch (e: UnverifiedIdTokenException) {
-            log.info("{idToken: ${e.idToken}, message: ${e.message}}", e)
+            log.info("비정상적인 id 토큰 입니다. : {idToken: ${e.idToken}}", e)
             sendResponse(response, HttpStatus.BAD_REQUEST)
         } catch (e: JWKParseException) {
-            log.error("clientName: ${e.clientName}, message: ${e.message}", e)
+            log.error("JWK 파싱에 실패했습니다. : {clientName: ${e.clientName}}", e)
             sendResponse(response, HttpStatus.INTERNAL_SERVER_ERROR)
         } catch (e: IllegalArgumentException) {
-            log.info("{message: ${e.message}}", e)
+            log.info("비정상적인 요청 입니다.", e)
             sendResponse(response, HttpStatus.BAD_REQUEST, message = e.message ?: "")
         }
     }
