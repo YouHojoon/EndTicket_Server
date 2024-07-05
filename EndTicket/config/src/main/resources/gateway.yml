@@ -9,6 +9,10 @@ resilience4j:
         failure-rate-threshold: 50
         wait-duration-in-open-state: 10s
         register-health-indicator: true
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 2s
 server:
   port: 8083
 spring:
