@@ -3,6 +3,7 @@ package ac.kr.smu.endticket.futureme.service
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.futureme.domain.event.model.TicketCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.repository.EventRepository
+import ac.kr.smu.endticket.futureme.domain.futureme.exception.FutureMeNotFoundException
 import ac.kr.smu.endticket.futureme.infra.messaging.TicketCompletedEventResponse
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.slf4j.LoggerFactory
@@ -42,8 +43,12 @@ class TicketCompletedEventConsumeService(
             }
 
             ack.acknowledge()
-        }catch (e: Exception){
+        } catch (e: FutureMeNotFoundException) {
+            // 이벤트를 수신 전에 회원 탈퇴가 되었다면 다음 오프셋으로 넘긴다.
+            ack.acknowledge()
+        } catch (e: Exception){
             log.error("티켓 완료 이벤트 수신 실패", e)
+            
             ack.nack(
                 Duration.ofSeconds(5)
             )
