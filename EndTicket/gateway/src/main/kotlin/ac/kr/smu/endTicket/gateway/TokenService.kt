@@ -7,8 +7,8 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter
 import net.devh.boot.grpc.client.inject.GrpcClient
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import java.util.concurrent.CompletableFuture
 
 /**
  * grpc를 이용해 auth 서비스와 통신하는 클래스
@@ -26,21 +26,20 @@ class TokenService {
      */
     @CircuitBreaker(name = "validate-access-token", fallbackMethod = "fallbackValidateAccessToken")
     @TimeLimiter(name = "validate-access-token")
-    fun validateAccessToken(accessToken: String): ValidateAccessTokenResponse =
-        stub.validateAccessToken(AccessToken.newBuilder().setToken(accessToken).build())
+    fun validateAccessToken(accessToken: String): CompletableFuture<ValidateAccessTokenResponse> =
+        CompletableFuture.completedFuture(
+            stub.validateAccessToken(
+                AccessToken.newBuilder().setToken(accessToken).build(),
+            ),
+        )
 
     private fun fallbackValidateAccessToken(
         token: String,
         e: Exception,
-    ): ValidateAccessTokenResponse {
+    ): CompletableFuture<ValidateAccessTokenResponse> {
         val message = "auth 서버에 access 토큰 검증 요청 실패 : {token: $token}"
         log.error(message, e)
 
-        return ValidateAccessTokenResponse
-            .newBuilder()
-            .setUserId(-1)
-            .setStatus(HttpStatus.SERVICE_UNAVAILABLE.value())
-            .setMessage(message)
-            .build()
+        return CompletableFuture.failedFuture(e)
     }
 }
