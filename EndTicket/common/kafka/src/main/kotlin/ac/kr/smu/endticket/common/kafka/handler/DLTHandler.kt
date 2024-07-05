@@ -10,13 +10,14 @@ class DLTHandler {
 
     fun handle(
         record: ConsumerRecord<String, Any>,
-        @Header(KafkaHeaders.TOPIC) topic: String,
+        @Header(KafkaHeaders.RECEIVED_TOPIC) topic: String,
+        @Header(KafkaHeaders.PARTITION) partition: Int,
         @Header(KafkaHeaders.OFFSET) offset: Long,
         @Header(KafkaHeaders.GROUP_ID) groupId: String,
         @Header(KafkaHeaders.EXCEPTION_MESSAGE) exceptionMessage: String,
     ) {
         log.error(
-            "DLT 발생 : {key: ${record.key()}, value: ${record.value()}, topic: $topic, offset: $offset, groupId: $groupId, exceptionMessage: $exceptionMessage}",
+            "DLT 발생 : {key: ${record.key()}, value: ${record.value()}, topic: $topic, partition: $partition, offset: $offset, groupId: $groupId, exceptionMessage: $exceptionMessage}",
         )
     }
 }
