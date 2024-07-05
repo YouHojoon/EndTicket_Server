@@ -12,24 +12,32 @@ import org.springframework.web.cors.reactive.CorsUtils
 import org.springframework.web.server.WebFilter
 import reactor.core.publisher.Hooks
 
-
 @SpringBootApplication
 @EnableDiscoveryClient
-class GatewayApplication{
+class GatewayApplication {
     @Bean
-    fun corsFilter(): WebFilter{
+    fun corsFilter(): WebFilter {
         return WebFilter { exchange, chain ->
             val request = exchange.request
 
-            if (CorsUtils.isCorsRequest(request)){
+            if (CorsUtils.isCorsRequest(request)) {
                 val headers = exchange.response.headers
 
                 headers.accessControlAllowOrigin = "http://localhost:8083"
-                headers.accessControlAllowMethods = listOf(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH, HttpMethod.OPTIONS, HttpMethod.HEAD, HttpMethod.DELETE)
+                headers.accessControlAllowMethods =
+                    listOf(
+                        HttpMethod.GET,
+                        HttpMethod.POST,
+                        HttpMethod.PUT,
+                        HttpMethod.PATCH,
+                        HttpMethod.OPTIONS,
+                        HttpMethod.HEAD,
+                        HttpMethod.DELETE,
+                    )
                 headers.accessControlAllowCredentials = true
                 headers.accessControlAllowHeaders = listOf("Content-Type", "X-User-Id", "Authorization")
 
-                if (request.method == HttpMethod.OPTIONS){
+                if (request.method == HttpMethod.OPTIONS) {
                     exchange.response.setStatusCode(HttpStatus.OK)
                     return@WebFilter exchange.response.setComplete()
                 }
@@ -40,28 +48,24 @@ class GatewayApplication{
     }
 
     @Bean
-    fun routeLocator(builder: RouteLocatorBuilder): RouteLocator{
-        return builder.routes {
+    fun routeLocator(builder: RouteLocatorBuilder): RouteLocator =
+        builder.routes {
             serviceApiDocsRoute("auth")
             serviceApiDocsRoute("user")
             serviceApiDocsRoute("ticket")
             serviceApiDocsRoute("future-me")
             serviceApiDocsRoute("history")
         }
-    }
 
-    private fun RouteLocatorDsl.serviceApiDocsRoute(service:String){
+    private fun RouteLocatorDsl.serviceApiDocsRoute(service: String) {
         route {
             path("/$service/api-docs")
                 .filters {
-                    it.rewritePath("/${service}/api-docs","/api-docs")
-                }
-                .uri("lb://$service")
+                    it.rewritePath("/$service/api-docs", "/api-docs")
+                }.uri("lb://$service")
         }
     }
 }
-
-
 
 fun main(args: Array<String>) {
     runApplication<GatewayApplication>(*args)
