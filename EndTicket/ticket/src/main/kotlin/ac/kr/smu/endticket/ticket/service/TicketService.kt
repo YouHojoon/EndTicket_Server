@@ -36,7 +36,7 @@ class TicketService(
         request: TicketRequest,
         userId: Long,
     ): TicketResponse {
-        val count = repo.countIncompleteTicketsOfUser(userId)
+        val count = repo.countIncompleteTicketsByUserId(userId)
 
         check(count < TICKET_LIMIT) { "티켓을 $TICKET_LIMIT 개 이상 생성할 수 없습니다." }
 
@@ -96,7 +96,7 @@ class TicketService(
      * @return 조회된 사용자의 티켓 리스트
      */
     @Transactional(readOnly = true)
-    fun findIncompleteTickets(userId: Long): List<TicketResponse> = repo.findIncompleteTicketsOfUser(userId).map { it.toResponse() }
+    fun findIncompleteTickets(userId: Long): List<TicketResponse> = repo.findIncompleteTicketsByUserId(userId).map { it.toResponse() }
 
     /**
      * 티켓 스와이프 취소
