@@ -40,7 +40,7 @@ class TicketController(
         try {
             ResponseEntity.status(HttpStatus.CREATED).body(service.createTicket(request, userId))
         } catch (e: IllegalStateException) {
-            log.info("userId: $userId", e)
+            log.info("티켓 생성 실패 : {userId: $userId}", e)
             ResponseEntity.status(HttpStatus.CONFLICT).body(
                 ExceptionResponse(
                     code = HttpStatus.CONFLICT.value(),
@@ -109,8 +109,8 @@ class TicketController(
     }
 
     @ExceptionHandler(TicketNotFoundException::class)
-    fun handleNotFoundTicketException(e: TicketNotFoundException): ResponseEntity<ExceptionResponse> {
-        log.info("id: ${e.id}", e)
+    fun handleTicketNotFoundException(e: TicketNotFoundException): ResponseEntity<ExceptionResponse> {
+        log.info("티켓 조회 실패 : {id: ${e.id}}", e)
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
             ExceptionResponse(
                 code = HttpStatus.NOT_FOUND.value(),
@@ -121,8 +121,8 @@ class TicketController(
     }
 
     @ExceptionHandler(TicketOwnershipException::class)
-    fun handleNotOwnerOfTicketException(e: TicketOwnershipException): ResponseEntity<ExceptionResponse> {
-        log.info("id: ${e.id}, userId: ${e.userId}", e)
+    fun handleTicketOwnershipException(e: TicketOwnershipException): ResponseEntity<ExceptionResponse> {
+        log.info("티켓 소유권 에러 : {id: ${e.id}, userId: ${e.userId}}", e)
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
             ExceptionResponse(
                 code = HttpStatus.FORBIDDEN.value(),
