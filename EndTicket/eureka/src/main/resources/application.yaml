@@ -7,10 +7,11 @@ eureka:
   client:
     register-with-eureka: false
     fetch-registry: false
-whitelist:
-  addresses:
-    - 127.0.0.1
 management:
+  endpoints:
+    web:
+      exposure:
+        include: health, refresh
   tracing:
     sampling:
       probability: 1.0
