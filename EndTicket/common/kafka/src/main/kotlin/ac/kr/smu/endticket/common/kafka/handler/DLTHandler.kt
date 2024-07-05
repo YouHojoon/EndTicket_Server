@@ -11,7 +11,7 @@ class DLTHandler {
     fun handle(
         record: ConsumerRecord<String, Any>,
         @Header(KafkaHeaders.RECEIVED_TOPIC) topic: String,
-        @Header(KafkaHeaders.PARTITION) partition: Int,
+        @Header(KafkaHeaders.RECEIVED_PARTITION) partition: Int,
         @Header(KafkaHeaders.OFFSET) offset: Long,
         @Header(KafkaHeaders.GROUP_ID) groupId: String,
         @Header(KafkaHeaders.EXCEPTION_MESSAGE) exceptionMessage: String,
