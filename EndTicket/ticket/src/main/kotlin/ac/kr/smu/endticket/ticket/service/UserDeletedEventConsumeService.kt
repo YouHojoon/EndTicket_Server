@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Service
-import java.time.Duration
 
 @Service
 class UserDeletedEventConsumeService(
@@ -19,14 +18,9 @@ class UserDeletedEventConsumeService(
         record: ConsumerRecord<String, Void>,
         ack: Acknowledgment,
     ) {
-        try {
-            val userId = record.key().toLong()
-            service.deleteByUserId(userId)
+        val userId = record.key().toLong()
+        service.deleteByUserId(userId)
 
-            ack.acknowledge()
-        } catch (e: Exception) {
-            log.error("회원 탈퇴 이벤트 수신 실패", e)
-            ack.nack(Duration.ofSeconds(5))
-        }
+        ack.acknowledge()
     }
 }
