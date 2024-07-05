@@ -100,7 +100,7 @@ class FutureMeController(
     ) = ResponseEntity.ok(service.updateFutureMe(request, userId))
 
     @ExceptionHandler(FutureMeNotFoundException::class)
-    fun handleNotFoundFutureMeException(e: FutureMeNotFoundException): ResponseEntity<ExceptionResponse> {
+    fun handleFutureMeNotFoundException(e: FutureMeNotFoundException): ResponseEntity<ExceptionResponse> {
         val status = HttpStatus.NOT_FOUND
         log.info("미래의 나 조회 실패 : {userId: ${e.userId}}", e)
 
@@ -114,7 +114,7 @@ class FutureMeController(
     }
 
     @ExceptionHandler(UnsupportedCharacterException::class)
-    fun handleUnsupportedCharacterExceptionException(e: UnsupportedCharacterException): ResponseEntity<ExceptionResponse> {
+    fun handleUnsupportedCharacterException(e: UnsupportedCharacterException): ResponseEntity<ExceptionResponse> {
         val status = HttpStatus.BAD_REQUEST
         log.info("캐릭터 조회 실패 : {input: ${e.input}}", e)
 
