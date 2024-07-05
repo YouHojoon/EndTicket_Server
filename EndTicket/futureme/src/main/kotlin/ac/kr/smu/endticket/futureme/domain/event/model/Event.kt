@@ -13,16 +13,16 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 @Entity
 @Table(
     indexes = [
-        Index(name = "idx_created_at", columnList = "created_at")
-    ]
+        Index(name = "idx_created_at", columnList = "created_at"),
+    ],
 )
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorOptions(force = false)
 @EntityListeners(AuditingEntityListener::class)
 abstract class Event(
     @Column(name = "user_id", nullable = false, updatable = false)
-    val userId: Long
-){
+    val userId: Long,
+) {
     /**
      * event 엔티티의 자체 Id
      */

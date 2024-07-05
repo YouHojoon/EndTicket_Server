@@ -16,24 +16,24 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
             responseCode = "200",
             description = "미래의 나 제목 등록/변경 성공",
             content = [
-                Content(schema = Schema(implementation = FutureMeResponse::class))
-            ]
+                Content(schema = Schema(implementation = FutureMeResponse::class)),
+            ],
         ),
         ApiResponse(
             responseCode = "400",
             description = "잘못된 요청",
             content = [
-                Content(schema = Schema(implementation = BindExceptionResponse::class))
-            ]
+                Content(schema = Schema(implementation = BindExceptionResponse::class)),
+            ],
         ),
         ApiResponse(
             responseCode = "404",
             description = "미래의 나가 존재하지 않음",
             content = [
-                Content(schema = Schema(implementation = ExceptionResponse::class))
-            ]
-        )
-    ]
+                Content(schema = Schema(implementation = ExceptionResponse::class)),
+            ],
+        ),
+    ],
 )
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

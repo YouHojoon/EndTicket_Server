@@ -16,17 +16,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
             content = [
                 Content(
                     mediaType = "image/svg+xml",
-                    schema = Schema(type = "string", format = "binary")
-                )
-            ]),
+                    schema = Schema(type = "string", format = "binary"),
+                ),
+            ],
+        ),
         ApiResponse(
             responseCode = "404",
             description = "존재하지 않는 캐릭터",
             content = [
-                Content(schema = Schema(implementation = ExceptionResponse::class))
-            ]
-        )
-    ]
+                Content(schema = Schema(implementation = ExceptionResponse::class)),
+            ],
+        ),
+    ],
 )
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

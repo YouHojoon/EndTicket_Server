@@ -17,16 +17,19 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
         content = [
             Content(
                 schema =
-                Schema(
-                    type = "object",
-                    requiredProperties = ["imaginations"]
-                ),
+                    Schema(
+                        type = "object",
+                        requiredProperties = ["imaginations"],
+                    ),
                 schemaProperties = [
-                    SchemaProperty(name = "imaginations", array = ArraySchema(schema = Schema(implementation = ImaginationResponse::class), maxItems = 6))
-                ]
-            )
-        ]
-    )
+                    SchemaProperty(
+                        name = "imaginations",
+                        array = ArraySchema(schema = Schema(implementation = ImaginationResponse::class), maxItems = 6),
+                    ),
+                ],
+            ),
+        ],
+    ),
 )
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

@@ -17,30 +17,32 @@ object FutureMeTestParameters {
     val UPDATE_REQUEST = UpdateFutureMeRequest("title", CharacterType.VEGA)
 
     @JvmStatic
-    fun provideFutureMeAndEvent() = Stream.of(
-        Arguments.of(
-            FutureMe.from(CreateFutureMeRequest(CharacterType.CHEESE), USER_ID),
-            Mockito.mock(TicketCompletedEvent::class.java).also { Mockito.`when`(it.userId).thenReturn(USER_ID) },
-            20
-        ),
-        Arguments.of(
-            FutureMe.from(CreateFutureMeRequest(CharacterType.CHEESE), USER_ID),
-            Mockito.mock(ImaginationCompletedEvent::class.java).also { Mockito.`when`(it.userId).thenReturn(USER_ID) },
-            10
+    fun provideFutureMeAndEvent() =
+        Stream.of(
+            Arguments.of(
+                FutureMe.from(CreateFutureMeRequest(CharacterType.CHEESE), USER_ID),
+                Mockito.mock(TicketCompletedEvent::class.java).also { Mockito.`when`(it.userId).thenReturn(USER_ID) },
+                20,
+            ),
+            Arguments.of(
+                FutureMe.from(CreateFutureMeRequest(CharacterType.CHEESE), USER_ID),
+                Mockito.mock(ImaginationCompletedEvent::class.java).also { Mockito.`when`(it.userId).thenReturn(USER_ID) },
+                10,
+            ),
         )
-    )
 
     @JvmStatic
-    fun provideCharacterAndEvent() = Stream.of(
-        Arguments.of(
-            Character(CharacterType.VEGA),
-            Mockito.mock(TicketCompletedEvent::class.java),
-            20
-        ),
-        Arguments.of(
-            Character(CharacterType.VEGA),
-            Mockito.mock(ImaginationCompletedEvent::class.java),
-            10
+    fun provideCharacterAndEvent() =
+        Stream.of(
+            Arguments.of(
+                Character(CharacterType.VEGA),
+                Mockito.mock(TicketCompletedEvent::class.java),
+                20,
+            ),
+            Arguments.of(
+                Character(CharacterType.VEGA),
+                Mockito.mock(ImaginationCompletedEvent::class.java),
+                10,
+            ),
         )
-    )
 }

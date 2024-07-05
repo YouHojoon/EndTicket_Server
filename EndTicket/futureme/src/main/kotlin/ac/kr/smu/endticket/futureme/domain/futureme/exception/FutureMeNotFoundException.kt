@@ -5,5 +5,5 @@ package ac.kr.smu.endticket.futureme.domain.futureme.exception
  * @param userId 미래의 나가 존재하지 않는 userId
  */
 class FutureMeNotFoundException(
-    val userId: Long
-): RuntimeException("$userId 의 미래의 나가 존재하지 않습니다.")
+    val userId: Long,
+) : RuntimeException("$userId 의 미래의 나가 존재하지 않습니다.")

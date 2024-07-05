@@ -24,45 +24,47 @@ import java.lang.RuntimeException
 @SpringBootTest(
     classes = [
         UserDeletedEventConsumeService::class,
-        KafkaAutoConfiguration::class
-    ]
+        KafkaAutoConfiguration::class,
+    ],
 )
 @EmbeddedKafka
-class UserDeletedEventConsumeServiceTest @Autowired constructor(
-    @MockBean
-    private val eventRepository: EventRepository,
-    @MockBean
-    private val futureMeService: FutureMeService,
-    @MockBean
-    private val imaginationService: ImaginationService,
-    private val service: UserDeletedEventConsumeService,
-    private val broker: EmbeddedKafkaBroker
-) {
+class UserDeletedEventConsumeServiceTest
+    @Autowired
+    constructor(
+        @MockBean
+        private val eventRepository: EventRepository,
+        @MockBean
+        private val futureMeService: FutureMeService,
+        @MockBean
+        private val imaginationService: ImaginationService,
+        private val service: UserDeletedEventConsumeService,
+        private val broker: EmbeddedKafkaBroker,
+    ) {
+        @Test
+        @DisplayName("회원 탈퇴 이벤트 수신 테스트")
+        fun given_userDeletedEvent_when_consume_then_deleteDataOfUser() {
+            val producer = createProducer<Void>(broker)
 
-    @Test
-    @DisplayName("회원 탈퇴 이벤트 수신 테스트")
-    fun given_userDeletedEvent_when_consume_then_deleteDataOfUser(){
-        val producer = createProducer<Void>(broker)
+            producer.send(ProducerRecord(KafkaTopic.USER_DELETED, EventTestParameters.USER_ID.toString(), null))
+            Thread.sleep(1000)
 
-        producer.send(ProducerRecord(KafkaTopic.USER_DELETED,EventTestParameters.USER_ID.toString(), null))
-        Thread.sleep(1000)
+            Mockito.verify(eventRepository).deleteByUserId(EventTestParameters.USER_ID)
+            Mockito.verify(futureMeService).deleteFutureMe(EventTestParameters.USER_ID)
+            Mockito.verify(imaginationService).deleteByUserId(EventTestParameters.USER_ID)
+        }
 
-        Mockito.verify(eventRepository).deleteByUserId(EventTestParameters.USER_ID)
-        Mockito.verify(futureMeService).deleteFutureMe(EventTestParameters.USER_ID)
-        Mockito.verify(imaginationService).deleteByUserId(EventTestParameters.USER_ID)
+        @Test
+        @DisplayName("회원 탈퇴 이벤트 수신 실패 테스트")
+        fun given_userDeleteEvent_when_consumeFail_then_sendNack() {
+            val record = Mockito.mock(ConsumerRecord::class.java) as ConsumerRecord<String, Void>
+            val ack = Mockito.mock(Acknowledgment::class.java)
+
+            Mockito
+                .`when`(record.key())
+                .thenThrow(RuntimeException())
+
+            service.consume(record, ack)
+
+            Mockito.verify(ack).nack(mockAny())
+        }
     }
-
-    @Test
-    @DisplayName("회원 탈퇴 이벤트 수신 실패 테스트")
-    fun given_userDeleteEvent_when_consumeFail_then_sendNack(){
-        val record = Mockito.mock(ConsumerRecord::class.java) as ConsumerRecord<String,Void>
-        val ack = Mockito.mock(Acknowledgment::class.java)
-
-        Mockito.`when`(record.key())
-            .thenThrow(RuntimeException())
-
-        service.consume(record,ack)
-
-        Mockito.verify(ack).nack(mockAny())
-    }
-}

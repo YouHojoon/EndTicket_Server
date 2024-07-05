@@ -36,70 +36,77 @@ import kotlin.test.assertEquals
         ImaginationCompletedEventListener::class,
         FutureMeEventService::class,
         KafkaAutoConfiguration::class,
-    ]
+    ],
 )
 @EmbeddedKafka(partitions = 3)
-class ImaginationCompletedEventListenerTest @Autowired constructor(
-    @MockBean
-    private val repo: EventRepository,
-    @MockBean
-    private val futureMeService: FutureMeService,
-    @SpyBean
-    private val messageService: KafkaMessageService<String, ImaginationCompletedEventResponse>,
-    private val broker: EmbeddedKafkaBroker,
-    private val eventService: FutureMeEventService
-) {
-    private lateinit var container: KafkaMessageListenerContainer<String, ImaginationCompletedEventResponse>
-    private val queue = LinkedBlockingQueue<ConsumerRecord<String, ImaginationCompletedEventResponse>>()
+class ImaginationCompletedEventListenerTest
+    @Autowired
+    constructor(
+        @MockBean
+        private val repo: EventRepository,
+        @MockBean
+        private val futureMeService: FutureMeService,
+        @SpyBean
+        private val messageService: KafkaMessageService<String, ImaginationCompletedEventResponse>,
+        private val broker: EmbeddedKafkaBroker,
+        private val eventService: FutureMeEventService,
+    ) {
+        private lateinit var container: KafkaMessageListenerContainer<String, ImaginationCompletedEventResponse>
+        private val queue = LinkedBlockingQueue<ConsumerRecord<String, ImaginationCompletedEventResponse>>()
 
-    @BeforeEach
-    fun init(){
-        container = createKafkaContainer(broker, KafkaTopic.IMAGINATION_COMPLETED)
-        container.messageListener(broker){
-            queue.add(it)
+        @BeforeEach
+        fun init() {
+            container = createKafkaContainer(broker, KafkaTopic.IMAGINATION_COMPLETED)
+            container.messageListener(broker) {
+                queue.add(it)
+            }
+            Mockito
+                .`when`(futureMeService.findFutureMe(ImaginationParameters.USER_ID))
+                .thenReturn(EventTestParameters.FUTURE_ME.toResponse())
         }
-        Mockito.`when`(futureMeService.findFutureMe(ImaginationParameters.USER_ID))
-            .thenReturn(EventTestParameters.FUTURE_ME.toResponse())
+
+        @AfterEach
+        fun reset() {
+            container.stop()
+        }
+
+        @DisplayName("상상해보기 완료 이벤트 테스트")
+        @ParameterizedTest
+        @MethodSource("${EventTestParameters.PATH}#provideImaginationCompletedEvent")
+        fun given_imaginationCompletedEvent_then_saveEventAndSendMessage(event: ImaginationCompletedEvent) {
+            eventService.publish(event)
+            Thread.sleep(1000L)
+
+            Mockito.verify(futureMeService, Mockito.times(1)).gainExperiencePoints(event)
+            Mockito.verify(repo).delete(mockAny())
+
+            val record = queue.poll()
+            val expectPayload = event.toMessage(EventTestParameters.FUTURE_ME.characterType).payload
+
+            assertEquals(expectPayload?.behavior, record.value().behavior)
+            assertEquals(expectPayload?.target, record.value().target)
+            assertEquals(expectPayload?.color, record.value().color)
+            assertEquals(expectPayload?.characterType, record.value().characterType)
+            assertEquals(event.userId.toString(), record.key())
+        }
+
+        @ParameterizedTest
+        @DisplayName("상상해보기 완료 이벤트 메시지 전송 실패 테스트")
+        @MethodSource("${EventTestParameters.PATH}#provideImaginationCompletedEvent")
+        fun given_imaginationCompletedEvent_when_sendMessageFail_then_doNothing(event: ImaginationCompletedEvent) {
+            val mockEvent = Mockito.spy(event)
+            val message = event.toMessage(EventTestParameters.FUTURE_ME.characterType)
+
+            Mockito
+                .`when`(mockEvent.toMessage(EventTestParameters.FUTURE_ME.characterType))
+                .thenReturn(message)
+            Mockito
+                .`when`(messageService.send(KafkaTopic.IMAGINATION_COMPLETED, message))
+                .thenReturn(CompletableFuture.failedFuture(RuntimeException()))
+
+            eventService.publish(mockEvent)
+
+            Mockito.verify(repo, Mockito.only()).save(mockEvent)
+            Mockito.verify(futureMeService, Mockito.times(1)).gainExperiencePoints(mockEvent)
+        }
     }
-    @AfterEach
-    fun reset(){
-        container.stop()
-    }
-
-    @DisplayName("상상해보기 완료 이벤트 테스트")
-    @ParameterizedTest
-    @MethodSource("${EventTestParameters.PATH}#provideImaginationCompletedEvent")
-    fun given_imaginationCompletedEvent_then_saveEventAndSendMessage(event: ImaginationCompletedEvent){
-        eventService.publish(event)
-        Thread.sleep(1000L)
-
-        Mockito.verify(futureMeService, Mockito.times(1)).gainExperiencePoints(event)
-        Mockito.verify(repo).delete(mockAny())
-
-        val record = queue.poll()
-        val expectPayload = event.toMessage(EventTestParameters.FUTURE_ME.characterType).payload
-
-        assertEquals(expectPayload?.behavior, record.value().behavior)
-        assertEquals(expectPayload?.target, record.value().target)
-        assertEquals(expectPayload?.color, record.value().color)
-        assertEquals(expectPayload?.characterType, record.value().characterType)
-        assertEquals(event.userId.toString(), record.key())
-    }
-    @ParameterizedTest
-    @DisplayName("상상해보기 완료 이벤트 메시지 전송 실패 테스트")
-    @MethodSource("${EventTestParameters.PATH}#provideImaginationCompletedEvent")
-    fun given_imaginationCompletedEvent_when_sendMessageFail_then_doNothing(event: ImaginationCompletedEvent){
-        val mockEvent = Mockito.spy(event)
-        val message = event.toMessage(EventTestParameters.FUTURE_ME.characterType)
-
-        Mockito.`when`(mockEvent.toMessage(EventTestParameters.FUTURE_ME.characterType))
-            .thenReturn(message)
-        Mockito.`when`(messageService.send(KafkaTopic.IMAGINATION_COMPLETED, message))
-            .thenReturn(CompletableFuture.failedFuture(RuntimeException()))
-
-        eventService.publish(mockEvent)
-
-        Mockito.verify(repo, Mockito.only()).save(mockEvent)
-        Mockito.verify(futureMeService, Mockito.times(1)).gainExperiencePoints(mockEvent)
-    }
-}

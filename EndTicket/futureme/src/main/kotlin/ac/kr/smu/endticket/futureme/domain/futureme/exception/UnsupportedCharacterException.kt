@@ -9,5 +9,5 @@ import org.springframework.web.bind.annotation.ResponseStatus
  */
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 class UnsupportedCharacterException(
-    val input: String
-): IllegalArgumentException("$input 은 지원하지 않는 캐릭터입니다.")
+    val input: String,
+) : IllegalArgumentException("$input 은 지원하지 않는 캐릭터입니다.")

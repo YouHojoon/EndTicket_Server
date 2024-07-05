@@ -13,19 +13,21 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 @AccessTokenSecurityScheme
 @OpenAPIDefinition(
-    info = Info(
-        title = "EndTicket",
-        description = "미래의 나 서버 API 명세서",
-        contact = Contact(name = "유호준", email = "dbghwns11@gmail.com")
-    )
+    info =
+        Info(
+            title = "EndTicket",
+            description = "미래의 나 서버 API 명세서",
+            contact = Contact(name = "유호준", email = "dbghwns11@gmail.com"),
+        ),
 )
 class SwaggerConfig(
-    private val discoveryClient: DiscoveryClient
+    private val discoveryClient: DiscoveryClient,
 ) {
     @Bean
-    fun openAPI(): OpenAPI = OpenAPI().servers(
-        discoveryClient.getInstances("gateway").map {
-            Server().url(it.uri.toString()).description("gateway")
-        }
-    )
+    fun openAPI(): OpenAPI =
+        OpenAPI().servers(
+            discoveryClient.getInstances("gateway").map {
+                Server().url(it.uri.toString()).description("gateway")
+            },
+        )
 }

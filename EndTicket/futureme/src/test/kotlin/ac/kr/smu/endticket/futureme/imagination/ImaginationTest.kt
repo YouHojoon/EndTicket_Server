@@ -1,6 +1,5 @@
 package ac.kr.smu.endticket.futureme.imagination
 
-import ac.kr.smu.endticket.common.web.enum.Color
 import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationOwnershipException
 import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
 import ac.kr.smu.endticket.futureme.ui.request.ImaginationRequest
@@ -15,7 +14,7 @@ import kotlin.test.assertEquals
 class ImaginationTest {
     @Test
     @DisplayName("상상해보기 생성 테스트")
-    fun given_request_when_from_then_returnCreatedImagination(){
+    fun given_request_when_from_then_returnCreatedImagination() {
         val imagination = Imagination.from(ImaginationParameters.REQUEST, ImaginationParameters.USER_ID)
         val response = imagination.toResponse()
 
@@ -27,7 +26,10 @@ class ImaginationTest {
     @DisplayName("상상해보기 수정 테스트")
     @ParameterizedTest
     @MethodSource("${ImaginationParameters.PATH}#provideImaginationAndRequest")
-    fun given_requestAndUserId_when_update_then_success(imagination: Imagination, request: ImaginationRequest){
+    fun given_requestAndUserId_when_update_then_success(
+        imagination: Imagination,
+        request: ImaginationRequest,
+    ) {
         imagination.update(request, imagination.userId)
 
         val response = imagination.toResponse()
@@ -39,22 +41,24 @@ class ImaginationTest {
     @DisplayName("소유자가 아닌 사용자 상상해보기 수정 테스트")
     @ParameterizedTest
     @MethodSource("${ImaginationParameters.PATH}#provideImaginationAndRequest")
-    fun given_userIdWhoNotOwnerAndRequest_when_update_then_throwImaginationOwnershipException(imagination: Imagination, request: ImaginationRequest){
-        assertThrows<ImaginationOwnershipException> {  imagination.update(request, 2L)}
+    fun given_userIdWhoNotOwnerAndRequest_when_update_then_throwImaginationOwnershipException(
+        imagination: Imagination,
+        request: ImaginationRequest,
+    ) {
+        assertThrows<ImaginationOwnershipException> { imagination.update(request, 2L) }
     }
 
     @DisplayName("상상해보기 완료 테스트")
     @ParameterizedTest
     @MethodSource("${ImaginationParameters.PATH}#provideImagination")
-    fun given_userId_when_complete_then_success(imagination: Imagination){
-        assertDoesNotThrow { imagination.complete(imagination.userId)}
+    fun given_userId_when_complete_then_success(imagination: Imagination) {
+        assertDoesNotThrow { imagination.complete(imagination.userId) }
     }
 
     @DisplayName("소유자가 아닌 사용자 완료 테스트")
     @ParameterizedTest
     @MethodSource("${ImaginationParameters.PATH}#provideImagination")
-    fun given_userIdWhoNotOwner_when_complete_then_throwImaginationOwnershipException(imagination: Imagination){
-        assertThrows<ImaginationOwnershipException> {  imagination.complete(2L)}
+    fun given_userIdWhoNotOwner_when_complete_then_throwImaginationOwnershipException(imagination: Imagination) {
+        assertThrows<ImaginationOwnershipException> { imagination.complete(2L) }
     }
-
 }

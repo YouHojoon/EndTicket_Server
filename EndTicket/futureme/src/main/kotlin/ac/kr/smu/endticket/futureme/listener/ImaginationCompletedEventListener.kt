@@ -1,11 +1,11 @@
 package ac.kr.smu.endticket.futureme.listener
 
 import KafkaMessageService
-import ac.kr.smu.endticket.futureme.service.FutureMeService
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.futureme.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.repository.EventRepository
 import ac.kr.smu.endticket.futureme.infra.messaging.ImaginationCompletedEventResponse
+import ac.kr.smu.endticket.futureme.service.FutureMeService
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
@@ -24,16 +24,17 @@ import org.springframework.transaction.event.TransactionalEventListener
 class ImaginationCompletedEventListener(
     private val repo: EventRepository,
     private val messageService: KafkaMessageService<String, ImaginationCompletedEventResponse>,
-    private val futureMeService: FutureMeService
+    private val futureMeService: FutureMeService,
 ) {
     private val log = LoggerFactory.getLogger(ImaginationCompletedEventListener::class.java)
+
     /**
      * 상상해보기 완료 이벤트가 발행되면 저장소에 저장하는 메소드
      * @param event 발행된 이벤트
      */
     @Transactional
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    fun saveEvent(event: ImaginationCompletedEvent){
+    fun saveEvent(event: ImaginationCompletedEvent) {
         repo.save(event)
         futureMeService.gainExperiencePoints(event)
     }
@@ -46,14 +47,15 @@ class ImaginationCompletedEventListener(
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    fun sendEvent(event: ImaginationCompletedEvent){
+    fun sendEvent(event: ImaginationCompletedEvent) {
         val message = event.toMessage(futureMeService.findFutureMe(event.userId).character.type)
 
-        messageService.send(KafkaTopic.IMAGINATION_COMPLETED,message).whenCompleteAsync { record, e ->
-            if (e == null)
+        messageService.send(KafkaTopic.IMAGINATION_COMPLETED, message).whenCompleteAsync { record, e ->
+            if (e == null) {
                 repo.delete(event)
-            else
-                log.error("key: ${message.key}, payload: ${message.payload}",e)
+            } else {
+                log.error("상상해보기 완료 이벤트 전송 실패 : {key: ${message.key}, payload: ${message.payload}}", e)
+            }
         }
     }
 }
