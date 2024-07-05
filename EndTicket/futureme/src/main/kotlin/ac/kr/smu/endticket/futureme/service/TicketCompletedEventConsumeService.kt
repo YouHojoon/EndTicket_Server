@@ -11,7 +11,6 @@ import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.Duration
 
 /**
  * 티켓 완료를 처리하는 클래스
@@ -21,7 +20,7 @@ import java.time.Duration
 @Service
 class TicketCompletedEventConsumeService(
     private val repo: EventRepository,
-    private val futureMeService: FutureMeService
+    private val futureMeService: FutureMeService,
 ) {
     private val log = LoggerFactory.getLogger(TicketCompletedEvent::class.java)
 
@@ -33,9 +32,12 @@ class TicketCompletedEventConsumeService(
      */
     @KafkaListener(topics = [KafkaTopic.TICKET_COMPLETED])
     @Transactional
-    fun consume(record: ConsumerRecord<String, TicketCompletedEventResponse>, ack: Acknowledgment){
+    fun consume(
+        record: ConsumerRecord<String, TicketCompletedEventResponse>,
+        ack: Acknowledgment,
+    ) {
         try {
-            if (!repo.existsBySpecificIdAndType(record.value().id, TicketCompletedEvent::class)){
+            if (!repo.existsBySpecificIdAndType(record.value().id, TicketCompletedEvent::class)) {
                 val event = TicketCompletedEvent(record.value().id, record.key().toLong())
 
                 futureMeService.gainExperiencePoints(event)
@@ -46,12 +48,6 @@ class TicketCompletedEventConsumeService(
         } catch (e: FutureMeNotFoundException) {
             // 이벤트를 수신 전에 회원 탈퇴가 되었다면 다음 오프셋으로 넘긴다.
             ack.acknowledge()
-        } catch (e: Exception){
-            log.error("티켓 완료 이벤트 수신 실패", e)
-            
-            ack.nack(
-                Duration.ofSeconds(5)
-            )
         }
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ImaginationRepository: JpaRepository<Imagination, Long>{
+interface ImaginationRepository : JpaRepository<Imagination, Long> {
     /**
      * 미완료된 상상해보기 개수 조회 메소드
      * @param userId 사용자 Id

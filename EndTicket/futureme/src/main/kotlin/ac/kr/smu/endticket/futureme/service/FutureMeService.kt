@@ -1,21 +1,19 @@
 package ac.kr.smu.endticket.futureme.service
 
-import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
 import ac.kr.smu.endticket.futureme.domain.event.model.Event
 import ac.kr.smu.endticket.futureme.domain.futureme.exception.FutureMeNotFoundException
 import ac.kr.smu.endticket.futureme.domain.futureme.model.FutureMe
 import ac.kr.smu.endticket.futureme.domain.futureme.repository.FutureMeRepository
+import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
 import ac.kr.smu.endticket.futureme.ui.request.UpdateFutureMeRequest
 import ac.kr.smu.endticket.futureme.ui.response.FutureMeResponse
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import kotlin.jvm.optionals.getOrNull
 
 @Service
 class FutureMeService(
-    private val repo: FutureMeRepository
+    private val repo: FutureMeRepository,
 ) {
-
     /**
      * 미래의 나를 생성하는 메소드
      * @param request 생성 요청
@@ -24,11 +22,14 @@ class FutureMeService(
      * @throws IllegalStateException 미래의 나가 이미 존재할 시
      */
     @Transactional
-    fun createFutureMe(request: CreateFutureMeRequest, userId: Long) =
-        if (repo.existsById(userId))
-            throw IllegalStateException("미래의 나가 이미 존재합니다.")
-        else
-            repo.save(FutureMe.from(request,userId)).toResponse()
+    fun createFutureMe(
+        request: CreateFutureMeRequest,
+        userId: Long,
+    ) = if (repo.existsById(userId)) {
+        throw IllegalStateException("미래의 나가 이미 존재합니다.")
+    } else {
+        repo.save(FutureMe.from(request, userId)).toResponse()
+    }
 
     /**
      * 미래의 나를 수정하는 메소드
@@ -38,7 +39,10 @@ class FutureMeService(
      * @throws FutureMeNotFoundException 미래의 나가 존재하지 않을 떄
      */
     @Transactional
-    fun updateFutureMe(request: UpdateFutureMeRequest, userId: Long): FutureMeResponse {
+    fun updateFutureMe(
+        request: UpdateFutureMeRequest,
+        userId: Long,
+    ): FutureMeResponse {
         val futureMe = findById(userId)
 
         futureMe.update(request)
@@ -52,7 +56,7 @@ class FutureMeService(
      * @throws FutureMeNotFoundException 상상해보기가 존재하지 않을 시
      */
     @Transactional
-    fun gainExperiencePoints(event: Event){
+    fun gainExperiencePoints(event: Event) {
         val futureMe = findById(event.userId)
         futureMe.gainExperiencePoints(event)
     }
@@ -71,7 +75,7 @@ class FutureMeService(
     }
 
     @Transactional
-    fun deleteFutureMe(userId: Long){
+    fun deleteFutureMe(userId: Long) {
         repo.deleteById(userId)
     }
 

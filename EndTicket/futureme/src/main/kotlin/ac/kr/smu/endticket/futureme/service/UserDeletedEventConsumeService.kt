@@ -14,24 +14,22 @@ import java.time.Duration
 class UserDeletedEventConsumeService(
     private val futureMeService: FutureMeService,
     private val imaginationService: ImaginationService,
-    private val eventRepository: EventRepository
+    private val eventRepository: EventRepository,
 ) {
     private val log = LoggerFactory.getLogger(UserDeletedEventConsumeService::class.java)
 
     @KafkaListener(topics = [KafkaTopic.USER_DELETED])
     @Transactional
-    fun consume(record: ConsumerRecord<String, Void>, ack: Acknowledgment){
-        try {
-            val userId = record.key().toLong()
+    fun consume(
+        record: ConsumerRecord<String, Void>,
+        ack: Acknowledgment,
+    ) {
+        val userId = record.key().toLong()
 
-            eventRepository.deleteByUserId(userId)
-            futureMeService.deleteFutureMe(userId)
-            imaginationService.deleteByUserId(userId)
+        eventRepository.deleteByUserId(userId)
+        futureMeService.deleteFutureMe(userId)
+        imaginationService.deleteByUserId(userId)
 
-            ack.acknowledge()
-        }catch (e: Exception){
-            log.error("회원 탈퇴 이벤트 수신 실패")
-            ack.nack(Duration.ofSeconds(5))
-        }
+        ack.acknowledge()
     }
 }

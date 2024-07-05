@@ -1,7 +1,6 @@
 package ac.kr.smu.endticket.futureme.ui.response
 
 import ac.kr.smu.endticket.common.web.enum.Color
-import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
 import io.swagger.v3.oas.annotations.media.Schema
 
 /**

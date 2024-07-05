@@ -7,7 +7,6 @@ import ac.kr.smu.endticket.futureme.domain.imagination.exception.ImaginationOwne
 import ac.kr.smu.endticket.futureme.infra.messaging.ImaginationCompletedEventResponse
 import ac.kr.smu.endticket.futureme.ui.request.ImaginationRequest
 import ac.kr.smu.endticket.futureme.ui.response.ImaginationResponse
-import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
@@ -22,32 +21,31 @@ import java.time.LocalDateTime
 @Entity
 @Table(
     indexes = [
-        Index(name = "idx_user_id", columnList = "user_id")
-    ]
+        Index(name = "idx_user_id", columnList = "user_id"),
+    ],
 )
 @EntityListeners(AuditingEntityListener::class)
 class Imagination private constructor(
     @Column(nullable = false, length = 10)
     private var behavior: String,
-
     @Column(nullable = false, length = 20)
     private var target: String,
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private var color: Color,
-
     @Column(name = "user_id", updatable = false, nullable = false)
-    val userId: Long
+    val userId: Long,
 ) {
-    companion object{
-        fun from(request: ImaginationRequest, userId: Long) =
-            Imagination(
-                behavior = request.behavior,
-                target = request.target,
-                color = request.color,
-                userId = userId
-            )
+    companion object {
+        fun from(
+            request: ImaginationRequest,
+            userId: Long,
+        ) = Imagination(
+            behavior = request.behavior,
+            target = request.target,
+            color = request.color,
+            userId = userId,
+        )
     }
 
     @Id
@@ -64,32 +62,38 @@ class Imagination private constructor(
      * 상상해보기로부터 응답을 만들어내는 메소드
      * @return 상상해보기 완료 응답
      */
-    fun toResponse() = ImaginationResponse(
-        id = id,
-        behavior = behavior,
-        target = target,
-        color = color
-    )
+    fun toResponse() =
+        ImaginationResponse(
+            id = id,
+            behavior = behavior,
+            target = target,
+            color = color,
+        )
 
     /**
      * 상상해보기로부터 이벤트 완료 응답을 만들어내는 메소드
      * @return 상상해보기 완료 응답
      */
-    fun toEventResponse(characterType: CharacterType) = ImaginationCompletedEventResponse(
-        id = id,
-        behavior = behavior,
-        target = target,
-        color = color,
-        characterType = characterType,
-        completedAt = audit.updatedAt ?: LocalDateTime.now()
-    )
+    fun toEventResponse(characterType: CharacterType) =
+        ImaginationCompletedEventResponse(
+            id = id,
+            behavior = behavior,
+            target = target,
+            color = color,
+            characterType = characterType,
+            completedAt = audit.updatedAt ?: LocalDateTime.now(),
+        )
+
     /**
      * 수정을 요청하는 메소드
      * @param request 수정 요청
      * @param userId 수정을 요청한 사용자
      * @throws ImaginationOwnershipException 사용자가 소유자가 아닐 시
      */
-    fun update(request: ImaginationRequest, userId: Long){
+    fun update(
+        request: ImaginationRequest,
+        userId: Long,
+    ) {
         checkOwnership(userId)
 
         this.color = request.color
@@ -97,13 +101,12 @@ class Imagination private constructor(
         this.target = request.target
     }
 
-
     /**
      * 상상해보기 완료를 요청하는 메소드
      * @param userId 완료를 요청한 사용자
      * @throws ImaginationOwnershipException 사용자가 소유자가 아닐 시
      */
-    fun complete(userId: Long){
+    fun complete(userId: Long) {
         checkOwnership(userId)
         isComplete = true
     }
@@ -113,9 +116,9 @@ class Imagination private constructor(
      * @param userId 사용자 Id
      * @throws ImaginationOwnershipException 사용자가 소유자가 아닐 시
      */
-    fun checkOwnership(userId: Long){
-        if (this.userId != userId)
+    fun checkOwnership(userId: Long) {
+        if (this.userId != userId) {
             throw ImaginationOwnershipException(id, userId)
-
+        }
     }
 }

@@ -7,5 +7,5 @@ package ac.kr.smu.endticket.futureme.domain.imagination.exception
  */
 class ImaginationOwnershipException(
     val id: Long,
-    val userId: Long
-): RuntimeException("$userId 는 $id 의 소유자가 아닙니다.")
+    val userId: Long,
+) : RuntimeException("$userId 는 $id 의 소유자가 아닙니다.")

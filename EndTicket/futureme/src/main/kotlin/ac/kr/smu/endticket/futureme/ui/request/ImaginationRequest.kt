@@ -1,7 +1,6 @@
 package ac.kr.smu.endticket.futureme.ui.request
 
 import ac.kr.smu.endticket.common.web.enum.Color
-import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -18,12 +17,10 @@ data class ImaginationRequest(
     @field:Size(max = 10)
     @field:NotBlank
     val behavior: String,
-
     @Schema(description = "목표", example = "체력도 늘고 할력도 되찾는 나의 모습")
     @field:Size(max = 20)
     @field:NotBlank
     val target: String,
-
     @Schema(description = "색", example = "BLUE1")
-    val color: Color
+    val color: Color,
 )
