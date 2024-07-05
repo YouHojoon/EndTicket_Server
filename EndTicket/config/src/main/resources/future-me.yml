@@ -15,7 +15,7 @@ spring:
       spring:
         json:
           type:
-            mapping: "ac.kr.smu.endticket.ticket.infra.messaging.TicketCompletedEventResponse:ac.kr.smu.endticket.futureme  .infra.messaging.TicketCompletedEventResponse"
+            mapping: "ac.kr.smu.endticket.ticket.infra.messaging.TicketCompletedEventResponse:ac.kr.smu.endticket.futureme.infra.messaging.TicketCompletedEventResponse"
 
 schedules:
   resend-imagination-completion-event:

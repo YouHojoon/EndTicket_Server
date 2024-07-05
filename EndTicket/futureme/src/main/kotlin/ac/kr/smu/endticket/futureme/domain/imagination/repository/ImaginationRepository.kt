@@ -19,4 +19,6 @@ interface ImaginationRepository: JpaRepository<Imagination, Long>{
      * @return 미완료된 상상해보기
      */
     fun findByUserIdAndIsCompleteIsFalse(userId: Long): Set<Imagination>
+
+    fun deleteByUserId(userId: Long)
 }

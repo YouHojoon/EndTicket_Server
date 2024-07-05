@@ -8,6 +8,7 @@ import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.servers.Server
 import org.springframework.cloud.client.discovery.DiscoveryClient
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 
 @OpenAPIDefinition(
     info = Info(
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.Bean
     )
 )
 @AccessTokenSecurityScheme
+@Configuration
 class SwaggerConfig(
     private val discoveryClient: DiscoveryClient
 ) {

@@ -1,10 +1,8 @@
 schedules:
-  save-updated-ticket:
-    fixedDelay: 1800000 # 30분
-    initialDelay: 60000 # 1분
-  resend-ticket-completion-event:
-    fixedDelay: 600000 # 10분
-    initialDelay: 60000 # 1분
+  resend-ticket-completed-event:
+    fixed-delay: 600000 # 10분
+    initial-delay: 60000 # 1분
+
 server:
   port: 8082
 spring:

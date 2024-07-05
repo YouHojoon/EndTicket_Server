@@ -12,7 +12,7 @@ import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import ac.kr.smu.endticket.futureme.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.repository.EventRepository
 import ac.kr.smu.endticket.futureme.domain.imagination.repository.ImaginationRepository
-import ac.kr.smu.endticket.futureme.infra.config.KafkaConfig
+import ac.kr.smu.endticket.futureme.config.KafkaConfig
 import ac.kr.smu.endticket.futureme.infra.messaging.ImaginationCompletedEventResponse
 import ac.kr.smu.endticket.futureme.listener.ImaginationCompletedEventListener
 import ac.kr.smu.endticket.futureme.service.FutureMeEventService
@@ -215,8 +215,7 @@ class ImaginationIntegrationTest @Autowired constructor(
         assertEquals(imagination.color, record.value().color)
         assertEquals(imagination.target, record.value().target)
         assertEquals(futureMe.character.type, record.value().characterType)
-        //이벤트 저장 검증
-        assertTrue(eventRepo.existsBySpecificIdAndType(imagination.id, ImaginationCompletedEvent::class))
+
         //경험치 상승 검증
         assertEquals(10,futureMe.character.experiencePoints)
     }

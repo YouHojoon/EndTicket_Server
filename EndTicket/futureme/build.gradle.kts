@@ -10,7 +10,9 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
-
+allOpen{
+    annotation("jakarta.persistence.Inheritance")
+}
 tasks.test{
     finalizedBy("jacocoTestReport")
 }
@@ -30,6 +32,7 @@ tasks.jacocoTestReport{
                     "**/domain/*",
                     "**/response/*",
                     "**/request/*",
+                    "**/config/*",
                 )
             }
         })
@@ -48,6 +51,7 @@ tasks.jacocoTestCoverageVerification {
                 "**.domain.*",
                 "**.response.*",
                 "**.request.*",
+                "**.config.**",
             )
 
             element = "CLASS"

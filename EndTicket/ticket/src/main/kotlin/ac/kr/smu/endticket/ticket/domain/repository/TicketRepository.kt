@@ -1,13 +1,12 @@
 package ac.kr.smu.endticket.ticket.domain.repository
 
 import ac.kr.smu.endticket.ticket.domain.model.Ticket
-
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
-interface TicketRepository: JpaRepository<Ticket, Long> {
+interface TicketRepository : JpaRepository<Ticket, Long> {
     /**
      * 사용자의 미완료된 티켓을 조회하는 메소드
      * @param userId 사용자의 Id
@@ -22,4 +21,6 @@ interface TicketRepository: JpaRepository<Ticket, Long> {
      */
     @Query("select count(t) from Ticket as t where t.swipeCount < t.maxSwipeCount and t.userId = :userId")
     fun countIncompleteTicketsOfUser(userId: Long): Int
+
+    fun deleteByUserId(userId: Long)
 }

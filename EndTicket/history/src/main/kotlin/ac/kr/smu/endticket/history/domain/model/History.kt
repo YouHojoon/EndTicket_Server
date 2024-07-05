@@ -15,8 +15,7 @@ import java.time.LocalDateTime
 @Entity
 @Table(
     indexes = [
-        Index(name = "idx_completed_at", columnList = "completed_at"),
-        Index(name = "idx_user_id", columnList = "user_id")
+        Index(name = "idx_user_id_completed_at", columnList = "user_id, completed_at")
     ]
 )
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -27,7 +26,7 @@ abstract class History(
     protected val completedAt: LocalDateTime,
 
     @Column(name = "user_id", updatable = false, nullable = false)
-    private val userId: Long
+    val userId: Long
 ){
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

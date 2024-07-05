@@ -17,6 +17,12 @@ spring:
           json:
             trusted:
               packages: "ac.kr.smu.endticket.ticket.infra.messaging"
+      group-id: ticket
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+
+    listener:
+      ack-mode: manual_immediate
   jpa:
     hibernate:
       ddl-auto: create

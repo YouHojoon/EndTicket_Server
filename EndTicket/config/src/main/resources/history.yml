@@ -16,9 +16,8 @@ spring:
       spring:
         json:
           type:
-            mapping:
-              - "ac.kr.smu.endticket.ticket.infra.messaging.TicketCompletedEventResponse:ac.kr.smu.endticket.history.infra.messaging.TicketCompletedEventResponse"
-              - "ac.kr.smu.endticket.futureme.infra.messaging.ImaginationCompletedEventResponse:ac.kr.smu.endticket.history.infra.messaging.ImaginationCompletedEventResponse"
+            mapping: "ac.kr.smu.endticket.ticket.infra.messaging.TicketCompletedEventResponse:ac.kr.smu.endticket.history.infra.messaging.TicketCompletedEventResponse, ac.kr.smu.endticket.futureme.infra.messaging.ImaginationCompletedEventResponse:ac.kr.smu.endticket.history.infra.messaging.ImaginationCompletedEventResponse"
+
 
 springdoc:
   paths-to-match:

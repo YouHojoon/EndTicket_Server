@@ -87,13 +87,13 @@ class ImaginationCompletedEventJobTest @Autowired constructor(
             val message = event.toMessage(EventTestParameters.FUTURE_ME.characterType)
 
             assertEquals(message.key, record.key())
-            assertEquals(message.payload.behavior, record.value().behavior)
-            assertEquals(message.payload.target, record.value().target)
-            assertEquals(message.payload.color, record.value().color)
+            assertEquals(message.payload?.behavior, record.value().behavior)
+            assertEquals(message.payload?.target, record.value().target)
+            assertEquals(message.payload?.color, record.value().color)
         }
 
-        Mockito.verify(futureMeService, Mockito.atLeast(1)).findFutureMe(Mockito.anyLong())
-        Mockito.verify(repo, Mockito.atLeast(1)).saveAll(mockAny<Collection<ImaginationCompletedEvent>>())
+        Mockito.verify(futureMeService).findFutureMe(Mockito.anyLong())
+        Mockito.verify(repo).deleteAllById(Mockito.argThat<Collection<Long>> { it.isNotEmpty()})
     }
 
     @ParameterizedTest
@@ -105,11 +105,11 @@ class ImaginationCompletedEventJobTest @Autowired constructor(
         Mockito.doReturn(events)
             .`when`(repo).findNotSentEventBefore(mockAny())
         Mockito.`when`(messageService.send(Mockito.anyString(), Mockito.anyCollection()))
-            .thenReturn(listOf(CompletableFuture.failedFuture(RuntimeException())))
+            .thenReturn(emptyList())
 
         job.resendImaginationCompletionEvent()
         Thread.sleep(1000L)
 
-        Mockito.verify(repo, Mockito.times(1)).saveAll(Mockito.argThat<List<Event>> { it.isEmpty() })
+        Mockito.verify(repo).deleteAllById(Mockito.argThat<List<Long>> { it.isEmpty() })
     }
 }

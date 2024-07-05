@@ -9,6 +9,7 @@ dependencies {
     implementation(project(":common:security"))
     implementation(project(":common:jpa"))
     implementation(project(":common:zipkin"))
+    implementation(project(":common:kafka"))
     testRuntimeOnly("com.h2database:h2")
 }
 
@@ -27,7 +28,7 @@ tasks.jacocoTestReport{
         files(classDirectories.files.map {
             fileTree(it) {
                 exclude(
-                    "**/infra/*",
+                    "**/config/*",
                     "**/*Application*",
                     "**/domain/*",
                     "**/response/*",
@@ -44,7 +45,7 @@ tasks.jacocoTestCoverageVerification {
     violationRules {
         rule {
             excludes = listOf(
-                "**.infra.**",
+                "**.config.**",
                 "*Application*",
                 "**.domain.*",
                 "**.response.*",

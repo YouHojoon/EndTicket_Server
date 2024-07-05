@@ -16,7 +16,9 @@ interface EventRepository: JpaRepository<Event, Long>, EventRepositorySupport{
      * @return 조회된 이벤트
      */
     @Query(
-        "select e from ImaginationCompletedEvent e where e.isSent = false and e.audit.createdAt <= :date"
+        "select e from ImaginationCompletedEvent e where e.audit.createdAt <= :date"
     )
     fun findNotSentEventBefore(date: LocalDateTime): Set<ImaginationCompletedEvent>
+
+    fun deleteByUserId(userId: Long)
 }

@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 
 @Repository
-interface TicketCompletedEventRepository: JpaRepository<TicketCompletedEvent, Long>{
-    fun findByIsSentFalseAndAuditCreatedAtBefore(date: LocalDateTime): Set<TicketCompletedEvent>
+interface TicketCompletedEventRepository : JpaRepository<TicketCompletedEvent, Long> {
+    fun findByAuditCreatedAtBefore(date: LocalDateTime): Set<TicketCompletedEvent>
 }

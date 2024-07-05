@@ -13,5 +13,4 @@ class TicketCompletedEventService(
     private val eventPublisher: ApplicationEventPublisher,
 ) {
     fun publishEvent(event: TicketCompletedEvent) = eventPublisher.publishEvent(event)
-
 }

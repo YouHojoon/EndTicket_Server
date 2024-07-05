@@ -14,7 +14,7 @@ import jakarta.persistence.UniqueConstraint
 /**
  * 사용자를 추상화한 클래스
  * @property socialType SNS 로그인의 타입
- * @property socialUserId 각 SNS 별 회원번호
+ * @property socialUserNumber 각 SNS 별 회원번호
  * @property id 회원번호
  * @property nickname 사용자의 별명, 3~8 자 사이여야 한다.
  */
@@ -61,7 +61,6 @@ class User(
      * @param nickname 등록할 닉네임
      * @throws IllegalStateException 닉네임이 null이 아닐 떄
      */
-    @Throws(IllegalStateException::class)
     fun registerNickname(request: NicknameRegisterRequest){
         check(this.nickname == null){"닉네임을 변경할 수 없습니다."}
         this.nickname = request.nickname

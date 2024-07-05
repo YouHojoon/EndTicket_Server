@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
         ]
     )
 )
-@Operation(description = "기록들 조회")
+@Operation(description = "기록들 조회", summary =  "기록들 조회")
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class FindHistoriesApiResponses()

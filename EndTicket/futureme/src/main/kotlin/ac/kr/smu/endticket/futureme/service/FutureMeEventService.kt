@@ -16,5 +16,5 @@ class FutureMeEventService(
      * [Event]를 발행하는 메소드
      * @param event 발행할 이벤트
      */
-    fun publishEvent(event: Event) = eventPublisher.publishEvent(event)
+    fun publish(event: Event) = eventPublisher.publishEvent(event)
 }

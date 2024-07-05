@@ -11,11 +11,15 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
  * @property userId 사용자의 Id
  */
 @Entity
-@Table
+@Table(
+    indexes = [
+        Index(name = "idx_created_at", columnList = "created_at")
+    ]
+)
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorOptions(force = false)
 @EntityListeners(AuditingEntityListener::class)
-sealed class Event(
+abstract class Event(
     @Column(name = "user_id", nullable = false, updatable = false)
     val userId: Long
 ){
@@ -28,7 +32,4 @@ sealed class Event(
 
     @Embedded
     val audit = Audit()
-
-    @Column(insertable = false, updatable = false)
-    private val type = ""
 }

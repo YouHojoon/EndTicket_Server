@@ -5,13 +5,13 @@ import ac.kr.smu.endticket.protobuf.UserIdResponse
 import ac.kr.smu.endticket.protobuf.UserServiceGrpc
 import ac.kr.smu.endticket.user.domain.exception.UserNotFoundException
 import ac.kr.smu.endticket.user.domain.model.User
+import ac.kr.smu.endticket.user.domain.model.UserDeletedEvent
 import ac.kr.smu.endticket.user.domain.repository.UserRepository
 import ac.kr.smu.endticket.user.ui.request.NicknameRegisterRequest
 import io.grpc.stub.StreamObserver
 import net.devh.boot.grpc.server.service.GrpcService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import kotlin.jvm.optionals.getOrNull
 
 /**
  * 사용자 관련 서비스 제공 클래스
@@ -20,7 +20,8 @@ import kotlin.jvm.optionals.getOrNull
 @Service
 @GrpcService
 class UserService(
-    private val repo: UserRepository
+    private val repo: UserRepository,
+    private val eventService: UserEventService
 ): UserServiceGrpc.UserServiceImplBase() {
 
     /**
@@ -47,13 +48,37 @@ class UserService(
      * 사용자의 닉네임 등록
      * @param request 닉네임 등록 요청
      * @param id 닉네임을 등록할 사용자
-     * @throws NotFoundUserException id의 사용자가 없을 시
+     * @throws UserNotFoundException id의 사용자가 존재하지 않을 시
      */
-    @Throws(UserNotFoundException::class)
     @Transactional
     fun registerNickname(request: NicknameRegisterRequest, id: Long){
-        val user = repo.findById(id).getOrNull() ?: throw UserNotFoundException(id)
+        val user = findById(id)
         
         user.registerNickname(request)
     }
+
+    /**
+     * 닉네임 조회 메소드
+     * @param id 사용자 id
+     * @throws UserNotFoundException id 인 사용자가 존재하지 않을 시
+     */
+    @Transactional(readOnly = true)
+    fun findNickname(id:Long): String? = findById(id).nickname
+
+    /**
+     * 사용자 삭제 메소드
+     * @param id 사용자 id
+     * @throws UserNotFoundException id인 사용자가 존재하지 않을 시
+     */
+    @Transactional
+    fun deleteUser(id: Long){
+        eventService.publish(UserDeletedEvent(findById(id)))
+    }
+
+    /**
+     * 사용자 조회 메소드
+     * @param id 사용자 id
+     * @throws UserNotFoundException id인 사용자가 존재하지 않을 시
+     */
+    private fun findById(id: Long) = repo.findById(id).orElseThrow { UserNotFoundException(id) }
 }

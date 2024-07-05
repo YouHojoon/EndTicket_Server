@@ -43,7 +43,7 @@ class TicketCompletedEventConsumeService(
 
             ack.acknowledge()
         }catch (e: Exception){
-            log.error("{ticketId: ${record.value().id}, userId: ${record.key()}}", e)
+            log.error("티켓 완료 이벤트 수신 실패", e)
             ack.nack(
                 Duration.ofSeconds(5)
             )

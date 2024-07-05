@@ -41,7 +41,7 @@ object HistoryTestParameters{
     )
 
     @JvmStatic
-    fun provideHistorySpecificIdAndType() = Stream.of(
+    fun provideHistoryAndSpecificIdAndType() = Stream.of(
         Arguments.of(TicketHistory.from(TICKET_COMPLETED_EVENT_RESPONSE, USER_ID), TICKET_COMPLETED_EVENT_RESPONSE.id, History.Type.TICKET),
         Arguments.of(ImaginationHistory.from(IMAGINATION_COMPLETED_EVENT_RESPONSE, USER_ID), IMAGINATION_COMPLETED_EVENT_RESPONSE.id, History.Type.IMAGINATION)
     )
@@ -53,19 +53,29 @@ object HistoryTestParameters{
     )
 
     @JvmStatic
+    fun provideEventResponseAndUserId() = Stream.of(
+        Arguments.of(TICKET_COMPLETED_EVENT_RESPONSE, USER_ID),
+        Arguments.of(IMAGINATION_COMPLETED_EVENT_RESPONSE, USER_ID),
+    )
+    @JvmStatic
     fun provideTopicAndResponseAndType() = Stream.of(
-        Arguments.of(KafkaTopic.TICKET_COMPLETED, TICKET_COMPLETED_EVENT_RESPONSE, TicketHistory::class),
-        Arguments.of(KafkaTopic.IMAGINATION_COMPLETED, IMAGINATION_COMPLETED_EVENT_RESPONSE, ImaginationHistory::class)
+        Arguments.of(
+            KafkaTopic.TICKET_COMPLETED,
+            TICKET_COMPLETED_EVENT_RESPONSE,
+            History.Type.TICKET
+        ),
+        Arguments.of(
+            KafkaTopic.IMAGINATION_COMPLETED,
+            IMAGINATION_COMPLETED_EVENT_RESPONSE,
+            History.Type.IMAGINATION
+        )
     )
 
     @JvmStatic
     fun provideRecord() = Stream.of(
-        *EventResponse::class.sealedSubclasses.map { Arguments.of(mockRecord(it)) }.toTypedArray()
-    )
-
-    @JvmStatic
-    fun provideRecordAndType() = Stream.of(
-        *EventResponse::class.sealedSubclasses.map { Arguments.of(mockRecord(it), historyTypeOfResponse(it)) }.toTypedArray()
+        *EventResponse::class.sealedSubclasses.map {
+            Arguments.of(mockRecord(it))
+        }.toTypedArray()
     )
 
     @JvmStatic
@@ -106,17 +116,6 @@ object HistoryTestParameters{
         Mockito.`when`(record.value()).thenReturn(value)
 
         return record
-    }
-
-    /**
-     * 이벤트 응답에 맞는 기록 class을 반환하는 메소드
-     * @param responseType 이벤트 응답
-     * @return 기록 class
-     */
-    private fun historyTypeOfResponse(responseType: KClass<out EventResponse>):History.Type = when(responseType){
-        TicketCompletedEventResponse::class -> History.Type.TICKET
-        ImaginationCompletedEventResponse::class ->  History.Type.IMAGINATION
-        else -> throw IllegalArgumentException("$responseType 은 지원하지 않는 타입입니다.")
     }
 }
 

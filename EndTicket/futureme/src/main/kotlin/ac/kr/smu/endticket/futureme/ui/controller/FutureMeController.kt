@@ -7,10 +7,10 @@ import ac.kr.smu.endticket.futureme.service.FutureMeService
 import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
 import ac.kr.smu.endticket.futureme.domain.futureme.exception.FutureMeNotFoundException
 import ac.kr.smu.endticket.futureme.domain.futureme.exception.UnsupportedCharacterException
-import ac.kr.smu.endticket.futureme.infra.swagger.apiResponses.futureMe.CreateFutureMeApiResponses
-import ac.kr.smu.endticket.futureme.infra.swagger.apiResponses.futureMe.FindCharacterImageResponses
-import ac.kr.smu.endticket.futureme.infra.swagger.apiResponses.futureMe.FindFutureMeApiResponses
-import ac.kr.smu.endticket.futureme.infra.swagger.apiResponses.futureMe.UpdateFutureMeApiResponses
+import ac.kr.smu.endticket.futureme.swagger.apiresponses.futureMe.CreateFutureMeApiResponses
+import ac.kr.smu.endticket.futureme.swagger.apiresponses.futureMe.FindCharacterImageResponses
+import ac.kr.smu.endticket.futureme.swagger.apiresponses.futureMe.FindFutureMeApiResponses
+import ac.kr.smu.endticket.futureme.swagger.apiresponses.futureMe.UpdateFutureMeApiResponses
 import ac.kr.smu.endticket.futureme.ui.request.UpdateFutureMeRequest
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Schema
@@ -47,7 +47,7 @@ class FutureMeController(
         @Parameter(
             name = "캐릭터의 타입",
             schema = Schema(implementation = CharacterType::class),
-            required = true
+            required = true,
         )
         @PathVariable("type")
         type: CharacterType
@@ -60,7 +60,7 @@ class FutureMeController(
     @CreateFutureMeApiResponses
     fun createFutureMe(
         @Parameter(
-            name = "캐릭터의 타입",
+            name = "생성 요청",
             schema = Schema(implementation = CreateFutureMeRequest::class),
             required = true
         )
@@ -125,10 +125,10 @@ class FutureMeController(
             .status(status)
             .body(
                 ExceptionResponse(
-                code = status.value(),
-                message = "캐릭터 조회 중 에러가 발생했습니다.",
-                detail = e.message
-            )
+                    code = status.value(),
+                    message = "캐릭터 조회 중 에러가 발생했습니다.",
+                    detail = e.message
+                )
             )
     }
 

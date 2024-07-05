@@ -70,13 +70,14 @@ class HistorySupportImpl(
     @Cacheable(cacheNames = ["history-count"], key = "#userId")
     override fun countEachHistoryByUserId(userId: Long): HistoryCount {
         val query = """
-            SELECT 
-                ${History.Type.values().joinToString(", "){
-                    val table = table(it)
-                    "COUNT((SELECT $table.id FROM $table WHERE $table.id = h.id)) ${table}_count"
-                }}
+            SELECT
+                COUNT(th.id) AS ticket_history_count,
+                COUNT(ih.id) AS imagination_history_count,
+                SUM(th.swipe_count) AS ticket_swipe_count
             FROM history h
-            WHERE h.user_id = :userId 
+            LEFT JOIN ticket_history th ON th.id = h.id
+            LEFT JOIN imagination_history ih ON ih.id = h.id
+            WHERE h.user_id = :userId
         """.trimIndent()
 
         return (
@@ -85,15 +86,15 @@ class HistorySupportImpl(
                     .unwrap(NativeQuery::class.java)
                     .addScalar("ticket_history_count", Int::class.java)
                     .addScalar("imagination_history_count", Int::class.java)
+                    .addScalar("ticket_swipe_count", Int::class.java)
                     .setTupleTransformer { tuple, _ ->
-                        println(tuple[0])
-                        println(tuple[1])
                         HistoryCount(
                             ticketHistoryCount = tuple[0] as Int,
-                            imaginationHistoryCount = tuple[1] as Int
+                            imaginationHistoryCount = tuple[1] as Int,
+                            ticketSwipeCount = tuple.last() as Int
                         )
                     }.singleResultOrNull
-                ) ?: HistoryCount(0, 0)
+                ) ?: HistoryCount(0, 0,0)
     }
 
     private fun table(type: History.Type) = when(type){

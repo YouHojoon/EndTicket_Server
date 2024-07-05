@@ -11,6 +11,7 @@ import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.time.LocalDateTime
 
 /**
  * 티켓을 추상화한 클래스
@@ -22,47 +23,47 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
  * @property userId 티켓 소유자의 사용자 id
  */
 @Entity
-@Table(name = "ticket", indexes = [
-    Index(name = "idx_user_id", columnList = "user_id")
-])
+@Table(
+    name = "ticket",
+    indexes = [
+        Index(name = "idx_user_id", columnList = "user_id"),
+    ],
+)
 @EntityListeners(AuditingEntityListener::class)
 class Ticket private constructor(
     @Column(nullable = false, length = 20)
     private var behavior: String,
-
     @Column(nullable = false, length = 20)
     private var target: String,
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private var color: Color,
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private var type: TicketType,
-
     @Column(nullable = false)
     @Convert(converter = MaxSwipeCountConverter::class)
     private var maxSwipeCount: MaxSwipeCount,
-
     @Column(name = "user_id", updatable = false, nullable = false)
     val userId: Long,
-){
-    companion object{
+) {
+    companion object {
         /**
          * [TicketRequest] 로부터 티켓을 생성하는 메소드
          * @param request 생성에 이용할 요청
          * @param userId 티켓의 소유자
          */
-        fun from(request: TicketRequest, userId: Long) =
-            Ticket(
-                behavior = request.behavior,
-                target = request.target,
-                color = request.color,
-                type = request.type,
-                maxSwipeCount = request.maxSwipeCount,
-                userId = userId
-            )
+        fun from(
+            request: TicketRequest,
+            userId: Long,
+        ) = Ticket(
+            behavior = request.behavior,
+            target = request.target,
+            color = request.color,
+            type = request.type,
+            maxSwipeCount = request.maxSwipeCount,
+            userId = userId,
+        )
     }
 
     @Id
@@ -84,13 +85,19 @@ class Ticket private constructor(
      * @property value 각 횟수의 맞는 값
      */
     @Schema(description = "티켓의 최대 스와이프 횟수")
-    enum class MaxSwipeCount(val value: Int){
+    enum class MaxSwipeCount(
+        val value: Int,
+    ) {
         @Schema(description = "5회")
         FIVE(5),
+
         @Schema(description = "10회")
         TEN(10),
+
         @Schema(description = "15회")
-        FIFTEEN(15);
+        FIFTEEN(15),
+        ;
+
         companion object {
             /**
              * value 로부터 티켓 최대 스와이프 횟수를 생성하는 메소드
@@ -98,47 +105,40 @@ class Ticket private constructor(
              * @return 생성된 티켓 최대 스와이프 횟수
              * @throws IllegalArgumentException 지원하지 않는 value일 때
              */
-            fun fromValue(value: Int): MaxSwipeCount {
-                return values().firstOrNull { it.value == value } ?: throw IllegalArgumentException("$value 의 MaxSwipeCount가 존재하지 않습니다.")
-            }
+            fun fromValue(value: Int) =
+                entries.firstOrNull { it.value == value } ?: throw IllegalArgumentException("$value 의 MaxSwipeCount가 존재하지 않습니다.")
         }
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (other == null)
-            return false
-
-        val o = other as? Ticket ?: return false
-
-        return o.id == id
     }
 
     /**
      * 티켓으로부터 응답을 생성하는 메소드
      * @return 생성된 응답
      */
-    fun toResponse() = TicketResponse(
-        id = id,
-        behavior = behavior,
-        target = target,
-        type = type,
-        color = color,
-        swipeCount = swipeCount,
-        maxSwipeCount = maxSwipeCount
-    )
+    fun toResponse() =
+        TicketResponse(
+            id = id,
+            behavior = behavior,
+            target = target,
+            type = type,
+            color = color,
+            swipeCount = swipeCount,
+            maxSwipeCount = maxSwipeCount,
+        )
 
     /**
      * 티켓으로부터 이벤트 완료 응답을 생성하는 메소드
      * @return 이벤트 완료 응답
      */
-    fun toEventResponse() = TicketCompletedEventResponse(
-        id = id,
-        behavior = behavior,
-        target = target,
-        type = type,
-        color = color,
-        swipeCount = swipeCount,
-    )
+    fun toEventResponse() =
+        TicketCompletedEventResponse(
+            id = id,
+            behavior = behavior,
+            target = target,
+            type = type,
+            color = color,
+            swipeCount = swipeCount,
+            completedAt = audit.updatedAt ?: LocalDateTime.now(),
+        )
 
     /**
      * 티켓의 수정 메소드
@@ -146,8 +146,10 @@ class Ticket private constructor(
      * @param userId 수정 요청을 한 사용자
      * @throws TicketOwnershipException 티켓의 소유자가 아닌 사용자가 요청했을 시
      */
-    @Throws(TicketOwnershipException::class)
-    fun updateAndCheckCompletion(request: TicketRequest, userId: Long): Boolean{
+    fun updateAndCheckCompletion(
+        request: TicketRequest,
+        userId: Long,
+    ): Boolean {
         checkOwnership(userId)
 
         this.behavior = request.behavior
@@ -165,12 +167,12 @@ class Ticket private constructor(
      * @return 완료 여부
      * @throws TicketOwnershipException 티켓의 소유자가 아닌 사용자가 요청했을 시
      */
-    @Throws(TicketOwnershipException::class)
-    fun swipeAndCheckCompletion(userId: Long): Boolean{
+    fun swipeAndCheckCompletion(userId: Long): Boolean {
         checkOwnership(userId)
 
-        if (swipeCount < maxSwipeCount.value)
+        if (swipeCount < maxSwipeCount.value) {
             swipeCount++
+        }
 
         return swipeCount == maxSwipeCount.value
     }
@@ -180,22 +182,21 @@ class Ticket private constructor(
      * @param userId 소유자 Id
      * @throws TicketOwnershipException 소유자가 아닐 시
      */
-    @Throws(TicketOwnershipException::class)
-    fun cancelSwipeTicket(userId: Long){
+    fun cancelSwipeTicket(userId: Long) {
         checkOwnership(userId)
 
-        if (swipeCount != 0)
+        if (swipeCount != 0) {
             swipeCount--
-
+        }
     }
 
     /**
      * 티켓의 소유권을 확인하는 메소드
      * @throws TicketOwnershipException 소유자가 아닐 시
      */
-    @Throws(TicketOwnershipException::class)
-    fun checkOwnership(userId: Long){
-        if (userId != this.userId)
-            throw TicketOwnershipException(id,userId)
+    fun checkOwnership(userId: Long) {
+        if (userId != this.userId) {
+            throw TicketOwnershipException(id, userId)
+        }
     }
 }

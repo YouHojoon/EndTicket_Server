@@ -58,7 +58,7 @@ class FutureMeServiceTest(
 
     @Test
     @DisplayName("존재하지 않는 미래의 나 수정 테스트")
-    fun given_userIdDoesNotHasFutureMe_when_updateFutureMe_then_throwFutureMeNotFoundException(){
+    fun given_userIdDoesNotHaveFutureMe_when_updateFutureMe_then_throwFutureMeNotFoundException(){
         Mockito.`when`(repo.findById(FutureMeTestParameters.USER_ID))
             .thenReturn(Optional.empty())
 
@@ -77,7 +77,7 @@ class FutureMeServiceTest(
 
     @Test
     @DisplayName("존재하지 않는 미래의 나 조회 테스트")
-    fun given_userDoesNotHasFutureMe_when_findFutureMe_then_throwFutureMeNotFoundException(){
+    fun given_userDoesNotHaveFutureMe_when_findFutureMe_then_throwFutureMeNotFoundException(){
         Mockito.`when`(repo.findById(FutureMeTestParameters.USER_ID))
             .thenReturn(Optional.empty())
 
@@ -98,7 +98,7 @@ class FutureMeServiceTest(
 
     @Test
     @DisplayName("존재하지 않는 미래의 나 경험치 상승 테스트")
-    fun given_notExistFutureMe_when_gainExperiencePoints_then_throwFutureMeNotFoundException(){
+    fun given_notExistentFutureMe_when_gainExperiencePoints_then_throwFutureMeNotFoundException(){
         assertThrows<FutureMeNotFoundException> { service.gainExperiencePoints(Mockito.mock(ImaginationCompletedEvent::class.java)) }
     }
 

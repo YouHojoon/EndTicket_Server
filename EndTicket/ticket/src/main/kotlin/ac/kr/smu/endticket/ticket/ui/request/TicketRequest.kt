@@ -23,21 +23,17 @@ data class TicketRequest(
     @field:Size(max = 20, message = "20자 이내로 작성해주세요.")
     @Schema(description = "행동", example = "힘들어도 눈치 보지 말고 꼭 대화하기")
     val behavior: String,
-
     @field:NotBlank(message = "공백일 수 없습니다.")
     @field:Size(max = 20, message = "20자 이내로 작성해주세요.")
     @Schema(description = "목표", example = "많은 사람들 앞에서 당당한 내 모습")
     val target: String,
-
     @field:NotNull
     @Schema(description = "티켓의 색", implementation = Color::class)
     val color: Color,
-
     @field:NotNull
     @Schema(description = "분류", implementation = TicketType::class)
     val type: TicketType,
-
     @field:NotNull
     @Schema(description = "최대 스와이프 횟수", implementation = Ticket.MaxSwipeCount::class)
-    val maxSwipeCount: Ticket.MaxSwipeCount
+    val maxSwipeCount: Ticket.MaxSwipeCount,
 )

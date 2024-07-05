@@ -46,6 +46,7 @@ class GatewayApplication{
             serviceApiDocsRoute("user")
             serviceApiDocsRoute("ticket")
             serviceApiDocsRoute("future-me")
+            serviceApiDocsRoute("history")
         }
     }
 

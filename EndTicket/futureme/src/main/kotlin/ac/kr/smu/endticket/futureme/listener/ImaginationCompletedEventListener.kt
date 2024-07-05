@@ -51,7 +51,7 @@ class ImaginationCompletedEventListener(
 
         messageService.send(KafkaTopic.IMAGINATION_COMPLETED,message).whenCompleteAsync { record, e ->
             if (e == null)
-                repo.save(event.also { it.successSend() })
+                repo.delete(event)
             else
                 log.error("key: ${message.key}, payload: ${message.payload}",e)
         }

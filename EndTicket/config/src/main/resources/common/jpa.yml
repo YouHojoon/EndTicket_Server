@@ -3,6 +3,7 @@ spring:
     url: "jdbc:mysql://localhost:3306/${spring.application.name}"
     username: root
     password: kl709709
+
   jpa:
     hibernate:
       ddl-auto: update

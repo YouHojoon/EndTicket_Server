@@ -5,5 +5,5 @@ package ac.kr.smu.endticket.ticket.domain.exception
  * @property id 존재하지 않는 티켓의 id
  */
 data class TicketNotFoundException(
-    val id: Long
+    val id: Long,
 ) : RuntimeException("$id 인 티켓을 찾을 수 없습니다.")
