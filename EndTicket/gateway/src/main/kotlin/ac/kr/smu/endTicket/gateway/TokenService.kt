@@ -4,6 +4,7 @@ import ac.kr.smu.endticket.protobuf.AccessToken
 import ac.kr.smu.endticket.protobuf.TokenServiceGrpc.TokenServiceBlockingStub
 import ac.kr.smu.endticket.protobuf.ValidateAccessTokenResponse
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter
 import net.devh.boot.grpc.client.inject.GrpcClient
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -23,12 +24,15 @@ class TokenService {
      * @param accessToken access token
      * @return 검증 결과
      */
-    @CircuitBreaker(name = "validate-accessToken", fallbackMethod = "fallbackValidateAccessToken")
-    fun validateAccessToken(accessToken: String): ValidateAccessTokenResponse{
-        return stub.validateAccessToken(AccessToken.newBuilder().setToken(accessToken).build())
-    }
+    @CircuitBreaker(name = "validate-access-token", fallbackMethod = "fallbackValidateAccessToken")
+    @TimeLimiter(name = "validate-access-token")
+    fun validateAccessToken(accessToken: String): ValidateAccessTokenResponse =
+        stub.validateAccessToken(AccessToken.newBuilder().setToken(accessToken).build())
 
-    private fun fallbackValidateAccessToken(token: String, e: Exception): ValidateAccessTokenResponse{
+    private fun fallbackValidateAccessToken(
+        token: String,
+        e: Exception,
+    ): ValidateAccessTokenResponse {
         val message = "auth 서버에 access 토큰 검증 요청 실패 : {token: $token}"
         log.error(message, e)
 
@@ -36,6 +40,7 @@ class TokenService {
             .newBuilder()
             .setUserId(-1)
             .setStatus(HttpStatus.SERVICE_UNAVAILABLE.value())
-            .setMessage(message).build()
+            .setMessage(message)
+            .build()
     }
 }
