@@ -127,7 +127,7 @@ class ImaginationController(
     }
 
     @ExceptionHandler(ImaginationNotFoundException::class)
-    fun handleNotFoundImaginationException(e: ImaginationNotFoundException): ResponseEntity<ExceptionResponse> {
+    fun handleImaginationNotFoundException(e: ImaginationNotFoundException): ResponseEntity<ExceptionResponse> {
         log.info("상상해보기 조회 실패 : {id: ${e.id}}", e)
         val status = HttpStatus.NOT_FOUND
 
@@ -141,7 +141,7 @@ class ImaginationController(
     }
 
     @ExceptionHandler(ImaginationOwnershipException::class)
-    fun handleImaginationOwnershipExceptionException(e: ImaginationOwnershipException): ResponseEntity<ExceptionResponse> {
+    fun handleImaginationOwnershipException(e: ImaginationOwnershipException): ResponseEntity<ExceptionResponse> {
         log.info("상상해보기 소유권 에러 : {id: ${e.id}, userId: ${e.userId}}", e)
         val status = HttpStatus.FORBIDDEN
 
