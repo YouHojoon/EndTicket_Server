@@ -15,17 +15,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
             responseCode = "201",
             description = "생성 성공",
             content = [
-                Content(schema = Schema(implementation = FutureMeResponse::class))
-            ]
+                Content(schema = Schema(implementation = FutureMeResponse::class)),
+            ],
         ),
         ApiResponse(
             responseCode = "409",
             description = "미래의 나가 이미 존재",
             content = [
-                Content(schema = Schema(implementation = ExceptionResponse::class))
-            ]
-        )
-    ]
+                Content(schema = Schema(implementation = ExceptionResponse::class)),
+            ],
+        ),
+    ],
 )
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

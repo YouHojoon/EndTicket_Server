@@ -26,7 +26,7 @@ class ImaginationServiceTest(
     @Mock
     private val repo: ImaginationRepository,
     @Mock
-    private val eventService: FutureMeEventService
+    private val eventService: FutureMeEventService,
 ) {
     @InjectMocks
     private lateinit var service: ImaginationService
@@ -38,16 +38,26 @@ class ImaginationServiceTest(
 
     @Test
     @DisplayName("제한 개수 이상으로 상상해보기 생성 테스트")
-    fun given_requestMoreThanImaginationLimit_when_createImagination_then_throwIllegalStateException(){
-        Mockito.`when`(repo.countByUserIdAndIsCompleteIsFalse(ImaginationParameters.USER_ID))
+    fun given_requestMoreThanImaginationLimit_when_createImagination_then_throwIllegalStateException() {
+        Mockito
+            .`when`(repo.countByUserIdAndIsCompleteIsFalse(ImaginationParameters.USER_ID))
             .thenReturn(6)
 
-        assertThrows<IllegalStateException> {  service.createImagination(ImaginationParameters.REQUEST, ImaginationParameters.USER_ID)}
+        assertThrows<IllegalStateException> {
+            service.createImagination(
+                ImaginationParameters.REQUEST,
+                ImaginationParameters.USER_ID,
+            )
+        }
     }
+
     @ParameterizedTest
     @DisplayName("상상해보기 수정 테스트")
     @MethodSource("${ImaginationParameters.PATH}#provideImaginationAndRequest")
-    fun given_idAndRequest_when_updateImagination_then_returnUpdatedImagination(imagination: Imagination, request: ImaginationRequest){
+    fun given_idAndRequest_when_updateImagination_then_returnUpdatedImagination(
+        imagination: Imagination,
+        request: ImaginationRequest,
+    ) {
         Mockito
             .`when`(repo.findById(imagination.id))
             .thenReturn(Optional.of(imagination))
@@ -66,22 +76,23 @@ class ImaginationServiceTest(
         imagination: Imagination?,
         request: ImaginationRequest,
         userId: Long,
-        e: KClass<out Throwable>
+        e: KClass<out Throwable>,
     ) {
         val id = imagination?.id ?: 1L
 
-        Mockito.`when`(repo.findById(id))
+        Mockito
+            .`when`(repo.findById(id))
             .thenReturn(Optional.ofNullable(imagination))
 
-        assertFailsWith(e){service.updateImagination(request, id, userId)}
+        assertFailsWith(e) { service.updateImagination(request, id, userId) }
     }
-
 
     @ParameterizedTest
     @DisplayName("상상해보기 완료 테스트")
     @MethodSource("${ImaginationParameters.PATH}#provideImagination")
-    fun given_id_when_completeImagination_then_publishImaginationCompletionEvent(imagination: Imagination){
-        Mockito.`when`(repo.findById(imagination.id))
+    fun given_id_when_completeImagination_then_publishImaginationCompletionEvent(imagination: Imagination) {
+        Mockito
+            .`when`(repo.findById(imagination.id))
             .thenReturn(Optional.of(imagination))
 
         service.completeImagination(imagination.id, imagination.userId)
@@ -95,11 +106,12 @@ class ImaginationServiceTest(
     fun given_invalidId_when_completeImagination_then_throwExpectedException(
         imagination: Imagination?,
         userId: Long,
-        e: KClass<out Throwable>
+        e: KClass<out Throwable>,
     ) {
         val id = imagination?.id ?: 1L
 
-        Mockito.`when`(repo.findById(id))
+        Mockito
+            .`when`(repo.findById(id))
             .thenReturn(Optional.ofNullable(imagination))
 
         assertFailsWith(e) { service.completeImagination(id, userId) }
@@ -108,26 +120,28 @@ class ImaginationServiceTest(
     @ParameterizedTest
     @DisplayName("상상해보기 조회 테스트")
     @MethodSource("${ImaginationParameters.PATH}#provideImaginations")
-    fun given_userId_when_findImagination_then_return_imaginations(imaginations: Set<Imagination>){
-        Mockito.`when`(repo.findByUserIdAndIsCompleteIsFalse(ImaginationParameters.USER_ID))
+    fun given_userId_when_findImagination_then_return_imaginations(imaginations: Set<Imagination>) {
+        Mockito
+            .`when`(repo.findByUserIdAndIsCompleteIsFalse(ImaginationParameters.USER_ID))
             .thenReturn(imaginations)
 
         val result = service.findImaginations(ImaginationParameters.USER_ID)
         assertTrue(result.isNotEmpty())
 
-        for((lhs,rhs) in imaginations.zip(result)){
-            assertEquals(lhs.toResponse(),rhs)
+        for ((lhs, rhs) in imaginations.zip(result)) {
+            assertEquals(lhs.toResponse(), rhs)
         }
     }
 
     @ParameterizedTest
     @DisplayName("상상해보기 삭제 테스트")
     @MethodSource("${ImaginationParameters.PATH}#provideImagination")
-    fun given_id_when_deleteImagination_then_success(imagination: Imagination){
-        Mockito.`when`(repo.findById(imagination.id))
+    fun given_id_when_deleteImagination_then_success(imagination: Imagination) {
+        Mockito
+            .`when`(repo.findById(imagination.id))
             .thenReturn(Optional.of(imagination))
 
-        assertDoesNotThrow { service.deleteImagination(imagination.id, imagination.userId)}
+        assertDoesNotThrow { service.deleteImagination(imagination.id, imagination.userId) }
         Mockito.verify(repo, Mockito.times(1)).delete(imagination)
     }
 
@@ -137,11 +151,12 @@ class ImaginationServiceTest(
     fun given_invalidId_when_deleteImagination_then_throwExpectedException(
         imagination: Imagination?,
         userId: Long,
-        e: KClass<out Throwable>
+        e: KClass<out Throwable>,
     ) {
         val id = imagination?.id ?: 1L
 
-        Mockito.`when`(repo.findById(id))
+        Mockito
+            .`when`(repo.findById(id))
             .thenReturn(Optional.ofNullable(imagination))
 
         assertFailsWith(e) { service.deleteImagination(id, userId) }
@@ -150,7 +165,6 @@ class ImaginationServiceTest(
     @ParameterizedTest
     @DisplayName("사용자 id로 삭제 테스트")
     @MethodSource("${ImaginationParameters.PATH}#provideImagination")
-    fun given_userId_when_deleteByUserId_then_deleteImaginationOfUser(imagination: Imagination){
-
+    fun given_userId_when_deleteByUserId_then_deleteImaginationOfUser(imagination: Imagination) {
     }
 }

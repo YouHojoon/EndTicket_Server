@@ -54,7 +54,7 @@ class ImaginationCompletedEventListener(
             if (e == null) {
                 repo.delete(event)
             } else {
-                log.error("key: ${message.key}, payload: ${message.payload}", e)
+                log.error("상상해보기 완료 이벤트 전송 실패 : {key: ${message.key}, payload: ${message.payload}}", e)
             }
         }
     }

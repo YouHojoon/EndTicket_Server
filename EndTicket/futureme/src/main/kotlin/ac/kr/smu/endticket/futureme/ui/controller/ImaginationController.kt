@@ -59,7 +59,7 @@ class ImaginationController(
             .status(HttpStatus.CREATED)
             .body(service.createImagination(request, userId))
     } catch (e: IllegalStateException) {
-        log.info("{userId: $userId}", e)
+        log.info("상상해보기 생성 실패 : {userId: $userId}", e)
         val status = HttpStatus.CONFLICT
         ResponseEntity
             .status(status)
@@ -128,7 +128,7 @@ class ImaginationController(
 
     @ExceptionHandler(ImaginationNotFoundException::class)
     fun handleNotFoundImaginationException(e: ImaginationNotFoundException): ResponseEntity<ExceptionResponse> {
-        log.info("${e.id}", e)
+        log.info("상상해보기 조회 실패 : {id: ${e.id}}", e)
         val status = HttpStatus.NOT_FOUND
 
         return ResponseEntity.status(status).body(
@@ -141,8 +141,8 @@ class ImaginationController(
     }
 
     @ExceptionHandler(ImaginationOwnershipException::class)
-    fun handleNotOwnerOfImaginationException(e: ImaginationOwnershipException): ResponseEntity<ExceptionResponse> {
-        log.info("{id: ${e.id}, userId: ${e.userId}}", e)
+    fun handleImaginationOwnershipExceptionException(e: ImaginationOwnershipException): ResponseEntity<ExceptionResponse> {
+        log.info("상상해보기 소유권 에러 : {id: ${e.id}, userId: ${e.userId}}", e)
         val status = HttpStatus.FORBIDDEN
 
         return ResponseEntity.status(status).body(

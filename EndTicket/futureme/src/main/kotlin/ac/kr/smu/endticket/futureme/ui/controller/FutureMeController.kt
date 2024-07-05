@@ -71,7 +71,7 @@ class FutureMeController(
     ) = try {
         ResponseEntity.status(HttpStatus.CREATED).body(service.createFutureMe(request, userId))
     } catch (e: IllegalStateException) {
-        log.info("uesrId: $userId", e)
+        log.info("미래의 나 생성 실패 : {userId: $userId}", e)
 
         val status = HttpStatus.CONFLICT
         ResponseEntity.status(status).body(
@@ -102,7 +102,7 @@ class FutureMeController(
     @ExceptionHandler(FutureMeNotFoundException::class)
     fun handleNotFoundFutureMeException(e: FutureMeNotFoundException): ResponseEntity<ExceptionResponse> {
         val status = HttpStatus.NOT_FOUND
-        log.info("{userId: ${e.userId}}", e)
+        log.info("미래의 나 조회 실패 : {userId: ${e.userId}}", e)
 
         return ResponseEntity.status(status).body(
             ExceptionResponse(
@@ -114,9 +114,9 @@ class FutureMeController(
     }
 
     @ExceptionHandler(UnsupportedCharacterException::class)
-    fun handleMethodArgumentTypeMismatchException(e: UnsupportedCharacterException): ResponseEntity<ExceptionResponse> {
+    fun handleUnsupportedCharacterExceptionException(e: UnsupportedCharacterException): ResponseEntity<ExceptionResponse> {
         val status = HttpStatus.BAD_REQUEST
-        log.info("{input: ${e.input}}", e)
+        log.info("캐릭터 조회 실패 : {input: ${e.input}}", e)
 
         return ResponseEntity
             .status(status)

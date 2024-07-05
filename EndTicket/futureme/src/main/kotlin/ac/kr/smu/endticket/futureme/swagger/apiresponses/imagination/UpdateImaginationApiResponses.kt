@@ -14,25 +14,24 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
     ApiResponse(
         responseCode = "200",
         description = "수정 성공",
-        content = [Content(schema = Schema(implementation = ImaginationResponse::class))]
+        content = [Content(schema = Schema(implementation = ImaginationResponse::class))],
     ),
     ApiResponse(
         responseCode = "400",
         description = "비정상적인 요청",
-        content = [Content(schema = Schema(implementation = BindExceptionResponse::class))]
+        content = [Content(schema = Schema(implementation = BindExceptionResponse::class))],
     ),
     ApiResponse(
         responseCode = "403",
         description = "소유자가 아닌 사용자",
-        content = [Content(schema = Schema(implementation = ExceptionResponse::class))]
+        content = [Content(schema = Schema(implementation = ExceptionResponse::class))],
     ),
     ApiResponse(
         responseCode = "404",
         description = "존재하지 않는 상상해보기",
-        content = [Content(schema = Schema(implementation = ExceptionResponse::class))]
-    )
+        content = [Content(schema = Schema(implementation = ExceptionResponse::class))],
+    ),
 )
-
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class UpdateImaginationApiResponses
