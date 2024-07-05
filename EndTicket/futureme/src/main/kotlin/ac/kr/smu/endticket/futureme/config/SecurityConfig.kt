@@ -13,12 +13,11 @@ import org.springframework.security.web.SecurityFilterChain
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val discoveryClient: DiscoveryClient
+    private val discoveryClient: DiscoveryClient,
 ) {
-
     @Bean
-    fun filterChain(http: HttpSecurity): SecurityFilterChain{
-        http{
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
+        http {
             baseConfig()
             permitOnlyWhitelistRequest(discoveryClient.getInstances("gateway").map { it.host })
         }

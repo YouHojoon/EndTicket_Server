@@ -9,8 +9,6 @@ import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
-import org.springframework.core.io.ClassPathResource
-
 
 /**
  * 캐릭터에 관한 정보를 저장하는 객체
@@ -22,9 +20,9 @@ data class Character(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, updatable = false)
     @Schema(description = "캐릭터 종류", example = "VEGA")
-    val type: CharacterType
+    val type: CharacterType,
 ) {
-    companion object{
+    companion object {
         private const val MAX_LEVEL = 40
         private const val MAX_EXPERIENCE_POINTS = 100
     }
@@ -33,6 +31,7 @@ data class Character(
     @Schema(description = "레벨", example = "1", minimum = "0", maximum = "$MAX_LEVEL")
     var level: Int = 1
         private set
+
     @Column
     @Schema(description = "경험치", example = "100", minimum = "0", maximum = "$MAX_EXPERIENCE_POINTS")
     var experiencePoints: Int = 0
@@ -43,20 +42,21 @@ data class Character(
      * 만약 경험치가 최대 경험치 이상이고, 레벨이 최대 레벨이 아니라면 레벨업한다.
      * @param event 발생한 이벤트
      */
-    fun gainExperiencePoints(event: Event){
-        when(event){
+    fun gainExperiencePoints(event: Event) {
+        when (event) {
             is ImaginationCompletedEvent -> experiencePoints += 10
             is TicketCompletedEvent -> experiencePoints += 20
         }
 
-        if (experiencePoints >= MAX_EXPERIENCE_POINTS)
+        if (experiencePoints >= MAX_EXPERIENCE_POINTS) {
             levelUpWhenLowerThanMaxLevel()
+        }
     }
 
     /**
      * 자기와 같은 객체를 반환한다.
      */
-    fun copy(): Character{
+    fun copy(): Character {
         val level = level
         val exp = experiencePoints
 
@@ -70,13 +70,12 @@ data class Character(
      * 최대 레벨이 아니라면 레벨업한다.
      * 최대 레벨이라면 경험치를 최대 경험치로 고정한다.
      */
-    private fun levelUpWhenLowerThanMaxLevel(){
-        if (level < MAX_LEVEL){
+    private fun levelUpWhenLowerThanMaxLevel() {
+        if (level < MAX_LEVEL) {
             level++
             experiencePoints -= MAX_EXPERIENCE_POINTS
+        } else {
+            experiencePoints = MAX_EXPERIENCE_POINTS
         }
-        else
-            experiencePoints = 100
     }
-
 }

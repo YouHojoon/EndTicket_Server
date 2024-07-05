@@ -13,11 +13,12 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ImaginationService(
     private val repo: ImaginationRepository,
-    private val futureMeEventService: FutureMeEventService
+    private val futureMeEventService: FutureMeEventService,
 ) {
-    companion object{
-        const val IMAGINATION_LIMIT = 6
+    private companion object {
+        private const val IMAGINATION_LIMIT = 6
     }
+
     /**
      * 상상해보기를 생성하는 메소드
      * @param request 생성 요청
@@ -26,10 +27,13 @@ class ImaginationService(
      * @throws IllegalStateException 최대 개수 이상으로 생성 시도할 시
      */
     @Transactional
-    fun createImagination(request: ImaginationRequest, userId: Long): ImaginationResponse {
-        check (repo.countByUserIdAndIsCompleteIsFalse(userId) < IMAGINATION_LIMIT){"$IMAGINATION_LIMIT 이상으로 상상해보기를 생성할 수 없습니다."}
+    fun createImagination(
+        request: ImaginationRequest,
+        userId: Long,
+    ): ImaginationResponse {
+        check(repo.countByUserIdAndIsCompleteIsFalse(userId) < IMAGINATION_LIMIT) { "$IMAGINATION_LIMIT 이상으로 상상해보기를 생성할 수 없습니다." }
 
-        return repo.save(Imagination.from(request,userId)).toResponse()
+        return repo.save(Imagination.from(request, userId)).toResponse()
     }
 
     /**
@@ -42,10 +46,14 @@ class ImaginationService(
      * @throws ImaginationOwnershipException 사용자가 상상해보기의 소유자가 아닐 시
      */
     @Transactional
-    fun updateImagination(request: ImaginationRequest, id: Long, userId: Long): ImaginationResponse {
+    fun updateImagination(
+        request: ImaginationRequest,
+        id: Long,
+        userId: Long,
+    ): ImaginationResponse {
         val imagination = findById(id)
 
-        imagination.update(request,userId)
+        imagination.update(request, userId)
         return imagination.toResponse()
     }
 
@@ -57,7 +65,10 @@ class ImaginationService(
      * @throws ImaginationOwnershipException 사용자가 상상해보기의 소유자가 아닐 시
      */
     @Transactional
-    fun completeImagination(id: Long, userId: Long){
+    fun completeImagination(
+        id: Long,
+        userId: Long,
+    ) {
         val imagination = findById(id)
 
         imagination.complete(userId)
@@ -72,7 +83,8 @@ class ImaginationService(
 
     @Transactional(readOnly = true)
     fun findImaginations(userId: Long): Set<ImaginationResponse> =
-        repo.findByUserIdAndIsCompleteIsFalse(userId)
+        repo
+            .findByUserIdAndIsCompleteIsFalse(userId)
             .map { it.toResponse() }
             .toSet()
 
@@ -84,7 +96,10 @@ class ImaginationService(
      * @throws ImaginationOwnershipException 사용자가 상상해보기의 소유자가 아닐 시
      */
     @Transactional
-    fun deleteImagination(id: Long, userId: Long){
+    fun deleteImagination(
+        id: Long,
+        userId: Long,
+    ) {
         val imagination = findById(id)
 
         imagination.checkOwnership(userId)
@@ -97,6 +112,7 @@ class ImaginationService(
      */
     @Transactional
     fun deleteByUserId(userId: Long) = repo.deleteByUserId(userId)
+
     /**
      * 상상해보기 id로 조회하는 메소드
      * @param id 상상해보기 id

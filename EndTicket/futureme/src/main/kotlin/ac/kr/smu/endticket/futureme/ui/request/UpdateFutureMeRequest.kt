@@ -1,7 +1,6 @@
 package ac.kr.smu.endticket.futureme.ui.request
 
 import ac.kr.smu.endticket.common.web.enum.CharacterType
-import ac.kr.smu.endticket.futureme.domain.futureme.model.Character
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.Size
 
@@ -15,10 +14,9 @@ data class UpdateFutureMeRequest(
     @Schema(description = "변경할 제목", example = "당당하고 멋있는 사람", nullable = true)
     @field:Size(max = 13, message = "제목은 13자 이내이어야 합니다.")
     val title: String? = null,
-
     @Schema(description = "변경할 캐릭터 종류", implementation = CharacterType::class, nullable = true)
-    val characterType: CharacterType? = null
-){
+    val characterType: CharacterType? = null,
+) {
     @Schema(hidden = true)
     fun isEmpty() = title == null && characterType == null
 }

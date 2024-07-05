@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
  */
 @Service
 class FutureMeEventService(
-    private val eventPublisher: ApplicationEventPublisher
+    private val eventPublisher: ApplicationEventPublisher,
 ) {
     /**
      * [Event]를 발행하는 메소드

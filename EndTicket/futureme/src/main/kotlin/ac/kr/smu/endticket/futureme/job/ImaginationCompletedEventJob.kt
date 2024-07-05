@@ -11,7 +11,6 @@ import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
-import java.util.concurrent.CompletableFuture
 import kotlin.system.measureTimeMillis
 
 /**
@@ -24,36 +23,41 @@ import kotlin.system.measureTimeMillis
 class ImaginationCompletedEventJob(
     private val repo: EventRepository,
     private val futureMeService: FutureMeService,
-    private val messageService: KafkaMessageService<String, ImaginationCompletedEventResponse>
+    private val messageService: KafkaMessageService<String, ImaginationCompletedEventResponse>,
 ) {
     private val log = LoggerFactory.getLogger(ImaginationCompletedEventJob::class.java)
+
     /**
      * 미전송된 이벤트를 재전송하는 메소드, 전송이 완료된 이벤트는 전송 완료를 저장한다.
      */
     @Scheduled(
         fixedDelayString = "\${schedules.resend-imagination-completion-event.fixedDelay}",
-        initialDelayString = "\${schedules.resend-imagination-completion-event.initialDelay}"
+        initialDelayString = "\${schedules.resend-imagination-completion-event.initialDelay}",
     )
-    fun resendImaginationCompletionEvent(){
+    fun resendImaginationCompletionEvent() {
         log.info("상상해보기 이벤트 재전송 시작")
 
-        val elapsed = measureTimeMillis {
-            val events = repo.findNotSentEventBefore(LocalDateTime.now().minusMinutes(10))
-            val characterTypes = HashMap<Long, CharacterType>()
-            val messages = events.map {event ->
-                event.toMessage(
-                characterTypes[event.userId] ?:
-                futureMeService
-                    .findFutureMe(event.userId)
-                    .character.type.also { characterTypes[event.userId] = it }
-            ) }
+        val elapsed =
+            measureTimeMillis {
+                val events = repo.findNotSentEventBefore(LocalDateTime.now().minusMinutes(10))
+                val characterTypes = HashMap<Long, CharacterType>()
+                val messages =
+                    events.map { event ->
+                        event.toMessage(
+                            characterTypes[event.userId] ?: futureMeService
+                                .findFutureMe(event.userId)
+                                .character.type
+                                .also { characterTypes[event.userId] = it },
+                        )
+                    }
 
-            val ids = messageService
-                .send(KafkaTopic.IMAGINATION_COMPLETED,messages)
-                .map { it.producerRecord.value().id }
+                val ids =
+                    messageService
+                        .send(KafkaTopic.IMAGINATION_COMPLETED, messages)
+                        .map { it.producerRecord.value().id }
 
-            repo.deleteAllById(ids)
-        }
+                repo.deleteAllById(ids)
+            }
 
         log.info("상상해보기 이벤트 재전송 $elapsed ms 시간으로 완료")
     }

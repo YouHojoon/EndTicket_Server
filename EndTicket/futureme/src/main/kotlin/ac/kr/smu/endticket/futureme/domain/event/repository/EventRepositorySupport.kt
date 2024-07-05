@@ -10,5 +10,8 @@ interface EventRepositorySupport {
      * @param type 이벤트의 종류
      * @return 존재 여부
      */
-    fun existsBySpecificIdAndType(specificId: Long, type: KClass<out Event>): Boolean
+    fun existsBySpecificIdAndType(
+        specificId: Long,
+        type: KClass<out Event>,
+    ): Boolean
 }
