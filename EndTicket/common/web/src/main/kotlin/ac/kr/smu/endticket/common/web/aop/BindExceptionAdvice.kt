@@ -1,12 +1,12 @@
 package ac.kr.smu.endticket.common.web.aop
 
+import ac.kr.smu.endticket.common.web.response.BindExceptionResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindException
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
-import ac.kr.smu.endticket.common.web.response.BindExceptionResponse
 
 /**
  * [BindException]을 공통적으로 처리하는 클래스
@@ -23,10 +23,13 @@ class BindExceptionAdvice {
      * @see BindExceptionResponse
      */
     @ExceptionHandler(BindException::class)
-    fun handleBindingException(e: BindException, bindingResult: BindingResult): ResponseEntity<*>{
+    fun handleBindingException(
+        e: BindException,
+        bindingResult: BindingResult,
+    ): ResponseEntity<*> {
         log.info(
             "{field: ${e.bindingResult.fieldError?.field}, objectName: ${e.bindingResult.objectName}, rejectedValue: ${e.bindingResult.fieldError?.rejectedValue}}",
-            e
+            e,
         )
 
         return ResponseEntity.badRequest().body(
@@ -34,8 +37,8 @@ class BindExceptionAdvice {
                 field = e.bindingResult.fieldError?.field,
                 code = 400,
                 objectName = e.bindingResult.objectName,
-                detail = e.bindingResult.fieldError?.defaultMessage
-            )
+                detail = e.bindingResult.fieldError?.defaultMessage,
+            ),
         )
     }
 }

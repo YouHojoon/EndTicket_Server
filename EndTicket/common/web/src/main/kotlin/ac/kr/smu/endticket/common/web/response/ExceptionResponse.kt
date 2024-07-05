@@ -15,9 +15,7 @@ open class ExceptionResponse(
     @Schema(description = "간단한 에러 메시지", example = "인증 과정 중 에러가 발생했습니다.")
     val message: String? = null,
     @Schema(description = "에러 발생의 자세한 이유", example = "access 토큰이 존재하지 않습니다.")
-    val detail: String? = null
-){
-    override fun toString(): String {
-        return "{code: $code, message: $message, detail: $detail}"
-    }
+    val detail: String? = null,
+) {
+    override fun toString(): String = "{code: $code, message: $message, detail: $detail}"
 }

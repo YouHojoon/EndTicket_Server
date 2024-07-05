@@ -5,5 +5,4 @@ import org.springframework.stereotype.Component
 
 @Component
 @EnableAutoAsyncConfig
-class MockBean {
-}
+class MockBean

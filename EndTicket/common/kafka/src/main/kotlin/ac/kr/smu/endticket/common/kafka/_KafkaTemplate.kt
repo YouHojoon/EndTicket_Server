@@ -8,4 +8,7 @@ import org.springframework.kafka.core.KafkaTemplate
  * @param topic 카프카 토픽
  * @param message 전송할 메시지
  */
-fun <K:Any,V> KafkaTemplate<K, V>.send(topic: String, message: KafkaMessage<K, V>) = send(topic, message.key, message.payload)
+fun <K : Any, V> KafkaTemplate<K, V>.send(
+    topic: String,
+    message: KafkaMessage<K, V>,
+) = send(topic, message.key, message.payload)

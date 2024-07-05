@@ -9,16 +9,26 @@ import org.springframework.data.redis.core.ScanOptions
  * @param count scan의 카운트, 기본값은 200
  * @return 조건에 맞는 키의 set
  */
-fun RedisTemplate<String, Any>.getKeysWithPattern(pattern: String, count: Long = 200): Set<String>{
+fun RedisTemplate<String, Any>.getKeysWithPattern(
+    pattern: String,
+    count: Long = 200,
+): Set<String> {
     val keys = HashSet<String>()
 
-    execute{
+    execute {
         try {
-            scan(ScanOptions.scanOptions().match(pattern).count(count).build()).use {
-                while (it.hasNext())
+            scan(
+                ScanOptions
+                    .scanOptions()
+                    .match(pattern)
+                    .count(count)
+                    .build(),
+            ).use {
+                while (it.hasNext()) {
                     keys.add(it.next())
+                }
             }
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             throw e
         }
     }
