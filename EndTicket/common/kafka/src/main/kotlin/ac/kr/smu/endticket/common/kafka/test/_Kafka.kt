@@ -1,11 +1,9 @@
 package ac.kr.smu.endticket.common.kafka.test
 
-import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
-import org.apache.kafka.common.utils.Serializer
 import org.jetbrains.annotations.TestOnly
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaProducerFactory
@@ -26,7 +24,10 @@ import org.springframework.kafka.test.utils.KafkaTestUtils
  * @return 생성된 카프카 컨테이너
  */
 @TestOnly
-inline fun <reified V> createKafkaContainer(broker: EmbeddedKafkaBroker, topic:String): KafkaMessageListenerContainer<String, V> {
+inline fun <reified V> createKafkaContainer(
+    broker: EmbeddedKafkaBroker,
+    topic: String,
+): KafkaMessageListenerContainer<String, V> {
     val config = KafkaTestUtils.consumerProps("test", "false", broker)
     val deserializer = JsonDeserializer<V>()
     deserializer.addTrustedPackages(V::class.java.packageName)
@@ -43,11 +44,14 @@ inline fun <reified V> createKafkaContainer(broker: EmbeddedKafkaBroker, topic:S
  * @param onMessage 메시지를 수신 시 호출되는 콜백 메소드
  */
 @TestOnly
-inline fun <reified V> KafkaMessageListenerContainer<String, V>.messageListener(broker: EmbeddedKafkaBroker, crossinline onMessage: (ConsumerRecord<String, V>) -> Unit){
+inline fun <reified V> KafkaMessageListenerContainer<String, V>.messageListener(
+    broker: EmbeddedKafkaBroker,
+    crossinline onMessage: (ConsumerRecord<String, V>) -> Unit,
+) {
     setupMessageListener(
-        MessageListener{
-           onMessage(it)
-        }
+        MessageListener {
+            onMessage(it)
+        },
     )
 
     start()
@@ -62,7 +66,7 @@ inline fun <reified V> KafkaMessageListenerContainer<String, V>.messageListener(
  * @return 생성된 카프카 프로듀서
  */
 @TestOnly
-fun<T> createProducer(broker: EmbeddedKafkaBroker): Producer<String, T>{
+fun <T> createProducer(broker: EmbeddedKafkaBroker): Producer<String, T> {
     val properties = KafkaTestUtils.producerProps(broker)
     return DefaultKafkaProducerFactory(properties, StringSerializer(), JsonSerializer<T>()).createProducer()
 }

@@ -11,7 +11,7 @@ import org.springframework.core.io.ClassPathResource
  * @property imageResource 캐릭터 이미지 리소스
  */
 @Schema(description = "캐릭터의 종류")
-enum class CharacterType{
+enum class CharacterType {
     @Schema(description = "키아")
     KIA,
 
@@ -19,7 +19,9 @@ enum class CharacterType{
     CHEESE,
 
     @Schema(description = "베가")
-    VEGA;
+    VEGA,
+
+    ;
 
     var imageResource = ClassPathResource("characters/${name.lowercase()}.svg")
 }

@@ -1,4 +1,5 @@
 package ac.kr.smu.endticket.common.kafka.constant
+
 /**
  * 카프카 토픽의 이름을 저장하는 클래스
  */

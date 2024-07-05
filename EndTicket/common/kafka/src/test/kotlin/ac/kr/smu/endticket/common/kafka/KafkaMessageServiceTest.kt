@@ -18,50 +18,52 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @SpringBootTest(
-    classes = [KafkaMessageService::class, KafkaAutoConfiguration::class]
+    classes = [KafkaMessageService::class, KafkaAutoConfiguration::class],
 )
 @EmbeddedKafka
-class KafkaMessageServiceTest @Autowired constructor(
-    private val service: KafkaMessageService<String, Map<String, String>>,
-    private val broker: EmbeddedKafkaBroker
-) {
-    @Test
-    @DisplayName("메시지 전송 테스트")
-    fun given_topic_and_message_when_send_then_returnComputableFuture(){
-        val topic = "test"
-        val container = createKafkaContainer<Map<String,String>>(broker,topic)
-        val queue = LinkedBlockingQueue<ConsumerRecord<String,Map<String,String>>>()
-        val message = KafkaMessage("key", mapOf("payload" to "payload"))
+class KafkaMessageServiceTest
+    @Autowired
+    constructor(
+        private val service: KafkaMessageService<String, Map<String, String>>,
+        private val broker: EmbeddedKafkaBroker,
+    ) {
+        @Test
+        @DisplayName("메시지 전송 테스트")
+        fun given_topic_and_message_when_send_then_returnComputableFuture() {
+            val topic = "test"
+            val container = createKafkaContainer<Map<String, String>>(broker, topic)
+            val queue = LinkedBlockingQueue<ConsumerRecord<String, Map<String, String>>>()
+            val message = KafkaMessage("key", mapOf("payload" to "payload"))
 
-        container.messageListener(broker){
-            queue.add(it)
-        }
+            container.messageListener(broker) {
+                queue.add(it)
+            }
 
-        service.send(topic, message)
+            service.send(topic, message)
 
-        val record = queue.poll(500,TimeUnit.MILLISECONDS)
-        assertNotNull(record)
-        assertEquals(message.key, record.key())
-        assertEquals(message.payload, record.value())
-    }
-
-    @Test
-    @DisplayName("메시지들 전송 테스트")
-    fun given_topic_and_messages_when_send_then_returnComputableFuture(){
-        val topic = "test"
-        val container = createKafkaContainer<Map<String,String>>(broker,topic)
-        val queue = LinkedBlockingQueue<ConsumerRecord<String,Map<String,String>>>()
-        val messages = listOf(KafkaMessage("key", mapOf("payload" to "payload")))
-
-        container.messageListener(broker){
-            queue.add(it)
-        }
-
-        service.send(topic, messages)
-
-        for ((message, record) in messages.zip(queue)){
+            val record = queue.poll(500, TimeUnit.MILLISECONDS)
+            assertNotNull(record)
             assertEquals(message.key, record.key())
             assertEquals(message.payload, record.value())
         }
+
+        @Test
+        @DisplayName("메시지들 전송 테스트")
+        fun given_topic_and_messages_when_send_then_returnComputableFuture() {
+            val topic = "test"
+            val container = createKafkaContainer<Map<String, String>>(broker, topic)
+            val queue = LinkedBlockingQueue<ConsumerRecord<String, Map<String, String>>>()
+            val messages = listOf(KafkaMessage("key", mapOf("payload" to "payload")))
+
+            container.messageListener(broker) {
+                queue.add(it)
+            }
+
+            service.send(topic, messages)
+
+            for ((message, record) in messages.zip(queue)) {
+                assertEquals(message.key, record.key())
+                assertEquals(message.payload, record.value())
+            }
+        }
     }
-}
