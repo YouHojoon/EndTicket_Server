@@ -14,9 +14,7 @@ class BindExceptionResponse(
     code: Int,
     objectName: String,
     @Schema(description = "검증에 실패한 사유", example = "닉네임의 길이는 3자에서 8자 이하여야 합니다.")
-    detail: String?
-): ExceptionResponse(code,"$objectName 바인딩 중에 오류가 발생했습니다.", detail){
-    override fun toString(): String {
-        return "field: $field ${super.toString()}"
-    }
+    detail: String?,
+) : ExceptionResponse(code, "$objectName 바인딩 중에 오류가 발생했습니다.", detail) {
+    override fun toString(): String = "field: $field ${super.toString()}"
 }

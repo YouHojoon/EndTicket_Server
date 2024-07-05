@@ -14,12 +14,16 @@ import io.swagger.v3.oas.annotations.media.Schema
 enum class TicketType {
     @Schema(description = "건강")
     HEALTH,
+
     @Schema(description = "성격")
     PERSONALITY,
+
     @Schema(description = "가치관")
     VALUES,
+
     @Schema(description = "자기계발")
     SELF_IMPROVEMENT,
+
     @Schema(description = "관계")
-    RELATIONSHIP
+    RELATIONSHIP,
 }

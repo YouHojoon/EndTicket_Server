@@ -12,6 +12,6 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme
     name = "Access token",
     type = SecuritySchemeType.HTTP,
     bearerFormat = "JWT",
-    scheme = "bearer"
+    scheme = "bearer",
 )
 annotation class AccessTokenSecurityScheme

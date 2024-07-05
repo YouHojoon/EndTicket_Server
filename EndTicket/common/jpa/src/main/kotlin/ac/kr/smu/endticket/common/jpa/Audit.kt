@@ -14,13 +14,14 @@ import java.time.LocalDateTime
  * 생성일자와 수정일자를 나태내기 위한 클래스
  */
 @Embeddable
-class Audit{
+class Audit {
     @CreatedDate
     @JsonSerialize(using = LocalDateTimeSerializer::class)
     @JsonDeserialize(using = LocalDateTimeDeserializer::class)
     @Column(name = "created_at")
     var createdAt: LocalDateTime = LocalDateTime.now()
         protected set
+
     @LastModifiedDate
     @JsonSerialize(using = LocalDateTimeSerializer::class)
     @JsonDeserialize(using = LocalDateTimeDeserializer::class)

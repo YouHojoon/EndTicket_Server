@@ -44,12 +44,13 @@ class AutoRedisConfig(
      */
     @Bean
     @ConditionalOnMissingBean(GenericJackson2JsonRedisSerializer::class)
-    fun valueSerializer() = GenericJackson2JsonRedisSerializer().apply {
-        configure {
-            it.registerModule(ParameterNamesModule())
-            it.registerModule(JavaTimeModule())
+    fun valueSerializer() =
+        GenericJackson2JsonRedisSerializer().apply {
+            configure {
+                it.registerModule(ParameterNamesModule())
+                it.registerModule(JavaTimeModule())
+            }
         }
-    }
 
     /**
      * ConnectionFactory를 설정하는 메소드, 클러스터 토폴로지의 변화 감지를 설정하고 읽기 연산을 Replica에서 수행하도록 설정한다.
@@ -58,21 +59,26 @@ class AutoRedisConfig(
     @Bean
     @ConditionalOnMissingBean(LettuceConnectionFactory::class)
     fun connectionFactory(): LettuceConnectionFactory {
-        val topologyOption = ClusterTopologyRefreshOptions.builder()
-            .enableAllAdaptiveRefreshTriggers()
-            .build()
+        val topologyOption =
+            ClusterTopologyRefreshOptions
+                .builder()
+                .enableAllAdaptiveRefreshTriggers()
+                .build()
 
-        val clientOption = ClusterClientOptions.builder()
-            .topologyRefreshOptions(topologyOption)
-            .build()
+        val clientOption =
+            ClusterClientOptions
+                .builder()
+                .topologyRefreshOptions(topologyOption)
+                .build()
 
-        val clientConfig = LettuceClientConfiguration
-            .builder()
-            .clientOptions(clientOption)
-            .readFrom(ReadFrom.REPLICA)
-            .build()
+        val clientConfig =
+            LettuceClientConfiguration
+                .builder()
+                .clientOptions(clientOption)
+                .readFrom(ReadFrom.REPLICA)
+                .build()
 
-        check(redisProperties.cluster.nodes.isNotEmpty()){
+        check(redisProperties.cluster.nodes.isNotEmpty()) {
             "클러스터의 노드가 없습니다."
         }
 
@@ -88,7 +94,10 @@ class AutoRedisConfig(
     @Bean
     @ConditionalOnClass(GenericJackson2JsonRedisSerializer::class)
     @ConditionalOnMissingBean(RedisTemplate::class)
-    fun redisTemplate(connectionFactory: RedisConnectionFactory, valueSerializer: GenericJackson2JsonRedisSerializer) = RedisTemplate<String, Object>().apply {
+    fun redisTemplate(
+        connectionFactory: RedisConnectionFactory,
+        valueSerializer: GenericJackson2JsonRedisSerializer,
+    ) = RedisTemplate<String, Object>().apply {
         this.connectionFactory = connectionFactory
         keySerializer = StringRedisSerializer()
         this.valueSerializer = valueSerializer
@@ -101,16 +110,19 @@ class AutoRedisConfig(
     @Bean
     @ConditionalOnClass(GenericJackson2JsonRedisSerializer::class)
     @ConditionalOnMissingBean(CacheManager::class)
-    fun cacheManager(factory: RedisConnectionFactory, valueSerializer: GenericJackson2JsonRedisSerializer): CacheManager {
-        val config = RedisCacheConfiguration
-            .defaultCacheConfig()
-            .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(StringRedisSerializer()))
-            .serializeValuesWith(
-                RedisSerializationContext.SerializationPair.fromSerializer(
-                    valueSerializer
-                )
-            )
-            .entryTtl(Duration.ofHours(2))
+    fun cacheManager(
+        factory: RedisConnectionFactory,
+        valueSerializer: GenericJackson2JsonRedisSerializer,
+    ): CacheManager {
+        val config =
+            RedisCacheConfiguration
+                .defaultCacheConfig()
+                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(StringRedisSerializer()))
+                .serializeValuesWith(
+                    RedisSerializationContext.SerializationPair.fromSerializer(
+                        valueSerializer,
+                    ),
+                ).entryTtl(Duration.ofHours(2))
 
         return RedisCacheManager
             .RedisCacheManagerBuilder
@@ -118,5 +130,4 @@ class AutoRedisConfig(
             .cacheDefaults(config)
             .build()
     }
-
 }
