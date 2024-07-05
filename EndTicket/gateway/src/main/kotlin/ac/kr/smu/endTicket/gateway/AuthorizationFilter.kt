@@ -25,10 +25,8 @@ class AuthorizationFilter(
                         ExceptionResponse(401, "게이트웨이 인증 에러", "access 토큰이 없습니다."),
                     )
 
-            val response = tokenService.validateAccessToken(token)
-            val userId = response.userId
-
-            if (response.userId != -1L) {
+            try {
+                val userId = tokenService.validateAccessToken(token).get().userId
                 val request =
                     exchange.request
                         .mutate()
@@ -36,11 +34,11 @@ class AuthorizationFilter(
                         .build()
                 chain
                     .filter(exchange.mutate().request(request).build())
-            } else {
+            } catch (e: Exception) {
                 denyRequest(
                     exchange.response,
-                    HttpStatus.valueOf(response.status),
-                    ExceptionResponse(response.status, "게이트웨이 인증 에러", response.message),
+                    HttpStatus.UNAUTHORIZED,
+                    ExceptionResponse(HttpStatus.UNAUTHORIZED.value(), "게이트웨이 인증 에러", "인증에 실패했습니다."),
                 )
             }
         }
