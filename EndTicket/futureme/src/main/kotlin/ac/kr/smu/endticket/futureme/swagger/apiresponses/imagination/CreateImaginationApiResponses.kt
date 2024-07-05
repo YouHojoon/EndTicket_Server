@@ -15,20 +15,20 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
         responseCode = "201",
         description = "생성 성공",
         content = [
-            Content(schema = Schema(implementation = ImaginationResponse::class))
-        ]
+            Content(schema = Schema(implementation = ImaginationResponse::class)),
+        ],
     ),
     ApiResponse(
         responseCode = "400",
         description = "비정상적인 요청",
-        content = [Content(schema = Schema(implementation = BindExceptionResponse::class))]
+        content = [Content(schema = Schema(implementation = BindExceptionResponse::class))],
     ),
     ApiResponse(
         responseCode = "409",
         description = "최대 개수 이상으로 생성 요청",
         content = [
-            Content(schema = Schema(implementation = ExceptionResponse::class))
-        ]
-    )
+            Content(schema = Schema(implementation = ExceptionResponse::class)),
+        ],
+    ),
 )
 annotation class CreateImaginationApiResponses

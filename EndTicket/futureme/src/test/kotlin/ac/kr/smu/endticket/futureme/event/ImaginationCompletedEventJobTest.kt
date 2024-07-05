@@ -5,7 +5,6 @@ import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.common.kafka.test.createKafkaContainer
 import ac.kr.smu.endticket.common.kafka.test.messageListener
 import ac.kr.smu.endticket.common.test.mockAny
-import ac.kr.smu.endticket.futureme.domain.event.model.Event
 import ac.kr.smu.endticket.futureme.domain.event.model.ImaginationCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.repository.EventRepository
 import ac.kr.smu.endticket.futureme.imagination.ImaginationParameters
@@ -27,7 +26,6 @@ import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.kafka.listener.KafkaMessageListenerContainer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -36,80 +34,95 @@ import kotlin.test.assertTrue
     classes = [
         KafkaAutoConfiguration::class,
         ImaginationCompletedEventJob::class,
-        FutureMeService::class
-    ]
+        FutureMeService::class,
+    ],
 )
 @EmbeddedKafka(partitions = 3)
-class ImaginationCompletedEventJobTest @Autowired constructor(
-    @MockBean
-    private val repo: EventRepository,
-    @MockBean
-    private val futureMeService: FutureMeService,
-    private val broker: EmbeddedKafkaBroker,
-    private val job: ImaginationCompletedEventJob,
-) {
-    @SpyBean
-    private lateinit var messageService: KafkaMessageService<String, ImaginationCompletedEventResponse>
-    private lateinit var container: KafkaMessageListenerContainer<String, ImaginationCompletedEventResponse>
-    private val queue = LinkedBlockingQueue<ConsumerRecord<String, ImaginationCompletedEventResponse>>()
+class ImaginationCompletedEventJobTest
+    @Autowired
+    constructor(
+        @MockBean
+        private val repo: EventRepository,
+        @MockBean
+        private val futureMeService: FutureMeService,
+        private val broker: EmbeddedKafkaBroker,
+        private val job: ImaginationCompletedEventJob,
+    ) {
+        @SpyBean
+        private lateinit var messageService: KafkaMessageService<String, ImaginationCompletedEventResponse>
+        private lateinit var container: KafkaMessageListenerContainer<String, ImaginationCompletedEventResponse>
+        private val queue = LinkedBlockingQueue<ConsumerRecord<String, ImaginationCompletedEventResponse>>()
 
-    @BeforeEach
-    fun init(){
-        container = createKafkaContainer(broker, KafkaTopic.IMAGINATION_COMPLETED)
-        container.messageListener(broker){
-            queue.add(it)
-        }
-        Mockito.`when`(futureMeService.findFutureMe(ImaginationParameters.USER_ID))
-            .thenReturn(EventTestParameters.FUTURE_ME.toResponse())
-    }
-    @AfterEach
-    fun reset(){
-        container.stop()
-    }
-    @ParameterizedTest
-    @DisplayName("전송되지 않은 상상해보기 완료 이벤트 재전송 테스트")
-    @MethodSource("${EventTestParameters.PATH}#provideImaginationCompletedEvent")
-    fun given_notSentImaginationCompletionEvent_when_resendImaginationCompletionEvent_then_resendMessageAndSave(event:ImaginationCompletedEvent){
-        val events = setOf(
-            event,
-            Mockito.spy(event)
-                .also { Mockito.`when`(it.imaginationId).thenReturn(2L) }
-        )
-
-        Mockito.`when`(repo.findNotSentEventBefore(mockAny()))
-            .thenReturn(events)
-
-        job.resendImaginationCompletionEvent()
-        Thread.sleep(1000)
-
-        assertTrue(queue.isNotEmpty())
-        for ((event, record) in events.zip(queue)){
-            val message = event.toMessage(EventTestParameters.FUTURE_ME.characterType)
-
-            assertEquals(message.key, record.key())
-            assertEquals(message.payload?.behavior, record.value().behavior)
-            assertEquals(message.payload?.target, record.value().target)
-            assertEquals(message.payload?.color, record.value().color)
+        @BeforeEach
+        fun init() {
+            container = createKafkaContainer(broker, KafkaTopic.IMAGINATION_COMPLETED)
+            container.messageListener(broker) {
+                queue.add(it)
+            }
+            Mockito
+                .`when`(futureMeService.findFutureMe(ImaginationParameters.USER_ID))
+                .thenReturn(EventTestParameters.FUTURE_ME.toResponse())
         }
 
-        Mockito.verify(futureMeService).findFutureMe(Mockito.anyLong())
-        Mockito.verify(repo).deleteAllById(Mockito.argThat<Collection<Long>> { it.isNotEmpty()})
+        @AfterEach
+        fun reset() {
+            container.stop()
+        }
+
+        @ParameterizedTest
+        @DisplayName("전송되지 않은 상상해보기 완료 이벤트 재전송 테스트")
+        @MethodSource("${EventTestParameters.PATH}#provideImaginationCompletedEvent")
+        fun given_notSentImaginationCompletionEvent_when_resendImaginationCompletionEvent_then_resendMessageAndSave(
+            event: ImaginationCompletedEvent,
+        ) {
+            val events =
+                setOf(
+                    event,
+                    Mockito
+                        .spy(event)
+                        .also { Mockito.`when`(it.imaginationId).thenReturn(2L) },
+                )
+
+            Mockito
+                .`when`(repo.findNotSentEventBefore(mockAny()))
+                .thenReturn(events)
+
+            job.resendImaginationCompletionEvent()
+            Thread.sleep(1000)
+
+            assertTrue(queue.isNotEmpty())
+            for ((event, record) in events.zip(queue)) {
+                val message = event.toMessage(EventTestParameters.FUTURE_ME.characterType)
+
+                assertEquals(message.key, record.key())
+                assertEquals(message.payload?.behavior, record.value().behavior)
+                assertEquals(message.payload?.target, record.value().target)
+                assertEquals(message.payload?.color, record.value().color)
+            }
+
+            Mockito.verify(futureMeService).findFutureMe(Mockito.anyLong())
+            Mockito.verify(repo).deleteAllById(Mockito.argThat<Collection<Long>> { it.isNotEmpty() })
+        }
+
+        @ParameterizedTest
+        @DisplayName("이벤트 재전송 실패 테스트")
+        @MethodSource("${EventTestParameters.PATH}#provideImaginationCompletedEvent")
+        fun given_notSentImaginationCompletionEvent_when_resendImaginationCompletionEventFail_then_doNothing(
+            event: ImaginationCompletedEvent,
+        ) {
+            val events = setOf(event)
+
+            Mockito
+                .doReturn(events)
+                .`when`(repo)
+                .findNotSentEventBefore(mockAny())
+            Mockito
+                .`when`(messageService.send(Mockito.anyString(), Mockito.anyCollection()))
+                .thenReturn(emptyList())
+
+            job.resendImaginationCompletionEvent()
+            Thread.sleep(1000L)
+
+            Mockito.verify(repo).deleteAllById(Mockito.argThat<List<Long>> { it.isEmpty() })
+        }
     }
-
-    @ParameterizedTest
-    @DisplayName("이벤트 재전송 실패 테스트")
-    @MethodSource("${EventTestParameters.PATH}#provideImaginationCompletedEvent")
-    fun given_notSentImaginationCompletionEvent_when_resendImaginationCompletionEventFail_then_doNothing(event: ImaginationCompletedEvent) {
-        val events = setOf(event)
-
-        Mockito.doReturn(events)
-            .`when`(repo).findNotSentEventBefore(mockAny())
-        Mockito.`when`(messageService.send(Mockito.anyString(), Mockito.anyCollection()))
-            .thenReturn(emptyList())
-
-        job.resendImaginationCompletionEvent()
-        Thread.sleep(1000L)
-
-        Mockito.verify(repo).deleteAllById(Mockito.argThat<List<Long>> { it.isEmpty() })
-    }
-}

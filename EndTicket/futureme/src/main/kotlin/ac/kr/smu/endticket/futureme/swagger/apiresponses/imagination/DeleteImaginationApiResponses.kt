@@ -11,18 +11,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 @ApiResponses(
     ApiResponse(
         responseCode = "204",
-        description = "삭제 성공"
+        description = "삭제 성공",
     ),
     ApiResponse(
         responseCode = "403",
         description = "소유자가 아닌 사용자",
-        content = [Content(schema = Schema(implementation = ExceptionResponse::class))]
+        content = [Content(schema = Schema(implementation = ExceptionResponse::class))],
     ),
     ApiResponse(
         responseCode = "404",
         description = "존재하지 않는 상상해보기",
-        content = [Content(schema = Schema(implementation = ExceptionResponse::class))]
-    )
+        content = [Content(schema = Schema(implementation = ExceptionResponse::class))],
+    ),
 )
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

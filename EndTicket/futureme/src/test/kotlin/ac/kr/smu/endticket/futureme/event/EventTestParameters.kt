@@ -19,18 +19,29 @@ object EventTestParameters {
     val FUTURE_ME = FutureMe.from(CreateFutureMeRequest(CharacterType.VEGA), USER_ID)
 
     @JvmStatic
-    fun provideTicketCompletedEventRecordAndAck() = Stream.of(
-        Arguments.of(
-            (Mockito.mock(ConsumerRecord::class.java) as ConsumerRecord<String, TicketCompletedEventResponse>)
-                .also {
-                    Mockito.`when`(it.value()).thenReturn(
-                        TicketCompletedEventResponse(1L)
-                    )
-                },
-            Mockito.mock(Acknowledgment::class.java)
+    fun provideTicketCompletedEventRecordAndAck() =
+        Stream.of(
+            Arguments.of(
+                (Mockito.mock(ConsumerRecord::class.java) as ConsumerRecord<String, TicketCompletedEventResponse>)
+                    .also {
+                        Mockito.`when`(it.value()).thenReturn(
+                            TicketCompletedEventResponse(1L),
+                        )
+                    },
+                Mockito.mock(Acknowledgment::class.java),
+            ),
         )
-    )
+
     @JvmStatic
-    fun provideImaginationCompletedEvent() = Stream.of(Arguments.of(ImaginationCompletedEvent(Imagination.from(
-        ImaginationParameters.REQUEST, USER_ID))))
+    fun provideImaginationCompletedEvent() =
+        Stream.of(
+            Arguments.of(
+                ImaginationCompletedEvent(
+                    Imagination.from(
+                        ImaginationParameters.REQUEST,
+                        USER_ID,
+                    ),
+                ),
+            ),
+        )
 }
