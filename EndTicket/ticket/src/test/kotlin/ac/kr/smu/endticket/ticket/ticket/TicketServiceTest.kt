@@ -55,14 +55,14 @@ class TicketServiceTest(
                 TicketTestParameters.USER_ID,
             ),
         )
-        Mockito.verify(repo, Mockito.times(1)).countIncompleteTicketsOfUser(TicketTestParameters.USER_ID)
+        Mockito.verify(repo, Mockito.times(1)).countIncompleteTicketsByUserId(TicketTestParameters.USER_ID)
     }
 
     @Test
     @DisplayName("티켓 개수 제한 이상으로 생성 테스트")
     fun given_userHasReachedTicketLimit_when_createTicket_then_throwIllegalStateException() {
         Mockito
-            .`when`(repo.countIncompleteTicketsOfUser(TicketTestParameters.USER_ID))
+            .`when`(repo.countIncompleteTicketsByUserId(TicketTestParameters.USER_ID))
             .thenReturn(5)
 
         assertThrows<IllegalStateException> {
@@ -220,7 +220,7 @@ class TicketServiceTest(
         val tickets = listOf(ticket)
 
         Mockito
-            .`when`(repo.findIncompleteTicketsOfUser(TicketTestParameters.USER_ID))
+            .`when`(repo.findIncompleteTicketsByUserId(TicketTestParameters.USER_ID))
             .thenReturn(tickets)
 
         assertEquals(tickets.map { it.toResponse() }, service.findIncompleteTickets(TicketTestParameters.USER_ID))
