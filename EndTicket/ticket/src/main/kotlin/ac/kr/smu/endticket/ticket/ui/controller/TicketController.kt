@@ -103,7 +103,7 @@ class TicketController(
         @Parameter(hidden = true)
         @RequestHeader(HttpHeaderName.USER_ID)
         userId: Long,
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<Unit> {
         service.deleteTicket(id, userId)
         return ResponseEntity.noContent().build()
     }

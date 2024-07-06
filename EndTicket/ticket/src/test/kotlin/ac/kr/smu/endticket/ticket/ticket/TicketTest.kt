@@ -15,8 +15,16 @@ class TicketTest {
     @DisplayName("티켓 수정 테스트")
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
     fun given_ticketRequest_when_updateAndCheckCompletion_then_updateTicketAndReturnIsCompletion(ticket: Ticket) {
-        ticket.updateAndCheckCompletion(TicketTestParameters.UPDATE_REQUEST, TicketTestParameters.USER_ID)
-        assertEquals(Ticket.from(TicketTestParameters.UPDATE_REQUEST, TicketTestParameters.USER_ID), ticket)
+        val request = TicketTestParameters.UPDATE_REQUEST
+        ticket.updateAndCheckCompletion(request, TicketTestParameters.USER_ID)
+
+        val response = ticket.toResponse()
+
+        assertEquals(request.behavior, response.behavior)
+        assertEquals(request.target, response.target)
+        assertEquals(request.color, response.color)
+        assertEquals(request.maxSwipeCount, response.maxSwipeCount)
+        assertEquals(request.type, response.type)
     }
 
     @ParameterizedTest
