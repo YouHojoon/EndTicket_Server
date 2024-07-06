@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class UserEventService(
-    private val eventPublisher: ApplicationEventPublisher
+    private val eventPublisher: ApplicationEventPublisher,
 ) {
     fun publish(event: UserDeletedEvent) = eventPublisher.publishEvent(event)
 }
