@@ -15,7 +15,7 @@ class UserDeletedEventConsumeService(
 
     @KafkaListener(topics = [KafkaTopic.USER_DELETED])
     fun consume(
-        record: ConsumerRecord<String, Void>,
+        record: ConsumerRecord<String, Unit>,
         ack: Acknowledgment,
     ) {
         val userId = record.key().toLong()
