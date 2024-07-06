@@ -108,7 +108,7 @@ class ImaginationController(
         @RequestHeader(HttpHeaderName.USER_ID)
         @Parameter(hidden = true)
         userId: Long,
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<Unit> {
         service.deleteImagination(id, userId)
         return ResponseEntity.noContent().build()
     }
@@ -121,7 +121,7 @@ class ImaginationController(
         @RequestHeader(HttpHeaderName.USER_ID)
         @Parameter(hidden = true)
         userId: Long,
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<Unit> {
         service.completeImagination(id, userId)
         return ResponseEntity.noContent().build()
     }
