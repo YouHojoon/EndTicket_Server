@@ -11,7 +11,7 @@ class UserTest {
     @ParameterizedTest
     @DisplayName("사용자의 닉네임이 등록되어 있을 시 수정 테스트")
     @MethodSource("${UserTestParameters.PATH}#provideUser")
-    fun given_userWithNicknameAlreadyRegistered_when_registerNickname_then_throwIllegalStateException(user: User){
+    fun given_userWithNicknameAlreadyRegistered_when_registerNickname_then_throwIllegalStateException(user: User) {
         assertThrows<IllegalStateException> {
             user.registerNickname(NicknameRegisterRequest("닉네임1"))
         }

@@ -12,61 +12,51 @@ import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
 
 /**
- * 사용자를 추상화한 클래스
+ * 사용자
  * @property socialType SNS 로그인의 타입
  * @property socialUserNumber 각 SNS 별 회원번호
- * @property id 회원번호
- * @property nickname 사용자의 별명, 3~8 자 사이여야 한다.
  */
 @Entity
 @Table(
     name = "\"user\"",
-    uniqueConstraints = [UniqueConstraint(columnNames = ["social_type", "social_user_number"])]
+    uniqueConstraints = [UniqueConstraint(columnNames = ["social_type", "social_user_number"])],
 )
 class User(
-    @Column(name="social_type", nullable = false, updatable = false)
+    @Column(name = "social_type", nullable = false, updatable = false)
     @Enumerated(value = EnumType.STRING)
     val socialType: SocialType,
-
     @Column(name = "social_user_number", nullable = false, updatable = false)
     private val socialUserNumber: String,
-    nickname: String? = null
-)
-{
-
+) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0L
 
     @Column(nullable = true)
-    var nickname: String?
+    var nickname: String? = null
         private set
 
-    init {
-        this.nickname = nickname
-    }
-
+    /**
+     * 사용자의 SNS 타입
+     * @property KAKAO 카카오
+     * @property GOOGLE 구글
+     * @property APPLE 애플
+     */
     enum class SocialType {
-        KAKAO, GOOGLE, APPLE
-    }
-
-    override fun equals(other: Any?): Boolean {
-        val user = (other as? User) ?: return false
-
-        return user.id == other.id
+        KAKAO,
+        GOOGLE,
+        APPLE,
     }
 
     /**
      * 닉네임을 등록하는 메소드
-     * @param nickname 등록할 닉네임
+     * @param request 등록 요청
      * @throws IllegalStateException 닉네임이 null이 아닐 떄
      */
-    fun registerNickname(request: NicknameRegisterRequest){
-        check(this.nickname == null){"닉네임을 변경할 수 없습니다."}
+    fun registerNickname(request: NicknameRegisterRequest) {
+        check(this.nickname == null) { "닉네임을 변경할 수 없습니다." }
         this.nickname = request.nickname
     }
 
-    override fun toString(): String {
-        return  "{id: $id, nickname: $nickname, socialType: $socialType, socialUserNumber: $socialUserNumber}"
-    }
+    override fun toString(): String = "{id: $id, nickname: $nickname, socialType: $socialType, socialUserNumber: $socialUserNumber}"
 }

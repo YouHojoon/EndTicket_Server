@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 
 @Repository
-interface UserDeletedEventRepository: JpaRepository<UserDeletedEvent, Long> {
+interface UserDeletedEventRepository : JpaRepository<UserDeletedEvent, Long> {
     fun findByAuditCreatedAtBefore(date: LocalDateTime): Set<UserDeletedEvent>
 }

@@ -7,5 +7,4 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 @EnableAutoKafkaConfig
 @EnableAutoAsyncConfig
-class KafkaConfig {
-}
+class KafkaConfig

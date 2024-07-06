@@ -11,10 +11,10 @@ import jakarta.persistence.*
 @Entity
 @Table
 class UserDeletedEvent(
-    @OneToOne(fetch = FetchType.LAZY,cascade = [CascadeType.REMOVE])
+    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
     @JoinColumn(name = "id")
     @MapsId
-    private val user: User
+    private val user: User,
 ) {
     @Id
     private val id: Long = 0L
@@ -22,5 +22,5 @@ class UserDeletedEvent(
     @Embedded
     private val audit = Audit()
 
-    fun toMessage() = KafkaMessage<String,Void>(id.toString())
+    fun toMessage() = KafkaMessage<String, Unit>(id.toString())
 }
