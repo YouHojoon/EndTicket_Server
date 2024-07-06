@@ -21,10 +21,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.kafka.listener.KafkaMessageListenerContainer
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
-import java.util.concurrent.BlockingQueue
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.TimeUnit
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
@@ -32,65 +29,69 @@ import kotlin.test.assertEquals
 @SpringBootTest(
     classes = [
         UserDeletedEventJob::class,
-        KafkaAutoConfiguration::class
-    ]
+        KafkaAutoConfiguration::class,
+    ],
 )
 @EmbeddedKafka
-class UserDeletedEventJobTest @Autowired constructor(
-    @SpyBean
-    private val messageService: KafkaMessageService<String,Void>,
-    @MockBean
-    private val repo: UserDeletedEventRepository,
-    private val job: UserDeletedEventJob,
-    private val broker: EmbeddedKafkaBroker
-) {
-    private lateinit var container: KafkaMessageListenerContainer<String,Void>
+class UserDeletedEventJobTest
+    @Autowired
+    constructor(
+        @SpyBean
+        private val messageService: KafkaMessageService<String, Unit>,
+        @MockBean
+        private val repo: UserDeletedEventRepository,
+        private val job: UserDeletedEventJob,
+        private val broker: EmbeddedKafkaBroker,
+    ) {
+        private lateinit var container: KafkaMessageListenerContainer<String, Unit>
 
-    @BeforeTest
-    fun init(){
-        container = createKafkaContainer(broker,KafkaTopic.USER_DELETED)
-    }
-
-    @AfterTest
-    fun reset(){
-        container.stop()
-    }
-
-    @ParameterizedTest
-    @MethodSource("${UserTestParameters.PATH}#provideEvents")
-    @DisplayName("미전송된 회원 탈퇴 이벤트들 재전송 테스트")
-    fun given_notSentUserDeletedEvents_when_resend_then_resendMessageAndDeleteEvent(events: Set<UserDeletedEvent>){
-        val queue = LinkedBlockingQueue<ConsumerRecord<String,Void>>()
-        container.messageListener(broker){
-            queue.add(it)
+        @BeforeTest
+        fun init() {
+            container = createKafkaContainer(broker, KafkaTopic.USER_DELETED)
         }
 
-        Mockito.`when`(repo.findByAuditCreatedAtBefore(mockAny()))
-            .thenReturn(events)
+        @AfterTest
+        fun reset() {
+            container.stop()
+        }
 
-        job.resend()
+        @ParameterizedTest
+        @MethodSource("${UserTestParameters.PATH}#provideEvents")
+        @DisplayName("미전송된 회원 탈퇴 이벤트들 재전송 테스트")
+        fun given_notSentUserDeletedEvents_when_resend_then_resendMessageAndDeleteEvent(events: Set<UserDeletedEvent>) {
+            val queue = LinkedBlockingQueue<ConsumerRecord<String, Unit>>()
+            container.messageListener(broker) {
+                queue.add(it)
+            }
 
-        Thread.sleep(500L)
-        assert(queue.isNotEmpty())
-        for((message,event) in queue.zip(events))
-            assertEquals(event.toMessage().key, message.key())
+            Mockito
+                .`when`(repo.findByAuditCreatedAtBefore(mockAny()))
+                .thenReturn(events)
+
+            job.resend()
+
+            Thread.sleep(500L)
+            assert(queue.isNotEmpty())
+            for ((message, event) in queue.zip(events)) {
+                assertEquals(event.toMessage().key, message.key())
+            }
+        }
+
+        @ParameterizedTest
+        @MethodSource("${UserTestParameters.PATH}#provideEvents")
+        @DisplayName("미전송된 회원 탈퇴 이벤트들 재전송 실패 테스트")
+        fun given_notSentUserDeletedEvent_when_resendFail_then_doNothing(events: Set<UserDeletedEvent>) {
+            val messages = events.map { it.toMessage() }
+
+            Mockito.`when`(repo.findByAuditCreatedAtBefore(mockAny())).thenReturn(
+                events,
+            )
+            Mockito
+                .`when`(messageService.send(KafkaTopic.USER_DELETED, messages))
+                .thenReturn(emptySet())
+
+            job.resend()
+
+            Mockito.verify(repo).deleteAllById(Mockito.argThat<List<Long>> { it.isEmpty() })
+        }
     }
-
-
-    @ParameterizedTest
-    @MethodSource("${UserTestParameters.PATH}#provideEvents")
-    @DisplayName("미전송된 회원 탈퇴 이벤트들 재전송 실패 테스트")
-    fun given_notSentUserDeletedEvent_when_resendFail_then_doNothing(events: Set<UserDeletedEvent>) {
-        val messages = events.map { it.toMessage() }
-
-        Mockito.`when`(repo.findByAuditCreatedAtBefore(mockAny())).thenReturn(
-            events
-        )
-        Mockito.`when`(messageService.send(KafkaTopic.USER_DELETED, messages))
-            .thenReturn(emptySet())
-
-        job.resend()
-
-        Mockito.verify(repo).deleteAllById(Mockito.argThat<List<Long>>{ it.isEmpty() })
-    }
-}

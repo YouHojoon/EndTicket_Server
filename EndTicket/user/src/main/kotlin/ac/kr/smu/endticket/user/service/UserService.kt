@@ -21,28 +21,29 @@ import org.springframework.transaction.annotation.Transactional
 @GrpcService
 class UserService(
     private val repo: UserRepository,
-    private val eventService: UserEventService
-): UserServiceGrpc.UserServiceImplBase() {
-
+    private val eventService: UserEventService,
+) : UserServiceGrpc.UserServiceImplBase() {
     /**
      * SNS 사용자 번호로 해당 SNS의 사용자를 찾아 grpc를 통해 user id를 반환하는 메소드, 만약에 없다면 저장한다.
-     * @param socialType 해당 SNS로 회원가입한 사용자
-     * @param socialUserNumber SNS 사용자 번호
+     * @param request 조회 요청
      */
     @Transactional
-    override fun findUserId(request: FindUserIdRequest, responseObserver: StreamObserver<UserIdResponse>) {
+    override fun findUserId(
+        request: FindUserIdRequest,
+        responseObserver: StreamObserver<UserIdResponse>,
+    ) {
         val socialType = User.SocialType.valueOf(request.socialType.name)
-        val id = repo.findBySocialTypeAndSocialUserNumber(socialType, request.socialUserNumber)?.id ?:
-        repo.save(
-            User(socialType, request.socialUserNumber)
-        ).id
+        val id =
+            repo.findBySocialTypeAndSocialUserNumber(socialType, request.socialUserNumber)?.id ?: repo
+                .save(
+                    User(socialType, request.socialUserNumber),
+                ).id
 
         responseObserver.onNext(
-            UserIdResponse.newBuilder().setUserId(id).build()
+            UserIdResponse.newBuilder().setUserId(id).build(),
         )
         responseObserver.onCompleted()
     }
-
 
     /**
      * 사용자의 닉네임 등록
@@ -51,9 +52,12 @@ class UserService(
      * @throws UserNotFoundException id의 사용자가 존재하지 않을 시
      */
     @Transactional
-    fun registerNickname(request: NicknameRegisterRequest, id: Long){
+    fun registerNickname(
+        request: NicknameRegisterRequest,
+        id: Long,
+    ) {
         val user = findById(id)
-        
+
         user.registerNickname(request)
     }
 
@@ -63,7 +67,7 @@ class UserService(
      * @throws UserNotFoundException id 인 사용자가 존재하지 않을 시
      */
     @Transactional(readOnly = true)
-    fun findNickname(id:Long): String? = findById(id).nickname
+    fun findNickname(id: Long): String? = findById(id).nickname
 
     /**
      * 사용자 삭제 메소드
@@ -71,7 +75,7 @@ class UserService(
      * @throws UserNotFoundException id인 사용자가 존재하지 않을 시
      */
     @Transactional
-    fun deleteUser(id: Long){
+    fun deleteUser(id: Long) {
         eventService.publish(UserDeletedEvent(findById(id)))
     }
 

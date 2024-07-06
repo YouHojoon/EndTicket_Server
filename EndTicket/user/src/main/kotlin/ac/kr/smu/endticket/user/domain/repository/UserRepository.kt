@@ -5,6 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface UserRepository: JpaRepository<User, Long> {
-    fun findBySocialTypeAndSocialUserNumber(socialType: User.SocialType, socialUserNumber: String): User?
+interface UserRepository : JpaRepository<User, Long> {
+    fun findBySocialTypeAndSocialUserNumber(
+        socialType: User.SocialType,
+        socialUserNumber: String,
+    ): User?
 }

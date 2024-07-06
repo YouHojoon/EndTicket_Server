@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.TestConfiguration
 @ImportAutoConfiguration(
     GrpcServerFactoryAutoConfiguration::class,
     GrpcServerAutoConfiguration::class,
-    GrpcClientAutoConfiguration::class
+    GrpcClientAutoConfiguration::class,
 )
 @TestConfiguration
 class GrpcConfig
