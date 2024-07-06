@@ -162,9 +162,11 @@ class ImaginationServiceTest(
         assertFailsWith(e) { service.deleteImagination(id, userId) }
     }
 
-    @ParameterizedTest
+    @Test
     @DisplayName("사용자 id로 삭제 테스트")
-    @MethodSource("${ImaginationParameters.PATH}#provideImagination")
-    fun given_userId_when_deleteByUserId_then_deleteImaginationOfUser(imagination: Imagination) {
+    fun given_userId_when_deleteByUserId_then_deleteImaginationOfUser() {
+        service.deleteByUserId(ImaginationParameters.USER_ID)
+
+        Mockito.verify(repo).deleteByUserId(ImaginationParameters.USER_ID)
     }
 }

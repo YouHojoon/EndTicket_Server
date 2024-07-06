@@ -6,6 +6,7 @@ import ac.kr.smu.endticket.common.test.mockAny
 import ac.kr.smu.endticket.futureme.config.KafkaConfig
 import ac.kr.smu.endticket.futureme.domain.event.model.TicketCompletedEvent
 import ac.kr.smu.endticket.futureme.domain.event.repository.EventRepository
+import ac.kr.smu.endticket.futureme.domain.futureme.exception.FutureMeNotFoundException
 import ac.kr.smu.endticket.futureme.infra.messaging.TicketCompletedEventResponse
 import ac.kr.smu.endticket.futureme.service.FutureMeService
 import ac.kr.smu.endticket.futureme.service.TicketCompletedEventConsumeService
@@ -77,17 +78,20 @@ class TicketCompletedEventConsumeServiceTest
         }
 
         @ParameterizedTest
-        @DisplayName("티켓 완료 이벤트 처리 실패 테스트")
+        @DisplayName("이미 미래의 나가 삭제된 사용자의 티켓 완료 이벤트 수신 테스트")
         @MethodSource("${EventTestParameters.PATH}#provideTicketCompletedEventRecordAndAck")
-        fun given_ticketCompletionEvent_when_consumeFail_then_sendNack(
+        fun given_ticketCompletedEvent_when_consumeAfterDeletingFutureMe_then_sendAck(
             record: ConsumerRecord<String, TicketCompletedEventResponse>,
             ack: Acknowledgment,
-        ) {
+        ){
             Mockito
                 .`when`(repo.existsBySpecificIdAndType(record.value().id, TicketCompletedEvent::class))
-                .thenThrow(RuntimeException())
+                .thenReturn(false)
+            Mockito.`when`(futureMeService.gainExperiencePoints(mockAny<TicketCompletedEvent>()))
+                .thenThrow(FutureMeNotFoundException(EventTestParameters.USER_ID))
 
-            service.consume(record, ack)
-            Mockito.verify(ack).nack(mockAny())
+            service.consume(record,ack)
+
+            Mockito.verify(ack).acknowledge()
         }
     }

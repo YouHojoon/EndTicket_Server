@@ -27,6 +27,8 @@ object EventTestParameters {
                         Mockito.`when`(it.value()).thenReturn(
                             TicketCompletedEventResponse(1L),
                         )
+                        Mockito.`when`(it.key())
+                            .thenReturn(USER_ID.toString())
                     },
                 Mockito.mock(Acknowledgment::class.java),
             ),
