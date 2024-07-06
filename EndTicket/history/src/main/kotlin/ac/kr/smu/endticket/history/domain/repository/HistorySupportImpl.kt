@@ -25,8 +25,8 @@ class HistorySupportImpl(
 
         val query =
             """
-            SELECT * FROM history as h JOIN $table as st 
-            WHERE st.$spec = :specificId and h.id = st.id
+            SELECT * FROM history as h JOIN $table as sh 
+            WHERE sh.$spec = :specificId and h.id = sh.id
             """.trimIndent()
 
         return em
@@ -74,7 +74,7 @@ class HistorySupportImpl(
 
         val query =
             """
-            SELECT * FROM history as h JOIN $table as sb  WHERE h.id = sb.id AND h.user_id = :userId
+            SELECT * FROM history as h JOIN $table as sh  WHERE h.id = sh.id AND h.user_id = :userId
             ORDER BY ${sortOrder.ifEmpty { "h.completed_at DESC" }} LIMIT :size OFFSET :offset
             """.trimIndent()
 
