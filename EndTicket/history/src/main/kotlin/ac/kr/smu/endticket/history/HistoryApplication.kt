@@ -6,12 +6,12 @@ import org.springframework.boot.runApplication
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 
-
 @SpringBootApplication
 @EnableJpaAuditing
 @EnableDiscoveryClient
 @EnableAutoRedisConfig
 class HistoryApplication
-fun main(args: Array<String>){
+
+fun main(args: Array<String>) {
     runApplication<HistoryApplication>(*args)
 }

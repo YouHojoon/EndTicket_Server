@@ -11,11 +11,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
     ApiResponse(
         responseCode = "200",
         description = "조회 성공",
-        content = [Content(schema = Schema(implementation = HistoryCount::class))]
-    )
+        content = [Content(schema = Schema(implementation = HistoryCount::class))],
+    ),
 )
 @Operation(description = "기록 개수들 조회", summary = "기록 개수들 조회")
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class FindHistoryCountApiResponses {
-}
+annotation class FindHistoryCountApiResponses
