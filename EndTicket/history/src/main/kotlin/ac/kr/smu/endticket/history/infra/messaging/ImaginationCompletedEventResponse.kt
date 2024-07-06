@@ -19,5 +19,5 @@ class ImaginationCompletedEventResponse(
     val target: String,
     val color: Color,
     val characterType: CharacterType,
-    completedAt: LocalDateTime
-): EventResponse(id, completedAt)
+    completedAt: LocalDateTime,
+) : EventResponse(id, completedAt)

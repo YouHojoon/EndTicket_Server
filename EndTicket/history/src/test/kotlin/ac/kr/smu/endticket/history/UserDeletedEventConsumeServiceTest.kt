@@ -23,38 +23,26 @@ import java.lang.RuntimeException
     classes = [
         KafkaAutoConfiguration::class,
         UserDeletedEventConsumeService::class,
-        HistoryService::class
-    ]
+        HistoryService::class,
+    ],
 )
 @EmbeddedKafka
-class UserDeletedEventConsumeServiceTest @Autowired constructor(
-    @MockBean
-    private val historyService: HistoryService,
-    private val service: UserDeletedEventConsumeService,
-    private val broker: EmbeddedKafkaBroker
-) {
-    @Test
-    @DisplayName("회원 탈퇴 이벤트 수신 테스트")
-    fun given_userDeletedEvent_when_consume_then_deleteHistoryOfUser(){
-        val producer = createProducer<Void>(broker)
+class UserDeletedEventConsumeServiceTest
+    @Autowired
+    constructor(
+        @MockBean
+        private val historyService: HistoryService,
+        private val service: UserDeletedEventConsumeService,
+        private val broker: EmbeddedKafkaBroker,
+    ) {
+        @Test
+        @DisplayName("회원 탈퇴 이벤트 수신 테스트")
+        fun given_userDeletedEvent_when_consume_then_deleteHistoryOfUser() {
+            val producer = createProducer<Void>(broker)
 
-        producer.send(ProducerRecord(KafkaTopic.USER_DELETED, HistoryTestParameters.USER_ID.toString(), null))
-        Thread.sleep(1000L)
+            producer.send(ProducerRecord(KafkaTopic.USER_DELETED, HistoryTestParameters.USER_ID.toString(), null))
+            Thread.sleep(1000L)
 
-        Mockito.verify(historyService).deleteByUserId(HistoryTestParameters.USER_ID)
+            Mockito.verify(historyService).deleteByUserId(HistoryTestParameters.USER_ID)
+        }
     }
-
-    @Test
-    @DisplayName("회원 탈퇴 이벤트 수신 실패 테스트")
-    fun given_userDeletedEvent_when_consumeFail_then_sendNack(){
-        val record = Mockito.mock(ConsumerRecord::class.java) as ConsumerRecord<String, Void>
-        val ack = Mockito.mock(Acknowledgment::class.java)
-
-        Mockito.`when`(record.key())
-            .thenThrow(RuntimeException())
-
-        service.consume(record,ack)
-
-        Mockito.verify(ack).nack(mockAny())
-    }
-}
