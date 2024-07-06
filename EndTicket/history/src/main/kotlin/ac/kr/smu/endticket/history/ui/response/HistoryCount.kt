@@ -15,5 +15,5 @@ data class HistoryCount(
     @Schema(description = "티켓 터치 횟수", example = "5")
     val ticketSwipeCount: Int,
     @Schema(description = "상상해보기 기록의 개수", example = "1")
-    val imaginationHistoryCount: Int
+    val imaginationHistoryCount: Int,
 )

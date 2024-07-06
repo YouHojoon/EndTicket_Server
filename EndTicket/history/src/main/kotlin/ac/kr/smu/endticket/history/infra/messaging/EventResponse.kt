@@ -9,5 +9,5 @@ import java.time.LocalDateTime
  */
 sealed class EventResponse(
     val id: Long,
-    val completedAt: LocalDateTime
+    val completedAt: LocalDateTime,
 )

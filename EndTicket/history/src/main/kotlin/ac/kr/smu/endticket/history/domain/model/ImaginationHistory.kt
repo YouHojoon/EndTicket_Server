@@ -24,52 +24,51 @@ import java.time.LocalDateTime
 @Entity
 @Table(
     indexes = [
-        Index(name = "idx_imagination_id", columnList = "imagination_id", unique = true)
-    ]
+        Index(name = "idx_imagination_id", columnList = "imagination_id", unique = true),
+    ],
 )
 @PrimaryKeyJoinColumn(name = "id")
 class ImaginationHistory private constructor(
     @Column(name = "imagination_id", updatable = false, nullable = false, unique = true)
     private val imaginationId: Long,
-
     @Column(updatable = false, nullable = false, length = 10)
     private val behavior: String,
-
     @Column(updatable = false, nullable = false, length = 20)
     private val target: String,
-
     @Column(updatable = false, nullable = false)
     private val color: Color,
-
     @Column(updatable = false, nullable = false)
     private val characterType: CharacterType,
-
     completedAt: LocalDateTime,
-    userId: Long
-): History(completedAt, userId){
-    companion object{
+    userId: Long,
+) : History(completedAt, userId) {
+    companion object {
         /**
          * 상상해보기 완료 이벤트로부터 상상해보기 기록을 생성
          * @param response 상상해보기 완료 이벤트
          * @param userId 소유자 ID
          * @return 상상해보기 기록
          */
-        fun from(response: ImaginationCompletedEventResponse, userId: Long) = ImaginationHistory(
+        fun from(
+            response: ImaginationCompletedEventResponse,
+            userId: Long,
+        ) = ImaginationHistory(
             imaginationId = response.id,
             behavior = response.behavior,
             target = response.target,
             color = response.color,
             completedAt = response.completedAt,
             characterType = response.characterType,
-            userId = userId
+            userId = userId,
         )
     }
 
-    override fun toResponse() = ImaginationHistoryResponse(
-        behavior = behavior,
-        target = target,
-        color = color,
-        completedAt = completedAt,
-        characterType = characterType
-    )
+    override fun toResponse() =
+        ImaginationHistoryResponse(
+            behavior = behavior,
+            target = target,
+            color = color,
+            completedAt = completedAt,
+            characterType = characterType,
+        )
 }
