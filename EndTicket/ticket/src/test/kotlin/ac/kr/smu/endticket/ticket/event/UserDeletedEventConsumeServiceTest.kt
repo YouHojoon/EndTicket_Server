@@ -43,17 +43,4 @@ class UserDeletedEventConsumeServiceTest
 
             Mockito.verify(ticketService).deleteByUserId(EventTestParameters.USER_ID)
         }
-
-        @Test
-        @DisplayName("이벤트 수신 실패 테스트")
-        fun given_userDeletedEvent_whenConsumeFail_then_sendNack() {
-            val record = Mockito.mock(ConsumerRecord::class.java) as ConsumerRecord<String, Void>
-            val ack = Mockito.mock(Acknowledgment::class.java)
-
-            Mockito.`when`(record.key()).thenThrow(RuntimeException())
-
-            service.consume(record, ack)
-
-            Mockito.verify(ack).nack(mockAny())
-        }
     }

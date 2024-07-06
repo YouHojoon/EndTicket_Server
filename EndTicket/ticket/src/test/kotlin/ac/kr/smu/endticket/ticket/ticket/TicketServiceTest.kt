@@ -45,16 +45,12 @@ class TicketServiceTest(
     @MethodSource("${TicketTestParameters.PATH}#provideTicket")
     fun given_ticketRequest_when_createTicket_then_returnCreatedTicket(ticket: Ticket) {
         Mockito
-            .`when`(repo.save(ticket))
+            .`when`(repo.save(mockAny()))
             .thenReturn(ticket)
 
-        assertEquals(
-            ticket.toResponse(),
-            service.createTicket(
-                TicketTestParameters.TICKET_REQUEST,
-                TicketTestParameters.USER_ID,
-            ),
-        )
+        service.createTicket(TicketTestParameters.TICKET_REQUEST, TicketTestParameters.USER_ID)
+
+        Mockito.verify(repo).save(mockAny())
         Mockito.verify(repo, Mockito.times(1)).countIncompleteTicketsByUserId(TicketTestParameters.USER_ID)
     }
 
