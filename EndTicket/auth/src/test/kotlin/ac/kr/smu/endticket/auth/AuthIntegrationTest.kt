@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import java.util.concurrent.CompletableFuture
 import kotlin.test.assertNotNull
 
 @SpringBootTest(
@@ -68,7 +69,7 @@ class AuthIntegrationTest
         fun given_user_when_createToken_then_responseAccessTokenAndRefreshToken() {
             Mockito
                 .`when`(userService.findUserId(AuthTestParameters.SOCIAL_TYPE, AuthTestParameters.SOCIAL_USER_NUMBER))
-                .thenReturn(AuthTestParameters.USER_ID)
+                .thenReturn(CompletableFuture.completedFuture(AuthTestParameters.USER_ID))
 
             mvc
                 .createToken()
@@ -81,7 +82,7 @@ class AuthIntegrationTest
         fun given_invalidUserId_when_createToken_then_responseExceptionResponseWithStatus503() {
             Mockito
                 .`when`(userService.findUserId(AuthTestParameters.SOCIAL_TYPE, AuthTestParameters.SOCIAL_USER_NUMBER))
-                .thenReturn(-1)
+                .thenReturn(CompletableFuture.failedFuture(RuntimeException()))
 
             mvc
                 .createToken()
@@ -94,7 +95,7 @@ class AuthIntegrationTest
         fun given_refreshToken_when_reissueToken_then_reissueAccessTokenAndRefreshToken() {
             Mockito
                 .`when`(userService.findUserId(AuthTestParameters.SOCIAL_TYPE, AuthTestParameters.SOCIAL_USER_NUMBER))
-                .thenReturn(AuthTestParameters.USER_ID)
+                .thenReturn(CompletableFuture.completedFuture(AuthTestParameters.USER_ID))
 
             val refreshToken = mvc.createToken().andReturn<TokenResponse>().refreshToken
 
