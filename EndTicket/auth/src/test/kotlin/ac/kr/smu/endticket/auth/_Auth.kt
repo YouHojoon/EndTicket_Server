@@ -1,6 +1,6 @@
 package ac.kr.smu.endticket.auth
 
-import ac.kr.smu.endTicket.auth.domain.service.OAuthService
+import ac.kr.smu.endTicket.auth.domain.service.OAuth2Service
 import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2TokenResponse
 import io.jsonwebtoken.JwtBuilder
 import io.jsonwebtoken.security.Keys
@@ -20,7 +20,7 @@ fun JwtBuilder.createMockRefreshToken(
         .compact()
 }
 
-fun mockOauthService(service: OAuthService) {
+fun mockOAuth2Service(service: OAuth2Service) {
     Mockito
         .`when`(service.oAuth(AuthTestParameters.SOCIAL_TYPE, AuthTestParameters.AUTHORIZATION_CODE))
         .thenReturn(

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.ResultActionsDsl
+import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 
 const val BASE_URL = "http://localhost:8081/auth"
@@ -12,11 +14,8 @@ const val BASE_URL = "http://localhost:8081/auth"
 fun MockMvc.createToken(
     socialType: SocialType = AuthTestParameters.SOCIAL_TYPE,
     code: String = AuthTestParameters.AUTHORIZATION_CODE,
-): ResultActions =
-    perform(
-        MockMvcRequestBuilders
-            .post("$BASE_URL/sns?socialType=$socialType&code=$code"),
-    )
+): ResultActionsDsl =
+    post("$BASE_URL/sns?socialType=$socialType&code=$code")
 
 fun MockMvc.reissueToken(refreshToken: String? = null) =
     perform(

@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.auth.infra.oauth2.filter
 
 import ac.kr.smu.endTicket.auth.domain.converter.SocialTypeConverter
-import ac.kr.smu.endTicket.auth.domain.service.OAuthService
+import ac.kr.smu.endTicket.auth.domain.service.OAuth2Service
 import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2User
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -15,10 +15,10 @@ import org.springframework.web.filter.OncePerRequestFilter
 /**
  * 인증 요청을 처리하는 필터
  * 토큰 생성 전에 SNS의 OAuth2 서비스를 통해 인증한다.
- * @property oAuthService 인증을 처리하는 서비스 객체
+ * @property oAuth2Service 인증을 처리하는 서비스 객체
  */
 class OAuth2AuthorizationFilter(
-    private val oAuthService: OAuthService,
+    private val oAuth2Service: OAuth2Service,
 ) : OncePerRequestFilter() {
     private val converter = SocialTypeConverter()
     private val matcher = AntPathRequestMatcher("/auth/sns")
@@ -48,8 +48,8 @@ class OAuth2AuthorizationFilter(
         val code = request.getParameter(CODE_URI_VARIABLE_NAME) ?: ""
         require(code.isNotBlank()) { "code가 비어있습니다." }
 
-        val oAuth2TokenResponse = oAuthService.oAuth(socialType, code)
-        val socialUserNumber = oAuthService.parseSocialUserNumber(socialType, oAuth2TokenResponse.idToken)
+        val oAuth2TokenResponse = oAuth2Service.oAuth(socialType, code)
+        val socialUserNumber = oAuth2Service.parseSocialUserNumber(socialType, oAuth2TokenResponse.idToken)
         val oAuth2User = OAuth2User(socialUserNumber, socialType)
 
         SecurityContextHolder.getContext().authentication =

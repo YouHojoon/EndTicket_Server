@@ -1,7 +1,9 @@
 package ac.kr.smu.endticket.auth
 
 import ac.kr.smu.endTicket.auth.config.property.JWTProperties
+import ac.kr.smu.endTicket.auth.constant.RedisConstant
 import ac.kr.smu.endTicket.auth.domain.exception.RefreshTokenExpiredException
+import ac.kr.smu.endTicket.auth.domain.exception.UserExpiredException
 import ac.kr.smu.endTicket.auth.service.TokenService
 import ac.kr.smu.endticket.common.redis.test.RedisTestConfig
 import ac.kr.smu.endticket.protobuf.AccessToken
@@ -16,6 +18,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -33,6 +37,7 @@ import kotlin.test.assertNull
     classes = [
         TokenService::class,
         GrpcConfig::class,
+        RedisAutoConfiguration::class
     ],
 )
 @Import(RedisTestConfig::class)
@@ -44,7 +49,7 @@ class TokenServiceTest
         @MockBean
         private val valueOperations: ValueOperations<String, String>,
         @MockBean
-        private val setOperations: SetOperations<String,String>,
+        private val setOperations: SetOperations<String, String>,
         @MockBean
         private val redisTemplate: RedisTemplate<String, String>,
         private val service: TokenService,
@@ -62,7 +67,7 @@ class TokenServiceTest
         @Test
         @DisplayName("Access 토큰 검증 테스트")
         @DirtiesContext
-        fun given_accessToken_when_validationToken_then_returnResponse() {
+        fun given_accessToken_when_validateToken_then_returnResponse() {
             val token = service.createAccessAndRefreshToken(AuthTestParameters.USER_ID).accessToken
             val response =
                 stub.validateAccessToken(
@@ -77,7 +82,7 @@ class TokenServiceTest
         @DisplayName("올바르지 않은 Access 토큰 검증 테스트")
         @MethodSource("${AuthTestParameters.PATH}#provideInvalidAccessTokenAndExpectedStatus")
         @DirtiesContext
-        fun given_invalidAccessToken_when_validationToken_then_returnResponseWithExpectedStatus(
+        fun given_invalidAccessToken_when_validateToken_then_returnResponseWithExpectedStatus(
             accessToken: AccessToken,
             expectedStatus: Int,
         ) {
@@ -90,7 +95,7 @@ class TokenServiceTest
         @Test
         @DisplayName("리프레시 토큰으로 토큰 검증 테스트")
         @DirtiesContext
-        fun given_refreshToken_when_validationToken_then_returnResponseWithStatus400() {
+        fun given_refreshToken_when_validateToken_then_returnResponseWithStatus400() {
             val createTokenResponse = service.createAccessAndRefreshToken(AuthTestParameters.USER_ID)
             val response =
                 stub.validateAccessToken(
@@ -111,6 +116,7 @@ class TokenServiceTest
                 service.createAccessAndRefreshToken(AuthTestParameters.USER_ID)
             }
         }
+
         @Test
         @DisplayName("access 토큰 재발급 테스트")
         fun given_refreshToken_when_reissueToken_then_returnOnlyAccessToken() {
@@ -167,5 +173,64 @@ class TokenServiceTest
             assertThrows<IllegalArgumentException> {
                 service.reissueToken(refreshToken)
             }
+        }
+
+        @Test
+        @DisplayName("사용자 만료 테스트")
+        fun given_userId_when_expireAccessTokenAndRefreshToken_then_saveUserIdAtRedis() {
+            service.expireAccessAndRefreshToken(AuthTestParameters.USER_ID)
+
+            Mockito.verify(setOperations).add(RedisConstant.EXPIRED_USERS_REDIS_KEY, AuthTestParameters.USER_ID.toString())
+        }
+
+        @Test
+        @DisplayName("만료된 사용자 access 토큰 발급 테스트")
+        fun given_expiredUser_when_createAccessTokenAndRefreshToken_then_throwUserExpiredException() {
+            Mockito
+                .`when`(
+                    setOperations.isMember(
+                        RedisConstant.EXPIRED_USERS_REDIS_KEY,
+                        AuthTestParameters.USER_ID.toString(),
+                    ),
+                ).thenReturn(true)
+
+            assertThrows<UserExpiredException> { service.createAccessAndRefreshToken(AuthTestParameters.USER_ID) }
+        }
+
+        @Test
+        @DisplayName("만료된 사용자 access 토큰 발급 테스트")
+        fun given_accessTokenOfExpiredUser_when_validateToken_then_returnResponseWithStatus401() {
+            val accessToken = service.createAccessAndRefreshToken(AuthTestParameters.USER_ID).accessToken
+
+            Mockito
+                .`when`(
+                    setOperations.isMember(
+                        RedisConstant.EXPIRED_USERS_REDIS_KEY,
+                        AuthTestParameters.USER_ID.toString(),
+                    ),
+                ).thenReturn(true)
+
+            val response = stub.validateAccessToken(AccessToken.newBuilder().setToken(accessToken).build())
+
+            assertEquals(401,response.status)
+        }
+
+        @Test
+        @DisplayName("만료된 사용자 토큰 갱신 테스트")
+        fun given_expiredUser_when_reissueToken_then_throwUserExpiredException(){
+            val refreshToken = service.createAccessAndRefreshToken(AuthTestParameters.USER_ID).refreshToken!!
+
+            Mockito
+                .`when`(
+                    setOperations.isMember(
+                        RedisConstant.EXPIRED_USERS_REDIS_KEY,
+                        AuthTestParameters.USER_ID.toString(),
+                    ),
+                ).thenReturn(true)
+            Mockito.`when`(valueOperations.get(refreshToken))
+                .thenReturn(AuthTestParameters.USER_ID.toString())
+
+            assertThrows<UserExpiredException> { service.reissueToken(refreshToken)  }
+            Mockito.verify(redisTemplate).delete(refreshToken)
         }
     }

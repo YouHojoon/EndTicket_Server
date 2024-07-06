@@ -6,7 +6,7 @@ import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2TokenResponse
 /**
  * 외부 SNS 서비스의 인증 기능을 위한 인터페이스
  */
-interface OAuthService {
+interface OAuth2Service {
     /**
      * 외부 SNS 서비스 인증을 하여 access 토큰 응답을 반환하는 메소드
      * @param socialType SNS 종류
