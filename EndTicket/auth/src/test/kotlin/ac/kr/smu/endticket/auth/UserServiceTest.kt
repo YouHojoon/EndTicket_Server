@@ -6,6 +6,7 @@ import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import io.github.resilience4j.springboot3.circuitbreaker.autoconfigure.CircuitBreakerAutoConfiguration
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
@@ -30,10 +31,12 @@ class UserServiceTest
         @Test
         @DisplayName("gRPC를 통한 userID 수신 테스트")
         @DirtiesContext
-        fun given_socialTypeAndSocialUserNumber_when_findUserID_then_returnFindUserID() {
+        fun given_socialTypeAndSocialUserNumber_when_findUserID_then_returnUserId() {
             assertEquals(
                 AuthTestParameters.USER_ID,
-                service.findUserId(AuthTestParameters.SOCIAL_TYPE, AuthTestParameters.SOCIAL_USER_NUMBER),
+                service
+                    .findUserId(AuthTestParameters.SOCIAL_TYPE, AuthTestParameters.SOCIAL_USER_NUMBER)
+                    .get(),
             )
         }
 
@@ -43,7 +46,7 @@ class UserServiceTest
         fun when_findUserIDThrowException_then_runFallback() {
             val breaker = registry.circuitBreaker("find-user-id")
 
-            assertEquals(-1, service.findUserId(AuthTestParameters.SOCIAL_TYPE, "2"))
+            assertThrows<Exception> { service.findUserId(AuthTestParameters.SOCIAL_TYPE, "2").get() }
             assertEquals(CircuitBreaker.State.OPEN, breaker.state)
         }
     }

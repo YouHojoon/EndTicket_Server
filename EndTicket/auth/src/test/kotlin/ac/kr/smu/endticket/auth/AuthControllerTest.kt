@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import java.lang.IllegalStateException
+import java.util.concurrent.CompletableFuture
 
 @WebMvcTest(controllers = [AuthController::class])
 @Import(RedisTestConfig::class, SecurityTestConfig::class, AutoRedisConfig::class)
@@ -50,7 +51,7 @@ class AuthControllerTest
         fun given_user_when_createToken_then_responseAccessTokenAndRefreshToken() {
             Mockito
                 .`when`(userService.findUserId(AuthTestParameters.SOCIAL_TYPE, AuthTestParameters.SOCIAL_USER_NUMBER))
-                .thenReturn(AuthTestParameters.USER_ID)
+                .thenReturn(CompletableFuture.completedFuture(AuthTestParameters.USER_ID))
 
             mvc
                 .createToken()
@@ -64,7 +65,7 @@ class AuthControllerTest
         fun given_invalidUserId_when_createToken_then_responseExceptionResponseWithStatus503() {
             Mockito
                 .`when`(userService.findUserId(AuthTestParameters.SOCIAL_TYPE, AuthTestParameters.SOCIAL_USER_NUMBER))
-                .thenReturn(-1)
+                .thenReturn(CompletableFuture.failedFuture(RuntimeException()))
 
             mvc
                 .createToken()
@@ -92,7 +93,7 @@ class AuthControllerTest
         fun given_invalidRefreshToken_when_reissueToken_then_responseExceptionResponseWithStatus400(token: String?) {
             Mockito
                 .`when`(tokenService.reissueToken(Mockito.anyString()))
-                .thenThrow(IllegalStateException(""))
+                .thenThrow(IllegalArgumentException(""))
 
             mvc
                 .reissueToken(token)
