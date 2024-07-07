@@ -1,6 +1,7 @@
 package ac.kr.smu.endticket.auth
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
+import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
 import ac.kr.smu.endticket.protobuf.AccessToken
 import io.grpc.StatusRuntimeException
 import io.jsonwebtoken.ExpiredJwtException
@@ -18,6 +19,11 @@ object AuthTestParameters {
     const val REFRESH_TOKEN = "r"
     const val ID_TOKEN = "i"
     const val PATH = "ac.kr.smu.endticket.auth.AuthTestParameters"
+    val TOKEN_RESPONSE =
+        TokenResponse(
+            ACCESS_TOKEN,
+            REFRESH_TOKEN,
+        )
     val SOCIAL_TYPE = SocialType.KAKAO
 
     @JvmStatic
