@@ -53,7 +53,11 @@ class AuthController(
             .status(HttpStatus.UNAUTHORIZED)
             .body(ExceptionResponse(HttpStatus.UNAUTHORIZED.value(), "토큰을 발급하는 과정에서 에러가 발생했습니다.", e.message))
     } catch (e: Exception) {
+<<<<<<< HEAD
         log.error("토큰 발급 실패", e)
+=======
+        log.error("토큰 발급 실패",e)
+>>>>>>> 4095bee1ea1d771194231947fa1cd3287c66d5dc
         ResponseEntity
             .status(HttpStatus.SERVICE_UNAVAILABLE)
             .body(ExceptionResponse(503, "토큰을 발급하는 과정에서 에러가 발생했습니다.", "시용자 서버와 통신에 실패했습니다"))
@@ -82,6 +86,7 @@ class AuthController(
         return try {
             val token = tokenService.reissueToken(refreshToken)
 
+<<<<<<< HEAD
             ResponseEntity
                 .ok(token)
         } catch (e: UserExpiredException) {
@@ -94,6 +99,15 @@ class AuthController(
             log.info("토큰 갱신 실패 : {refreshToken: $refreshToken}", e)
 
             ResponseEntity
+=======
+             ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(token)
+        } catch (e: IllegalArgumentException) {
+            log.info("토큰 갱신 실패 : {refreshToken: $refreshToken}", e)
+
+            ResponseEntity
+>>>>>>> 4095bee1ea1d771194231947fa1cd3287c66d5dc
                 .badRequest()
                 .body(ExceptionResponse(400, message, e.message))
         }
