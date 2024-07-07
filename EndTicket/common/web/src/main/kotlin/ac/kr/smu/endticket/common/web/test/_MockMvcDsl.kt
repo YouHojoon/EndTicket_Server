@@ -4,6 +4,7 @@ import ac.kr.smu.endticket.common.web.response.BindExceptionResponse
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import org.jetbrains.annotations.TestOnly
+import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.test.web.servlet.MockMvcResultMatchersDsl
 import org.springframework.test.web.servlet.ResultActionsDsl
@@ -24,11 +25,15 @@ inline fun <reified T> ResultActionsDsl.andReturn(): T =
 
 /**
  * 요청의 응답으로 [ExceptionResponse]을 예상하는 메소드
+ * @param status 예상하는 응답 상태 코드
  * @see ExceptionResponse
  * @return ExceptionResponse를 예상하는 ResultActions
  */
 @TestOnly
-fun MockMvcResultMatchersDsl.expectExceptionResponse() {
+fun MockMvcResultMatchersDsl.expectExceptionResponse(status: HttpStatus) {
+    status{
+        isEqualTo(status.value())
+    }
     jsonPath("code") {
         isString()
     }
