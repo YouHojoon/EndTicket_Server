@@ -35,7 +35,7 @@ fun ResultActionsDsl.expectExceptionResponse(status: HttpStatus) =
             isEqualTo(status.value())
         }
         jsonPath("code") {
-            isString()
+            value(status.value())
         }
         jsonPath("message") {
             isString()
