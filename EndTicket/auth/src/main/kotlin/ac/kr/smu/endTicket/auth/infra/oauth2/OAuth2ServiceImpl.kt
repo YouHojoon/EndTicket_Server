@@ -1,7 +1,7 @@
 package ac.kr.smu.endTicket.auth.infra.oauth2
 
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
-import ac.kr.smu.endTicket.auth.domain.service.OAuthService
+import ac.kr.smu.endTicket.auth.domain.service.OAuth2Service
 import ac.kr.smu.endTicket.auth.infra.oauth2.exception.OAuth2RequestException
 import ac.kr.smu.endTicket.auth.infra.oauth2.idtoken.IdTokenService
 import kotlinx.coroutines.*
@@ -16,7 +16,7 @@ import org.springframework.web.reactive.function.client.awaitBody
 
 /**
  *
- * [OAuthService]의 구현체
+ * [OAuth2Service]의 구현체
  * @property clientRegistrationRepository OAuth 클라이언트가 저장된 객체
  * @property idTokenService ID 토큰을 위한 서비스
  */
@@ -24,7 +24,7 @@ import org.springframework.web.reactive.function.client.awaitBody
 class OAuth2ServiceImpl(
     private val clientRegistrationRepository: ClientRegistrationRepository,
     private val idTokenService: IdTokenService,
-) : OAuthService {
+) : OAuth2Service {
     /**
      * 외부 SNS 서비스 인증을 하여 access 토큰 응답을 반환하는 메소드
      * @param socialType SNS 종류

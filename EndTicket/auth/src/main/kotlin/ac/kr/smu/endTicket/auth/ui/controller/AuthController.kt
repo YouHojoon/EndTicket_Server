@@ -1,5 +1,6 @@
 package ac.kr.smu.endTicket.auth.ui.controller
 
+import ac.kr.smu.endTicket.auth.domain.exception.UserExpiredException
 import ac.kr.smu.endTicket.auth.domain.model.SocialType
 import ac.kr.smu.endTicket.auth.infra.oauth2.OAuth2User
 import ac.kr.smu.endTicket.auth.service.TokenService
@@ -43,10 +44,20 @@ class AuthController(
     ) = try {
         val userId = userService.findUserId(socialType, oAuth2User.name).get()
         ResponseEntity
-            .status(HttpStatus.CREATED)
+            .status(HttpStatus.OK)
             .body(tokenService.createAccessAndRefreshToken(userId))
+    } catch (e: UserExpiredException) {
+        log.info("사용자 만료 : {userId: ${e.userId}}", e)
+
+        ResponseEntity
+            .status(HttpStatus.UNAUTHORIZED)
+            .body(ExceptionResponse(HttpStatus.UNAUTHORIZED.value(), "토큰을 발급하는 과정에서 에러가 발생했습니다.", e.message))
     } catch (e: Exception) {
+<<<<<<< HEAD
+        log.error("토큰 발급 실패", e)
+=======
         log.error("토큰 발급 실패",e)
+>>>>>>> 4095bee1ea1d771194231947fa1cd3287c66d5dc
         ResponseEntity
             .status(HttpStatus.SERVICE_UNAVAILABLE)
             .body(ExceptionResponse(503, "토큰을 발급하는 과정에서 에러가 발생했습니다.", "시용자 서버와 통신에 실패했습니다"))
@@ -75,6 +86,20 @@ class AuthController(
         return try {
             val token = tokenService.reissueToken(refreshToken)
 
+<<<<<<< HEAD
+            ResponseEntity
+                .ok(token)
+        } catch (e: UserExpiredException) {
+            log.info("만료된 사용자 입니다 : {userId : ${e.userId}}", e)
+
+            ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ExceptionResponse(401, message, e.message))
+        } catch (e: IllegalArgumentException) {
+            log.info("토큰 갱신 실패 : {refreshToken: $refreshToken}", e)
+
+            ResponseEntity
+=======
              ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(token)
@@ -82,6 +107,7 @@ class AuthController(
             log.info("토큰 갱신 실패 : {refreshToken: $refreshToken}", e)
 
             ResponseEntity
+>>>>>>> 4095bee1ea1d771194231947fa1cd3287c66d5dc
                 .badRequest()
                 .body(ExceptionResponse(400, message, e.message))
         }

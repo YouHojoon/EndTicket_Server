@@ -1,6 +1,6 @@
 package ac.kr.smu.endTicket.auth.config
 
-import ac.kr.smu.endTicket.auth.domain.service.OAuthService
+import ac.kr.smu.endTicket.auth.domain.service.OAuth2Service
 import ac.kr.smu.endTicket.auth.infra.oauth2.filter.OAuth2AuthorizationFilter
 import ac.kr.smu.endTicket.auth.infra.oauth2.filter.OAuth2ErrorHandlerFilter
 import ac.kr.smu.endticket.common.security.baseConfig
@@ -20,7 +20,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val oauthService: OAuthService,
+    private val oauth2Service: OAuth2Service,
     private val discoveryClient: DiscoveryClient,
 ) {
     @Bean
@@ -51,7 +51,7 @@ class SecurityConfig(
                 authorize(anyRequest, denyAll)
             }
 
-            addFilterBefore<OAuth2LoginAuthenticationFilter>(OAuth2AuthorizationFilter(oauthService))
+            addFilterBefore<OAuth2LoginAuthenticationFilter>(OAuth2AuthorizationFilter(oauth2Service))
             addFilterBefore<OAuth2AuthorizationFilter>(OAuth2ErrorHandlerFilter())
         }
 
