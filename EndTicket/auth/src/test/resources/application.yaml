@@ -13,6 +13,16 @@ jwt:
   refresh-token-reissue-expiration: 259200000
 
 spring:
+  kafka:
+    consumer:
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: auth
+    listener:
+      concurrency: 3
+      ack-mode: manual_immediate
   data:
     redis:
       port: 6382

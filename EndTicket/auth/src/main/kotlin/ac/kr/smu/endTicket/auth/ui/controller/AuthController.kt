@@ -46,6 +46,7 @@ class AuthController(
             .status(HttpStatus.CREATED)
             .body(tokenService.createAccessAndRefreshToken(userId))
     } catch (e: Exception) {
+        log.error("토큰 발급 실패",e)
         ResponseEntity
             .status(HttpStatus.SERVICE_UNAVAILABLE)
             .body(ExceptionResponse(503, "토큰을 발급하는 과정에서 에러가 발생했습니다.", "시용자 서버와 통신에 실패했습니다"))
@@ -71,16 +72,16 @@ class AuthController(
                 .badRequest()
                 .body(ExceptionResponse(400, message, "refresh 토큰이 존재하지 않습니다."))
 
-        try {
+        return try {
             val token = tokenService.reissueToken(refreshToken)
 
-            return ResponseEntity
+             ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(token)
-        } catch (e: IllegalStateException) {
-            log.info("{refreshToken: $refreshToken}", e)
+        } catch (e: IllegalArgumentException) {
+            log.info("토큰 갱신 실패 : {refreshToken: $refreshToken}", e)
 
-            return ResponseEntity
+            ResponseEntity
                 .badRequest()
                 .body(ExceptionResponse(400, message, e.message))
         }
