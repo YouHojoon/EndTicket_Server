@@ -6,7 +6,6 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import org.jetbrains.annotations.TestOnly
 import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockHttpServletResponse
-import org.springframework.test.web.servlet.MockMvcResultMatchersDsl
 import org.springframework.test.web.servlet.ResultActionsDsl
 
 /**
@@ -30,20 +29,21 @@ inline fun <reified T> ResultActionsDsl.andReturn(): T =
  * @return ExceptionResponse를 예상하는 ResultActions
  */
 @TestOnly
-fun MockMvcResultMatchersDsl.expectExceptionResponse(status: HttpStatus) {
-    status{
-        isEqualTo(status.value())
+fun ResultActionsDsl.expectExceptionResponse(status: HttpStatus) =
+    andExpect {
+        status {
+            isEqualTo(status.value())
+        }
+        jsonPath("code") {
+            isString()
+        }
+        jsonPath("message") {
+            isString()
+        }
+        jsonPath("detail") {
+            isString()
+        }
     }
-    jsonPath("code") {
-        isString()
-    }
-    jsonPath("message") {
-        isString()
-    }
-    jsonPath("detail") {
-        isString()
-    }
-}
 
 /**
  * 요청의 결과로 BindingException을 예상하는 메소드
@@ -51,10 +51,10 @@ fun MockMvcResultMatchersDsl.expectExceptionResponse(status: HttpStatus) {
  * @return BindindException을 예상하는 ResultActions
  */
 @TestOnly
-fun MockMvcResultMatchersDsl.expectBindExceptionResponse() {
-    status { isBadRequest() }
-    jsonPath("field") {
-        isString()
-    }
-    expectExceptionResponse()
-}
+fun ResultActionsDsl.expectBindExceptionResponse() =
+    expectExceptionResponse(HttpStatus.BAD_REQUEST)
+        .andExpect {
+            jsonPath("field") {
+                isString()
+            }
+        }
