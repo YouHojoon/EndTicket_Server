@@ -25,6 +25,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
             content = [Content(schema = Schema(implementation = ExceptionResponse::class))],
         ),
         ApiResponse(
+            description = "사용자 만료",
+            responseCode = "401",
+            content = [Content(schema = Schema(implementation = ExceptionResponse::class))],
+        ),
+        ApiResponse(
             description = "시용자 서버 통신 실패",
             responseCode = "503",
             content = [Content(schema = Schema(implementation = ExceptionResponse::class))],
