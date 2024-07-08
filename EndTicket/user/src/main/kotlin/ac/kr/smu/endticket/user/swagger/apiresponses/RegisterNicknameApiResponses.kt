@@ -19,6 +19,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
             description = "닉네임 등록 완료",
         ),
         ApiResponse(
+            responseCode = "400",
+            description = "요청 파라미터 에러",
+            content = [
+                Content(schema = Schema(implementation = BindExceptionResponse::class)),
+            ],
+        ),
+        ApiResponse(
             responseCode = "404",
             description = "사용자가 존재하지 않을 때",
             content = [
@@ -26,10 +33,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
             ],
         ),
         ApiResponse(
-            responseCode = "400",
-            description = "요청 파라미터 에러",
+            responseCode = "409",
+            description = "닉네임이 이미 등록되어 있을 때",
             content = [
-                Content(schema = Schema(implementation = BindExceptionResponse::class)),
+                Content(schema = Schema(implementation = ExceptionResponse::class)),
             ],
         ),
     ],
