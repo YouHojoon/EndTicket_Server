@@ -47,8 +47,6 @@ class AuthController(
             .status(HttpStatus.OK)
             .body(tokenService.createAccessAndRefreshToken(userId))
     } catch (e: UserExpiredException) {
-        log.info("사용자 만료 : {userId: ${e.userId}}", e)
-
         ResponseEntity
             .status(HttpStatus.UNAUTHORIZED)
             .body(ExceptionResponse(HttpStatus.UNAUTHORIZED.value(), "토큰을 발급하는 과정에서 에러가 발생했습니다.", e.message))
@@ -86,8 +84,6 @@ class AuthController(
             ResponseEntity
                 .ok(token)
         } catch (e: UserExpiredException) {
-            log.info("만료된 사용자 입니다 : {userId : ${e.userId}}", e)
-
             ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(ExceptionResponse(401, message, e.message))

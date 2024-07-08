@@ -28,6 +28,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
             responseCode = "400",
             content = [Content(schema = Schema(implementation = ExceptionResponse::class))],
         ),
+        ApiResponse(
+            description = "사용자 만료",
+            responseCode = "401",
+            content = [Content(schema = Schema(implementation = ExceptionResponse::class))],
+        ),
     ],
 )
 @Target(AnnotationTarget.FUNCTION)

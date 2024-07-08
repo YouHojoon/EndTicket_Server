@@ -18,6 +18,7 @@ import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
 import net.devh.boot.grpc.server.service.GrpcService
+import org.slf4j.LoggerFactory
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import java.util.*
@@ -34,6 +35,8 @@ class TokenService(
     private val redisTemplate: RedisTemplate<String, String>,
     private val jwtProperties: JWTProperties,
 ) : TokenServiceGrpc.TokenServiceImplBase() {
+    private val log = LoggerFactory.getLogger(TokenService::class.java)
+
     /**
      * JWT를 서명하기 위한 key
      */
@@ -64,9 +67,9 @@ class TokenService(
             } catch (e: StatusRuntimeException) {
                 Triple(null, 500, e.message)
             } catch (e: UserExpiredException) {
-                Triple(null, 401, "만료된 사용자입니다.")
+                Triple(null, 401, e.message)
             }
-
+        
         responseObserver.onNext(validateAccessTokenResponseOf(userId, status, message))
         responseObserver.onCompleted()
     }
@@ -102,7 +105,7 @@ class TokenService(
      * @throws UnsupportedJwtException token에 subject가 없을 시 발생
      */
     private fun parseUserId(token: String): Long {
-        val claims = Jwts.parser().parseJwtSignedClaims(key,token)
+        val claims = Jwts.parser().parseJwtSignedClaims(key, token)
 
         val sub = claims.payload.subject ?: throw UnsupportedJwtException(token)
         return sub.toLong()
@@ -156,7 +159,8 @@ class TokenService(
      */
     private fun checkUserNotExpired(userId: Long) {
         if (redisTemplate.opsForSet().isMember(RedisConstant.EXPIRED_USERS_REDIS_KEY, userId.toString()) == true) {
-            throw UserExpiredException(userId)
+            log.info("만료된 사용자 입니다 : {userId : $userId}")
+            throw UserExpiredException()
         }
     }
 
