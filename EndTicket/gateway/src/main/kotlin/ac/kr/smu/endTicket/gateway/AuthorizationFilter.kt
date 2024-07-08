@@ -3,6 +3,7 @@ package ac.kr.smu.endTicket.gateway
 import ac.kr.smu.endticket.common.constant.HttpHeaderName
 import ac.kr.smu.endticket.common.web.response.ExceptionResponse
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.slf4j.LoggerFactory
 import org.springframework.cloud.gateway.filter.GatewayFilter
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory
 import org.springframework.http.HttpStatus
@@ -15,14 +16,16 @@ import reactor.core.publisher.Mono
 class AuthorizationFilter(
     private val tokenService: TokenService,
 ) : AbstractGatewayFilterFactory<Any>() {
+    private val log = LoggerFactory.getLogger(AuthorizationFilter::class.java)
+
     override fun apply(config: Any): GatewayFilter {
         return GatewayFilter { exchange, chain ->
             val token =
                 exchange.request.headers.getFirst("Authorization")
                     ?: return@GatewayFilter denyRequest(
                         exchange.response,
-                        HttpStatus.UNAUTHORIZED,
-                        ExceptionResponse(401, "게이트웨이 인증 에러", "access 토큰이 없습니다."),
+                        HttpStatus.BAD_REQUEST,
+                        ExceptionResponse(400, "게이트웨이 인증 에러", "access 토큰이 없습니다."),
                     )
 
             try {
@@ -35,10 +38,11 @@ class AuthorizationFilter(
                 chain
                     .filter(exchange.mutate().request(request).build())
             } catch (e: Exception) {
+                log.error("인증 서버와 통신 실패", e)
                 denyRequest(
                     exchange.response,
-                    HttpStatus.UNAUTHORIZED,
-                    ExceptionResponse(HttpStatus.UNAUTHORIZED.value(), "게이트웨이 인증 에러", "인증에 실패했습니다."),
+                    HttpStatus.SERVICE_UNAVAILABLE,
+                    ExceptionResponse(503, "게이트웨이 인증 에러", "인증 서버와 통신에 실패했습니다."),
                 )
             }
         }
