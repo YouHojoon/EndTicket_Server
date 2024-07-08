@@ -7,6 +7,7 @@ import ac.kr.smu.endticket.futureme.domain.imagination.model.Imagination
 import ac.kr.smu.endticket.futureme.domain.imagination.repository.ImaginationRepository
 import ac.kr.smu.endticket.futureme.ui.request.ImaginationRequest
 import ac.kr.smu.endticket.futureme.ui.response.ImaginationResponse
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,6 +16,8 @@ class ImaginationService(
     private val repo: ImaginationRepository,
     private val futureMeEventService: FutureMeEventService,
 ) {
+    private val log = LoggerFactory.getLogger(ImaginationService::class.java)
+
     private companion object {
         private const val IMAGINATION_LIMIT = 6
     }
@@ -118,5 +121,9 @@ class ImaginationService(
      * @param id 상상해보기 id
      * @throws ImaginationNotFoundException id인 상상해보기가 존재하지 않을 시
      */
-    private fun findById(id: Long) = repo.findById(id).orElseThrow { ImaginationNotFoundException(id) }
+    private fun findById(id: Long) =
+        repo.findById(id).orElseThrow {
+            log.info("상상해보기 조회 실패 : {id: $id}")
+            ImaginationNotFoundException()
+        }
 }
