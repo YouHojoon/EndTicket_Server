@@ -1,5 +1,0 @@
-logging:
-  pattern:
-    level: "%5p [service=${spring.application.name:}, %mdc]"
-  level:
-    org.hibernate.orm.jdbc.bind: trace
