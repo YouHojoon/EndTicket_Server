@@ -2,6 +2,8 @@ package ac.kr.smu.endticket.history.domain.model
 
 import ac.kr.smu.endticket.common.jpa.Audit
 import ac.kr.smu.endticket.history.ui.response.HistoryResponse
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.persistence.*
 import org.hibernate.annotations.DiscriminatorOptions
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
@@ -34,10 +36,23 @@ abstract class History(
     @Embedded
     private val audit = Audit()
 
+    /**
+     * 기록 응답으로 변환하는 메소드
+     */
     abstract fun toResponse(): HistoryResponse
 
+    /**
+     * 기록의 종류
+     * @property TICKET 티켓
+     * @property IMAGINATION 상상해보기
+     */
+    @Schema(description = "기록의 종류")
     enum class Type {
+        @JsonProperty("ticket")
+        @Schema(description = "티켓")
         TICKET,
+        @JsonProperty("imagination")
+        @Schema(description = "상상해보기")
         IMAGINATION,
         ;
 

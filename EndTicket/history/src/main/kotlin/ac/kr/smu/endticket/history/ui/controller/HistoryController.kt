@@ -25,7 +25,10 @@ class HistoryController(
     @GetMapping("{type}")
     fun findHistories(
         @PathVariable("type")
-        @Parameter(description = "기록의 종류", schema = Schema(implementation = History.Type::class))
+        @Parameter(
+            description = "기록의 종류",
+            schema = Schema(implementation = History.Type::class),
+        )
         type: History.Type,
         @PageableDefault
         @Parameter(description = "조회할 페이지", schema = Schema(implementation = Pageable::class))
