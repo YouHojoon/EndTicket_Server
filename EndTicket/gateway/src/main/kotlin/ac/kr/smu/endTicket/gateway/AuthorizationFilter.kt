@@ -20,29 +20,43 @@ class AuthorizationFilter(
 
     override fun apply(config: Any): GatewayFilter {
         return GatewayFilter { exchange, chain ->
+            val message = "게이트웨이 인증 에러"
             val token =
                 exchange.request.headers.getFirst("Authorization")
                     ?: return@GatewayFilter denyRequest(
                         exchange.response,
                         HttpStatus.BAD_REQUEST,
-                        ExceptionResponse(400, "게이트웨이 인증 에러", "access 토큰이 없습니다."),
+                        ExceptionResponse(400, message, "access 토큰이 없습니다."),
                     )
 
             try {
-                val userId = tokenService.validateAccessToken(token).get().userId
-                val request =
-                    exchange.request
-                        .mutate()
-                        .header(HttpHeaderName.USER_ID, userId.toString())
-                        .build()
-                chain
-                    .filter(exchange.mutate().request(request).build())
+                val response = tokenService.validateAccessToken(token).get()
+
+                if (response.status == 200) {
+                    val request =
+                        exchange.request
+                            .mutate()
+                            .header(HttpHeaderName.USER_ID, response.userId.toString())
+                            .build()
+                    chain
+                        .filter(exchange.mutate().request(request).build())
+                } else {
+                    denyRequest(
+                        exchange.response,
+                        HttpStatus.valueOf(response.status),
+                        ExceptionResponse(
+                            code = response.status,
+                            message = message,
+                            detail = response.message ?: "",
+                        ),
+                    )
+                }
             } catch (e: Exception) {
                 log.error("인증 서버와 통신 실패", e)
                 denyRequest(
                     exchange.response,
                     HttpStatus.SERVICE_UNAVAILABLE,
-                    ExceptionResponse(503, "게이트웨이 인증 에러", "인증 서버와 통신에 실패했습니다."),
+                    ExceptionResponse(503, message, "인증 서버와 통신에 실패했습니다."),
                 )
             }
         }
