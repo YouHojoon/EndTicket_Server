@@ -5,9 +5,9 @@ import java.time.LocalDateTime
 
 /**
  * 기록 응답 추상화 객체
- * @param createdAt 완료 일자
+ * @param completedAt 완료 일자
  */
 sealed class HistoryResponse(
     @Schema(description = "완료 일자", example = "2024-06-22T12:53:58.834278")
-    val createdAt: LocalDateTime,
+    val completedAt: LocalDateTime,
 )
