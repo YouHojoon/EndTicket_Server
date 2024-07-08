@@ -128,7 +128,6 @@ class ImaginationController(
 
     @ExceptionHandler(ImaginationNotFoundException::class)
     fun handleImaginationNotFoundException(e: ImaginationNotFoundException): ResponseEntity<ExceptionResponse> {
-        log.info("상상해보기 조회 실패 : {id: ${e.id}}", e)
         val status = HttpStatus.NOT_FOUND
 
         return ResponseEntity.status(status).body(

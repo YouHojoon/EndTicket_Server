@@ -7,6 +7,7 @@ import ac.kr.smu.endticket.futureme.domain.futureme.repository.FutureMeRepositor
 import ac.kr.smu.endticket.futureme.ui.request.CreateFutureMeRequest
 import ac.kr.smu.endticket.futureme.ui.request.UpdateFutureMeRequest
 import ac.kr.smu.endticket.futureme.ui.response.FutureMeResponse
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -14,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional
 class FutureMeService(
     private val repo: FutureMeRepository,
 ) {
+    private val log = LoggerFactory.getLogger(FutureMeService::class.java)
+
     /**
      * 미래의 나를 생성하는 메소드
      * @param request 생성 요청
@@ -84,5 +87,9 @@ class FutureMeService(
      * @param userId 사용자 id
      * @throws FutureMeNotFoundException id인 미래의 나가 존재하지 않을 시
      */
-    private fun findById(userId: Long) = repo.findById(userId).orElseThrow { FutureMeNotFoundException(userId) }
+    private fun findById(userId: Long) =
+        repo.findById(userId).orElseThrow {
+            log.info("미래의 나 조회 실패 : {userId: $userId}")
+            FutureMeNotFoundException()
+        }
 }
