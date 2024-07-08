@@ -102,7 +102,6 @@ class FutureMeController(
     @ExceptionHandler(FutureMeNotFoundException::class)
     fun handleFutureMeNotFoundException(e: FutureMeNotFoundException): ResponseEntity<ExceptionResponse> {
         val status = HttpStatus.NOT_FOUND
-        log.info("미래의 나 조회 실패 : {userId: ${e.userId}}", e)
 
         return ResponseEntity.status(status).body(
             ExceptionResponse(
