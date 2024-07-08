@@ -110,7 +110,6 @@ class TicketController(
 
     @ExceptionHandler(TicketNotFoundException::class)
     fun handleTicketNotFoundException(e: TicketNotFoundException): ResponseEntity<ExceptionResponse> {
-        log.info("티켓 조회 실패 : {id: ${e.id}}", e)
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
             ExceptionResponse(
                 code = HttpStatus.NOT_FOUND.value(),

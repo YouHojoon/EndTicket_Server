@@ -7,6 +7,7 @@ import ac.kr.smu.endticket.ticket.domain.model.TicketCompletedEvent
 import ac.kr.smu.endticket.ticket.domain.repository.TicketRepository
 import ac.kr.smu.endticket.ticket.ui.request.TicketRequest
 import ac.kr.smu.endticket.ticket.ui.response.TicketResponse
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -20,6 +21,8 @@ class TicketService(
     private val repo: TicketRepository,
     private val completionEventService: TicketCompletedEventService,
 ) {
+    private val log = LoggerFactory.getLogger(TicketService::class.java)
+
     private companion object {
         private const val TICKET_LIMIT = 5
     }
@@ -153,5 +156,9 @@ class TicketService(
      * @param id 티켓의 id
      * @throws TicketNotFoundException id인 티켓이 존재하지 않을 시
      */
-    private fun findById(id: Long) = repo.findById(id).orElseThrow { TicketNotFoundException(id) }
+    private fun findById(id: Long) =
+        repo.findById(id).orElseThrow {
+            log.info("티켓 조회 실패 : {id: $id}")
+            TicketNotFoundException()
+        }
 }
