@@ -1,0 +1,9 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+  - /var/logs/*.log
+ 
+output.logstash:
+ hosts: ["logstash:5100"]
+
