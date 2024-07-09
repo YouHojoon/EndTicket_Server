@@ -12,7 +12,6 @@ spring:
     import:
       - classpath:/common/jpa.yml
       - classpath:/common/swagger.yml
-      - classpath:/common/logging.yml
       - classpath:/common/kafka.yml
       - classpath:/common/zipkin.yml
       - classpath:/common/redis.yml
