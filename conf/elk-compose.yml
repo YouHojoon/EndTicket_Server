@@ -1,0 +1,93 @@
+version: '3.2'
+ 
+services:
+  elasticsearch:
+    build:
+      context: .
+      dockerfile: esDockerFile
+      args:
+        ELK_VERSION: 8.14.1
+    volumes:
+      - type: volume
+        source: elk
+        target: /usr/share/elk/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ELASTIC_PASSWORD: 1111
+      cluster.name: docker-cluster
+      discovery.type: single-node
+      xpack.security.enabled: false
+      xpack.security.enrollment.enabled: false
+      xpack.security.http.ssl,enabled: false
+      xpack.security.transport.ssl.enabled: false
+    networks:
+      - elk
+ 
+  logstash:
+    build:
+      context: .
+      dockerfile: logstashDockerFile
+      args:
+        ELK_VERSION: 8.14.1
+    volumes:
+      - type: bind
+        source: logstash.yml
+        target: /usr/share/logstash/config/logstash.yml
+        read_only: true
+      - type: bind
+        source: logstash-pipline.yml
+        target: /usr/share/logstash/pipeline/logstash.yml
+        read_only: true
+    ports:
+      - "5100:5100"
+      - "9600:9600"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+ 
+  kibana:
+    build:
+      context: .
+      dockerfile: kibanaDockerFile
+      args:
+        ELK_VERSION: 8.14.1
+    volumes:
+      - type: bind
+        source: kibana.yml
+        target: /usr/share/kibana/config/kibana.yml
+    ports:
+      - "5601:5601"
+    environment:
+      INTERACTIVESETUP_ENABLED: false
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+ 
+  filebeat:
+    build:
+      context: .
+      dockerfile: filebeatDockerFile
+      args:
+        ELK_VERSION: 8.14.1
+    volumes:
+      - ../logs:/var/logs:ro
+      - type: bind
+        source: filebeat.yml
+        target: /usr/share/filebeat/filebeat.yml
+        read_only: true
+    networks:
+      - elk
+    depends_on:
+      - logstash
+ 
+ 
+networks:
+  elk:
+    driver: bridge
+ 
+volumes:
+  elk:

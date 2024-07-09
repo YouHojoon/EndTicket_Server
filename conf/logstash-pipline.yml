@@ -1,0 +1,16 @@
+input {
+    beats {
+        port => 5100
+    }
+}
+ 
+ 
+output {
+        elasticsearch {
+                hosts => "elasticsearch:9200"
+                index => "logstash-%{+yyyy.MM.dd}"
+                user => "elastic"
+                password => "1111"
+                ecs_compatibility => disabled
+        }
+}
