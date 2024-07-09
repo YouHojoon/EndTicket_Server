@@ -52,7 +52,6 @@ class AuthorizationFilter(
                     )
                 }
             } catch (e: Exception) {
-                log.error("인증 서버와 통신 실패", e)
                 denyRequest(
                     exchange.response,
                     HttpStatus.SERVICE_UNAVAILABLE,

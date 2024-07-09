@@ -37,7 +37,7 @@ class TokenService {
         token: String,
         e: Exception,
     ): CompletableFuture<ValidateAccessTokenResponse> {
-        val message = "auth 서버에 access 토큰 검증 요청 실패 : {token: $token}"
+        val message = "access 토큰 검증 요청 실패 : {token: $token}"
         log.error(message, e)
 
         return CompletableFuture.failedFuture(e)
