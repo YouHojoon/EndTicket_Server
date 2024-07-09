@@ -18,6 +18,7 @@ import io.jsonwebtoken.*
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SignatureException
 import net.devh.boot.grpc.server.service.GrpcService
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
@@ -51,6 +52,8 @@ class TokenService(
         request: AccessToken,
         responseObserver: StreamObserver<ValidateAccessTokenResponse>,
     ) {
+        fun Logger.validateError(e: Throwable) = log.info("토큰 검증 실패 : {token : ${request.token}}",e)
+
         val (userId, status, message) =
             try {
                 val userId = parseUserId(request.token.split(" ").last())
@@ -59,15 +62,24 @@ class TokenService(
 
                 Triple(userId, 200, null)
             } catch (e: ExpiredJwtException) {
+                log.validateError(e)
                 Triple(null, 401, "토큰이 만료됐습니다.")
             } catch (e: SignatureException) {
+                log.validateError(e)
                 Triple(null, 400, "토큰 서명 검증에 실패했습니다.")
             } catch (e: UnsupportedJwtException) {
+                log.validateError(e)
                 Triple(null, 400, "올바르지 않은 토큰입니다.")
             } catch (e: StatusRuntimeException) {
+                log.validateError(e)
                 Triple(null, 500, e.message)
             } catch (e: UserExpiredException) {
+                log.validateError(e)
                 Triple(null, 401, e.message)
+            }
+            catch (e: MalformedJwtException){
+                log.validateError(e)
+                Triple(null, 400, "잘못된 형식의 토큰입니다.")
             }
         
         responseObserver.onNext(validateAccessTokenResponseOf(userId, status, message))
