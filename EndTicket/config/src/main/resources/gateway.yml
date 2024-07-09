@@ -19,7 +19,6 @@ spring:
   config:
     import:
       - classpath:/common/swagger.yml
-      - classpath:/common/logging.yml
       - classpath:/common/zipkin.yml
       - classpath:/common/grpc.yml
   application:
