@@ -4,7 +4,12 @@ input {
     }
 }
  
- 
+filter {
+  dissect {
+            mapping => { "[log][file][path]" => "/var/logs/%{service_name}-%{}.%{}.log"}
+	}
+}
+
 output {
         elasticsearch {
                 hosts => "elasticsearch:9200"

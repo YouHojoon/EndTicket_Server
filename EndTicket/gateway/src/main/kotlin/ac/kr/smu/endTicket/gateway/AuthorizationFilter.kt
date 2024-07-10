@@ -41,6 +41,8 @@ class AuthorizationFilter(
                     chain
                         .filter(exchange.mutate().request(request).build())
                 } else {
+                    log.info("토큰 검증 실패 : {accessToken : $token, message : ${response.message}}")
+
                     denyRequest(
                         exchange.response,
                         HttpStatus.valueOf(response.status),
