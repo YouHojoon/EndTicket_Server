@@ -1,10 +1,9 @@
 package ac.kr.smu.endticket.auth
 
-import ac.kr.smu.endTicket.auth.domain.exception.UserExpiredException
-import ac.kr.smu.endTicket.auth.domain.service.OAuth2Service
-import ac.kr.smu.endTicket.auth.service.TokenService
-import ac.kr.smu.endTicket.auth.service.UserService
-import ac.kr.smu.endTicket.auth.ui.controller.AuthController
+import ac.kr.smu.endticket.auth.domain.exception.UserExpiredException
+import ac.kr.smu.endticket.auth.service.TokenService
+import ac.kr.smu.endticket.auth.service.UserService
+import ac.kr.smu.endticket.auth.ui.controller.AuthController
 import ac.kr.smu.endticket.common.redis.config.AutoRedisConfig
 import ac.kr.smu.endticket.common.redis.test.RedisTestConfig
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
@@ -31,9 +30,6 @@ class AuthControllerTest : DescribeSpec() {
     lateinit var mvc: MockMvc
 
     @MockkBean
-    private lateinit var oauth2Service: OAuth2Service
-
-    @MockkBean
     private lateinit var tokenService: TokenService
 
     @MockkBean
@@ -42,7 +38,6 @@ class AuthControllerTest : DescribeSpec() {
     init {
         describe("토큰 발급 시") {
             context("SNS 종류와 인증 코드로 요청하는 경우") {
-                mockOAuth2Service(oauth2Service)
                 context("사용자 서버와 통신을 성공했을 때") {
                     beforeContainer {
                         every {
@@ -54,9 +49,7 @@ class AuthControllerTest : DescribeSpec() {
                     }
                     context("만료된 사용자라면") {
                         every { tokenService.createAccessAndRefreshToken(AuthTestParameters.USER_ID) } throws
-                            UserExpiredException(
-                                AuthTestParameters.USER_ID,
-                            )
+                            UserExpiredException()
 
                         it("401 에러를 반환한다.") {
                             mvc
@@ -128,9 +121,7 @@ class AuthControllerTest : DescribeSpec() {
                 }
                 context("만료된 사용자라면") {
                     every { tokenService.reissueToken(AuthTestParameters.REFRESH_TOKEN) } throws
-                        UserExpiredException(
-                            AuthTestParameters.USER_ID,
-                        )
+                        UserExpiredException()
                     it("401에러를 반환한다.") {
                         mvc.reissueToken()
                     }

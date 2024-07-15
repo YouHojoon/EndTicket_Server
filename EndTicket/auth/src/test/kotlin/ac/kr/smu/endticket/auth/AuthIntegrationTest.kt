@@ -1,16 +1,14 @@
 package ac.kr.smu.endticket.auth
 
-import ac.kr.smu.endTicket.auth.config.property.JWTProperties
-import ac.kr.smu.endTicket.auth.domain.service.OAuth2Service
-import ac.kr.smu.endTicket.auth.service.TokenService
-import ac.kr.smu.endTicket.auth.service.UserService
-import ac.kr.smu.endTicket.auth.ui.controller.AuthController
-import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
+import ac.kr.smu.endticket.auth.config.property.JWTProperties
+import ac.kr.smu.endticket.auth.service.TokenService
+import ac.kr.smu.endticket.auth.service.UserService
+import ac.kr.smu.endticket.auth.ui.controller.AuthController
+import ac.kr.smu.endticket.auth.ui.response.TokenResponse
 import ac.kr.smu.endticket.common.redis.config.AutoRedisConfig
 import ac.kr.smu.endticket.common.redis.test.RedisTestConfig
 import ac.kr.smu.endticket.common.web.test.andReturn
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
-import com.ninjasquad.springmockk.MockkBean
 import com.ninjasquad.springmockk.SpykBean
 import io.jsonwebtoken.Jwts
 import io.kotest.core.spec.style.DescribeSpec
@@ -47,9 +45,6 @@ import java.util.concurrent.CompletableFuture
 class AuthIntegrationTest : DescribeSpec() {
     override fun extensions() = listOf(SpringExtension)
 
-    @MockkBean
-    private lateinit var oauth2Service: OAuth2Service
-
     @SpykBean
     private lateinit var userService: UserService
 
@@ -74,7 +69,6 @@ class AuthIntegrationTest : DescribeSpec() {
         }
 
         describe("토큰 발급 시") {
-            mockOAuth2Service(oauth2Service)
             context("SNS 종류와 인증 코드로 요청하는 경우") {
                 context("사용자 서버와 통신을 성공했을 때") {
                     context("만료된 사용자라면") {
@@ -120,8 +114,6 @@ class AuthIntegrationTest : DescribeSpec() {
         }
 
         describe("토큰 갱신 시") {
-            mockOAuth2Service(oauth2Service)
-
             suspend fun DescribeSpecContainerScope.it_response_badRequest(refreshToken: String? = null) =
                 it("400에러를 반환한다.") {
                     mvc
