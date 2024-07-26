@@ -25,6 +25,7 @@ EndTicket/history/src/test/resources/application.yaml
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/httpRequests
 
 # AWS User-specific
 .idea/**/aws.xml

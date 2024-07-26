@@ -1,13 +1,11 @@
 package ac.kr.smu.endticket.auth.infra.security
 
-import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
-import org.springframework.http.HttpMethod
+import org.jetbrains.annotations.NotNull
+import org.slf4j.LoggerFactory
+import org.springframework.core.convert.converter.Converter
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException
@@ -18,29 +16,37 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequ
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationResponse
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames
 import org.springframework.security.oauth2.core.oidc.OidcScopes
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationCodeAuthenticationToken
+import org.springframework.security.web.authentication.AuthenticationConverter
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
 /**
- * 토큰 생성 전의 인증을 처리하는 필터
- * SNS의 OAuth2 서비스를 통해 인증한다.
- * @property clientRegistrationRepository OAuth2 서비스 조회를 위한 저장소
- * @property authenticationManager Authentication의 생성을 담당하는 객체
+ * OAuth2 Token 요청을 변환해주는 객체
+ * @property clientRegistrationRepository OAuth2 로그인을 수행한 client를 조회하는 클래스
  */
-class OAuth2TokenRequestAuthenticationFilter(
+class OAuth2AccessTokenRequestConverter(
     private val clientRegistrationRepository: ClientRegistrationRepository,
     private val authenticationManager: AuthenticationManager,
-) : AbstractAuthenticationProcessingFilter(AntPathRequestMatcher("/auth/token*", HttpMethod.POST.name())) {
-    private val securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy()
+    tokenEndpoint: String,
+    authenticationConverterInitializer: () -> Converter<OAuth2LoginAuthenticationToken, OAuth2AuthorizationCodeAuthenticationToken>,
+) : AuthenticationConverter {
+    private val matcher = AntPathRequestMatcher(tokenEndpoint)
+    private val log = LoggerFactory.getLogger(OAuth2AccessTokenRequestConverter::class.java)
+    private val authenticationConverter: Converter<OAuth2LoginAuthenticationToken, OAuth2AuthorizationCodeAuthenticationToken> by lazy(
+        authenticationConverterInitializer,
+    )
 
     private companion object {
-        private const val SOCIAL_TYPE_PARAMETER_NAME = "socialType"
+        private const val REGISTRATION_ID_URI_VARIABLE_NAME = "registrationId"
     }
 
-    override fun attemptAuthentication(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-    ): Authentication {
+    override fun convert(
+        @NotNull request: HttpServletRequest,
+    ): Authentication? {
+        if (!matcher.matches(request)) {
+            return null
+        }
+
         val parameters = request.parameterMap
         val codes = parameters[OAuth2ParameterNames.CODE]
 
@@ -48,16 +54,14 @@ class OAuth2TokenRequestAuthenticationFilter(
             throw parameterError(OAuth2ErrorCodes.INVALID_REQUEST, OAuth2ParameterNames.CODE)
         }
 
-        val socialTypes = parameters[SOCIAL_TYPE_PARAMETER_NAME]
-        if (socialTypes == null || socialTypes.size != 1) {
-            throw parameterError(OAuth2ErrorCodes.INVALID_REQUEST, SOCIAL_TYPE_PARAMETER_NAME)
+        val registrationId = matcher.matcher(request).variables[REGISTRATION_ID_URI_VARIABLE_NAME]
+        if (registrationId.isNullOrBlank()) {
+            throw parameterError(OAuth2ErrorCodes.INVALID_REQUEST, REGISTRATION_ID_URI_VARIABLE_NAME)
         }
 
         val code = codes.first()
-        val socialType = socialTypes.first()
-
         val clientRegistration =
-            clientRegistrationRepository.findByRegistrationId(socialType)
+            clientRegistrationRepository.findByRegistrationId(registrationId)
                 ?: throw OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_CLIENT)
 
         val authRequest =
@@ -68,15 +72,18 @@ class OAuth2TokenRequestAuthenticationFilter(
                 .authorizationUri(clientRegistration.providerDetails.authorizationUri)
                 .scope(OidcScopes.OPENID)
                 .build()
+
         val authResponse =
             OAuth2AuthorizationResponse
                 .success(code)
                 .state("")
                 .redirectUri(clientRegistration.redirectUri)
                 .build()
+
         val authExchange = OAuth2AuthorizationExchange(authRequest, authResponse)
 
         try {
+            // 인증 위임
             val authResult =
                 authenticationManager.authenticate(
                     OAuth2LoginAuthenticationToken(
@@ -85,28 +92,11 @@ class OAuth2TokenRequestAuthenticationFilter(
                     ),
                 ) as OAuth2LoginAuthenticationToken
 
-            return OAuth2AuthenticationToken(
-                authResult.principal,
-                authResult.authorities,
-                authResult.clientRegistration.registrationId,
-            )
+            return authenticationConverter.convert(authResult)
         } catch (e: Exception) {
-            logger.error("OAuth2 인증 실패", e)
+            log.error("OAuth2 인증 실패", e)
             throw e
         }
-    }
-
-    override fun successfulAuthentication(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        chain: FilterChain,
-        authResult: Authentication,
-    ) {
-        val context = securityContextHolderStrategy.createEmptyContext()
-        context.authentication = authResult
-        this.securityContextHolderStrategy.context = context
-
-        chain.doFilter(request, response)
     }
 
     private fun parameterError(

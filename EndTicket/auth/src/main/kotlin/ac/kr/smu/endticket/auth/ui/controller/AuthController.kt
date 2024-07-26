@@ -35,10 +35,24 @@ class AuthController(
         @AuthenticationPrincipal
         oauth2User: OAuth2User,
     ) = try {
-        println("???????")
-        ResponseEntity
-            .status(HttpStatus.OK)
-            .body(tokenService.createAccessAndRefreshToken(oauth2User.name.toLong()))
+
+        // @formatter:off
+//        val tokenContextBuilder =
+//            DefaultOAuth2TokenContext.builder()
+//            .principal(authentication)
+//            .authorizationServerContext(AuthorizationServerContextHolder.getContext())
+//            .authorization(a)
+//            .authorizedScopes(authorization.getAuthorizedScopes())
+//                .auth
+//            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+//            .authorizationGrant(authorizationCodeAuthentication)
+//
+//        tokenGenerator.generate()
+
+
+//        ResponseEntity
+//            .status(HttpStatus.OK)
+//            .body(tokenService.createAccessAndRefreshToken(oauth2User.name.toLong()))
     } catch (e: UserExpiredException) {
         ResponseEntity
             .status(HttpStatus.UNAUTHORIZED)

@@ -34,14 +34,13 @@ import java.util.concurrent.TimeUnit
 @GrpcService
 class TokenService(
     private val redisTemplate: RedisTemplate<String, String>,
-    private val jwtProperties: JWTProperties,
 ) : TokenServiceGrpc.TokenServiceImplBase() {
     private val log = LoggerFactory.getLogger(TokenService::class.java)
 
     /**
      * JWT를 서명하기 위한 key
      */
-    private val key = Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray())
+    private val key = Keys.hmacShaKeyFor("dlatldlalwjgapogjapwgjopawgjpgawjpgajwpoga".toByteArray())
 
     /**
      * access 토큰을 검증하는 메소드
@@ -101,8 +100,8 @@ class TokenService(
         checkUserNotExpired(userId)
 
         val issuedAt = Date()
-        val accessToken = Jwts.builder().createAccessToken(key, userId, issuedAt, jwtProperties.accessTokenExpiration)
-        val refreshToken = Jwts.builder().createRefreshToken(key, issuedAt, jwtProperties.refreshTokenExpiration)
+        val accessToken = Jwts.builder().createAccessToken(key, userId, issuedAt, 12312414124)
+        val refreshToken = Jwts.builder().createRefreshToken(key, issuedAt, 12312414124)
 
         redisTemplate.setRefreshToken(userId, refreshToken)
 
@@ -152,13 +151,13 @@ class TokenService(
             ) {
                 Jwts
                     .builder()
-                    .createRefreshToken(key, issuedAt, jwtProperties.refreshTokenExpiration)
+                    .createRefreshToken(key, issuedAt, 12312414124)
                     .also { redisTemplate.setRefreshToken(userId, it) }
             } else {
                 null
             }
 
-        val accessToken = Jwts.builder().createAccessToken(key, userId, issuedAt, jwtProperties.accessTokenExpiration)
+        val accessToken = Jwts.builder().createAccessToken(key, userId, issuedAt, 12312414124)
 
         return TokenResponse(accessToken, newRefreshToken)
     }
@@ -187,7 +186,7 @@ class TokenService(
     ): Boolean {
         try {
             val claims = Jwts.parser().parseJwtSignedClaims(key, refreshToken)
-            return claims.payload.expiration.time - issuedAt.time <= jwtProperties.refreshTokenReissueExpiration
+            return claims.payload.expiration.time - issuedAt.time <= 12312414124
         } catch (e: ExpiredJwtException) {
             throw RefreshTokenExpiredException(refreshToken)
         }
@@ -202,5 +201,5 @@ class TokenService(
         userId: Long,
         refreshToken: String,
     ) = opsForValue()
-        .set(refreshToken, userId.toString(), jwtProperties.refreshTokenExpiration, TimeUnit.MILLISECONDS)
+        .set(refreshToken, userId.toString(), 12312414124, TimeUnit.MILLISECONDS)
 }
