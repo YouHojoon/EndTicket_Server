@@ -1,7 +1,7 @@
 package ac.kr.smu.endticket.auth
 
-import ac.kr.smu.endTicket.auth.domain.model.SocialType
-import ac.kr.smu.endTicket.auth.ui.response.TokenResponse
+import ac.kr.smu.endticket.auth.domain.model.SocialType
+import ac.kr.smu.endticket.auth.ui.response.TokenResponse
 import ac.kr.smu.endticket.protobuf.AccessToken
 import io.grpc.StatusRuntimeException
 import io.jsonwebtoken.ExpiredJwtException

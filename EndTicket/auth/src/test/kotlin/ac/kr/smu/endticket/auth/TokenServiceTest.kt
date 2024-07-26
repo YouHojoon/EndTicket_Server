@@ -1,10 +1,10 @@
 package ac.kr.smu.endticket.auth
 
-import ac.kr.smu.endTicket.auth.config.property.JWTProperties
-import ac.kr.smu.endTicket.auth.constant.RedisConstant
-import ac.kr.smu.endTicket.auth.domain.exception.RefreshTokenExpiredException
-import ac.kr.smu.endTicket.auth.domain.exception.UserExpiredException
-import ac.kr.smu.endTicket.auth.service.TokenService
+import ac.kr.smu.endticket.auth.config.property.JWTProperties
+import ac.kr.smu.endticket.auth.constant.RedisConstant
+import ac.kr.smu.endticket.auth.domain.exception.RefreshTokenExpiredException
+import ac.kr.smu.endticket.auth.domain.exception.UserExpiredException
+import ac.kr.smu.endticket.auth.service.TokenService
 import ac.kr.smu.endticket.common.redis.test.RedisTestConfig
 import ac.kr.smu.endticket.protobuf.AccessToken
 import ac.kr.smu.endticket.protobuf.TokenServiceGrpc.TokenServiceBlockingStub
@@ -18,7 +18,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.SpringBootTest

@@ -1,6 +1,6 @@
 package ac.kr.smu.endticket.auth
 
-import ac.kr.smu.endTicket.auth.service.UserService
+import ac.kr.smu.endticket.auth.service.UserService
 import io.github.resilience4j.circuitbreaker.CircuitBreaker
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry
 import io.github.resilience4j.springboot3.circuitbreaker.autoconfigure.CircuitBreakerAutoConfiguration

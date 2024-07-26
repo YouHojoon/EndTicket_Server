@@ -5,6 +5,28 @@ Connection: Keep-Alive
 User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.8)
 Accept-Encoding: br,deflate,gzip,x-gzip
 
+<> 2024-07-26T144920.200.json
+
+###
+
+POST http://127.0.0.1:8888/actuator/refresh
+Accept: application/vnd.spring-boot.actuator.v3+json
+Content-Length: 0
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.8)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
+<> 2024-07-10T192346.200.json
+
+###
+
+POST http://127.0.0.1:8888/actuator/refresh
+Accept: application/vnd.spring-boot.actuator.v3+json
+Content-Length: 0
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.5.14 (Java/17.0.8)
+Accept-Encoding: br,deflate,gzip,x-gzip
+
 <> 2024-07-09T015755.200.json
 
 ###
