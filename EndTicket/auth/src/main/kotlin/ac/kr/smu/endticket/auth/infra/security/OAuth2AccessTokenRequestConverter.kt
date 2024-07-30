@@ -8,8 +8,8 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
+import org.springframework.security.oauth2.core.AuthorizationGrantType
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException
-import org.springframework.security.oauth2.core.OAuth2Error
 import org.springframework.security.oauth2.core.OAuth2ErrorCodes
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationExchange
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest
@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationResp
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames
 import org.springframework.security.oauth2.core.oidc.OidcScopes
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationCodeAuthenticationToken
+import org.springframework.security.oauth2.server.authorization.web.OAuth2TokenEndpointFilter
 import org.springframework.security.web.authentication.AuthenticationConverter
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 
@@ -30,7 +31,7 @@ class OAuth2AccessTokenRequestConverter(
     tokenEndpoint: String,
     authenticationConverterInitializer: () -> Converter<OAuth2LoginAuthenticationToken, OAuth2AuthorizationCodeAuthenticationToken>,
 ) : AuthenticationConverter {
-    private val matcher = AntPathRequestMatcher(tokenEndpoint)
+    private val matcher = AntPathRequestMatcher("$tokenEndpoint/{$REGISTRATION_ID_URI_VARIABLE_NAME}")
     private val log = LoggerFactory.getLogger(OAuth2AccessTokenRequestConverter::class.java)
     private val authenticationConverter: Converter<OAuth2LoginAuthenticationToken, OAuth2AuthorizationCodeAuthenticationToken> by lazy(
         authenticationConverterInitializer,
@@ -43,20 +44,25 @@ class OAuth2AccessTokenRequestConverter(
     override fun convert(
         @NotNull request: HttpServletRequest,
     ): Authentication? {
-        if (!matcher.matches(request)) {
+        if (!matcher.matches(request) ||
+            !request
+                .getParameter(OAuth2ParameterNames.GRANT_TYPE)
+                .equals(AuthorizationGrantType.AUTHORIZATION_CODE.value)
+        ) {
             return null
         }
 
-        val parameters = request.parameterMap
-        val codes = parameters[OAuth2ParameterNames.CODE]
-
-        if (codes == null || codes.size != 1) {
-            throw parameterError(OAuth2ErrorCodes.INVALID_REQUEST, OAuth2ParameterNames.CODE)
+        val codes = request.getParameterValues(OAuth2ParameterNames.CODE)
+        if (codes.size != 1) {
+            throw OAuth2EndpointUtils.parameterError(OAuth2ErrorCodes.INVALID_REQUEST, OAuth2ParameterNames.CODE)
         }
 
         val registrationId = matcher.matcher(request).variables[REGISTRATION_ID_URI_VARIABLE_NAME]
         if (registrationId.isNullOrBlank()) {
-            throw parameterError(OAuth2ErrorCodes.INVALID_REQUEST, REGISTRATION_ID_URI_VARIABLE_NAME)
+            throw OAuth2EndpointUtils.parameterError(
+                OAuth2ErrorCodes.INVALID_REQUEST,
+                REGISTRATION_ID_URI_VARIABLE_NAME,
+            )
         }
 
         val code = codes.first()
@@ -97,14 +103,5 @@ class OAuth2AccessTokenRequestConverter(
             log.error("OAuth2 인증 실패", e)
             throw e
         }
-    }
-
-    private fun parameterError(
-        errorCode: String?,
-        parameterName: String,
-        errorUri: String? = null,
-    ): OAuth2AuthenticationException {
-        val error = OAuth2Error(errorCode, "OAuth 2.0 Parameter: $parameterName", errorUri)
-        return OAuth2AuthenticationException(error)
     }
 }

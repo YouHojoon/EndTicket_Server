@@ -2,7 +2,8 @@ package ac.kr.smu.endticket.auth.infra.security
 
 import org.springframework.core.convert.converter.Converter
 import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken
-import org.springframework.security.oauth2.core.*
+import org.springframework.security.oauth2.core.AuthorizationGrantType
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationCode
@@ -22,14 +23,8 @@ class OAuth2LoginAuthenticationConverter(
     private val registeredClientRepository: RegisteredClientRepository,
     private val authorizationService: OAuth2AuthorizationService,
 ) : Converter<OAuth2LoginAuthenticationToken, OAuth2AuthorizationCodeAuthenticationToken> {
-    private companion object {
-        private const val CLIENT_ID = "endticket"
-    }
-
     override fun convert(source: OAuth2LoginAuthenticationToken): OAuth2AuthorizationCodeAuthenticationToken? {
-        val client =
-            registeredClientRepository.findByClientId(CLIENT_ID)
-                ?: throw OAuth2AuthenticationException(OAuth2Error(OAuth2ErrorCodes.INVALID_CLIENT))
+        val client = registeredClientRepository.findEndticketClient()
         val redirectUri = client.redirectUris.firstOrNull() ?: ""
 
         val principal =

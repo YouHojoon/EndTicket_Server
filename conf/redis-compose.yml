@@ -1,0 +1,74 @@
+version: '3'
+services:
+  redis-master-1:
+    build:
+       dockerfile: redisDockerFile
+    networks:
+        - redis
+    ports:
+      - "6379:6379"
+  redis-master-2:
+    build:
+       dockerfile: redisDockerFile
+    networks:
+        - redis
+    ports:
+      - "6380:6379"
+
+  redis-master-3:
+    build:
+       dockerfile: redisDockerFile
+    networks:
+        - redis
+    ports:
+      - "6381:6379"
+
+  redis-slave-1:
+    build:
+       dockerfile: redisDockerFile
+    networks:
+        - redis
+    ports:
+      - "6479:6379"
+  redis-slave-2:
+    build:
+       dockerfile: redisDockerFile
+    networks:
+        - redis
+    ports:
+      - "6480:6379"
+  redis-slave-3:
+    build:
+       dockerfile: redisDockerFile
+    networks:
+        - redis
+    ports:
+      - "6481:6379"
+
+  redis-cluster-entry:
+    image: redis:latest
+    command: 
+      - sh
+      - -c
+      - 
+        redis-cli --cluster create redis-master-1:6379 redis-master-2:6379 redis-master-3:6379 --cluster-yes
+
+        redis-cli --cluster add-node redis-slave-1:6379 redis-master-1:6379 --cluster-slave --cluster-yes
+
+        redis-cli --cluster add-node redis-slave-2:6379 redis-master-2:6379 --cluster-slave --cluster-yes
+
+        redis-cli --cluster add-node redis-slave-3:6379 redis-master-3:6379 --cluster-slave --cluster-yes
+
+    depends_on:
+      - redis-master-1
+      - redis-master-2
+      - redis-master-3
+      - redis-slave-1
+      - redis-slave-2
+      - redis-slave-3
+    networks:
+      - redis
+
+networks:
+  redis:
+    driver: bridge

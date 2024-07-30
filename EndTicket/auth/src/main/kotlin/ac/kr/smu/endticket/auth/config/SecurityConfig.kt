@@ -3,6 +3,7 @@ package ac.kr.smu.endticket.auth.config
 import ac.kr.smu.endticket.auth.infra.security.OAuth2Configurer
 import ac.kr.smu.endticket.auth.service.UserService
 import ac.kr.smu.endticket.common.security.baseConfig
+import ac.kr.smu.endticket.common.security.permitOnlyWhitelistRequest
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet
@@ -16,12 +17,12 @@ import org.springframework.boot.ssl.SslBundles
 import org.springframework.cloud.client.discovery.DiscoveryClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
 import org.springframework.security.oauth2.core.AuthorizationGrantType
-import org.springframework.security.oauth2.core.oidc.OidcScopes
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient
@@ -53,7 +54,7 @@ class SecurityConfig {
     fun registeredClientRepository(): RegisteredClientRepository {
         val client =
             RegisteredClient
-                .withId(UUID.randomUUID().toString())
+                .withId("endticket")
                 .clientId("endticket")
                 .clientSecret(UUID.randomUUID().toString())
                 .redirectUri("")
@@ -62,10 +63,11 @@ class SecurityConfig {
                 .tokenSettings(
                     TokenSettings
                         .builder()
+                        .refreshTokenTimeToLive(Duration.ofDays(7))
+                        .reuseRefreshTokens(false)
                         .accessTokenTimeToLive(Duration.ofHours(1))
-                        .build()
-                )
-                .build()
+                        .build(),
+                ).build()
 
         return InMemoryRegisteredClientRepository(client)
     }
@@ -77,32 +79,12 @@ class SecurityConfig {
         clientRegistrationRepository: ClientRegistrationRepository,
         registeredClientRepository: RegisteredClientRepository,
         userService: UserService,
+        redisTemplate: RedisTemplate<String, Any>,
         authorizationServerProperties: OAuth2AuthorizationServerProperties,
     ): SecurityFilterChain {
         http {
             baseConfig()
-            authorizeRequests {
-                discoveryClient.getInstances("gateway").forEach {
-                    val ipMatcher = IpAddressMatcher(it.host)
-                    /*
-                        게이트웨이에서 오는 요청 중 토큰 재발급 제외하고 인증 필요
-                     */
-                    authorize(
-                        matches =
-                            object : RequestMatcher {
-                                val pathMatcher = AntPathRequestMatcher("/auth/reissue-token")
-
-                                override fun matches(request: HttpServletRequest): Boolean =
-                                    ipMatcher.matches(request) && pathMatcher.matches(request)
-                            },
-                        permitAll,
-                    )
-
-                    authorize(ipMatcher, authenticated)
-                }
-                authorize(anyRequest, permitAll)
-            }
-
+            permitOnlyWhitelistRequest(discoveryClient.getInstances("gateway").map { it.host })
             formLogin { disable() }
         }
 
@@ -111,6 +93,7 @@ class SecurityConfig {
                 clientRegistrationRepository,
                 userService,
                 authorizationServerProperties,
+                redisTemplate,
             ),
         )
 
