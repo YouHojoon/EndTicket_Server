@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.auth.infra.security
+package ac.kr.smu.endticket.auth.infra.oauth2
 
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException
 import org.springframework.security.oauth2.core.OAuth2Error

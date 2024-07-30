@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.auth.infra.security
+package ac.kr.smu.endticket.auth.infra.oauth2
 
 import jakarta.servlet.http.HttpServletRequest
 import org.jetbrains.annotations.NotNull

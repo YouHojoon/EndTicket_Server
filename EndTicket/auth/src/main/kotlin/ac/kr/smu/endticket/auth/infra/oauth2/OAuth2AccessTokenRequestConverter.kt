@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.auth.infra.security
+package ac.kr.smu.endticket.auth.infra.oauth2
 
 import jakarta.servlet.http.HttpServletRequest
 import org.jetbrains.annotations.NotNull
@@ -17,7 +17,6 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationResp
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames
 import org.springframework.security.oauth2.core.oidc.OidcScopes
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationCodeAuthenticationToken
-import org.springframework.security.oauth2.server.authorization.web.OAuth2TokenEndpointFilter
 import org.springframework.security.web.authentication.AuthenticationConverter
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 

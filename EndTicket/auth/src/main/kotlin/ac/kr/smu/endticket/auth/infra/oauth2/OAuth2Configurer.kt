@@ -1,9 +1,8 @@
-package ac.kr.smu.endticket.auth.infra.security
+package ac.kr.smu.endticket.auth.infra.oauth2
 
 import ac.kr.smu.endticket.auth.service.UserService
 import org.jetbrains.annotations.NotNull
 import org.springframework.boot.autoconfigure.security.oauth2.server.servlet.OAuth2AuthorizationServerProperties
-import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer
@@ -19,7 +18,7 @@ class OAuth2Configurer(
     private val clientRegistrationRepository: ClientRegistrationRepository,
     private val userService: UserService,
     private val authorizationServerProperties: OAuth2AuthorizationServerProperties,
-    private val redisTemplate: RedisTemplate<String, Any>,
+    private val refreshTokenService: RedisRefreshTokenService,
 ) : AbstractHttpConfigurer<OAuth2Configurer, HttpSecurity>() {
     override fun configure(
         @NotNull builder: HttpSecurity,
@@ -50,7 +49,7 @@ class OAuth2Configurer(
         val lazyRegisteredClientRepository = lazy { builder.getSharedObject(RegisteredClientRepository::class.java) }
         val authorizationService =
             RedisOAuth2AuthorizationService(
-                RedisRefreshTokenService(redisTemplate),
+                refreshTokenService,
                 InMemoryOAuth2AuthorizationService(),
                 lazyRegisteredClientRepository,
             )

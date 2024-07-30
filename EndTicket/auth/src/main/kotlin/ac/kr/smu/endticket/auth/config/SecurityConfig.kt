@@ -1,6 +1,7 @@
 package ac.kr.smu.endticket.auth.config
 
-import ac.kr.smu.endticket.auth.infra.security.OAuth2Configurer
+import ac.kr.smu.endticket.auth.infra.oauth2.OAuth2Configurer
+import ac.kr.smu.endticket.auth.infra.oauth2.RedisRefreshTokenService
 import ac.kr.smu.endticket.auth.service.UserService
 import ac.kr.smu.endticket.common.security.baseConfig
 import ac.kr.smu.endticket.common.security.permitOnlyWhitelistRequest
@@ -9,7 +10,6 @@ import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet
 import com.nimbusds.jose.jwk.source.JWKSource
 import com.nimbusds.jose.proc.SecurityContext
-import jakarta.servlet.http.HttpServletRequest
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties
 import org.springframework.boot.autoconfigure.security.oauth2.server.servlet.OAuth2AuthorizationServerProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -17,7 +17,6 @@ import org.springframework.boot.ssl.SslBundles
 import org.springframework.cloud.client.discovery.DiscoveryClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.invoke
@@ -29,9 +28,6 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings
 import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher
-import org.springframework.security.web.util.matcher.IpAddressMatcher
-import org.springframework.security.web.util.matcher.RequestMatcher
 import java.security.KeyPair
 import java.security.PrivateKey
 import java.security.interfaces.RSAPrivateKey
@@ -79,7 +75,7 @@ class SecurityConfig {
         clientRegistrationRepository: ClientRegistrationRepository,
         registeredClientRepository: RegisteredClientRepository,
         userService: UserService,
-        redisTemplate: RedisTemplate<String, Any>,
+        refreshTokenService: RedisRefreshTokenService,
         authorizationServerProperties: OAuth2AuthorizationServerProperties,
     ): SecurityFilterChain {
         http {
@@ -93,7 +89,7 @@ class SecurityConfig {
                 clientRegistrationRepository,
                 userService,
                 authorizationServerProperties,
-                redisTemplate,
+                refreshTokenService,
             ),
         )
 

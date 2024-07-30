@@ -1,13 +1,11 @@
 package ac.kr.smu.endticket.auth
 
 import ac.kr.smu.endticket.auth.config.property.JWTProperties
-import ac.kr.smu.endticket.auth.service.TokenService
 import ac.kr.smu.endticket.auth.service.UserService
 import ac.kr.smu.endticket.auth.ui.controller.AuthController
 import ac.kr.smu.endticket.auth.ui.response.TokenResponse
 import ac.kr.smu.endticket.common.redis.config.AutoRedisConfig
 import ac.kr.smu.endticket.common.redis.test.RedisTestConfig
-import ac.kr.smu.endticket.common.web.test.andReturn
 import ac.kr.smu.endticket.common.web.test.expectExceptionResponse
 import com.ninjasquad.springmockk.SpykBean
 import io.jsonwebtoken.Jwts

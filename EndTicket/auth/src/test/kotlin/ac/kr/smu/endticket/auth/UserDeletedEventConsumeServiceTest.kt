@@ -1,6 +1,5 @@
 package ac.kr.smu.endticket.auth
 
-import ac.kr.smu.endticket.auth.service.TokenService
 import ac.kr.smu.endticket.auth.service.UserDeletedEventConsumeService
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import ac.kr.smu.endticket.common.kafka.test.createProducer

@@ -3,17 +3,9 @@ ext["JWT_VERSION"] = "0.12.5"
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-oauth2-authorization-server")
     implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     implementation("org.springframework.cloud:spring-cloud-starter-config")
-    // jwt
-    // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api
-    implementation("io.jsonwebtoken:jjwt-api:${property("JWT_VERSION")}")
-    implementation("io.jsonwebtoken:jjwt-impl:${property("JWT_VERSION")}")
-    implementation("io.jsonwebtoken:jjwt-jackson:${property("JWT_VERSION")}")
 
     implementation(files("../grpc.jar"))
     implementation(project(":common:web"))

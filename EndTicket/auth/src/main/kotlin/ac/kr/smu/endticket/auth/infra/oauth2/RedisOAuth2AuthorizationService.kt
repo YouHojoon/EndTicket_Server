@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.auth.infra.security
+package ac.kr.smu.endticket.auth.infra.oauth2
 
 import org.jetbrains.annotations.NotNull
 import org.springframework.security.authentication.AnonymousAuthenticationToken

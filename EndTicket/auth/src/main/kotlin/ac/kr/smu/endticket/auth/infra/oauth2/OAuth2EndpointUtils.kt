@@ -1,8 +1,7 @@
-package ac.kr.smu.endticket.auth.infra.security
+package ac.kr.smu.endticket.auth.infra.oauth2
 
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException
 import org.springframework.security.oauth2.core.OAuth2Error
-import org.springframework.security.oauth2.server.authorization.authentication.OAuth2RefreshTokenAuthenticationProvider
 
 /**
  * Spring Security의 OAuth2EndpointUtils

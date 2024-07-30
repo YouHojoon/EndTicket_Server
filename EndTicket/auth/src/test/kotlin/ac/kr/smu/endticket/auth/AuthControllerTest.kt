@@ -1,7 +1,6 @@
 package ac.kr.smu.endticket.auth
 
 import ac.kr.smu.endticket.auth.domain.exception.UserExpiredException
-import ac.kr.smu.endticket.auth.service.TokenService
 import ac.kr.smu.endticket.auth.service.UserService
 import ac.kr.smu.endticket.auth.ui.controller.AuthController
 import ac.kr.smu.endticket.common.redis.config.AutoRedisConfig

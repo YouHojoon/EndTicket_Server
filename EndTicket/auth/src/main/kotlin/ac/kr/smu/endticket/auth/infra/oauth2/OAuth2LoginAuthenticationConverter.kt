@@ -1,4 +1,4 @@
-package ac.kr.smu.endticket.auth.infra.security
+package ac.kr.smu.endticket.auth.infra.oauth2
 
 import org.springframework.core.convert.converter.Converter
 import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken

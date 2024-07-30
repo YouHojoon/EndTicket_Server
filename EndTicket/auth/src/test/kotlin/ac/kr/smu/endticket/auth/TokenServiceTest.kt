@@ -2,9 +2,7 @@ package ac.kr.smu.endticket.auth
 
 import ac.kr.smu.endticket.auth.config.property.JWTProperties
 import ac.kr.smu.endticket.auth.constant.RedisConstant
-import ac.kr.smu.endticket.auth.domain.exception.RefreshTokenExpiredException
 import ac.kr.smu.endticket.auth.domain.exception.UserExpiredException
-import ac.kr.smu.endticket.auth.service.TokenService
 import ac.kr.smu.endticket.common.redis.test.RedisTestConfig
 import ac.kr.smu.endticket.protobuf.AccessToken
 import ac.kr.smu.endticket.protobuf.TokenServiceGrpc.TokenServiceBlockingStub

@@ -1,5 +1,6 @@
 package ac.kr.smu.endticket.auth.service
 
+import ac.kr.smu.endticket.auth.infra.oauth2.RedisRefreshTokenService
 import ac.kr.smu.endticket.common.kafka.constant.KafkaTopic
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.kafka.annotation.KafkaListener
@@ -8,16 +9,14 @@ import org.springframework.stereotype.Service
 
 @Service
 class UserDeletedEventConsumeService(
-    private val tokenService: TokenService,
+    private val refreshTokenService: RedisRefreshTokenService,
 ) {
     @KafkaListener(topics = [KafkaTopic.USER_DELETED])
     fun consume(
         record: ConsumerRecord<String, Unit>,
         ack: Acknowledgment,
     ) {
-        val userId = record.key().toLong()
-
-        tokenService.expireAccessAndRefreshToken(userId)
+        refreshTokenService.removeByUserId(record.key())
         ack.acknowledge()
     }
 }
