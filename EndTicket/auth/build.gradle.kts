@@ -33,7 +33,6 @@ tasks.jacocoTestReport {
             classDirectories.files.map {
                 fileTree(it) {
                     exclude(
-                        "**/infra/*",
                         "**/*Application*",
                         "**/domain/*",
                         "**/response/*",
@@ -53,7 +52,6 @@ tasks.jacocoTestCoverageVerification {
         rule {
             excludes =
                 listOf(
-                    "**.infra.**",
                     "*Application*",
                     "**.domain.*",
                     "**.response.*",

@@ -17,9 +17,7 @@ class SecurityTestConfig{
         http {
             baseConfig()
             authorizeRequests {
-                authorize("/auth/reissue-token", permitAll)
-                authorize("/oauth/**", permitAll)
-                authorize(anyRequest, authenticated)
+                authorize(anyRequest, permitAll)
             }
         }
 
