@@ -1,16 +1,14 @@
 # [EndTicket_Server](https://apps.apple.com/kr/app/%EB%A7%88%EC%B9%A8-%ED%91%9C/id1634962397)
 
 ## 서버 구조도
-![제목 없는 다이어그램 drawio-2](https://github.com/YouHojoon/EndTicket_Server/assets/53998480/cfb9294a-c0cb-4aca-8bba-6072e1a38192)
+![image](https://github.com/user-attachments/assets/c9dd40bb-ea27-49a7-b0d2-9030350c4a4b)
 
 ## 테이블 설계
-![image](https://github.com/YouHojoon/EndTicket_Server/assets/53998480/f85c4765-74d5-454b-a0ae-dae5a974d471)
+![image](https://github.com/user-attachments/assets/5976eeda-60ec-4c08-a936-9ad84cb1b324)
 
 ## API 문서
 [https://app.swaggerhub.com/apis-docs/DBGHWNS11_1/end-ticket-api/1.0.0](https://app.swaggerhub.com/apis-docs/DBGHWNS11_1/end-ticket-api/1.0.0
 )
-
-
 
 ## 사용 기술
 ### Language
@@ -37,11 +35,19 @@
 ### Observation
 - Zipkin
 - Brave
-
+- Elastic Search
+- Kibana
+- Logstash
+- Filebeat
+  
 ### Test
 - Junit5
 - Jacoco
+- Kotest
+- MockK
 
+### Infrastructure
+- Docker
 
 ## 소개
 
